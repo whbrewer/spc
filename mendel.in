@@ -1,1 +1,19 @@
-case_id: xyz123
+&basic
+case_id = xyz123
+reproductive_rate = 2
+num_generations = 50
+mutn_rate = 10
+pop_size = 100
+frac_fav_mutn = 1e-05
+/
+&mutations
+/
+&selection
+/
+&population
+/
+&substructure
+/
+&computation
+data_file_path = './output/'
+/

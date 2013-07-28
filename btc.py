@@ -1,31 +1,22 @@
 from bottle import route, template, static_file, view
-from bottle import get, post, request
-from bottle import run
+from bottle import get, post, request, run
+from subprocess import call
 #run(reloader=True)
 import config
-print "sim_config_file: " + config.sim_conf_file
-sim_conf_file = 'mendel.in'
-
-@route('/start/<cid>')
-def index(cid='test00'):
-	return template('<b>Hello {{cid}}</b>!', cid=cid)
-@route('/static/<filename>')
-def server_static(filename):
-	return static_file(filename, root='./views')
 
 @post('/confirm')
 def confirm_form():
-   user = request.forms.get('user')
-   cid = request.forms.get('cid')
-   mutn_rate = request.forms.get('mutn_rate')  
-   frac_fav_mutn = request.forms.get('frac_fav_mutn')
-   reproductive_rate = request.forms.get('reproductive_rate')
-   pop_size = request.forms.get('pop_size')
-   num_generations = request.forms.get('num_generations')
-   f = open(config.sim_conf_file, 'w')
-   f.write('case_id: %s' % cid) 
-   f.close
-	
+   if(config.write_params(request.forms)):
+      #return template('wrote parameters to file: {{fn}}',fn=config.sim_conf_file)
+      return template('execute', config.exe)
+   else:
+      return template('failed to write parameters to file: {{fn}}',fn=config.sim_conf_file)
+
+@post('/execute')
+def execute():
+   call(config.sim_exe_path)
+   
+@route('/')
 @get('/login')
 def login_form():
     return '''<form method="POST" action="/login">
