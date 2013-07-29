@@ -1,3 +1,6 @@
+import re
+
+sim_conf_template = 'static/mendel.in'
 sim_conf_file = 'mendel.in'
 sim_exe_path = 'engine/mendel'
 sim_out_path = './output/'
@@ -36,5 +39,17 @@ def write_params(form_params):
    f.close
    return 1
 
-#def read_params()
+def read_namelist():
+   '''read the namelist file and return as a dictionary'''
+   params = dict()
+   block = 'dummy'
+   for line in open(sim_conf_template, 'rU'):
+      for word in line.split():
+         m = re.search(r'&(\w+)',line)
+         n = re.search(r'(\w+) = (.*$)',line)
+         if m:
+            block = m.group(1)  
+         elif n:
+            params[(block,n.group(1))] = n.group(2)
+   return params
 
