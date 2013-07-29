@@ -2,6 +2,7 @@ sim_conf_file = 'mendel.in'
 sim_exe_path = 'engine/mendel'
 sim_out_path = './output/'
 
+# for user authentication
 user='wes'
 password='john3.16'
 

@@ -30,7 +30,7 @@ def login_submit():
     user     = request.forms.get('user')
     password = request.forms.get('password')
     if check_login(user, password):
-        config.params['user'] = user
+        #config.params['user'] = user
         return template('start', config.params)
     else:
         return "<p>Login failed</p>"
