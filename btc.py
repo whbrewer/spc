@@ -1,5 +1,6 @@
 from bottle import route, template, static_file, view
 from bottle import get, post, request, run
+#from bottlehaml import haml_template
 from subprocess import call
 #run(reloader=True)
 import config
@@ -31,7 +32,9 @@ def login_submit():
     password = request.forms.get('password')
     if check_login(user, password):
         #config.params['user'] = user
-        return template('start', config.params)
+        #return template('start', config.params)
+        return template('start', config.read_namelist())
+        #return haml_template('start', config.read_namelist())
     else:
         return "<p>Login failed</p>"
 
