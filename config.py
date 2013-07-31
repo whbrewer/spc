@@ -1,10 +1,11 @@
 import re
+from urlparse import urlparse
 
-#sim_conf_template = 'static/mendel.in'
-sim_conf_template = './static/mendel.in'
-sim_conf_file = './mendel.in'
-sim_exe_path = 'engine/mendel'
+sim_input_template = './static/mendel.in'
+sim_input_file = './engine/mendel.in'
 sim_out_path = './output/'
+sim_exe_path = './engine'
+sim_exe = 'mendel'
 
 # for user authentication
 user='wes'
@@ -19,69 +20,65 @@ exe = dict(path='engine/mendel')
 
 # user must write their own function for how to write the output file
 def write_params(form_params):
-   f = open(sim_conf_file, 'w')
-   f.write('&basic\n')
-   #keys = params.keys()
-   keys = read_namelist().keys() # change this in the future
-   for key in keys:
-      #print key, form_params[key]
-      f.write(key + ' = ' + form_params[key] + "\n")
-   #f.write('/\n')
-   #f.write('&mutations\n')
-   #f.write('/\n')
-   #f.write('&selection\n')
-   #f.write('/\n')
-   #f.write('&population\n')
-   #f.write('/\n')
-   #f.write('&substructure\n')
-   #f.write('/\n')
-   #f.write('&computation\n')
-   #f.write('data_file_path = \'' + sim_out_path + '\'\n')
-   f.write('/\n')
+   '''write the input file needed for the simulation'''
+   f = open(sim_input_file, 'w')
+   # need to know what attributes are in what blocks
+   params, blockmap, blockorder = read_namelist() 
+   for block in blockorder:
+       f.write("&%s\n" % block)
+       for key in blockmap[block]:
+           m = re.search(r'[a-zA-Z]',form_params[key])
+           if m:
+               if not re.search('[0-9.]*e+[0-9]*|[FT]',m.group()):
+                   form_params[key] = "'" + form_params[key] + "'"
+           f.write(key + ' = ' + form_params[key] + "\n")
+       f.write("/\n\n")
    f.close
    return 1
 
 def read_namelist():
     '''read the namelist file and return as a dictionary'''
     params = dict()
-    blocks = dict()
-    for line in open(sim_conf_template, 'rU'):
-        for word in line.split():
-            m = re.search(r'&(\w+)',line) # block title
-            n = re.search(r'(\w+) = (.*$)',line) # parameter
-            if m:
-                block = m.group(1)  
-            elif n:
-                #print block, n.group(1), n.group(2)
-                # Delete apostrophes
-                val = re.sub(r"'", "", n.group(2))
-                # Delete Fortran comments 
-                params[n.group(1)] = re.sub(r'\!.*$', "", val)
-                blocks[n.group(1)] = block
-    #print blocks
-    return params
+    blockmap = dict() 
+    blockorder = []
+    for line in open(sim_input_template, 'rU'):
+        m = re.search(r'&(\w+)',line) # block title
+        n = re.search(r'(\w+) = (.*$)',line) # parameter
+        if m:
+            block = m.group(1)  
+            blockorder += [ m.group(1) ]
+        elif n:
+            # Delete apostrophes
+            val = re.sub(r"'", "", n.group(2))
+            # Delete Fortran comments 
+            params[n.group(1)] = re.sub(r'\!.*$', "", val)
+            # Append to blocks e.g. {'basic': ['case_id', 'mutn_rate']}
+            blockmap.setdefault(block,[]).append(n.group(1))
+    return params, blockmap, blockorder
 
 def write_html_template():
 # need to output according to blocks
     confirm="/confirm"
     f = open('out.tpl', 'w')
-    params = read_namelist() 
-    f.write("<html>")
-    f.write("<body>")
-    f.write("<table><tbody>\n")
+    params, blockmap, blockorder = read_namelist() 
+    f.write("<html>\n")
+    f.write("<body>\n")
     f.write("<form action=\""+confirm+"\" method=\"post\">\n")
-    f.write("<input type=\"submit\" />")
-    for param in params:
-        str = "<tr><td>"
-        str += param
-        str += ":</td><td><input type=\"text\" name=\"" + param + "\" "
-        str += "value=\"{{" + param + "}}\"/>"
-        str += "</td></tr>\n"
-        f.write(str)
-    f.write("</tbody></table>\n")
-    f.write("</form>")
-    f.write("</body>")
-    f.write("</html>")
+    f.write("<input type=\"submit\" />\n")
+    for block in blockorder:
+        f.write("\n\n<h2>" + block + "</h2>\n")
+        f.write("<table><tbody>\n")
+        for param in blockmap[block]:
+            str = "<tr><td>"
+            str += param
+            str += ":</td><td><input type=\"text\" name=\"" + param + "\" "
+            str += "value=\"{{" + param + "}}\"/>"
+            str += "</td></tr>\n"
+            f.write(str)
+        f.write("</tbody></table>\n")
+    f.write("</form>\n")
+    f.write("</body>\n")
+    f.write("</html>\n")
     f.close()
     return 1
 
