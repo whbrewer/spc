@@ -16,6 +16,7 @@ def confirm_form():
 
 @post('/execute')
 def execute():
+    # student - need to use popen here and repeatedly read from the pipe and display
     #try:
     #    retcode = call(config.sim_exe + "cwd='./engine'", shell=True)
     #    if retcode < 0:
@@ -34,6 +35,10 @@ def login_form():
                 <input name="password" type="password" />
                 <input type="submit" />
               </form>'''
+
+@route('/static/:path#.+#', name='static')
+def static(path):
+    return static_file(path, root='static')
 
 @post('/login')
 def login_submit():

@@ -62,7 +62,11 @@ def write_html_template():
     f = open('out.tpl', 'w')
     params, blockmap, blockorder = read_namelist() 
     f.write("<html>\n")
-    f.write("<body>\n")
+    f.write("<head>\n")
+    f.write("<script type=\"text/javascript\" src=\"/static/main.js\" charset=\"utf-8\"></script>\n")
+    f.write("<link type=\"text/css\" rel=\"StyleSheet\" href=\"/static/default.css\" />")
+    f.write("</head>\n")
+    f.write("<body onload=\"init()\">\n")
     f.write("<form action=\""+confirm+"\" method=\"post\">\n")
     f.write("<input type=\"submit\" />\n")
     for block in blockorder:

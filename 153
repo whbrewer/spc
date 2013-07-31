@@ -1,9 +1,0 @@
-#!/usr/bin/env python
-
-import config
-
-params = config.read_namelist()
-
-if config.write_html_template():
-    print "successfully output template"
-
