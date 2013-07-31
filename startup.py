@@ -9,7 +9,7 @@ import config
 def confirm_form():
    if(config.write_params(request.forms)):
       #return template('wrote parameters to file: {{fn}}',fn=config.sim_conf_file)
-      return template('execute', config.exe)
+      return template('confirm', config.exe)
    else:
       return template('failed to write parameters to file: {{fn}}',fn=config.sim_conf_file)
 

@@ -26,17 +26,17 @@ def write_params(form_params):
    for key in keys:
       #print key, form_params[key]
       f.write(key + ' = ' + form_params[key] + "\n")
-   f.write('/\n')
-   f.write('&mutations\n')
-   f.write('/\n')
-   f.write('&selection\n')
-   f.write('/\n')
-   f.write('&population\n')
-   f.write('/\n')
-   f.write('&substructure\n')
-   f.write('/\n')
-   f.write('&computation\n')
-   f.write('data_file_path = \'' + sim_out_path + '\'\n')
+   #f.write('/\n')
+   #f.write('&mutations\n')
+   #f.write('/\n')
+   #f.write('&selection\n')
+   #f.write('/\n')
+   #f.write('&population\n')
+   #f.write('/\n')
+   #f.write('&substructure\n')
+   #f.write('/\n')
+   #f.write('&computation\n')
+   #f.write('data_file_path = \'' + sim_out_path + '\'\n')
    f.write('/\n')
    f.close
    return 1
@@ -44,8 +44,7 @@ def write_params(form_params):
 def read_namelist():
     '''read the namelist file and return as a dictionary'''
     params = dict()
-    #get_block = dict()
-    block = 'dummy'
+    blocks = dict()
     for line in open(sim_conf_template, 'rU'):
         for word in line.split():
             m = re.search(r'&(\w+)',line) # block title
@@ -54,11 +53,35 @@ def read_namelist():
                 block = m.group(1)  
             elif n:
                 #print block, n.group(1), n.group(2)
-                params[n.group(1)] = n.group(2)
-                #get_block[n.group(1)] = block
-    #print get_block
-    print params
+                # Delete apostrophes
+                val = re.sub(r"'", "", n.group(2))
+                # Delete Fortran comments 
+                params[n.group(1)] = re.sub(r'\!.*$', "", val)
+                blocks[n.group(1)] = block
+    #print blocks
     return params
 
-#def write_params():
-#    def wrapper:  
+def write_html_template():
+# need to output according to blocks
+    confirm="/confirm"
+    f = open('out.tpl', 'w')
+    params = read_namelist() 
+    f.write("<html>")
+    f.write("<body>")
+    f.write("<table><tbody>\n")
+    f.write("<form action=\""+confirm+"\" method=\"post\">\n")
+    f.write("<input type=\"submit\" />")
+    for param in params:
+        str = "<tr><td>"
+        str += param
+        str += ":</td><td><input type=\"text\" name=\"" + param + "\" "
+        str += "value=\"{{" + param + "}}\"/>"
+        str += "</td></tr>\n"
+        f.write(str)
+    f.write("</tbody></table>\n")
+    f.write("</form>")
+    f.write("</body>")
+    f.write("</html>")
+    f.close()
+    return 1
+
