@@ -1,8 +1,14 @@
-# student projects
+# todo - possible student projects
+# - file manager
+# - plotting system
 # - job queuing system
+# - integration to openshift
 # - workflow system
 # - data monitoring system
 # - pipe handling system
+# - generic xml reader
+# - implement haml templates
+# - get SQLite DB working
 
 # student homeworks
 # - add ability to group things by tabs (tabfx)
@@ -13,10 +19,10 @@ from urlparse import urlparse
 sim_input_template = './static/mendel.in'
 sim_input_file = './engine/mendel.in'
 sim_out_path = './output/'
-sim_exe_path = './engine'
+sim_path = './engine'
 sim_exe = 'mendel'
 
-workflow = "login >> start >> confirm >> execute :: monitor :: plot :: filemanager"
+workflow = "login >> start >> confirm >> execute"
 
 # for user authentication
 user='wes'
@@ -77,14 +83,9 @@ def write_html_template():
     confirm="/confirm"
     f = open('out.tpl', 'w')
     params, blockmap, blockorder = read_namelist() 
-    f.write("<html>\n")
-    f.write("<head>\n")
-    f.write("<script type=\"text/javascript\" src=\"/static/main.js\" charset=\"utf-8\"></script>\n")
-    f.write("<link type=\"text/css\" rel=\"StyleSheet\" href=\"/static/default.css\" />")
-    f.write("</head>\n")
-    f.write("<body onload=\"init()\">\n")
+    f.write("%include header title='confirm'\n")
     f.write("<form action=\""+confirm+"\" method=\"post\">\n")
-    f.write("<input type=\"submit\" />\n")
+    f.write("<input class=\"start\" type=\"submit\" />\n")
     for block in blockorder:
         f.write("\n\n<h2>" + block + "</h2>\n")
         f.write("<table><tbody>\n")
@@ -97,8 +98,14 @@ def write_html_template():
             f.write(str)
         f.write("</tbody></table>\n")
     f.write("</form>\n")
-    f.write("</body>\n")
-    f.write("</html>\n")
+    f.write("%include footer")
     f.close()
     return 1
+
+def define_workflow():
+    pass
+    #for i in workflow.split(">>"):
+    #    print i.strip()
+    # consider using Pyphant, Python Workflow Engine, Spiff, Ruffus, PaPy, or
+    # pyutilib.workflow 
 

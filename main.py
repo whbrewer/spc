@@ -19,13 +19,13 @@ def confirm_form():
 def execute():
     # student - need to use popen here and repeatedly read from the pipe and display
     try:
-        retcode = call(config.sim_exe)
+        retcode = call(config.sim_path + "/" + config.sim_exe)
         if retcode < 0:
             print >>sys.stderr, "Child was terminated by signal", -retcode
             return template('job terminated by signal: {{x}}', x=-retcode)
         else:
             print >>sys.stderr, "Child returned", retcode
-            return "completed successfully"
+            return template('menu')
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -53,9 +53,28 @@ def login_submit():
         # ignore blockmap and blockorder from read_namelist()
         params,_,_ = config.read_namelist()
         return template('start', params)
+        #start() # dont know why this doesnt work... yet
         #return haml_template('start', config.read_namelist())
     else:
         return "<p>Login failed</p>"
+
+@post('/start')
+def start():
+    # ignore blockmap and blockorder from read_namelist()
+    params,_,_ = config.read_namelist()
+    return template('start', params)
+
+@post('/list')
+def start():
+    # ignore blockmap and blockorder from read_namelist()
+    params,_,_ = config.read_namelist()
+    return template('list', params)
+
+@post('/plot')
+def plot():
+    # ignore blockmap and blockorder from read_namelist()
+    params,_,_ = config.read_namelist()
+    return template('plot', params)
 
 def check_login(user, password):
 	if user == config.user and password == config.password:
