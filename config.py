@@ -84,8 +84,9 @@ def write_html_template():
     f = open('out.tpl', 'w')
     params, blockmap, blockorder = read_namelist() 
     f.write("%include header title='confirm'\n")
+    f.write("%include navbar\n")
     f.write("<form action=\""+confirm+"\" method=\"post\">\n")
-    f.write("<input class=\"start\" type=\"submit\" />\n")
+    f.write("<input class=\"start\" type=\"submit\" value=\"confirm\" />")
     for block in blockorder:
         f.write("\n\n<h2>" + block + "</h2>\n")
         f.write("<table><tbody>\n")

@@ -25,7 +25,7 @@ def execute():
             return template('job terminated by signal: {{x}}', x=-retcode)
         else:
             print >>sys.stderr, "Child returned", retcode
-            return template('menu')
+            return template('output')
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
