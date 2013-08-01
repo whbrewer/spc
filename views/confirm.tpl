@@ -1,7 +1,4 @@
-<html>
-<head><style> input { width: 100px; } </style>
-</head>
-<body>
+%include header title='Hello World'
 
 <h1>Execute simulation:</h1>
 
@@ -12,5 +9,4 @@
 <input type="submit">
 </form>
 
-</body>
-</html>
+%include footer

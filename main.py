@@ -6,6 +6,7 @@ from subprocess import call
 #import subprocess
 #run(reloader=True)
 import config
+import sys
 
 @post('/confirm')
 def confirm_form():
@@ -17,15 +18,18 @@ def confirm_form():
 @post('/execute')
 def execute():
     # student - need to use popen here and repeatedly read from the pipe and display
-    #try:
-    #    retcode = call(config.sim_exe + "cwd='./engine'", shell=True)
-    #    if retcode < 0:
-    #        print >>sys.stderr, "Child was terminated by signal", -retcode
-    #    else:
-    #        print >>sys.stderr, "Child returned", retcode
-    #except OSError, e:
-    #    print >>sys.stderr, "Execution failed:", e
-    call(config.sim_exe)
+    try:
+        retcode = call(config.sim_exe)
+        if retcode < 0:
+            print >>sys.stderr, "Child was terminated by signal", -retcode
+            return template('job terminated by signal: {{x}}', x=-retcode)
+        else:
+            print >>sys.stderr, "Child returned", retcode
+            return "completed successfully"
+
+    except OSError, e:
+        print >>sys.stderr, "Execution failed:", e
+        return "failed to start job"
    
 @route('/')
 @get('/login')

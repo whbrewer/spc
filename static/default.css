@@ -39,6 +39,8 @@ a {
 
 a.plain { text-decoration: none }
 
+input:focus { background: yellow; color: black; }
+
 input[type="submit"]
 {
    z-index:1;

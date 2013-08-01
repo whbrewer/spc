@@ -13,10 +13,11 @@ try:
 		    print "successfully output template"
 
     if(sys.argv[1] == "st"):
-        os.system("python startup.py")
+        os.system("python main.py")
 
 except:
     print "usage: " + sys.argv[0] + " <command>"
     print
     print "list of commands:"
     print "new - create new project"
+    print "st  - start the web server"

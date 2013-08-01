@@ -1,3 +1,12 @@
+# student projects
+# - job queuing system
+# - workflow system
+# - data monitoring system
+# - pipe handling system
+
+# student homeworks
+# - add ability to group things by tabs (tabfx)
+
 import re
 from urlparse import urlparse
 
@@ -6,6 +15,8 @@ sim_input_file = './engine/mendel.in'
 sim_out_path = './output/'
 sim_exe_path = './engine'
 sim_exe = 'mendel'
+
+workflow = "login >> start >> confirm >> execute :: monitor :: plot :: filemanager"
 
 # for user authentication
 user='wes'
@@ -36,6 +47,8 @@ def write_params(form_params):
    f.close
    return 1
 
+# student - needs to modify reader and writer so that can handle
+# multiple values for each parameter
 def read_namelist():
     '''read the namelist file and return as a dictionary'''
     params = dict()
@@ -48,13 +61,16 @@ def read_namelist():
             block = m.group(1)  
             blockorder += [ m.group(1) ]
         elif n:
-            # Delete apostrophes
-            val = re.sub(r"'", "", n.group(2))
+            # Delete apostrophes and commas
+            val = re.sub(r"[',]", "", n.group(2))
             # Delete Fortran comments 
             params[n.group(1)] = re.sub(r'\!.*$', "", val)
             # Append to blocks e.g. {'basic': ['case_id', 'mutn_rate']}
             blockmap.setdefault(block,[]).append(n.group(1))
     return params, blockmap, blockorder
+
+# student - convert T/F values into checkboxes
+# convert some into dropdown boxes
 
 def write_html_template():
 # need to output according to blocks
