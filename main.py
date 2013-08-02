@@ -5,8 +5,10 @@ from subprocess import call
 #from os import sys
 #import subprocess
 #run(reloader=True)
+import string, random
 import config
 import sys
+import os
 
 @post('/confirm')
 def confirm_form():
@@ -58,7 +60,7 @@ def login_submit():
     else:
         return "<p>Login failed</p>"
 
-@post('/start')
+@get('/start')
 def start():
     # ignore blockmap and blockorder from read_namelist()
     params,_,_ = config.read_namelist()
@@ -67,8 +69,14 @@ def start():
 @post('/list')
 def start():
     # ignore blockmap and blockorder from read_namelist()
-    params,_,_ = config.read_namelist()
-    return template('list', params)
+    #for x in range(6): cid += random.choice(string.letters)
+    #params = { 'filename': cid }
+    #f = open('static/tmp/'+cid, 'w')
+    cid = 'views/listing.tpl'
+    f = open(cid, 'w')
+    f.write('<br>'.join(os.listdir(config.sim_out_path)))
+    f.close()
+    return template('list')
 
 @post('/plot')
 def plot():

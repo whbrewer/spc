@@ -4,5 +4,3 @@
   <link type="text/css" rel="StyleSheet" href="/static/default.css" />
   <title>{{title or 'No title'}}</title>
 </head>
-
-<body onload="init()">

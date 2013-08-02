@@ -1,4 +1,5 @@
 %include header title='confirm'
+<body onload="init()">
 %include navbar
 
 <h1>Execute simulation:</h1>
