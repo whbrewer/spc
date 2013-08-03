@@ -14,19 +14,18 @@
 # - add ability to group things by tabs (tabfx)
 
 import re
-from urlparse import urlparse
+import sys, os
 
-sim_input_template = './static/mendel.in'
-sim_input_file = './engine/mendel.in'
-sim_out_path = './output/'
-sim_path = './engine'
-sim_exe = 'mendel'
-
-workflow = "login >> start >> confirm >> execute"
-
-# for user authentication
+# set these parameters
 user='wes'
 password='john3.16'
+sim_fn = 'mendel.in'
+sim_exe = 'engine'
+sim_user_dir = './user_data'
+# end set 
+
+# future feature
+workflow = "login >> start >> confirm >> execute"
 
 # define user input parameters here and set them with default values
 #params = dict(case_id='xyz123',mutn_rate=10,frac_fav_mutn=0.00001,
@@ -37,30 +36,48 @@ exe = dict(path='engine/mendel')
 
 # user must write their own function for how to write the output file
 def write_params(form_params):
-   '''write the input file needed for the simulation'''
-   f = open(sim_input_file, 'w')
-   # need to know what attributes are in what blocks
-   params, blockmap, blockorder = read_namelist() 
-   for block in blockorder:
-       f.write("&%s\n" % block)
-       for key in blockmap[block]:
-           m = re.search(r'[a-zA-Z]',form_params[key])
-           if m:
-               if not re.search('[0-9.]*e+[0-9]*|[FT]',m.group()):
-                   form_params[key] = "'" + form_params[key] + "'"
-           f.write(key + ' = ' + form_params[key] + "\n")
-       f.write("/\n\n")
-   f.close
-   return 1
+    '''write the input file needed for the simulation'''
+
+    sim_dir = sim_user_dir + os.sep + form_params['case_id'] + os.sep
+    #form_params['data_file_path'] = sim_dir
+    form_params['data_file_path'] = "'./'"
+   
+    if not os.path.exists(sim_dir):
+        os.makedirs(sim_dir)
+
+    cid = form_params['case_id']
+    fn = sim_user_dir + os.sep + cid + os.sep + sim_fn
+
+    f = open(fn, 'w')
+    # need to know what attributes are in what blocks
+    params, blockmap, blockorder = read_params() 
+    for block in blockorder:
+        f.write("&%s\n" % block)
+        for key in blockmap[block]:
+            #if re.search(r'[a-zA-Z]{2}',form_params[key]):
+            #    form_params[key] = "'" + form_params[key] + "'"
+
+            # if number contains some letters
+            m = re.search(r'[a-zA-Z]',form_params[key])
+            if m:
+                # for all strings except exp numbers, enclose by single quotes
+                if not re.search('[0-9.]*e+[0-9]*|[FT]',m.group()):
+                    form_params[key] = "'" + form_params[key] + "'"
+
+            f.write(key + ' = ' + form_params[key] + "\n")
+        f.write("/\n\n")
+    f.close
+    return 1
 
 # student - needs to modify reader and writer so that can handle
 # multiple values for each parameter
-def read_namelist():
+def read_params(cid='TMPLET'):
     '''read the namelist file and return as a dictionary'''
+    fn = sim_user_dir + os.sep + cid + os.sep + sim_fn
     params = dict()
     blockmap = dict() 
     blockorder = []
-    for line in open(sim_input_template, 'rU'):
+    for line in open(fn, 'rU'):
         m = re.search(r'&(\w+)',line) # block title
         n = re.search(r'(\w+) = (.*$)',line) # parameter
         if m:
@@ -81,8 +98,8 @@ def read_namelist():
 def write_html_template():
 # need to output according to blocks
     confirm="/confirm"
-    f = open('out.tpl', 'w')
-    params, blockmap, blockorder = read_namelist() 
+    f = open('views/start.tpl', 'w')
+    params, blockmap, blockorder = read_params() 
     f.write("%include header title='confirm'\n")
     f.write("<body onload=\"init()\">\n")
     f.write("%include navbar\n")

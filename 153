@@ -8,7 +8,7 @@ sys.argv[1:]
 
 try:
     if(sys.argv[1] == "n"):
-        params = config.read_namelist()
+        params = config.read_params()
         if config.write_html_template():
 		    print "successfully output template"
         config.define_workflow()

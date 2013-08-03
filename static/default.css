@@ -25,9 +25,6 @@ h1 {
     text-align: left;
     color: rgb(74,74,74);
     background-color: rgb(220,220,220);
-    background-image: url(images/top.png);
-    background-repeat: repeat-x;
-    background-position: left center;
     //padding: 10px 15px;
     margin: 0;
     border-bottom: 1px solid rgb(144,144,144);
@@ -80,6 +77,22 @@ input[type="submit"]
    background: rgba(0,0,0,0.1);
 }
 
+input.cid {
+   position: fixed;
+   font-size: 18px;
+   width: 96px;
+   height:30px;
+   top:  0px;
+   left: 0px;
+   background: rgb(255,255,255);
+   margin:4px;
+   z-index:1;
+   -webkit-border-radius: 5px; //For Safari, etc.
+   -moz-border-radius: 5px; //For Mozilla, etc.
+   border-radius: 5px; //CSS3 Feature
+}
+
+/*.cid   { position: fixed; left: 4px; top: 4px;   font-size: 18px; width: 96px; height: 30px; } */
 .exe   { left: 0px; top: 0px;   background: green;   }
 .run   { left: 0px; top: 0px;   background: green;   }
 .start { left: 100px; top: 0px; background: green; }
