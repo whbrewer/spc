@@ -6,6 +6,8 @@
 
 <h1>List</h1>
 
-%include listing
+{{!content}}
+
+<hr>
 
 %include footer

@@ -77,20 +77,11 @@ def start():
 
 @get('/list')
 def list():
-    # ignore blockmap and blockorder from read_params()
-    #for x in range(6): cid += random.choice(string.letters)
-    #params = { 'filename': cid }
-    #f = open('static/tmp/'+cid, 'w')
-    fn = 'views/listing.tpl'
-    f = open(fn, 'w')
-    listing = os.listdir(mendel.sim_user_dir)
-    #print listing
-    #params = { 'listing': listing }
-    #f.write('<br>\n'.join(os.listdir(mendel.sim_user_dir)))
-    for case in listing: #os.listdir(mendel.sim_user_dir):
-        f.write('<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n')
-    f.close()
-    return template('list')
+    str = ''
+    for case in os.listdir(mendel.sim_user_dir):
+        str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n'
+    content = { 'content': str }
+    return template('list', content)
 
 @post('/plot')
 def plot():
