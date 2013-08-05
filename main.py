@@ -4,12 +4,13 @@ from bottle import get, post, request, run
 import subprocess
 import string, random
 import sys, os, re
-import config, flot
+import mendel, flot
+#from gevent import monkey; monkey.patch_all()
 
 @post('/confirm')
 def confirm_form():
    params = {'cid': request.forms['case_id'] }
-   if(config.write_params(request.forms)):
+   if(mendel.write_params(request.forms)):
       return template('confirm', params)
    else:
       return 'ERROR: failed to write parameters to file'
@@ -19,16 +20,15 @@ def execute():
     # student - need to use popen here and repeatedly read from the pipe and display
     cid = request.forms['cid']
     try:
-        cmd = os.pardir + os.sep + os.pardir + os.sep + config.sim_exe
+        cmd = os.pardir + os.sep + os.pardir + os.sep + mendel.sim_exe
         #retcode = call(cmd)
-        run_dir = config.sim_user_dir + os.sep + cid 
+        run_dir = mendel.sim_user_dir + os.sep + cid 
         print run_dir
         p = subprocess.Popen([cmd], cwd=run_dir, shell=True, stdout=subprocess.PIPE)
-        f = open('tmp.out','w')
         while p.poll() is None:
             output = p.stdout.readline()
-            #print output,
-        f.close()
+            #yield output
+            print output,
         p.wait()
         #if retcode < 0:
         #    print >>sys.stderr, "Child was terminated by signal", -retcode
@@ -59,9 +59,9 @@ def login_submit():
     user     = request.forms.get('user')
     password = request.forms.get('password')
     if check_login(user, password):
-        #config.params['user'] = user
+        #mendel.params['user'] = user
         # ignore blockmap and blockorder from read_params()
-        params,_,_ = config.read_params()
+        params,_,_ = mendel.read_params()
         return template('start', params)
     else:
         return "<p>Login failed</p>"
@@ -69,7 +69,7 @@ def login_submit():
 @get('/start')
 def start():
     # ignore blockmap and blockorder from read_params()
-    params,_,_ = config.read_params()
+    params,_,_ = mendel.read_params()
     return template('start', params)
 
 @get('/list')
@@ -80,11 +80,11 @@ def list():
     #f = open('static/tmp/'+cid, 'w')
     fn = 'views/listing.tpl'
     f = open(fn, 'w')
-    listing = os.listdir(config.sim_user_dir)
+    listing = os.listdir(mendel.sim_user_dir)
     #print listing
     #params = { 'listing': listing }
-    #f.write('<br>\n'.join(os.listdir(config.sim_user_dir)))
-    for case in listing: #os.listdir(config.sim_user_dir):
+    #f.write('<br>\n'.join(os.listdir(mendel.sim_user_dir)))
+    for case in listing: #os.listdir(mendel.sim_user_dir):
         f.write('<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n')
     f.close()
     return template('list')
@@ -92,7 +92,7 @@ def list():
 @post('/plot')
 def plot():
     cid = request.forms['cid']
-    sim_dir = config.sim_user_dir + os.sep + cid + os.sep
+    sim_dir = mendel.sim_user_dir + os.sep + cid + os.sep
     if re.search(r'^\s*$', cid):
         return "Error: no case id specified"
     else:
@@ -101,10 +101,11 @@ def plot():
         return template('plot', params)
 
 def check_login(user, password):
-	if user == config.user and password == config.password:
+	if user == mendel.user and password == mendel.password:
 		return 1
 	else:
 		return 0
 
 run(host='localhost', port=8080)
+#run(host='localhost', port=8080, server='gevent')
 
