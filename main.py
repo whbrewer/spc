@@ -10,6 +10,9 @@ import mendel, flot
 @post('/confirm')
 def confirm_form():
    params = {'cid': request.forms['case_id'] }
+   #my_dict = request.query.decode()
+   #print my_dict
+
    if(mendel.write_params(request.forms)):
       return template('confirm', params)
    else:

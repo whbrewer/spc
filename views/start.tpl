@@ -8,98 +8,160 @@
 <div class="tab-page">
 <h2 class="tab">basic</h2>
 <table><tbody>
-<tr><td>case_id:</td><td><input type="text" name="case_id" value="{{case_id}}"/></td></tr>
-<tr><td>mutn_rate:</td><td><input type="text" name="mutn_rate" value="{{mutn_rate}}"/></td></tr>
-<tr><td>frac_fav_mutn:</td><td><input type="text" name="frac_fav_mutn" value="{{frac_fav_mutn}}"/></td></tr>
-<tr><td>reproductive_rate:</td><td><input type="text" name="reproductive_rate" value="{{reproductive_rate}}"/></td></tr>
-<tr><td>pop_size:</td><td><input type="text" name="pop_size" value="{{pop_size}}"/></td></tr>
-<tr><td>num_generations:</td><td><input type="text" name="num_generations" value="{{num_generations}}"/></td></tr>
+<tr><td>case_id:</td>
+<td><input type="text" name="case_id" value="{{case_id}}"/></td></tr>
+<tr><td>mutn_rate:</td>
+<td><input type="text" name="mutn_rate" value="{{mutn_rate}}"/></td></tr>
+<tr><td>frac_fav_mutn:</td>
+<td><input type="text" name="frac_fav_mutn" value="{{frac_fav_mutn}}"/></td></tr>
+<tr><td>reproductive_rate:</td>
+<td><input type="text" name="reproductive_rate" value="{{reproductive_rate}}"/></td></tr>
+<tr><td>pop_size:</td>
+<td><input type="text" name="pop_size" value="{{pop_size}}"/></td></tr>
+<tr><td>num_generations:</td>
+<td><input type="text" name="num_generations" value="{{num_generations}}"/></td></tr>
 </tbody></table>
 </div>
 <div class="tab-page">
 <h2 class="tab">mutations</h2>
 <table><tbody>
-<tr><td>fitness_distrib_type:</td><td><input type="text" name="fitness_distrib_type" value="{{fitness_distrib_type}}"/></td></tr>
-<tr><td>fraction_neutral:</td><td><input type="text" name="fraction_neutral" value="{{fraction_neutral}}"/></td></tr>
-<tr><td>genome_size:</td><td><input type="text" name="genome_size" value="{{genome_size}}"/></td></tr>
-<tr><td>high_impact_mutn_fraction:</td><td><input type="text" name="high_impact_mutn_fraction" value="{{high_impact_mutn_fraction}}"/></td></tr>
-<tr><td>high_impact_mutn_threshold:</td><td><input type="text" name="high_impact_mutn_threshold" value="{{high_impact_mutn_threshold}}"/></td></tr>
-<tr><td>max_fav_fitness_gain:</td><td><input type="text" name="max_fav_fitness_gain" value="{{max_fav_fitness_gain}}"/></td></tr>
-<tr><td>fraction_recessive:</td><td><input type="text" name="fraction_recessive" value="{{fraction_recessive}}"/></td></tr>
-<tr><td>recessive_hetero_expression:</td><td><input type="text" name="recessive_hetero_expression" value="{{recessive_hetero_expression}}"/></td></tr>
-<tr><td>dominant_hetero_expression:</td><td><input type="text" name="dominant_hetero_expression" value="{{dominant_hetero_expression}}"/></td></tr>
-<tr><td>multiplicative_weighting:</td><td><input type="text" name="multiplicative_weighting" value="{{multiplicative_weighting}}"/></td></tr>
-<tr><td>synergistic_epistasis:</td><td><input type="text" name="synergistic_epistasis" value="{{synergistic_epistasis}}"/></td></tr>
-<tr><td>upload_mutations:</td><td><input type="text" name="upload_mutations" value="{{upload_mutations}}"/></td></tr>
-<tr><td>allow_back_mutn:</td><td><input type="text" name="allow_back_mutn" value="{{allow_back_mutn}}"/></td></tr>
+<tr><td>fitness_distrib_type:</td>
+<td><input type="text" name="fitness_distrib_type" value="{{fitness_distrib_type}}"/></td></tr>
+<tr><td>fraction_neutral:</td>
+<td><input type="text" name="fraction_neutral" value="{{fraction_neutral}}"/></td></tr>
+<tr><td>genome_size:</td>
+<td><input type="text" name="genome_size" value="{{genome_size}}"/></td></tr>
+<tr><td>high_impact_mutn_fraction:</td>
+<td><input type="text" name="high_impact_mutn_fraction" value="{{high_impact_mutn_fraction}}"/></td></tr>
+<tr><td>high_impact_mutn_threshold:</td>
+<td><input type="text" name="high_impact_mutn_threshold" value="{{high_impact_mutn_threshold}}"/></td></tr>
+<tr><td>max_fav_fitness_gain:</td>
+<td><input type="text" name="max_fav_fitness_gain" value="{{max_fav_fitness_gain}}"/></td></tr>
+<tr><td>fraction_recessive:</td>
+<td><input type="text" name="fraction_recessive" value="{{fraction_recessive}}"/></td></tr>
+<tr><td>recessive_hetero_expression:</td>
+<td><input type="text" name="recessive_hetero_expression" value="{{recessive_hetero_expression}}"/></td></tr>
+<tr><td>dominant_hetero_expression:</td>
+<td><input type="text" name="dominant_hetero_expression" value="{{dominant_hetero_expression}}"/></td></tr>
+<tr><td>multiplicative_weighting:</td>
+<td><input type="text" name="multiplicative_weighting" value="{{multiplicative_weighting}}"/></td></tr>
+<tr><td>synergistic_epistasis:</td>
+<td><input type="checkbox" name="synergistic_epistasis" value="T"/></td></tr>
+<tr><td>upload_mutations:</td>
+<td><input type="checkbox" name="upload_mutations" value="T"/></td></tr>
+<tr><td>allow_back_mutn:</td>
+<td><input type="checkbox" name="allow_back_mutn" value="T"/></td></tr>
 </tbody></table>
 </div>
 <div class="tab-page">
 <h2 class="tab">selection</h2>
 <table><tbody>
-<tr><td>fraction_random_death:</td><td><input type="text" name="fraction_random_death" value="{{fraction_random_death}}"/></td></tr>
-<tr><td>heritability:</td><td><input type="text" name="heritability" value="{{heritability}}"/></td></tr>
-<tr><td>non_scaling_noise:</td><td><input type="text" name="non_scaling_noise" value="{{non_scaling_noise}}"/></td></tr>
-<tr><td>fitness_dependent_fertility:</td><td><input type="text" name="fitness_dependent_fertility" value="{{fitness_dependent_fertility}}"/></td></tr>
-<tr><td>selection_scheme:</td><td><input type="text" name="selection_scheme" value="{{selection_scheme}}"/></td></tr>
+<tr><td>fraction_random_death:</td>
+<td><input type="text" name="fraction_random_death" value="{{fraction_random_death}}"/></td></tr>
+<tr><td>heritability:</td>
+<td><input type="text" name="heritability" value="{{heritability}}"/></td></tr>
+<tr><td>non_scaling_noise:</td>
+<td><input type="text" name="non_scaling_noise" value="{{non_scaling_noise}}"/></td></tr>
+<tr><td>fitness_dependent_fertility:</td>
+<td><input type="checkbox" name="fitness_dependent_fertility" value="T"/></td></tr>
+<tr><td>selection_scheme:</td>
+<td><input type="text" name="selection_scheme" value="{{selection_scheme}}"/></td></tr>
 </tbody></table>
 </div>
 <div class="tab-page">
 <h2 class="tab">population</h2>
 <table><tbody>
-<tr><td>clonal_reproduction:</td><td><input type="text" name="clonal_reproduction" value="{{clonal_reproduction}}"/></td></tr>
-<tr><td>clonal_haploid:</td><td><input type="text" name="clonal_haploid" value="{{clonal_haploid}}"/></td></tr>
-<tr><td>fraction_self_fertilization:</td><td><input type="text" name="fraction_self_fertilization" value="{{fraction_self_fertilization}}"/></td></tr>
-<tr><td>num_contrasting_alleles:</td><td><input type="text" name="num_contrasting_alleles" value="{{num_contrasting_alleles}}"/></td></tr>
-<tr><td>max_total_fitness_increase:</td><td><input type="text" name="max_total_fitness_increase" value="{{max_total_fitness_increase}}"/></td></tr>
-<tr><td>dynamic_linkage:</td><td><input type="text" name="dynamic_linkage" value="{{dynamic_linkage}}"/></td></tr>
-<tr><td>haploid_chromosome_number:</td><td><input type="text" name="haploid_chromosome_number" value="{{haploid_chromosome_number}}"/></td></tr>
-<tr><td>num_linkage_subunits:</td><td><input type="text" name="num_linkage_subunits" value="{{num_linkage_subunits}}"/></td></tr>
-<tr><td>pop_growth_model:</td><td><input type="text" name="pop_growth_model" value="{{pop_growth_model}}"/></td></tr>
-<tr><td>pop_growth_rate:</td><td><input type="text" name="pop_growth_rate" value="{{pop_growth_rate}}"/></td></tr>
-<tr><td>bottleneck_yes:</td><td><input type="text" name="bottleneck_yes" value="{{bottleneck_yes}}"/></td></tr>
+<tr><td>clonal_reproduction:</td>
+<td><input type="checkbox" name="clonal_reproduction" value="T"/></td></tr>
+<tr><td>clonal_haploid:</td>
+<td><input type="checkbox" name="clonal_haploid" value="T"/></td></tr>
+<tr><td>fraction_self_fertilization:</td>
+<td><input type="text" name="fraction_self_fertilization" value="{{fraction_self_fertilization}}"/></td></tr>
+<tr><td>num_contrasting_alleles:</td>
+<td><input type="text" name="num_contrasting_alleles" value="{{num_contrasting_alleles}}"/></td></tr>
+<tr><td>max_total_fitness_increase:</td>
+<td><input type="text" name="max_total_fitness_increase" value="{{max_total_fitness_increase}}"/></td></tr>
+<tr><td>dynamic_linkage:</td>
+<td><input type="checkbox" name="dynamic_linkage" value="T"/></td></tr>
+<tr><td>haploid_chromosome_number:</td>
+<td><input type="text" name="haploid_chromosome_number" value="{{haploid_chromosome_number}}"/></td></tr>
+<tr><td>num_linkage_subunits:</td>
+<td><input type="text" name="num_linkage_subunits" value="{{num_linkage_subunits}}"/></td></tr>
+<tr><td>pop_growth_model:</td>
+<td><input type="text" name="pop_growth_model" value="{{pop_growth_model}}"/></td></tr>
+<tr><td>pop_growth_rate:</td>
+<td><input type="text" name="pop_growth_rate" value="{{pop_growth_rate}}"/></td></tr>
+<tr><td>bottleneck_yes:</td>
+<td><input type="checkbox" name="bottleneck_yes" value="T"/></td></tr>
 </tbody></table>
 </div>
 <div class="tab-page">
 <h2 class="tab">substructure</h2>
 <table><tbody>
-<tr><td>is_parallel:</td><td><input type="text" name="is_parallel" value="{{is_parallel}}"/></td></tr>
-<tr><td>homogenous_tribes:</td><td><input type="text" name="homogenous_tribes" value="{{homogenous_tribes}}"/></td></tr>
-<tr><td>num_indiv_exchanged:</td><td><input type="text" name="num_indiv_exchanged" value="{{num_indiv_exchanged}}"/></td></tr>
-<tr><td>migration_generations:</td><td><input type="text" name="migration_generations" value="{{migration_generations}}"/></td></tr>
-<tr><td>migration_model:</td><td><input type="text" name="migration_model" value="{{migration_model}}"/></td></tr>
-<tr><td>tribal_competition:</td><td><input type="text" name="tribal_competition" value="{{tribal_competition}}"/></td></tr>
-<tr><td>tc_scaling_factor:</td><td><input type="text" name="tc_scaling_factor" value="{{tc_scaling_factor}}"/></td></tr>
-<tr><td>group_heritability:</td><td><input type="text" name="group_heritability" value="{{group_heritability}}"/></td></tr>
-<tr><td>altruistic:</td><td><input type="text" name="altruistic" value="{{altruistic}}"/></td></tr>
-<tr><td>social_bonus_factor:</td><td><input type="text" name="social_bonus_factor" value="{{social_bonus_factor}}"/></td></tr>
+<tr><td>is_parallel:</td>
+<td><input type="checkbox" name="is_parallel" value="T"/></td></tr>
+<tr><td>homogenous_tribes:</td>
+<td><input type="checkbox" name="homogenous_tribes" value="T"/></td></tr>
+<tr><td>num_indiv_exchanged:</td>
+<td><input type="text" name="num_indiv_exchanged" value="{{num_indiv_exchanged}}"/></td></tr>
+<tr><td>migration_generations:</td>
+<td><input type="text" name="migration_generations" value="{{migration_generations}}"/></td></tr>
+<tr><td>migration_model:</td>
+<td><input type="text" name="migration_model" value="{{migration_model}}"/></td></tr>
+<tr><td>tribal_competition:</td>
+<td><input type="checkbox" name="tribal_competition" value="T"/></td></tr>
+<tr><td>tc_scaling_factor:</td>
+<td><input type="text" name="tc_scaling_factor" value="{{tc_scaling_factor}}"/></td></tr>
+<tr><td>group_heritability:</td>
+<td><input type="text" name="group_heritability" value="{{group_heritability}}"/></td></tr>
+<tr><td>altruistic:</td>
+<td><input type="checkbox" name="altruistic" value="T"/></td></tr>
+<tr><td>social_bonus_factor:</td>
+<td><input type="text" name="social_bonus_factor" value="{{social_bonus_factor}}"/></td></tr>
 </tbody></table>
 </div>
 <div class="tab-page">
 <h2 class="tab">computation</h2>
 <table><tbody>
-<tr><td>max_del_mutn_per_indiv:</td><td><input type="text" name="max_del_mutn_per_indiv" value="{{max_del_mutn_per_indiv}}"/></td></tr>
-<tr><td>max_fav_mutn_per_indiv:</td><td><input type="text" name="max_fav_mutn_per_indiv" value="{{max_fav_mutn_per_indiv}}"/></td></tr>
-<tr><td>max_neu_mutn_per_indiv:</td><td><input type="text" name="max_neu_mutn_per_indiv" value="{{max_neu_mutn_per_indiv}}"/></td></tr>
-<tr><td>track_neutrals:</td><td><input type="text" name="track_neutrals" value="{{track_neutrals}}"/></td></tr>
-<tr><td>tracking_threshold:</td><td><input type="text" name="tracking_threshold" value="{{tracking_threshold}}"/></td></tr>
-<tr><td>extinction_threshold:</td><td><input type="text" name="extinction_threshold" value="{{extinction_threshold}}"/></td></tr>
-<tr><td>random_number_seed:</td><td><input type="text" name="random_number_seed" value="{{random_number_seed}}"/></td></tr>
-<tr><td>write_dump:</td><td><input type="text" name="write_dump" value="{{write_dump}}"/></td></tr>
-<tr><td>restart_case:</td><td><input type="text" name="restart_case" value="{{restart_case}}"/></td></tr>
-<tr><td>plot_allele_gens:</td><td><input type="text" name="plot_allele_gens" value="{{plot_allele_gens}}"/></td></tr>
-<tr><td>data_file_path:</td><td><input type="text" name="data_file_path" value="{{data_file_path}}"/></td></tr>
+<tr><td>max_del_mutn_per_indiv:</td>
+<td><input type="text" name="max_del_mutn_per_indiv" value="{{max_del_mutn_per_indiv}}"/></td></tr>
+<tr><td>max_fav_mutn_per_indiv:</td>
+<td><input type="text" name="max_fav_mutn_per_indiv" value="{{max_fav_mutn_per_indiv}}"/></td></tr>
+<tr><td>max_neu_mutn_per_indiv:</td>
+<td><input type="text" name="max_neu_mutn_per_indiv" value="{{max_neu_mutn_per_indiv}}"/></td></tr>
+<tr><td>track_neutrals:</td>
+<td><input type="checkbox" name="track_neutrals" value="T"/></td></tr>
+<tr><td>tracking_threshold:</td>
+<td><input type="text" name="tracking_threshold" value="{{tracking_threshold}}"/></td></tr>
+<tr><td>extinction_threshold:</td>
+<td><input type="text" name="extinction_threshold" value="{{extinction_threshold}}"/></td></tr>
+<tr><td>random_number_seed:</td>
+<td><input type="text" name="random_number_seed" value="{{random_number_seed}}"/></td></tr>
+<tr><td>write_dump:</td>
+<td><input type="checkbox" name="write_dump" value="T"/></td></tr>
+<tr><td>restart_case:</td>
+<td><input type="checkbox" name="restart_case" value="T"/></td></tr>
+<tr><td>plot_allele_gens:</td>
+<td><input type="text" name="plot_allele_gens" value="{{plot_allele_gens}}"/></td></tr>
+<tr><td>data_file_path:</td>
+<td><input type="text" name="data_file_path" value="{{data_file_path}}"/></td></tr>
 </tbody></table>
 </div>
 <div class="tab-page">
 <h2 class="tab">interface</h2>
 <table><tbody>
-<tr><td>auto_malloc:</td><td><input type="text" name="auto_malloc" value="{{auto_malloc}}"/></td></tr>
-<tr><td>num_tribes:</td><td><input type="text" name="num_tribes" value="{{num_tribes}}"/></td></tr>
-<tr><td>num_procs:</td><td><input type="text" name="num_procs" value="{{num_procs}}"/></td></tr>
-<tr><td>plot_avg_data:</td><td><input type="text" name="plot_avg_data" value="{{plot_avg_data}}"/></td></tr>
-<tr><td>run_queue:</td><td><input type="text" name="run_queue" value="{{run_queue}}"/></td></tr>
-<tr><td>engine:</td><td><input type="text" name="engine" value="{{engine}}"/></td></tr>
+<tr><td>auto_malloc:</td>
+<td><input type="text" name="auto_malloc" value="{{auto_malloc}}"/></td></tr>
+<tr><td>num_tribes:</td>
+<td><input type="text" name="num_tribes" value="{{num_tribes}}"/></td></tr>
+<tr><td>num_procs:</td>
+<td><input type="text" name="num_procs" value="{{num_procs}}"/></td></tr>
+<tr><td>plot_avg_data:</td>
+<td><input type="text" name="plot_avg_data" value="{{plot_avg_data}}"/></td></tr>
+<tr><td>run_queue:</td>
+<td><input type="text" name="run_queue" value="{{run_queue}}"/></td></tr>
+<tr><td>engine:</td>
+<td><input type="text" name="engine" value="{{engine}}"/></td></tr>
 </tbody></table>
 </div>
 </div>

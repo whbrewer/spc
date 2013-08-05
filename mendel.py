@@ -54,13 +54,15 @@ def write_params(form_params):
     for block in blockorder:
         f.write("&%s\n" % block)
         for key in blockmap[block]:
-            #if re.search(r'[a-zA-Z]{2}',form_params[key]):
-            #    form_params[key] = "'" + form_params[key] + "'"
+            # if the keys are not in the params, it means that
+            # the checkboxes were not checked, so add the keys
+            # to the form_params here and set the values to False
+            if key not in form_params:
+                form_params[key] = "F"  
 
-            # if number contains some letters
+            # detect strings and enclose with single quotes
             m = re.search(r'[a-zA-Z]',form_params[key])
             if m:
-                # for all strings except exp numbers, enclose by single quotes
                 if not re.search('[0-9.]*e+[0-9]*|[FT]',m.group()):
                     form_params[key] = "'" + form_params[key] + "'"
 
@@ -112,10 +114,14 @@ def write_html_template():
         f.write("<h2 class=\"tab\">" + block + "</h2>\n")
         f.write("<table><tbody>\n")
         for param in blockmap[block]:
-            str = "<tr><td>"
-            str += param
-            str += ":</td><td><input type=\"text\" name=\"" + param + "\" "
-            str += "value=\"{{" + param + "}}\"/>"
+            str = "<tr><td>" + param + ":</td>\n"
+            str += "<td>"
+            if re.search("[TF]",params[param]):
+                str += "<input type=\"checkbox\" name=\"" + param + "\" "
+                str += "value=\"true\"/>"
+            else: 
+                str += "<input type=\"text\" name=\"" + param + "\" "
+                str += "value=\"{{" + param + "}}\"/>"
             str += "</td></tr>\n"
             f.write(str)
         f.write("</tbody></table>\n")
