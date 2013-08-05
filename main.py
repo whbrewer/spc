@@ -23,9 +23,12 @@ def execute():
         #retcode = call(cmd)
         run_dir = config.sim_user_dir + os.sep + cid 
         print run_dir
-        #p = subprocess.Popen(cmd, cwd=run_dir)
-        #p = subprocess.Popen([cmd], cwd=run_dir)
-        p = subprocess.Popen([cmd], cwd=run_dir, shell=True)
+        p = subprocess.Popen([cmd], cwd=run_dir, shell=True, stdout=subprocess.PIPE)
+        f = open('tmp.out','w')
+        while p.poll() is None:
+            output = p.stdout.readline()
+            #print output,
+        f.close()
         p.wait()
         #if retcode < 0:
         #    print >>sys.stderr, "Child was terminated by signal", -retcode
