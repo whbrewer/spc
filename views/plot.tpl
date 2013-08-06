@@ -7,7 +7,6 @@
 <script language="javascript" type="text/javascript" src="/static/flot/jquery.flot.fillbetween.js"></script>
 
 <body onload="init()">
-%include button_start
 %include navbar
 
 <h1>Plots {{cid}}</h1>

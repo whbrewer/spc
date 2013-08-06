@@ -38,7 +38,9 @@ def execute():
         #    return template('job terminated by signal: {{x}}', x=-retcode)
         #else:
         #    print >>sys.stderr, "Child returned", retcode
-        return template('output')
+        params = dict()
+        params['cid'] = cid
+        return template('output',params)
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -65,22 +67,30 @@ def login_submit():
         #mendel.params['user'] = user
         # ignore blockmap and blockorder from read_params()
         params,_,_ = mendel.read_params()
+        params['cid'] = ''
         return template('start', params)
     else:
         return "<p>Login failed</p>"
 
-@get('/start')
+@post('/start')
 def start():
     # ignore blockmap and blockorder from read_params()
-    params,_,_ = mendel.read_params()
+    cid = request.forms['cid']
+    if cid is None:
+        params,_,_ = mendel.read_params()
+    else:
+        params,_,_ = mendel.read_params(cid)
+    params['cid'] = cid
     return template('start', params)
 
-@get('/list')
+@post('/list')
 def list():
     str = ''
+    cid = request.forms['cid']
     for case in os.listdir(mendel.sim_user_dir):
         str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n'
     content = { 'content': str }
+    content['cid'] = cid
     return template('list', content)
 
 @post('/plot')
