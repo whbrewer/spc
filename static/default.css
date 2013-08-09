@@ -13,7 +13,7 @@ body {
     margin: 0 auto;
     padding: 3em;
     width: 85%;
-    border-width: 5px 1px 1px;
+    border-width: 0px 0px 0px;
     border-color: #3366CC rgb(164,164,164) rgb(164,164,164);
     border-style: solid;
     max-width: 900px;
@@ -91,6 +91,24 @@ input.cid {
    -moz-border-radius: 5px; //For Mozilla, etc.
    border-radius: 5px; //CSS3 Feature
 }
+
+/* http://bavotasan.com/2011/style-select-box-using-only-css/ */
+.styled-select select {
+   position: fixed;
+   left: 400px;
+   top: 0px;
+   margin: 4px;
+   color: white;
+   background: transparent; 
+   width: 200px;
+   padding: 5px;
+   font-size: 16px;
+   line-height: 1;
+   border: 0;
+   border-radius: 0;
+   height: 34px;
+   -webkit-appearance: none;
+   }
 
 /*.cid   { position: fixed; left: 4px; top: 4px;   font-size: 18px; width: 96px; height: 30px; } */
 .exe   { left: 0px; top: 0px;   background: green;   }

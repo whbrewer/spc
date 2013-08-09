@@ -25,7 +25,7 @@ def execute():
     try:
         cmd = os.pardir + os.sep + os.pardir + os.sep + mendel.sim_exe
         #retcode = call(cmd)
-        run_dir = mendel.sim_user_dir + os.sep + cid 
+        run_dir = mendel.user_dir + os.sep + cid 
         print run_dir
         p = subprocess.Popen([cmd], cwd=run_dir, shell=True, stdout=subprocess.PIPE)
         while p.poll() is None:
@@ -87,7 +87,7 @@ def start():
 def list():
     str = ''
     cid = request.forms['cid']
-    for case in os.listdir(mendel.sim_user_dir):
+    for case in os.listdir(mendel.user_dir):
         str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n'
     content = { 'content': str }
     content['cid'] = cid
@@ -96,7 +96,7 @@ def list():
 @post('/plot')
 def plot():
     cid = request.forms['cid']
-    sim_dir = mendel.sim_user_dir + os.sep + cid + os.sep
+    sim_dir = mendel.user_dir + os.sep + cid + os.sep
     if re.search(r'^\s*$', cid):
         return "Error: no case id specified"
     else:

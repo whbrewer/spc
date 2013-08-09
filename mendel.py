@@ -19,10 +19,16 @@ import sys, os
 # set these parameters
 user='wes'
 password='john3.16'
+# using convention over configuration 
+# the executable is the name of the app
+# and the input file is the name of the app + '.in'
+apps = [ 'mendel', 'burger' ] 
 sim_fn = 'mendel.in'
 sim_exe = 'apps/mendel/mendel'
-sim_user_dir = './user_data'
+user_dir = './user_data'
 # end set 
+apps = dict()
+#mendel = { 'cfn' = 'mendel.in' }
 
 # future feature
 workflow = "login >> start >> confirm >> execute"
@@ -38,7 +44,7 @@ exe = dict(path='engine/mendel')
 def write_params(form_params):
     '''write the input file needed for the simulation'''
 
-    sim_dir = sim_user_dir + os.sep + form_params['case_id'] + os.sep
+    sim_dir = user_dir + os.sep + form_params['case_id'] + os.sep
     #form_params['data_file_path'] = sim_dir
     form_params['data_file_path'] = "'./'"
    
@@ -46,7 +52,8 @@ def write_params(form_params):
         os.makedirs(sim_dir)
 
     cid = form_params['case_id']
-    fn = sim_user_dir + os.sep + cid + os.sep + sim_fn
+    #fn = user_dir + os.sep + cid + os.sep + sim_fn
+    fn = user_dir + os.sep + cid + os.sep + sim_fn
 
     f = open(fn, 'w')
     # need to know what attributes are in what blocks
@@ -75,7 +82,7 @@ def write_params(form_params):
 # multiple values for each parameter
 def read_params(cid='TMPLET'):
     '''read the namelist file and return as a dictionary'''
-    fn = sim_user_dir + os.sep + cid + os.sep + sim_fn
+    fn = user_dir + os.sep + cid + os.sep + sim_fn
     params = dict()
     blockmap = dict() 
     blockorder = []
