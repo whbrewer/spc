@@ -9,6 +9,7 @@
 
 <form action="/execute" method="post" onclick="showImage()">
 <input type="hidden" name="cid" value="{{cid}}"/>
+<input type="hidden" name="app" value="{{app}}"/>
 <input class="start" type="submit" value="execute"/>
 </form>
 

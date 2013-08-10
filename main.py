@@ -4,16 +4,27 @@ from bottle import get, post, request, run
 import subprocess
 import string, random
 import sys, os, re
-import mendel, flot
+#import mendel, flot
+import flot
+#from apps import app_f90
+import apps
+import login
 #from gevent import monkey; monkey.patch_all()
+
+mendel = apps.app_f90('mendel')
+burger = apps.app_f90('burger')
+myapps = { 'mendel': mendel, 'burger': burger }
+default_app = 'mendel'
 
 @post('/confirm')
 def confirm_form():
-   params = {'cid': request.forms['case_id'] }
+   app = request.forms['app']
+   params = {'cid': request.forms['case_id'], 'app': app }
    #my_dict = request.query.decode()
    #print my_dict
 
    if(mendel.write_params(request.forms)):
+   #if(myapps[app].write_params(request.forms)):
       return template('confirm', params)
    else:
       return 'ERROR: failed to write parameters to file'
@@ -22,9 +33,11 @@ def confirm_form():
 def execute():
     # student - need to use popen here and repeatedly read from the pipe and display
     cid = request.forms['cid']
+    app = request.forms['app']
     try:
-        cmd = os.pardir + os.sep + os.pardir + os.sep + mendel.sim_exe
+        cmd = os.pardir + os.sep + os.pardir + os.sep + mendel.exe
         #retcode = call(cmd)
+        #run_dir = myapps[app].user_dir + os.sep + cid 
         run_dir = mendel.user_dir + os.sep + cid 
         print run_dir
         p = subprocess.Popen([cmd], cwd=run_dir, shell=True, stdout=subprocess.PIPE)
@@ -66,8 +79,9 @@ def login_submit():
     if check_login(user, password):
         #mendel.params['user'] = user
         # ignore blockmap and blockorder from read_params()
-        params,_,_ = mendel.read_params()
+        params = mendel.params
         params['cid'] = ''
+        params['app'] = myapps[default_app]
         return template('start', params)
     else:
         return "<p>Login failed</p>"
@@ -76,11 +90,13 @@ def login_submit():
 def start():
     # ignore blockmap and blockorder from read_params()
     cid = request.forms['cid']
-    if cid is None:
-        params,_,_ = mendel.read_params()
+    app = request.forms['app']
+    if cid is '':
+        params = myapps[app].params
     else:
-        params,_,_ = mendel.read_params(cid)
+        params,_,_ = myapps[app].read_params(cid)
     params['cid'] = cid
+    params['app'] = app
     return template('start', params)
 
 @post('/list')
@@ -105,7 +121,7 @@ def plot():
         return template('plot', params)
 
 def check_login(user, password):
-	if user == mendel.user and password == mendel.password:
+	if user == login.user and password == login.password:
 		return 1
 	else:
 		return 0
