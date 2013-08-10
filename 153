@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 
-import mendel
+import apps
 import sys
 import os
 
 sys.argv[1:]
+
+mendel = apps.app_f90('mendel')
 
 try:
     if(sys.argv[1] == "n"):
         params = mendel.read_params()
         if mendel.write_html_template():
 		    print "successfully output template"
-        mendel.define_workflow()
 
     if(sys.argv[1] == "s"):
         os.system("python main.py")

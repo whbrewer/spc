@@ -6,21 +6,18 @@ import sys, os
 # and the input file is the name of the app + '.in'
 apps_dir = 'apps'
 sim_fn = 'mendel.in'
-#sim_exe = 'apps/mendel/mendel'
 user_dir = './user_data'
 # end set 
-apps = dict()
-#mendel = { 'cfn' = 'mendel.in' }
 
 # future feature
-workflow = "login >> start >> confirm >> execute"
+#workflow = "login >> start >> confirm >> execute"
 
 # define user input parameters here and set them with default values
 #params = dict(case_id='xyz123',mutn_rate=10,frac_fav_mutn=0.00001,
 #              reproductive_rate=2,pop_size=100,num_generations=50)
 
 # define parameters for executing simulation
-exe = dict(path='engine/mendel')
+#exe = dict(path='engine/mendel')
 
 # user must write their own function for how to write the output file
 class app_f90(object):
@@ -28,15 +25,15 @@ class app_f90(object):
     
     def __init__(self,appname):
         self.appname = appname
-        #self.user_dir = user_dir + os.sep + self.appname
-        self.user_dir = user_dir
+        self.user_dir = user_dir + os.sep + self.appname
+        #self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
 
     def write_params(self,form_params):
         '''write the input file needed for the simulation'''
 
-        sim_dir = user_dir + os.sep + form_params['case_id'] + os.sep
+        sim_dir = self.user_dir + os.sep + form_params['case_id'] + os.sep
         #form_params['data_file_path'] = sim_dir
         form_params['data_file_path'] = "'./'"
        
@@ -45,7 +42,7 @@ class app_f90(object):
 
         cid = form_params['case_id']
         #fn = user_dir + os.sep + cid + os.sep + sim_fn
-        fn = user_dir + os.sep + cid + os.sep + sim_fn
+        fn = self.user_dir + os.sep + cid + os.sep + sim_fn
 
         f = open(fn, 'w')
         # need to know what attributes are in what blocks
@@ -73,7 +70,7 @@ class app_f90(object):
     # multiple values for each parameter
     def read_params(self,cid='TMPLET'):
         '''read the namelist file and return as a dictionary'''
-        fn = user_dir + os.sep + cid + os.sep + sim_fn
+        fn = self.user_dir + os.sep + cid + os.sep + sim_fn
         params = dict()
         blockmap = dict() 
         blockorder = []

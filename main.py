@@ -12,8 +12,8 @@ import login
 #from gevent import monkey; monkey.patch_all()
 
 mendel = apps.app_f90('mendel')
-burger = apps.app_f90('burger')
-myapps = { 'mendel': mendel, 'burger': burger }
+#burger = apps.app_f90('burger')
+myapps = { 'mendel': mendel } #, 'burger': burger }
 default_app = 'mendel'
 
 @post('/confirm')
