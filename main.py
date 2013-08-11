@@ -18,13 +18,12 @@ default_app = 'mendel'
 
 @post('/confirm')
 def confirm_form():
-   app = request.forms['app']
-   params = {'cid': request.forms['case_id'], 'app': app }
-   #my_dict = request.query.decode()
-   #print my_dict
+   cid = str(request.forms['case_id'])
+   app = str(request.forms['app'])
+   params = {'cid': cid, 'app': app }
+   #print 'cid:%s,app:%s' % (cid, app)
 
-   if(mendel.write_params(request.forms)):
-   #if(myapps[app].write_params(request.forms)):
+   if(myapps[app].write_params(request.forms)):
       return template('confirm', params)
    else:
       return 'ERROR: failed to write parameters to file'
@@ -34,13 +33,18 @@ def execute():
     # student - need to use popen here and repeatedly read from the pipe and display
     cid = request.forms['cid']
     app = request.forms['app']
+    #print 'cid:%s,app:%s' % (cid, app)
     try:
-        cmd = os.pardir + os.sep + os.pardir + os.sep + mendel.exe
+	# this path works for OSX
+        #cmd = os.pardir + os.sep + os.pardir + os.sep + myapps[app].exe
+	# this path works for Windows
+        cmd = myapps[app].exe
+	print 'cmd is:',cmd
         #retcode = call(cmd)
-        #run_dir = myapps[app].user_dir + os.sep + cid 
-        run_dir = mendel.user_dir + os.sep + cid 
-        print run_dir
-        p = subprocess.Popen([cmd], cwd=run_dir, shell=True, stdout=subprocess.PIPE)
+        run_dir = myapps[app].user_dir + os.sep + cid 
+        print 'run_dir is:', run_dir
+	print 'cwd is:',os.getcwd()
+        p = subprocess.Popen([cmd], cwd=run_dir, stdout=subprocess.PIPE)
         while p.poll() is None:
             output = p.stdout.readline()
             #yield output
@@ -77,11 +81,9 @@ def login_submit():
     user     = request.forms.get('user')
     password = request.forms.get('password')
     if check_login(user, password):
-        #mendel.params['user'] = user
-        # ignore blockmap and blockorder from read_params()
-        params = mendel.params
+        params = myapps[default_app].params
+        params['app'] = default_app
         params['cid'] = ''
-        params['app'] = myapps[default_app]
         return template('start', params)
     else:
         return "<p>Login failed</p>"
@@ -102,8 +104,9 @@ def start():
 @post('/list')
 def list():
     str = ''
+    app = request.forms['app']
     cid = request.forms['cid']
-    for case in os.listdir(mendel.user_dir):
+    for case in os.listdir(myapps[app].user_dir):
         str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n'
     content = { 'content': str }
     content['cid'] = cid
@@ -111,8 +114,9 @@ def list():
 
 @post('/plot')
 def plot():
+    app = request.forms['app']
     cid = request.forms['cid']
-    sim_dir = mendel.user_dir + os.sep + cid + os.sep
+    sim_dir = myapps[app].user_dir + os.sep + cid + os.sep
     if re.search(r'^\s*$', cid):
         return "Error: no case id specified"
     else:

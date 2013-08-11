@@ -6,7 +6,7 @@ import sys, os
 # and the input file is the name of the app + '.in'
 apps_dir = 'apps'
 sim_fn = 'mendel.in'
-user_dir = './user_data'
+user_dir = 'user_data'
 # end set 
 
 # future feature
@@ -56,7 +56,7 @@ class app_f90(object):
                     form_params[key] = "F"  
 
                 # detect strings and enclose with single quotes
-                m = re.search(r'[a-zA-Z]',form_params[key])
+                m = re.search(r'[a-zA-Z]{2}',form_params[key])
                 if m:
                     if not re.search('[0-9.]*e+[0-9]*|[FT]',m.group()):
                         form_params[key] = "'" + form_params[key] + "'"
@@ -83,13 +83,12 @@ class app_f90(object):
             elif n:
                 # Delete apostrophes and commas
                 val = re.sub(r"[',]", "", n.group(2))
-                # Delete Fortran comments 
-                params[n.group(1)] = re.sub(r'\!.*$', "", val)
+                # Delete Fortran comments and whitespace
+                params[n.group(1)] = re.sub(r'\!.*$', "", val).strip()
                 # Append to blocks e.g. {'basic': ['case_id', 'mutn_rate']}
                 blockmap.setdefault(block,[]).append(n.group(1))
+		#print n.group(1), val
         return params, blockmap, blockorder
-
-    # student - convert T/F values into checkboxes
     # convert some into dropdown boxes
 
     def write_html_template(self):

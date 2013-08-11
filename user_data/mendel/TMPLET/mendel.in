@@ -42,7 +42,6 @@
                clonal_haploid =  F
   fraction_self_fertilization =    0.0000000
       num_contrasting_alleles =            0
-  initial_alleles_mean_effect =    0.0000000
               dynamic_linkage =  T
     haploid_chromosome_number =           23
          num_linkage_subunits =          989
@@ -71,7 +70,6 @@
            tracking_threshold =    0.000E+00
          extinction_threshold =    0.0000000
        max_del_mutn_per_indiv =        10000
-       max_neu_mutn_per_indiv =        10000
        max_fav_mutn_per_indiv =        10000
            random_number_seed =           42
                track_neutrals =  F
