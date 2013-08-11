@@ -15,6 +15,9 @@ mendel = apps.app_f90('mendel')
 #burger = apps.app_f90('burger')
 myapps = { 'mendel': mendel } #, 'burger': burger }
 default_app = 'mendel'
+#pbuffer = []
+#pbuffer = 'str'
+pbuffer = ''
 
 @post('/confirm')
 def confirm_form():
@@ -30,38 +33,58 @@ def confirm_form():
 
 @post('/execute')
 def execute():
-    # student - need to use popen here and repeatedly read from the pipe and display
     cid = request.forms['cid']
     app = request.forms['app']
     #print 'cid:%s,app:%s' % (cid, app)
     try:
+        run_dir = myapps[app].user_dir + os.sep + cid 
+	ofn = run_dir + os.sep + myapps[app].outfn
+        #print 'run_dir is:', run_dir
 	# this path works for OSX
         #cmd = os.pardir + os.sep + os.pardir + os.sep + myapps[app].exe
 	# this path works for Windows
-        cmd = myapps[app].exe
-	print 'cmd is:',cmd
+        cmd = myapps[app].exe 
+	#print 'cmd is:',cmd
         #retcode = call(cmd)
-        run_dir = myapps[app].user_dir + os.sep + cid 
-        print 'run_dir is:', run_dir
-	print 'cwd is:',os.getcwd()
-        p = subprocess.Popen([cmd], cwd=run_dir, stdout=subprocess.PIPE)
-        while p.poll() is None:
-            output = p.stdout.readline()
-            #yield output
-            print output,
-        p.wait()
         #if retcode < 0:
         #    print >>sys.stderr, "Child was terminated by signal", -retcode
         #    return template('job terminated by signal: {{x}}', x=-retcode)
         #else:
         #    print >>sys.stderr, "Child returned", retcode
-        params = dict()
-        params['cid'] = cid
+	#print 'cwd is:',os.getcwd()
+        f = open(ofn,'w')
+	# run in background mode
+        #p = subprocess.Popen([sys.executable, cmd], cwd=run_dir, 
+	#                      stdout=subprocess.PIPE)
+        p = subprocess.Popen([cmd], cwd=run_dir, stdout=subprocess.PIPE)
+	pbuffer = ''
+        while p.poll() is None:
+            out = p.stdout.readline()
+	    #out += '<br>'
+	    f.write(out)
+	    pbuffer += out 
+	    #print pbuffer
+            #print out,
+        p.wait()
+	f.close()
+        params = { 'cid': cid, 'output': pbuffer }
         return template('output',params)
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
         return "ERROR: failed to start job"
+
+@post('/output')
+def output():
+    cid = request.forms['cid']
+    app = request.forms['app']
+    run_dir = myapps[app].user_dir + os.sep + cid 
+    ofn = run_dir + os.sep + myapps[app].outfn
+    f = open(ofn,'r')
+    output = f.read()
+    f.close()
+    params = { 'cid': cid, 'output': output }
+    return template('output', params)
    
 @route('/')
 @get('/login')

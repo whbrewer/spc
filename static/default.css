@@ -116,4 +116,5 @@ input.cid {
 .start { left: 100px; top: 0px; background: green; }
 .plot  { left: 200px; top: 0px; background: blue;  }
 .list  { left: 300px; top: 0px; background: red;}
+.output { left: 400px; top: 0px; background: DarkMagenta; }
 

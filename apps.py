@@ -25,8 +25,8 @@ class app_f90(object):
     
     def __init__(self,appname):
         self.appname = appname
+	self.outfn = appname + '.out'
         self.user_dir = user_dir + os.sep + self.appname
-        #self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
 

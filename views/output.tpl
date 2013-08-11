@@ -1,8 +1,10 @@
 %include header title='Menu'
 %include navbar
 
-<h1>What do you want to do now?</h1>
+<h1>Output</h1>
 
+<pre>
+{{!output}}
+</pre>
 
 %include footer
-
