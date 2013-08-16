@@ -6,18 +6,16 @@ import sys, os, re
 import flot
 import apps
 import login
-#from gevent import monkey; monkey.patch_all()
 
 mendel = apps.app_f90('mendel')
-#burger = apps.app_f90('burger')
-myapps = { 'mendel': mendel } #, 'burger': burger }
+burger = apps.app_f90('burger')
+myapps = { 'mendel': mendel, 'burger': burger }
 default_app = 'mendel'
 pbuffer = ''
 
-@post('/confirm')
-def confirm_form():
-   cid = str(request.forms['case_id'])
-   app = str(request.forms['app'])
+@post('/<app>/confirm')
+def confirm_form(app):
+   cid = request.forms['case_id']
    params = {'cid': cid, 'app': app }
    #print 'cid:%s,app:%s' % (cid, app)
 
@@ -26,59 +24,55 @@ def confirm_form():
    else:
       return 'ERROR: failed to write parameters to file'
 
-@post('/execute')
-def execute():
-    cid = request.forms['cid']
-    app = request.forms['app']
-    #print 'cid:%s,app:%s' % (cid, app)
+@post('/<app>/<cid>/execute')
+def execute(app,cid):
     try:
         run_dir = myapps[app].user_dir + os.sep + cid 
-	ofn = run_dir + os.sep + myapps[app].outfn
-        #print 'run_dir is:', run_dir
-	# this path works for OSX
-        #cmd = os.pardir + os.sep + os.pardir + os.sep + myapps[app].exe
-	# this path works for Windows
-        cmd = myapps[app].exe 
-	#print 'cmd is:',cmd
-        #retcode = subprocess.call(cmd)
-        #if retcode < 0:
-        #    print >>sys.stderr, "Child was terminated by signal", -retcode
-        #    return template('job terminated by signal: {{x}}', x=-retcode)
-        #else:
-        #    print >>sys.stderr, "Child returned", retcode
-	#print 'cwd is:',os.getcwd()
+        ofn = run_dir + os.sep + myapps[app].outfn
+	    # this path works for OSX
+        rel_path = os.pardir + os.sep + os.pardir + os.sep + os.pardir + os.sep 
+        cmd = rel_path + myapps[app].exe
+	    # this path works for Windows
+        #cmd = myapps[app].exe 
         f = open(ofn,'w')
-	# run in background mode
-        #p = subprocess.Popen([sys.executable, cmd], cwd=run_dir, 
-	#                      stdout=subprocess.PIPE)
         p = subprocess.Popen([cmd], cwd=run_dir, stdout=subprocess.PIPE)
-	pbuffer = ''
+        pbuffer = ''
         while p.poll() is None:
             out = p.stdout.readline()
-	    f.write(out)
-	    pbuffer += out 
+            f.write(out)
+            pbuffer += out 
         p.wait()
-	f.close()
-        params = { 'cid': cid, 'output': pbuffer }
+        f.close()
+        params = { 'cid': cid, 'output': pbuffer, 'app': app }
         return template('output',params)
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
         return "ERROR: failed to start job"
 
-@post('/output')
-def output():
-    cid = request.forms['cid']
-    app = request.forms['app']
+@post('/<app>/<cid>/output')
+def output(app,cid):
+    #print "output app:",app,"."
     run_dir = myapps[app].user_dir + os.sep + cid 
+    #print "output run_dir:",run_dir
     ofn = run_dir + os.sep + myapps[app].outfn
     f = open(ofn,'r')
     output = f.read()
     f.close()
-    params = { 'cid': cid, 'output': output }
+    params = { 'cid': cid, 'output': output, 'app': app }
     return template('output', params)
    
 @route('/')
+def overview():
+    return template('overview')
+
+@route('/<app>')
+def show_app(app):
+    params = myapps[app].params
+    params['cid'] = 'test00'
+    params['app'] = app
+    return template(app, params)
+
 @get('/login')
 def login_form():
     return '''<form method="POST" action="/login">
@@ -99,48 +93,50 @@ def login_submit():
         params = myapps[default_app].params
         params['app'] = default_app
         params['cid'] = ''
-	tpl = myapps[default_app].appname + "_start"
-        #return template('start', params)
+        #params['apps'] = [ myapps.keys() ]
+        print params
+        tpl = myapps[default_app].appname 
         return template(tpl, params)
     else:
         return "<p>Login failed</p>"
 
-@post('/start')
-def start():
+@get('<app>/start')
+def getstart(app):
+    params = myapps[app].params
+    params['cid'] = params['case_id']
+    return template(myapps[app].appname, params)
+
+@post('/<app>/start')
+def start(app):
     # ignore blockmap and blockorder from read_params()
     cid = request.forms['cid']
-    app = request.forms['app']
     if cid is '':
         params = myapps[app].params
     else:
         params,_,_ = myapps[app].read_params(cid)
     params['cid'] = cid
     params['app'] = app
-    tpl = myapps[app].appname + "_start"
-    #return template('start', params)
-    return template(tpl, params)
+    return template(myapps[app].appname, params)
 
-@post('/list')
-def list():
+@post('/<app>/list')
+def list(app):
     str = ''
-    app = request.forms['app']
     cid = request.forms['cid']
     for case in os.listdir(myapps[app].user_dir):
         str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n'
     content = { 'content': str }
     content['cid'] = cid
+    content['app'] = app
     return template('list', content)
 
-@post('/plot')
-def plot():
-    app = request.forms['app']
-    cid = request.forms['cid']
+@post('/<app>/<cid>/plot')
+def plot(app,cid):
     sim_dir = myapps[app].user_dir + os.sep + cid + os.sep
     if re.search(r'^\s*$', cid):
         return "Error: no case id specified"
     else:
         hst=flot.get_data(sim_dir + cid + '.000.hst',0,1)
-        params = { 'cid': cid, 'hst': hst }
+        params = { 'cid': cid, 'hst': hst, 'app': app }
         return template('plot', params)
 
 def check_login(user, password):
@@ -150,5 +146,3 @@ def check_login(user, password):
 		return 0
 
 run(host='0.0.0.0', port=8080)
-#run(host='localhost', port=8080, server='gevent')
-

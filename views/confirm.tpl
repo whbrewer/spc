@@ -7,9 +7,7 @@
 <p>wrote parameters file needed for simulation</p>
 <p>click "execute" to start the simulation</p>
 
-<form action="/execute" method="post" onclick="showImage()">
-<input type="hidden" name="cid" value="{{cid}}"/>
-<input type="hidden" name="app" value="{{app}}"/>
+<form action="/{{app}}/{{cid}}/execute" method="post" onclick="showImage()">
 <input class="start" type="submit" value="execute"/>
 </form>
 
