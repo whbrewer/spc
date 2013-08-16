@@ -1,14 +1,14 @@
 # todo - possible student projects
+# - get SQLite DB working
+# - continuous updating of screen output
 # - file manager
 # - plotting system using matplotlib
 # - job queuing system
 # - integration to openshift
 # - workflow system
 # - data monitoring system
-# - pipe handling system
 # - generic xml reader
 # - implement haml templates
-# - get SQLite DB working
 
 # student homeworks
 # - add ability to group things by tabs (tabfx)

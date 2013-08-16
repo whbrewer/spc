@@ -94,7 +94,7 @@ class app_f90(object):
     def write_html_template(self):
     # need to output according to blocks
         confirm="/confirm"
-        f = open('views/start.tpl', 'w')
+        f = open('views/new_template.tpl', 'w')
         f.write("%include header title='confirm'\n")
         f.write("<body onload=\"init()\">\n")
         f.write("%include navbar\n")

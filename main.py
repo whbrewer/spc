@@ -1,12 +1,9 @@
 from bottle import route, template, static_file, view
 from bottle import get, post, request, run
-#from subprocess import call
 import subprocess
 import string, random
 import sys, os, re
-#import mendel, flot
 import flot
-#from apps import app_f90
 import apps
 import login
 #from gevent import monkey; monkey.patch_all()
@@ -15,8 +12,6 @@ mendel = apps.app_f90('mendel')
 #burger = apps.app_f90('burger')
 myapps = { 'mendel': mendel } #, 'burger': burger }
 default_app = 'mendel'
-#pbuffer = []
-#pbuffer = 'str'
 pbuffer = ''
 
 @post('/confirm')
@@ -45,7 +40,7 @@ def execute():
 	# this path works for Windows
         cmd = myapps[app].exe 
 	#print 'cmd is:',cmd
-        #retcode = call(cmd)
+        #retcode = subprocess.call(cmd)
         #if retcode < 0:
         #    print >>sys.stderr, "Child was terminated by signal", -retcode
         #    return template('job terminated by signal: {{x}}', x=-retcode)
@@ -60,11 +55,8 @@ def execute():
 	pbuffer = ''
         while p.poll() is None:
             out = p.stdout.readline()
-	    #out += '<br>'
 	    f.write(out)
 	    pbuffer += out 
-	    #print pbuffer
-            #print out,
         p.wait()
 	f.close()
         params = { 'cid': cid, 'output': pbuffer }
@@ -107,7 +99,9 @@ def login_submit():
         params = myapps[default_app].params
         params['app'] = default_app
         params['cid'] = ''
-        return template('start', params)
+	tpl = myapps[default_app].appname + "_start"
+        #return template('start', params)
+        return template(tpl, params)
     else:
         return "<p>Login failed</p>"
 
@@ -122,7 +116,9 @@ def start():
         params,_,_ = myapps[app].read_params(cid)
     params['cid'] = cid
     params['app'] = app
-    return template('start', params)
+    tpl = myapps[app].appname + "_start"
+    #return template('start', params)
+    return template(tpl, params)
 
 @post('/list')
 def list():
@@ -153,6 +149,6 @@ def check_login(user, password):
 	else:
 		return 0
 
-run(host='localhost', port=8080)
+run(host='0.0.0.0', port=8080)
 #run(host='localhost', port=8080, server='gevent')
 

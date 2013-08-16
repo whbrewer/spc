@@ -95,7 +95,7 @@ input.cid {
 /* http://bavotasan.com/2011/style-select-box-using-only-css/ */
 .styled-select select {
    position: fixed;
-   left: 400px;
+   left: 500px;
    top: 0px;
    margin: 4px;
    color: white;
@@ -104,9 +104,12 @@ input.cid {
    padding: 5px;
    font-size: 16px;
    line-height: 1;
-   border: 0;
-   border-radius: 0;
+   border: 5;
+   border-radius: 5px;
+   -webkit-border-radius: 5px; //For Safari, etc.
+   -moz-border-radius: 5px; //For Mozilla, etc.
    height: 34px;
+   z-index: 1;
    -webkit-appearance: none;
    }
 

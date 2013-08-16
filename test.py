@@ -1,11 +1,21 @@
-from apps import app_f90
+#from apps import app_f90
+#myapp = app_f90('mendel')
+#params, _, _ = myapp.read_params()
+#myapp.write_params(params)
 
-myapp = app_f90('mendel')
+import bottle
+import bottle.ext.sqlite
 
-#print myapp.params
+app = bottle.Bottle()
+#plugin = bottle.ext.sqlite.Plugin(dbfile='/tmp/test.db')
+plugin = bottle.ext.sqlite.Plugin(dbfile='test.db')
+app.install(plugin)
 
-#myapp.write_html_template()
+@app.route('/show/:item')
+def show(item, db):
+    row = db.execute('SELECT * from items where name=?', item).fetchone()
+    if row:
+        return template('showitem', page=row)
+    return HTTPError(404, "Page not found")
 
-params, _, _ = myapp.read_params()
-
-myapp.write_params(params)
+app.run(host='localhost', port=8080)
