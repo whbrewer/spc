@@ -18,7 +18,7 @@
    <div id="mutations" style="width:600px;height:370px;"></div> 
    <script id="source" language="javascript" type="text/javascript"> 
       $(function () {
-      var d1 = {{hst}};
+      var d1 = {{data}};
       var data = [ { label: "deleterious", data: d1, color: "rgb(200,0,0)" } ];
 
       var options = {

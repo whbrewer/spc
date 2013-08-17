@@ -11,21 +11,15 @@ user_dir = 'user_data'
 # future feature
 #workflow = "login >> start >> confirm >> execute"
 
-# define user input parameters here and set them with default values
-#params = dict(case_id='xyz123',mutn_rate=10,frac_fav_mutn=0.00001,
-#              reproductive_rate=2,pop_size=100,num_generations=50)
-
-# define parameters for executing simulation
-#exe = dict(path='engine/mendel')
-
 # user must write their own function for how to write the output file
 class app_f90(object):
     '''Class for plugging in Fortran apps ...'''
     
-    def __init__(self,appname):
+    def __init__(self,appname,plotfn='out.dat'):
         self.appname = appname
         self.outfn = appname + '.out'
         self.sim_fn = appname + '.in'
+        self.plotfn = plotfn
         self.user_dir = user_dir + os.sep + self.appname
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
@@ -94,7 +88,7 @@ class app_f90(object):
     def write_html_template(self):
     # need to output according to blocks
         confirm="/{{app}}/confirm"
-        f = open('views/new_template.tpl', 'w')
+        f = open('views/'+self.appname+'.tpl', 'w')
         f.write("%include header title='confirm'\n")
         f.write("<body onload=\"init()\">\n")
         f.write("%include navbar\n")

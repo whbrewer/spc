@@ -1,16 +1,22 @@
-from bottle import route, template, static_file, view
-from bottle import get, post, request, run
+from bottle import *
+from bottle.ext import sqlite
 import subprocess
 import string, random
 import sys, os, re
 import flot
 import apps
-import login
 
-mendel = apps.app_f90('mendel')
-burger = apps.app_f90('burger')
+# sqlite plugin
+plugin = ext.sqlite.Plugin(dbfile='scipaas.db')
+install(plugin)
+
+# app configuration here
+mendel = apps.app_f90('mendel','<cid>.000.hst')
+burger = apps.app_f90('burger','burger.dat')
 myapps = { 'mendel': mendel, 'burger': burger }
 default_app = 'mendel'
+# end app config
+
 pbuffer = ''
 
 @post('/<app>/confirm')
@@ -86,19 +92,18 @@ def static(path):
     return static_file(path, root='static')
 
 @post('/login')
-def login_submit():
+def login_submit(db):
     user     = request.forms.get('user')
     password = request.forms.get('password')
-    if check_login(user, password):
+    dbpass,  = db.execute('select pass from users where user = ?', [user]).fetchone()
+    if password == dbpass:
         params = myapps[default_app].params
         params['app'] = default_app
         params['cid'] = ''
-        #params['apps'] = [ myapps.keys() ]
-        print params
         tpl = myapps[default_app].appname 
         return template(tpl, params)
     else:
-        return "<p>Login failed</p>"
+        return "<p>Login failed: wrong username or password</p>"
 
 @get('<app>/start')
 def getstart(app):
@@ -135,14 +140,10 @@ def plot(app,cid):
     if re.search(r'^\s*$', cid):
         return "Error: no case id specified"
     else:
-        hst=flot.get_data(sim_dir + cid + '.000.hst',0,1)
-        params = { 'cid': cid, 'hst': hst, 'app': app }
+        plotfn = re.sub(r"<cid>", cid, myapps[app].plotfn)
+        print sim_dir + plotfn
+        data = flot.get_data(sim_dir + plotfn,0,1)
+        params = { 'cid': cid, 'data': data, 'app': app }
         return template('plot', params)
-
-def check_login(user, password):
-	if user == login.user and password == login.password:
-		return 1
-	else:
-		return 0
 
 run(host='0.0.0.0', port=8080)
