@@ -6,7 +6,7 @@
 <input class="start" type="submit" value="confirm" />
 <div class="tab-pane" id="tab-pane-1">
 <div class="tab-page">
-<h2 class="tab">burger</h2>
+<h2 class="tab">basic</h2>
 <table><tbody>
 <tr><td>case_id:</td>
 <td><input type="text" name="case_id" value="{{case_id}}"/></td></tr>
