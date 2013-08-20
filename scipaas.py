@@ -1,6 +1,6 @@
 from bottle import *
 from bottle.ext import sqlite
-import scheduler as sched
+import scheduler
 import subprocess
 import string, random
 import sys, os, re
@@ -10,6 +10,9 @@ import apps
 # sqlite plugin
 plugin = ext.sqlite.Plugin(dbfile='scipaas.db')
 install(plugin)
+
+# create instance of scheduler
+sched = scheduler.scheduler()
 
 # app configuration here
 mendel = apps.app_f90('mendel','<cid>.000.hst')
@@ -43,6 +46,8 @@ def execute(app,cid):
         #cmd = myapps[app].exe 
         f = open(ofn,'w')
         p = subprocess.Popen([cmd], cwd=run_dir, stdout=subprocess.PIPE)
+        # schedule job
+        sched.qsub(cmd)
         pbuffer = ''
         while p.poll() is None:
             out = p.stdout.readline()
@@ -148,3 +153,4 @@ def plot(app,cid):
         return template('plot', params)
 
 run(host='0.0.0.0', port=8080)
+

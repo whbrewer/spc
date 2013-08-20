@@ -1,15 +1,8 @@
 #!/usr/bin/env python
 import sqlite3 as lite
+import threading
 import time
 
-# Connect to DB 
-con = None
-try: 
-    con = lite.connect('scipaas.db')    
-
-except lite.Error, e:
-    print "Error %s:" % e.args[0]
-    sys.exit(1)
 
 #CREATE TABLE jobs ( 
 #jid integer primary key autoincrement,
@@ -23,16 +16,35 @@ except lite.Error, e:
 class scheduler(object):
 
     def __init__(self):
-        pass
+        # Connect to DB 
+        self.con = None
+        try: 
+            self.con = lite.connect('scipaas.db')    
+        except lite.Error, e:
+            print "Error %s:" % e.args[0]
+            sys.exit(1)
 
     def qsub(self,path):
-        cur = con.cursor()
-        print "im here"
-        cur.execute('insert into jobs values (null, ?,\'Q\', ?, null, null);',                    (path,time.time()))
-        con.commit()
+        cur = self.con.cursor()
+        cur.execute('insert into jobs values (null, ?,\'Q\', ?, null, null);',(path,time.time()))
+        self.con.commit()
 
-    def qdel(self):
-        pass
+    def qpop(self):
+        cur = self.con.cursor()
+        (jid,name) = cur.execute('select jid,name from jobs limit 1').fetchone()
+        self.qdel(str(jid))
+        return name
+
+    #def last(self):
+    #    cur = self.con.cursor()
+    #    return cur.lastrowid
+
+    def qdel(self,jid):
+        print "jid is:",jid
+        cur = self.con.cursor()
+        cur.execute('delete from jobs where jid = ?', (jid))
+        self.con.commit()
+        return 1
 
     def qstat(self):
         pass
@@ -49,5 +61,18 @@ class scheduler(object):
     def __terminate(self):
         pass
 
-sched = scheduler()
-sched.qsub('test')
+if __name__ == "__main__":
+    sched = scheduler()
+    sched.qsub('test')
+    print 'top row id:', sched.qpop()
+
+# let the ball roll
+#if __name__ == "__main__":
+#    hw_thread = threading.Thread(target = assignTask)
+#    hw_thread.daemon = True
+#    hw_thread.start()
+#    try:
+#        time.sleep(500000)
+#
+#    except KeyboardInterrupt:
+#        print '\nGoodbye!'
