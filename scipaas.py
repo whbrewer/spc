@@ -6,6 +6,7 @@ import string, random
 import sys, os, re
 import flot
 import apps
+import zipfile
 
 # sqlite plugin
 plugin = ext.sqlite.Plugin(dbfile='scipaas.db')
@@ -17,22 +18,46 @@ sched = scheduler.scheduler()
 # app configuration here
 mendel = apps.app_f90('mendel','<cid>.000.hst')
 burger = apps.app_f90('burger','burger.dat')
-myapps = { 'mendel': mendel, 'burger': burger }
+dna = apps.app_f90('dna','dna.dat')
+myapps = { 'mendel': mendel, 'burger': burger, 'dna': dna }
 default_app = 'mendel'
 # end app config
 
 pbuffer = ''
 
+@get('/createapp')
+def create_app_form():
+    return static_file('createapp.html', root='static')
+
+@post('/createapp')
+def create_app():
+    appname = request.forms['appname']
+    # create directory for app binary/source
+    os.mkdir(apps.apps_dir + os.sep + appname)
+    # create directory for user data
+    os.mkdir(apps.user_dir + os.sep + appname)
+    # create the template directory
+    os.mkdir(apps.user_dir + os.sep + appname + os.sep + apps.template_dir)
+    # create a new instance of the app
+    # add app instance to myapps data structure
+    return appname, ' app created'
+
 @post('/<app>/confirm')
 def confirm_form(app):
-   cid = request.forms['case_id']
-   params = {'cid': cid, 'app': app }
-   #print 'cid:%s,app:%s' % (cid, app)
+    # if case_id not in form will throw error, but just ignore it
+    # as some apps will not use case_id
+    try:
+        cid = request.forms['case_id']
+    except: 
+        # give some nice error message here in the future
+        pass
+    params = {'cid': cid, 'app': app }
+    #print 'cid:%s,app:%s' % (cid, app)
 
-   if(myapps[app].write_params(request.forms)):
-      return template('confirm', params)
-   else:
-      return 'ERROR: failed to write parameters to file'
+    if(myapps[app].write_params(request.forms)):
+        return template('confirm', params)
+    else:
+        return 'ERROR: failed to write parameters to file'
 
 @post('/<app>/<cid>/execute')
 def execute(app,cid):
@@ -152,5 +177,33 @@ def plot(app,cid):
         params = { 'cid': cid, 'data': data, 'app': app }
         return template('plot', params)
 
-run(host='0.0.0.0', port=8080)
+@post('/upload')
+def do_upload():
+    #category   = request.forms.get('category')
+    appname    = request.forms.get('appname')
+    upload     = request.files.get('upload')
+    name, ext = os.path.splitext(upload.filename)
+    print name, ext
+    if ext not in ('.zip','.txt'):
+        return 'File extension not allowed.'
+
+    #save_path = get_save_path_for_category(category)
+    try:
+        #save_path = apps.apps_dir + '/' + appname + '.zip'
+        save_path = apps.apps_dir + '/' + name + ext
+        upload.save(save_path)
+        # unzip file
+        fh = open(save_path, 'rb')
+        z = zipfile.ZipFile(fh)
+        z.extractall(apps.apps_dir)
+        fh.close() 
+        os.remove(save_path)
+        return 'OK'
+    except IOError:
+        return "IOerror:", IOError
+        raise
+    else:
+        return "ERROR: must be already a file"
+
+run(host='0.0.0.0', port=8081)
 

@@ -1,10 +1,11 @@
 # todo - possible student projects
-# - integration to openshift
+# - app deployment (egg format/zip file)
 # - continuous updating of screen output
-# - file manager
+# - job scheduler/queuing system
 # - plotting system using matplotlib
-# - job queuing system
+# - file manager
 # - workflow system
 # - data monitoring system
 # - generic xml reader
 # - implement haml templates
+# - integration to openshift

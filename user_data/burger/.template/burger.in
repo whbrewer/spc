@@ -1,0 +1,7 @@
+&basic
+      case_id='test00'
+      cfl=0.5
+      nc=100
+      xrange=10.
+      niter=50
+/

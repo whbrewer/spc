@@ -1,0 +1,24 @@
+<html>
+<body>
+
+<h1>Create New App</h1>
+
+<form method="post" action="/createapp">
+
+Name of App: <input type="text" name="appname"><br>
+
+<input type="submit">
+
+</form>
+
+<h2>Upload files...</h2>
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <!-- Category:      <input type="text" name="category" /> -->
+  Name of app:   <input type="text" name="appname" />
+  Select a file: <input type="file" name="upload" />
+  <input type="submit" value="Start upload" />
+</form>
+
+
+</body>
+</html>
