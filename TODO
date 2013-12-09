@@ -1,5 +1,7 @@
 # todo - possible student projects
 # - app deployment (egg format/zip file)
+# - add user management
+# - implement ConfigParser -- possibly move to supporting INI files
 # - continuous updating of screen output
 # - job scheduler/queuing system
 # - plotting system using matplotlib

@@ -4,9 +4,10 @@ import scheduler
 import subprocess
 import string, random
 import sys, os, re
-import flot
+import plots
 import apps
 import zipfile
+import users
 
 # sqlite plugin
 plugin = ext.sqlite.Plugin(dbfile='scipaas.db')
@@ -126,8 +127,8 @@ def static(path):
 def login_submit(db):
     user     = request.forms.get('user')
     password = request.forms.get('password')
-    dbpass,  = db.execute('select pass from users where user = ?', [user]).fetchone()
-    if password == dbpass:
+    u = users.user()
+    if u.authenticate(user,password):
         params = myapps[default_app].params
         params['app'] = default_app
         params['cid'] = ''
@@ -135,7 +136,7 @@ def login_submit(db):
         return template(tpl, params)
     else:
         return "<p>Login failed: wrong username or password</p>"
-
+    
 @get('<app>/start')
 def getstart(app):
     params = myapps[app].params
@@ -166,14 +167,15 @@ def list(app):
     return template('list', content)
 
 @post('/<app>/<cid>/plot')
-def plot(app,cid):
+def plot_interface(app,cid):
     sim_dir = myapps[app].user_dir + os.sep + cid + os.sep
     if re.search(r'^\s*$', cid):
         return "Error: no case id specified"
     else:
         plotfn = re.sub(r"<cid>", cid, myapps[app].plotfn)
         print sim_dir + plotfn
-        data = flot.get_data(sim_dir + plotfn,0,1)
+        p = plots.plot()
+        data = p.get_data(sim_dir + plotfn,0,1)
         params = { 'cid': cid, 'data': data, 'app': app }
         return template('plot', params)
 
@@ -189,8 +191,7 @@ def do_upload():
 
     #save_path = get_save_path_for_category(category)
     try:
-        #save_path = apps.apps_dir + '/' + appname + '.zip'
-        save_path = apps.apps_dir + '/' + name + ext
+        save_path = apps.apps_dir + os.sep + name + ext
         upload.save(save_path)
         # unzip file
         fh = open(save_path, 'rb')

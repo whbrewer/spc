@@ -1,24 +1,33 @@
 <html>
 <body>
 
-<h1>Create New App</h1>
+<h1>Upload new app</h1>
 
-<form method="post" action="/createapp">
+<p><em>Note: the app must be named the same name as it is to be deployed.</em></p>
 
-Name of App: <input type="text" name="appname"><br>
-
-<input type="submit">
-
-</form>
-
-<h2>Upload files...</h2>
 <form action="/upload" method="post" enctype="multipart/form-data">
   <!-- Category:      <input type="text" name="category" /> -->
-  Name of app:   <input type="text" name="appname" />
   Select a file: <input type="file" name="upload" />
   <input type="submit" value="Start upload" />
 </form>
+<hr>
 
+<h2>Input form</h2>
+<form>
+<textarea name="input_template" cols=40 rows=6></textarea><br>
+<input type="submit">
+</form>
+<hr>
+
+<h2>Choose plot type</h2>
+<form>
+<label><input type="radio" name="plottype"><img src="/static/plot-line.png" width="100"></label>
+<label><input type="radio" name="plottype"><img src="/static/plot-scatter.png" width="100"></label>
+<label><input type="radio" name="plottype"><img src="/static/plot-bars.jpg" width="100"></label>
+</input>
+</form>
+</p>
 
 </body>
 </html>
+

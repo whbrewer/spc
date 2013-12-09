@@ -3,6 +3,8 @@ import sqlite3 as lite
 import threading
 import time
 
+#inspired from:
+#http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
 
 #CREATE TABLE jobs ( 
 #jid integer primary key autoincrement,

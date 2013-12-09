@@ -10,8 +10,23 @@ template_dir = '.template'
 
 # future feature
 #workflow = "login >> start >> confirm >> execute"
+class app(object):
+
+    def __init__(self,appname,plotfn='out.dat'):
+        self.appname = appname
+        self.outfn = appname + '.out'
+        self.sim_fn = appname + '.in'
+        self.plotfn = plotfn
+        self.user_dir = user_dir + os.sep + self.appname
+        self.params, self.blockmap, self.blockorder = self.read_params()
+        self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
+
+    def deploy(self):
+        pass
 
 # user must write their own function for how to write the output file
+# in future app_f90 needs to inherit from app
+#class app_f90(app):
 class app_f90(object):
     '''Class for plugging in Fortran apps ...'''
     
