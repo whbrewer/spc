@@ -24,6 +24,9 @@ class user(object):
         cur = self.con.cursor()
         cur.execute('delete from users where uid = (?)',(uid,))
         self.con.commit()
+
+    def update(self,uid):
+        pass
     
     def show(self):
         cur = self.con.cursor()

@@ -6,7 +6,7 @@ import string, random
 import sys, os, re
 import plots
 import apps
-import zipfile
+import uploads
 import users
 
 # sqlite plugin
@@ -181,30 +181,31 @@ def plot_interface(app,cid):
 
 @post('/upload')
 def do_upload():
-    #category   = request.forms.get('category')
     appname    = request.forms.get('appname')
     upload     = request.files.get('upload')
     name, ext = os.path.splitext(upload.filename)
-    print name, ext
     if ext not in ('.zip','.txt'):
         return 'File extension not allowed.'
-
-    #save_path = get_save_path_for_category(category)
     try:
-        save_path = apps.apps_dir + os.sep + name + ext
+        save_path_dir = apps.apps_dir + os.sep + name
+        save_path = save_path_dir + ext
+        if os.path.isfile(save_path):
+            return 'ERROR: zip file exists already. Please remove first.'
         upload.save(save_path)
-        # unzip file
-        fh = open(save_path, 'rb')
-        z = zipfile.ZipFile(fh)
-        z.extractall(apps.apps_dir)
-        fh.close() 
+        # before unzip file check if directory exists
+        if os.path.isdir(save_path_dir):
+            return 'ERROR: app already exists. Please change name.'
+        else:
+            u = uploads.uploader()
+            u.unzip(save_path)
+            return 'OK'
+        # remove zip file
         os.remove(save_path)
-        return 'OK'
     except IOError:
         return "IOerror:", IOError
         raise
     else:
         return "ERROR: must be already a file"
 
-run(host='0.0.0.0', port=8081)
+run(host='0.0.0.0', port=8081, debug=True)
 
