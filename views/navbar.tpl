@@ -9,6 +9,7 @@
 <input type="submit" formaction="/{{app}}/list" class="list" value="list"/>
 <input type="submit" formaction="/{{app}}/{{cid}}/output" class="output" value="output"/>
 </form>
+<label style="position: absolute; left: 550; color: white;">user: {{user}}</label>
 
 </div>
 

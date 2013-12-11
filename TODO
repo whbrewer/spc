@@ -1,13 +1,20 @@
-# todo - possible student projects
-# - app deployment (egg format/zip file)
-# - add user management
-# - implement ConfigParser -- possibly move to supporting INI files
-# - continuous updating of screen output
-# - job scheduler/queuing system
-# - plotting system using matplotlib
-# - file manager
-# - workflow system
-# - data monitoring system
-# - generic xml reader
-# - implement haml templates
-# - integration to openshift
+Feature Requests
+- app deployment (egg format/zip file)
+- user management
+- implement ConfigParser -- possibly move to supporting INI files
+- continuous updating of screen output
+- file manager
+- job scheduler/queuing system
+- plotting system using matplotlib
+- workflow system
+- data monitoring system
+- generic xml reader
+- implement haml templates
+- integration to openshift
+
+Refactoring
+- cleanup long pathnames such as sim_dir, run_dir, and fn in 
+  apps.py and scipaas.py
+
+Tests
+- if click list when directory doesnt exist error 405

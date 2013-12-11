@@ -1,11 +1,12 @@
 import re, sys, os
+import config
 
 # using convention over configuration 
 # the executable is the name of the app
 # and the input file is the name of the app + '.in'
-apps_dir = 'apps'
-user_dir = 'user_data'
-template_dir = '.template'
+apps_dir = config.apps_dir
+user_dir = config.user_dir
+template_dir = config.template_dir
 # end set 
 
 # future feature
@@ -16,6 +17,7 @@ class app(object):
         self.appname = appname
         self.outfn = appname + '.out'
         self.sim_fn = appname + '.in'
+        self.plottype = 0
         self.plotfn = plotfn
         self.user_dir = user_dir + os.sep + self.appname
         self.params, self.blockmap, self.blockorder = self.read_params()
@@ -30,27 +32,31 @@ class app(object):
 class app_f90(object):
     '''Class for plugging in Fortran apps ...'''
     
-    def __init__(self,appname,plotfn='out.dat'):
+    def __init__(self,appname,plotfn='out.dat',plottype=None):
         self.appname = appname
+        self.appdir = apps_dir + os.sep + appname
         self.outfn = appname + '.out'
         self.sim_fn = appname + '.in'
         self.plotfn = plotfn
-        self.user_dir = user_dir + os.sep + self.appname
+        self.plottype = plottype
+        #self.user_dir = user_dir + os.sep + self.appname
+        self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
 
-    def write_params(self,form_params):
+    def write_params(self,form_params,user):
         '''write the input file needed for the simulation'''
 
-        sim_dir = self.user_dir + os.sep + form_params['case_id'] + os.sep
+        cid = form_params['case_id']
+        sim_dir = self.user_dir + os.sep + user + os.sep + self.appname + os.sep + cid + os.sep
         #form_params['data_file_path'] = sim_dir
+        # following line is temporary hack just for mendel app
         form_params['data_file_path'] = "'./'"
        
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
 
-        cid = form_params['case_id']
-        fn = self.user_dir + os.sep + cid + os.sep + self.sim_fn
+        fn = sim_dir + self.sim_fn
 
         f = open(fn, 'w')
         # need to know what attributes are in what blocks
@@ -76,9 +82,15 @@ class app_f90(object):
 
     # student - needs to modify reader and writer so that can handle
     # multiple values for each parameter
-    def read_params(self,cid=template_dir):
+    #def read_params(self,cid=template_dir):
+    def read_params(self,user=None,cid=None):
         '''read the namelist file and return as a dictionary'''
-        fn = self.user_dir + os.sep + cid + os.sep + self.sim_fn
+        if cid is None or user is None:
+            fn = self.appdir
+        else:
+            fn = self.user_dir + os.sep + user + os.sep + self.appname + os.sep + cid
+        # append name of input file to end of string
+        fn += os.sep + self.sim_fn
         params = dict()
         blockmap = dict() 
         blockorder = []

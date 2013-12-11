@@ -9,6 +9,9 @@ import apps
 import uploads
 import users
 
+# default user - if not logged in
+user = "guest"
+
 # sqlite plugin
 plugin = ext.sqlite.Plugin(dbfile='scipaas.db')
 install(plugin)
@@ -17,8 +20,8 @@ install(plugin)
 sched = scheduler.scheduler()
 
 # app configuration here
-mendel = apps.app_f90('mendel','<cid>.000.hst')
-burger = apps.app_f90('burger','burger.dat')
+mendel = apps.app_f90('mendel','<cid>.000.hst','line')
+burger = apps.app_f90('burger','burger.dat','line')
 dna = apps.app_f90('dna','dna.dat')
 myapps = { 'mendel': mendel, 'burger': burger, 'dna': dna }
 default_app = 'mendel'
@@ -45,6 +48,7 @@ def create_app():
 
 @post('/<app>/confirm')
 def confirm_form(app):
+    global user
     # if case_id not in form will throw error, but just ignore it
     # as some apps will not use case_id
     try:
@@ -52,21 +56,23 @@ def confirm_form(app):
     except: 
         # give some nice error message here in the future
         pass
-    params = {'cid': cid, 'app': app }
+    params = {'cid': cid, 'app': app, 'user': user }
     #print 'cid:%s,app:%s' % (cid, app)
 
-    if(myapps[app].write_params(request.forms)):
+    if(myapps[app].write_params(request.forms,user)):
         return template('confirm', params)
     else:
         return 'ERROR: failed to write parameters to file'
 
 @post('/<app>/<cid>/execute')
 def execute(app,cid):
+    global user
     try:
-        run_dir = myapps[app].user_dir + os.sep + cid 
+        run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
+        print 'run_dir:',run_dir
         ofn = run_dir + os.sep + myapps[app].outfn
 	    # this path works for OSX
-        rel_path = os.pardir + os.sep + os.pardir + os.sep + os.pardir + os.sep 
+        rel_path = os.pardir + os.sep + os.pardir + os.sep + os.pardir + os.sep + os.pardir + os.sep 
         cmd = rel_path + myapps[app].exe
 	    # this path works for Windows
         #cmd = myapps[app].exe 
@@ -81,23 +87,24 @@ def execute(app,cid):
             pbuffer += out 
         p.wait()
         f.close()
-        params = { 'cid': cid, 'output': pbuffer, 'app': app }
+        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user }
         return template('output',params)
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
-        return "ERROR: failed to start job"
+        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user }
+        return template('error',params)
+        #return "ERROR: failed to start job"
 
 @post('/<app>/<cid>/output')
 def output(app,cid):
-    #print "output app:",app,"."
-    run_dir = myapps[app].user_dir + os.sep + cid 
-    #print "output run_dir:",run_dir
+    global user
+    run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
     ofn = run_dir + os.sep + myapps[app].outfn
     f = open(ofn,'r')
     output = f.read()
     f.close()
-    params = { 'cid': cid, 'output': output, 'app': app }
+    params = { 'cid': cid, 'output': output, 'app': app, 'user': user }
     return template('output', params)
    
 @route('/')
@@ -106,9 +113,11 @@ def overview():
 
 @route('/<app>')
 def show_app(app):
+    global user
     params = myapps[app].params
     params['cid'] = 'test00'
     params['app'] = app
+    params['user'] = user
     return template(app, params)
 
 @get('/login')
@@ -125,6 +134,7 @@ def static(path):
 
 @post('/login')
 def login_submit(db):
+    global user
     user     = request.forms.get('user')
     password = request.forms.get('password')
     u = users.user()
@@ -132,6 +142,7 @@ def login_submit(db):
         params = myapps[default_app].params
         params['app'] = default_app
         params['cid'] = ''
+        params['user'] = user
         tpl = myapps[default_app].appname 
         return template(tpl, params)
     else:
@@ -139,44 +150,56 @@ def login_submit(db):
     
 @get('<app>/start')
 def getstart(app):
+    global user
     params = myapps[app].params
     params['cid'] = params['case_id']
+    params['user'] = user
     return template(myapps[app].appname, params)
 
 @post('/<app>/start')
 def start(app):
+    global user
     # ignore blockmap and blockorder from read_params()
     cid = request.forms['cid']
     if cid is '':
         params = myapps[app].params
     else:
-        params,_,_ = myapps[app].read_params(cid)
+        params,_,_ = myapps[app].read_params(user,cid)
     params['cid'] = cid
     params['app'] = app
+    params['user'] = user
     return template(myapps[app].appname, params)
 
 @post('/<app>/list')
 def list(app):
+    global user
     str = ''
     cid = request.forms['cid']
-    for case in os.listdir(myapps[app].user_dir):
+    for case in os.listdir(myapps[app].user_dir+os.sep+user+os.sep+app):
         str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n'
     content = { 'content': str }
     content['cid'] = cid
     content['app'] = app
+    content['user'] = user
     return template('list', content)
 
 @post('/<app>/<cid>/plot')
 def plot_interface(app,cid):
-    sim_dir = myapps[app].user_dir + os.sep + cid + os.sep
+    global user
+    if myapps[app].plottype is None:
+        params = { 'cid': cid, 'app': app, 'user': user }
+        params['err'] = "This app does not support plotting capability"
+        #return "This app does not support plotting capability"
+        return template('error', params)
+    sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
     if re.search(r'^\s*$', cid):
         return "Error: no case id specified"
     else:
         plotfn = re.sub(r"<cid>", cid, myapps[app].plotfn)
-        print sim_dir + plotfn
+        #print sim_dir + plotfn
         p = plots.plot()
         data = p.get_data(sim_dir + plotfn,0,1)
-        params = { 'cid': cid, 'data': data, 'app': app }
+        params = { 'cid': cid, 'data': data, 'app': app, 'user': user }
         return template('plot', params)
 
 @post('/upload')

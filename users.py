@@ -34,18 +34,28 @@ class user(object):
         #print result
         for i in result: print i
 
+    def create_infra(self):
+        pass
+
     def authenticate(self,user,passwd):
         cur = self.con.cursor()
-        (dbpasswd,) = cur.execute('select pass from users where user = \'' + user + '\';').fetchone()
-        if passwd == dbpasswd:
-            return True
-        else:
+        try:
+            (dbpasswd,) = cur.execute('select pass from users where user = \'' + user + '\';').fetchone()
+            if passwd == dbpasswd: 
+                return True
+            else: # user correct, but password not correct
+                return False
+        except:   # user is not in db
             return False
 
 if __name__ == "__main__":
+    # tests:
+    # can handle right user/pass
+    # wrong user right pass
+    # right user wrong pass
     u = user()
     print "authentication test:", u.authenticate('wes','john3.16')
-    print "insert test:", u.create('bob','jones')
+    #print "insert test:", u.create('bob','jones')
     #u.delete(2)
     u.show()
 
