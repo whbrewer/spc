@@ -1,5 +1,6 @@
 import re, sys, os
 import config
+import sqlite3 as lite
 
 # using convention over configuration 
 # the executable is the name of the app
@@ -13,23 +14,40 @@ template_dir = config.template_dir
 #workflow = "login >> start >> confirm >> execute"
 class app(object):
 
-    def __init__(self,appname,plotfn='out.dat'):
-        self.appname = appname
-        self.outfn = appname + '.out'
-        self.sim_fn = appname + '.in'
-        self.plottype = 0
-        self.plotfn = plotfn
-        self.user_dir = user_dir + os.sep + self.appname
-        self.params, self.blockmap, self.blockorder = self.read_params()
-        self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
+#CREATE TABLE apps(appid integer primary key autoincrement, name varchar(20), description varchar(80), category varchar(20), language varchar(20));
+
+    def __init__(self):
+        # Connect to DB 
+        self.con = None
+        try:
+            self.con = lite.connect('scipaas.db')
+        except lite.Error, e:
+            print "Error %s:" % e.args[0]
+            sys.exit(1)
+
+    def create(self,name,description,category,language):
+        cur = self.con.cursor()
+        cur.execute('insert into apps values (NULL,?,?,?,?)',
+                    (name,description,category,language))
+        self.con.commit()
+
+    def read(self):
+        cur = self.con.cursor()
+        result = cur.execute('select * from users')
+        #print result
+        for i in result: print i
+
+    def update(self):
+        pass
+
+    def delete(self):
+        pass
 
     def deploy(self):
         pass
 
 # user must write their own function for how to write the output file
-# in future app_f90 needs to inherit from app
-#class app_f90(app):
-class app_f90(object):
+class app_f90(app):
     '''Class for plugging in Fortran apps ...'''
     
     def __init__(self,appname,plotfn='out.dat',plottype=None):

@@ -147,7 +147,12 @@ def login_submit(db):
         return template(tpl, params)
     else:
         return "<p>Login failed: wrong username or password</p>"
-    
+
+@get('/apps')
+def getapps():
+    params = { }
+    return template('apps', params)
+
 @get('<app>/start')
 def getstart(app):
     global user

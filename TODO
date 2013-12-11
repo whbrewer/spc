@@ -1,20 +1,23 @@
 Feature Requests
+- app management
 - app deployment (egg format/zip file)
-- user management
+- user page/user management: my apps, change passwd, etc.
 - implement ConfigParser -- possibly move to supporting INI files
-- continuous updating of screen output
+  + generic xml or ini reader
+- continuous updating of screen output: Ajax or built-in alternative
 - file manager
 - job scheduler/queuing system
 - plotting system using matplotlib
 - workflow system
 - data monitoring system
-- generic xml reader
 - implement haml templates
 - integration to openshift
 
 Refactoring
+- CRUD superclass... all models inherit from CRUD superclass
+- group common params that get passed to navbar in object?
 - cleanup long pathnames such as sim_dir, run_dir, and fn in 
   apps.py and scipaas.py
 
 Tests
-- if click list when directory doesnt exist error 405
+- if click list when directory doesnt exist >> error 405
