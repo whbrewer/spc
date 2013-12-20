@@ -20,34 +20,36 @@ class app(object):
         # Connect to DB 
         self.con = None
         try:
-            self.con = lite.connect('scipaas.db')
+            #self.con = lite.connect('scipaas.db')
+            self.con = lite.connect(config.database)
         except lite.Error, e:
             print "Error %s:" % e.args[0]
             sys.exit(1)
 
     def create(self,name,description,category,language):
         cur = self.con.cursor()
-        cur.execute('insert into apps values (NULL,?,?,?,?)',
-                    (name,description,category,language))
+        cur.execute('insert into apps values (NULL,?,?,?,?)',(name,description,category,language))
         self.con.commit()
 
     def read(self):
         cur = self.con.cursor()
-        result = cur.execute('select * from users')
+        result = cur.execute('select * from apps')
         #print result
         for i in result: print i
 
     def update(self):
         pass
 
-    def delete(self):
-        pass
+    def delete(self,appid):
+        cur = self.con.cursor()
+        cur.execute('delete from apps where appid = (?)',(appid,))
+        self.con.commit()
 
     def deploy(self):
         pass
 
 # user must write their own function for how to write the output file
-class app_f90(app):
+class f90(app):
     '''Class for plugging in Fortran apps ...'''
     
     def __init__(self,appname,plotfn='out.dat',plottype=None):

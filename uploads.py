@@ -1,5 +1,6 @@
 import zipfile
-import os
+import config
+import os, stat
 
 class uploader(object):
 
@@ -14,6 +15,21 @@ class uploader(object):
         z.extractall(path)
         fh.close()
 
-    def create_infrastructure(self):
-        pass
-
+    def verify(self,save_path_dir,appname):
+        exe_file = save_path_dir + os.sep + appname 
+        in_file  = exe_file + '.in'
+        msg = 'File uploaded OK\n'
+        # verify that .in file exists
+        if not os.path.exists(in_file):
+            msg += "\nERROR: .in file does not exist"
+        # verify that binary file exists
+        if os.path.exists(exe_file):
+            # set permissions to read and execute for all
+            os.chmod(exe_file, 0755)
+            # set permissions to read by owner 
+            #os.chmod(exe_file, stat.S_IREAD)
+            # set permissions to execute by owner
+            #os.chmod(exe_file, stat.S_IEXEC)
+        else:
+            msg += "\nERROR: executable missing"
+        return msg 

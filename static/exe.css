@@ -1,0 +1,83 @@
+input[type="submit"]
+{
+   z-index:1;
+   font-family: tacoma;
+   font-size: 20px;
+   width: 92px;
+   /*background: #009933;*/
+   display: inline-block;
+   /*padding: 5px 10px 6px;*/
+   padding: 5px;
+   color: #fff;
+   text-decoration: none;
+   font-weight: bold;
+   line-height: 1;
+   -moz-border-radius: 5px;
+   -webkit-border-radius: 5px;
+   -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+   -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+   text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+   /*position: relative;*/
+   position: fixed;
+   top:0px;
+   /* left:0px; */
+   margin:4px;
+   border: solid 0px;
+   cursor: pointer;
+}
+
+.navbar{
+   position: fixed;
+   font-size: 18px;
+   top:0px;
+   left:0px;
+   width: 100%;
+   height: 42px;
+   /*background: rgba(0,66,174,0.1);*/
+   background: rgba(0,0,0,0.5);
+}
+
+input.cid {
+   position: fixed;
+   font-size: 18px;
+   width: 96px;
+   height:30px;
+   top:  0px;
+   left: 0px;
+   background: rgb(255,255,255);
+   margin:4px;
+   z-index:1;
+   -webkit-border-radius: 5px; //For Safari, etc.
+   -moz-border-radius: 5px; //For Mozilla, etc.
+   border-radius: 5px; //CSS3 Feature
+}
+
+/* http://bavotasan.com/2011/style-select-box-using-only-css/ */
+.styled-select select {
+   position: fixed;
+   left: 500px; 
+   top: 0px;
+   margin: 4px;
+   color: white;
+   background: transparent; 
+   width: 200px;
+   padding: 5px;
+   font-size: 16px;
+   line-height: 1;
+   border: 5;
+   border-radius: 5px;
+   -webkit-border-radius: 5px; //For Safari, etc.
+   -moz-border-radius: 5px; //For Mozilla, etc.
+   height: 34px;
+   z-index: 1;
+   -webkit-appearance: none;
+   }
+
+/*.cid   { position: fixed; left: 4px; top: 4px;   font-size: 18px; width: 96px; height: 30px; } */
+.exe   { left: 0px; top: 0px;   background: green;   }
+.run   { left: 0px; top: 0px;   background: green;   }
+.start { left: 100px; top: 0px; background: green; }
+.plot  { left: 200px; top: 0px; background: blue;  }
+.list  { left: 300px; top: 0px; background: red;}
+.output { left: 400px; top: 0px; background: DarkMagenta; }
+

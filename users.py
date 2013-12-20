@@ -34,9 +34,6 @@ class user(object):
         #print result
         for i in result: print i
 
-    def create_infra(self):
-        pass
-
     def authenticate(self,user,passwd):
         cur = self.con.cursor()
         try:

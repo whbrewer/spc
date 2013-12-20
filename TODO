@@ -1,16 +1,23 @@
 Feature Requests
-- app management
-- app deployment (egg format/zip file)
+- app management: update, delete, and finish add section
+  o upload
+    > verify that upload contains the necessary files (e.g. .in & binary)
+    > hook into scipaas... dynamic importing 
+  o app deployment (egg format/zip file)
+  o rename app
+- info about app page... e.g. intro to importance of Burger's eqn
+- JS/Ajax check if appname already exists
 - user page/user management: my apps, change passwd, etc.
+- case management
+- file manager... or data button to see data in output files
 - implement ConfigParser -- possibly move to supporting INI files
   + generic xml or ini reader
-- continuous updating of screen output: Ajax or built-in alternative
-- file manager
 - job scheduler/queuing system
+- continuous updating of screen output: Ajax or built-in alternative
+  + data monitoring system: ajax and python-based
+- implement haml templates
 - plotting system using matplotlib
 - workflow system
-- data monitoring system
-- implement haml templates
 - integration to openshift
 
 Refactoring
@@ -20,4 +27,10 @@ Refactoring
   apps.py and scipaas.py
 
 Tests
+- test that when file unzips the unzipped directory is the same
+  as the zip file name
 - if click list when directory doesnt exist >> error 405
+- if click Upload but file not first selected >> error
+- upload verify works with .in and exe file
+- verify throws error with no .in file
+- verify throws error with no exe file

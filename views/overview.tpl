@@ -1,23 +1,23 @@
 %include header title='Overview'
 
+<center>
 <img src="/static/scipaas.png" width="50%">
 <p><font size="+2"><i>a scientific platform-as-a-service</i></font></p> 
+</center>
 
 <hr>
 
-<form method="get" action="/createapp">
-<input type="submit" value="Add App">
-</form>
+<font size="+1">
 
-<a href="/dna"><h2>DNA</h2></a>
-<p>Modify DNA...</p>
-<p></p>
+<p>Welcome to SciPaaS! SciPaaS is a middleware execution platform
+for easily uploading and running scientific apps in the cloud.</p>
 
-<hr>
-<a href="/mendel"><h2>Mendel's Accountant</h2></a>
-<p>Mendel's Accountant (MENDEL) is an advanced numerical simulation program for modeling genetic change over time and was developed collaboratively by Sanford, Baumgardner, Brewer, Gibson and ReMine.</p>
+<p>From here you can do several things:</p>
 
-<hr>
-<a href="/burger"><h2>Burger</h2></a>
-<p>Burger is a program that solves the one-dimensional Burger's equation explicitly in time.  Burger's equation is used to investigate the appearance of shock waves in gas dynamics, but also has applications in traffic flow.</p>
+<ul>
+<li><a href="/login">Login<p>
+<li><a href="/apps/show/name">Show Apps<p>
+<li><a href="/apps/add">Add App<p>
+</ul
 
+</font>
