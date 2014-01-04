@@ -1,4 +1,8 @@
 Next:
+- plotting:
+  o add bar plot ability
+  o specify x-legend, y-legend
+  o specify x-min, x-max, y-min, y-max
 - real-time data monitor
 - when click confirm show input file
 - move code to load apps into apps.py

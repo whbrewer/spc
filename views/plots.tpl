@@ -58,7 +58,7 @@ td {text-align: center}
    <select name="ptype">
        <option VALUE="line">line</option>
        <option VALUE="scatter">scatter</option>
-       <option VALUE="barchart">barchart</option>
+       <option VALUE="bar">bar</option>
    </select><br>
    <input type="submit">
 </form>

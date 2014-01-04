@@ -15,11 +15,13 @@
 
    <h3 align="center">{{title}}</h3>
 
-   <div id="mutations" style="width:600px;height:370px;"></div> 
+   <div id="myplot" style="width:600px;height:370px;"></div> 
    <script id="source" language="javascript" type="text/javascript"> 
       $(function () {
       var d1 = {{data}};
-      var data = [ { label: "deleterious", data: d1, color: "rgb(200,0,0)" } ];
+      var data = [ { label: "deleterious", data: d1, 
+                     bars: { show: {{bars}}, autoWidth: true } , 
+                     color: "rgb(200,0,0)" } ];
 
       var options = {
          legend: { position: 'nw' },
@@ -30,7 +32,7 @@
          selection: { mode: "xy" }
       };
 
-      var placeholder = $("#mutations");
+      var placeholder = $("#myplot");
 
       //myplot = new plotter(placeholder, data, options)
       //myplot.showPlot();

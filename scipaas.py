@@ -257,12 +257,18 @@ def plot_interface(app,cid,pltid):
     global user
     p = plots.plot()
     (plottype,plotfn,col1,col2,title) = p.read(app,pltid)
+    print 'plottype is:', plottype
 
     # if plot not in DB return error
     if plottype is None:
         params = { 'cid': cid, 'app': app, 'user': user }
         params['err'] = "Sorry! This app does not support plotting capability"
         return template('error', params)
+
+    if plottype == 'bar':
+        bars = 'true'
+    else:
+        bars = 'false'
 
     sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
     if re.search(r'^\s*$', cid):
@@ -272,7 +278,8 @@ def plot_interface(app,cid,pltid):
         print sim_dir + plotfn
         p = plots.plot()
         data = p.get_data(sim_dir + plotfn,col1,col2)
-        params = { 'cid': cid, 'data': data, 'app': app, 'user': user, 'title': title }
+        params = { 'cid': cid, 'data': data, 'app': app, 'user': user, 
+                   'title': title, 'bars': bars }
         return template('plot', params)
 
 @post('/apps/upload')
