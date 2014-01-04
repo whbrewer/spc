@@ -1,7 +1,18 @@
-import json
+#import json 
 import re
+import config
+import sqlite3 as lite
 
 class plot(object):
+
+    def __init__(self):
+        # Connect to DB 
+        self.con = None
+        try:
+            self.con = lite.connect(config.database)
+        except lite.Error, e:
+            print "Error %s:" % e.args[0]
+            sys.exit(1)
 
     def get_data(self,fn,col1,col2):
         y = ''
@@ -13,3 +24,37 @@ class plot(object):
                 y += '[ ' + x[col1] + ', ' + x[col2] + '], ' 
         str = "[ %s ]" % y
         return str
+
+    def create(self,appid,ptype,fn,col1,col2,title):
+        #insert into plots values (NULL,12,'xyplot','burger.dat',0,1);
+        # use try except here...
+        print 'creating plot: ',appid,ptype,fn,col1,col2
+        cur = self.con.cursor()
+        cur.execute('insert into plots values (NULL,?,?,?,?,?,?)',(appid,ptype,fn,col1,col2,title))
+        self.con.commit()
+
+    def read(self,app,pltid):
+        cur = self.con.cursor()
+        print app
+        # in the future this has to support reading multiple plots
+        result = cur.execute('select type, filename, col1, col2, title from apps natural join plots where name=? and pltid=?',(app,pltid)).fetchone()
+        if result is None:
+            return None
+        else:
+            return (result[0],result[1],result[2],result[3],result[4])
+
+    def show(self):
+        cur = self.con.cursor()
+        result = cur.execute('select * from plots')
+        #print result
+
+    def delete(self,pid):
+        cur = self.con.cursor()
+        cur.execute('delete from plots where pltid = (?)',(pid,))
+        self.con.commit()
+
+    def update(self,pid):
+        pass
+
+#CREATE TABLE plots(pltid integer primary key autoincrement, appid integer,  type varchar(80), filename varchar(80), col1 integer, col2 integer, foreign key (appid) references apps(appid));
+#insert into plots values (1,11,'xyplot','<cid>.000.hst',0,1);

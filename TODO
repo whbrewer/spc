@@ -1,10 +1,15 @@
+Next:
+- real-time data monitor
+- when click confirm show input file
+- move code to load apps into apps.py
+- edit app page
+
+--
 Feature Requests
-- app management: update, delete, and finish add section
-  o upload
-    > verify that upload contains the necessary files (e.g. .in & binary)
-    > hook into scipaas... dynamic importing 
-  o app deployment (egg format/zip file)
-  o rename app
+- continuous updating of screen output: Ajax or built-in alternative
+  + data monitoring system: ajax and python-based
+- plotting subsystem
+  o plotting system using matplotlib
 - info about app page... e.g. intro to importance of Burger's eqn
 - JS/Ajax check if appname already exists
 - user page/user management: my apps, change passwd, etc.
@@ -13,12 +18,13 @@ Feature Requests
 - implement ConfigParser -- possibly move to supporting INI files
   + generic xml or ini reader
 - job scheduler/queuing system
-- continuous updating of screen output: Ajax or built-in alternative
-  + data monitoring system: ajax and python-based
 - implement haml templates
-- plotting system using matplotlib
 - workflow system
 - integration to openshift
+
+Bug fixes
+- when form items are disabled by JS they don't show up in the forms data structure
+  (fix in apps.write_params() method)
 
 Refactoring
 - CRUD superclass... all models inherit from CRUD superclass
@@ -34,3 +40,16 @@ Tests
 - upload verify works with .in and exe file
 - verify throws error with no .in file
 - verify throws error with no exe file
+- test if writing parameters correctly especially test booleans, integers,
+  strings, etc.
+
+Completed
+- app management: update, delete, and finish add section
+  o move 
+  o upload
+    > verify that upload contains the necessary files (e.g. .in & binary)
+    > hook into scipaas... dynamic importing 
+  o app deployment (egg format/zip file)
+  o rename app
+  o put different app categories into database
+- add ability to handle multiple plots

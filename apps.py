@@ -20,7 +20,6 @@ class app(object):
         # Connect to DB 
         self.con = None
         try:
-            #self.con = lite.connect('scipaas.db')
             self.con = lite.connect(config.database)
         except lite.Error, e:
             print "Error %s:" % e.args[0]
@@ -31,11 +30,11 @@ class app(object):
         cur.execute('insert into apps values (NULL,?,?,?,?)',(name,description,category,language))
         self.con.commit()
 
-    def read(self):
+    def read(self,appid):
         cur = self.con.cursor()
-        result = cur.execute('select * from apps')
-        #print result
+        (name,description,language,category) = cur.execute('select name,description,language,category from apps where appid=?',(appid,))
         for i in result: print i
+        return (name,description,language,category)
 
     def update(self):
         pass
@@ -52,14 +51,12 @@ class app(object):
 class f90(app):
     '''Class for plugging in Fortran apps ...'''
     
-    def __init__(self,appname,plotfn='out.dat',plottype=None):
+    def __init__(self,appname,appid):
         self.appname = appname
+        self.appid = appid
         self.appdir = apps_dir + os.sep + appname
         self.outfn = appname + '.out'
-        self.sim_fn = appname + '.in'
-        self.plotfn = plotfn
-        self.plottype = plottype
-        #self.user_dir = user_dir + os.sep + self.appname
+        self.simfn = appname + '.in'
         self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
@@ -76,7 +73,12 @@ class f90(app):
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
 
-        fn = sim_dir + self.sim_fn
+        fn = sim_dir + self.simfn
+
+        i = 0
+        for fp in form_params:
+            i += 1
+            print i,fp, form_params[fp]
 
         f = open(fn, 'w')
         # need to know what attributes are in what blocks
@@ -85,14 +87,24 @@ class f90(app):
             for key in self.blockmap[block]:
                 # if the keys are not in the params, it means that
                 # the checkboxes were not checked, so add the keys
-                # to the form_params here and set the values to False
+                # to the form_params here and set the values to False.
+                # Also, found that when textboxes get disabled e.g. via JS 
+                # they also don't show up in the dictionary.
                 if key not in form_params:
-                    form_params[key] = "F"  
+                    #print "key not found - inserting:", key
+                    form_params[key] = "F"
+
+                # replace checked checkboxes with T value
+                #print 'key/value', key, form_params[key]
+                form_params[key].replace("'","")
+                if form_params[key] == 'on':
+                    form_params[key] = "T"
 
                 # detect strings and enclose with single quotes
                 m = re.search(r'[a-zA-Z]{2}',form_params[key])
                 if m:
-                    if not re.search('[0-9.]*e+[0-9]*|[FT]',m.group()):
+                    #if not re.search('[0-9.]*e+[0-9]*|[FT]',m.group()):
+                    if not re.search('[0-9].*[0-9]^|[FT]',m.group()):
                         form_params[key] = "'" + form_params[key] + "'"
 
                 f.write(key + ' = ' + form_params[key] + "\n")
@@ -110,7 +122,7 @@ class f90(app):
         else:
             fn = self.user_dir + os.sep + user + os.sep + self.appname + os.sep + cid
         # append name of input file to end of string
-        fn += os.sep + self.sim_fn
+        fn += os.sep + self.simfn
         params = dict()
         blockmap = dict() 
         blockorder = []

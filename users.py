@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sqlite3 as lite
+import config
 
 #CREATE TABLE users(uid integer primary key autoincrement, user varchar(20), pass 
 
@@ -9,7 +10,7 @@ class user(object):
         # Connect to DB 
         self.con = None
         try:
-            self.con = lite.connect('scipaas.db')
+            self.con = lite.connect(config.database)
         except lite.Error, e:
             print "Error %s:" % e.args[0]
             sys.exit(1)

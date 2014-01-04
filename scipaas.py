@@ -9,6 +9,7 @@ import apps
 import uploads
 import users
 import config
+import sqlite3 as lite
 
 # default user - if not logged in
 user = "guest"
@@ -71,7 +72,7 @@ def execute(app,cid):
         return template('error',params)
         #return "ERROR: failed to start job"
 
-@post('/<app>/<cid>/output')
+@get('/<app>/<cid>/output')
 def output(app,cid):
     global user
     run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
@@ -91,6 +92,7 @@ def show_app(app):
     global user, myapps
     # parameters for return template
     params = myapps[app].params
+    print app, 'params:',params
     params['cid'] = 'test00'
     params['app'] = app
     params['user'] = user
@@ -129,24 +131,27 @@ def showapps():
     redirect("/apps/show/name")
 
 @get('/apps/load')
-def load_apps():
-    # need to figure out a way to load apps without manually specifying them here
-    # could have them in a database called startup or something
-    # or could try to load all the apps in the app directory
+def load_apps(db):
+    # this needs to be moved into apps.py in the future
     global myapps, default_app
-    # app configuration here
-    mendel = apps.f90('mendel','<cid>.000.hst','line')
-    burger = apps.f90('burger','burger.dat','line')
-    dna = apps.f90('dna','dna.dat')
-    myapps = { 'mendel': mendel, 'burger': burger, 'dna': dna }
-    default_app = 'mendel'
-    # end app config
-
-    # instantiate app and add to dictionary of running apps
-    #myapp = apps.f90(app,app+'.dat')
-    #myapps[app] = myapp
-    #print 'myapps:',myapps
-    pass
+    # Connect to DB 
+    try:
+        db = lite.connect(config.database)
+    except lite.Error, e:
+        print "Error %s:" % e.args[0]
+        sys.exit(1)
+    c = db.execute('SELECT name,appid FROM apps')
+    result = c.fetchall()
+    c.close()
+    myapps = {}
+    for row in result:   
+        name = row[0]
+        appid = row[1]
+        print 'loading: %s id: %s' % (name,appid)
+        myapp = apps.f90(name,appid)
+        myapps[name] = myapp
+    default_app = name # simple soln - use last app read from DB
+    return 0
 
 @get('/apps/show/<sort>')
 def getapps(db,sort="name"):
@@ -182,77 +187,92 @@ def create_view():
         return "ERROR: there was a problem when creating view"
 
 @get('/apps/delete/<appid>')
-def deleteapp(appid):
+def delete_app(appid):
     a = apps.app()
     a.delete(appid)
     redirect("/apps/show/name")
 
-# not sure if we're using this anymore at all
-#@post('/createapp')
-#def create_app():
-#    appname = request.forms['appname']
-#    # create directory for app binary/source
-#    os.mkdir(apps.apps_dir + os.sep + appname)
-#    # create directory for user data
-#    os.mkdir(apps.user_dir + os.sep + appname)
-#    # create the template directory
-#    os.mkdir(apps.user_dir + os.sep + appname + os.sep + apps.template_dir)
-#    # create a new instance of the app
-#    # add app instance to myapps data structure
-#    return appname, ' app created'
+@get('/apps/edit/<appid>')
+def edit_app(appid):
+    return 'SORRY - this function has not yet been implemented'
+    a = apps.app()
+    (name,description,category,language) = a.read(appid)
+    params = {'name': name, 'description': description, 'category': category, 'language': language }
+    return template(app_edit, params)
 
-@get('<app>/start')
+@get('/<app>/start')
 def getstart(app):
     global user
     params = myapps[app].params
-    params['cid'] = params['case_id']
-    params['user'] = user
-    return template(myapps[app].appname, params)
-
-@post('/<app>/start')
-def start(app):
-    global user
-    # ignore blockmap and blockorder from read_params()
-    cid = request.forms['cid']
+    cid = request.forms.get('cid')
     if cid is '':
         params = myapps[app].params
     else:
         params,_,_ = myapps[app].read_params(user,cid)
+    #params['cid'] = params['case_id']
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     return template(myapps[app].appname, params)
 
-@post('/<app>/list')
+@get('/<app>/list')
 def list(app):
     global user
     str = ''
-    cid = request.forms['cid']
+    cid = request.forms.get('cid')
     for case in os.listdir(myapps[app].user_dir+os.sep+user+os.sep+app):
         str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n'
-    content = { 'content': str }
-    content['cid'] = cid
-    content['app'] = app
-    content['user'] = user
-    return template('list', content)
+    params = { 'content': str }
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    return template('list', params)
 
-@post('/<app>/<cid>/plot')
-def plot_interface(app,cid):
+@get('/<app>/plots')
+@get('/<app>/<cid>/plots')
+def get_plots(db,app):
+    try: print cid
+    except: cid='test00'
+    c = db.execute('select pltid, type, filename, col1, col2, title from apps natural join plots where name=?',(app,))
+    result = c.fetchall()
+    c.close()
+    params = { 'app': app, 'cid': cid } 
+    return template('plots', params, rows=result)
+
+@get('/<app>/plots/delete/<pltid>')
+def delete_plot(db,app,pltid):
+    p = plots.plot()
+    p.delete(pltid)
+    redirect ('/' + app + '/plots')
+
+@post('/<app>/plots/create')
+def create_plot(app):
+    p = plots.plot()
+    r = request
+    p.create(myapps[app].appid,r.forms['ptype'],r.forms['fn'],r.forms['col1'],r.forms['col2'],r.forms['title'])
+    redirect ('/' + app + '/plots')
+
+@get('/<app>/<cid>/plot/<pltid>')
+def plot_interface(app,cid,pltid):
     global user
-    if myapps[app].plottype is None:
+    p = plots.plot()
+    (plottype,plotfn,col1,col2,title) = p.read(app,pltid)
+
+    # if plot not in DB return error
+    if plottype is None:
         params = { 'cid': cid, 'app': app, 'user': user }
-        params['err'] = "This app does not support plotting capability"
-        #return "This app does not support plotting capability"
+        params['err'] = "Sorry! This app does not support plotting capability"
         return template('error', params)
+
     sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
     if re.search(r'^\s*$', cid):
         return "Error: no case id specified"
     else:
-        plotfn = re.sub(r"<cid>", cid, myapps[app].plotfn)
-        #print sim_dir + plotfn
+        plotfn = re.sub(r"<cid>", cid, plotfn)
+        print sim_dir + plotfn
         p = plots.plot()
-        data = p.get_data(sim_dir + plotfn,0,1)
-        params = { 'cid': cid, 'data': data, 'app': app, 'user': user }
+        data = p.get_data(sim_dir + plotfn,col1,col2)
+        params = { 'cid': cid, 'data': data, 'app': app, 'user': user, 'title': title }
         return template('plot', params)
 
 @post('/apps/upload')
@@ -288,6 +308,7 @@ def do_upload():
         return "ERROR: must be already a file"
 
 if __name__ == "__main__":
-    load_apps()
+    db = lite.connect(config.database)
+    load_apps(db)
     run(host='0.0.0.0', port=8081, debug=True)
 

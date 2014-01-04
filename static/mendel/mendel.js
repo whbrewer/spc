@@ -30,8 +30,8 @@ function fxn_init() {
 }
 
 function fxn_set_caseid() {
-        parent.frames.contents.caseidform.case_id.value = 
-           dmi.case_id.value;
+        dmi.case_id.value = dmi.cid.value;
+        //parent.frames.contents.caseidform.case_id.value = dmi.case_id.value;
 }
 
 function set_random_caseid() {
@@ -101,16 +101,16 @@ function fxn_synergistic_epistasis() {
 
 function fxn_synergistic_epistasis_able() {
     if(dmi.synergistic_epistasis.checked) {
-           dmi.se_nonlinked_scaling.disabled = false;
-           dmi.se_linked_scaling.disabled = false;
+           dmi.se_nonlinked_scaling.readOnly = false;
+           dmi.se_linked_scaling.readOnly = false;
     } else {
-       dmi.se_nonlinked_scaling.disabled = true;
-       dmi.se_linked_scaling.disabled = true;
+       dmi.se_nonlinked_scaling.readOnly = true;
+       dmi.se_linked_scaling.readOnly = true;
     }
 }
 function fxn_synergistic_epistasis_disable() {
-        dmi.se_nonlinked_scaling.disabled = true;
-        dmi.se_linked_scaling.disabled = true;
+        dmi.se_nonlinked_scaling.readOnly = true;
+        dmi.se_linked_scaling.readOnly = true;
 }
 
 function fxn_combine_mutns() {
@@ -143,11 +143,11 @@ function fxn_dynamic_linkage() {
 }
 function fxn_dynamic_linkage_able() {
     if (dmi.dynamic_linkage.checked) {
-       dmi.haploid_chromosome_number.disabled = false;
+       dmi.haploid_chromosome_number.readOnly = false;
            document.getElementById("link_num").innerText = 
             ":: number of linkage subunits:";
     } else {
-       dmi.haploid_chromosome_number.disabled = true;
+       dmi.haploid_chromosome_number.readOnly = true;
        document.getElementById("link_num").innerText = 
             ":: fixed block linkage number:";
     }
@@ -239,14 +239,14 @@ function check_bottleneck() {
 
 function fxn_allocate_memory() {
     if (dmi.auto_malloc.checked) {
-           dmi.max_del_mutn_per_indiv.disabled = true;
-           dmi.max_neu_mutn_per_indiv.disabled = true;
-           dmi.max_fav_mutn_per_indiv.disabled = true;
+           dmi.max_del_mutn_per_indiv.readOnly = true;
+           dmi.max_neu_mutn_per_indiv.readOnly = true;
+           dmi.max_fav_mutn_per_indiv.readOnly = true;
            status("");
         } else {
-           dmi.max_del_mutn_per_indiv.disabled = false;
-           dmi.max_neu_mutn_per_indiv.disabled = false;
-           dmi.max_fav_mutn_per_indiv.disabled = false;
+           dmi.max_del_mutn_per_indiv.readOnly = false;
+           dmi.max_neu_mutn_per_indiv.readOnly = false;
+           dmi.max_fav_mutn_per_indiv.readOnly = false;
            dmi.max_del_mutn_per_indiv.select();
         }
 }
@@ -283,7 +283,7 @@ function fxn_polygenic_beneficials() {
 
 function fxn_track_neutrals() {
    if(dmi.track_neutrals.checked) {
-      dmi.fraction_neutral.disabled = false;
+      dmi.fraction_neutral.readOnly = false;
       if ( fraction_neutral > 0 ) {
          dmi.fraction_neutral.value = fraction_neutral;
       } else {
@@ -301,7 +301,7 @@ function fxn_track_neutrals() {
       //dmi.mutn_rate.value = Math.round(dmi.mutn_rate.value*(1-dmi.fraction_neutral.value));
       document.getElementById("mutn_rate").innerText = "Total non-neutral mutation rate per individual per generation:";
       dmi.fraction_neutral.value = 0.0;
-      dmi.fraction_neutral.disabled = true;
+      dmi.fraction_neutral.readOnly = true;
       status("");
    }
    compute_u();
@@ -310,9 +310,9 @@ function fxn_track_neutrals() {
 function fxn_track_all_mutn() {
    if(dmi.track_all_mutn.checked) {
       dmi.tracking_threshold.value = 0;
-      dmi.tracking_threshold.disabled = true;
+      dmi.tracking_threshold.readOnly = true;
    } else {
-      dmi.tracking_threshold.disabled = false;
+      dmi.tracking_threshold.readOnly = false;
       dmi.tracking_threshold.value = tracking_threshold;
       dmi.tracking_threshold.select();
       dmi.track_neutrals.checked = false;
@@ -338,24 +338,24 @@ function fxn_fitness_distrib_type_init() {
       document.getElementById("ufe_div").style.display = "block";
       document.getElementById("weibull_div").style.display = "none";
       document.getElementById("crdiv").style.display = "block";
-      dmi.combine_mutns.disabled = false;
-      dmi.synergistic_epistasis.disabled = false;
+      dmi.combine_mutns.readOnly = false;
+      dmi.synergistic_epistasis.readOnly = false;
       window.scrollBy(0,500);
    // Weibull distribution
    } else if (fdt == 1) {
       document.getElementById("ufe_div").style.display = "none";
       document.getElementById("weibull_div").style.display = "block";
       document.getElementById("crdiv").style.display = "block";
-      dmi.combine_mutns.disabled = false;
-      dmi.synergistic_epistasis.disabled = false;
+      dmi.combine_mutns.readOnly = false;
+      dmi.synergistic_epistasis.readOnly = false;
       window.scrollBy(0,500);
    // All Neutral
    } else if (fdt == 2) {
       document.getElementById("ufe_div").style.display = "none";
       document.getElementById("weibull_div").style.display = "none";
       document.getElementById("crdiv").style.display = "none";
-      dmi.combine_mutns.disabled = true;
-      dmi.synergistic_epistasis.disabled = true;
+      dmi.combine_mutns.readOnly = true;
+      dmi.synergistic_epistasis.readOnly = true;
       fxn_disable_synergistic_epistasis();
       window.scrollBy(0,500);
    // Bi-modal
@@ -363,15 +363,15 @@ function fxn_fitness_distrib_type_init() {
       document.getElementById("ufe_div").style.display = "block";
       document.getElementById("weibull_div").style.display = "block";
       document.getElementById("crdiv").style.display = "block";
-      dmi.combine_mutns.disabled = false;
-      dmi.synergistic_epistasis.disabled = false;
+      dmi.combine_mutns.readOnly = false;
+      dmi.synergistic_epistasis.readOnly = false;
       window.scrollBy(0,500);
    } else {
       document.getElementById("ufe_div").style.display = "none";
       document.getElementById("weibull_div").style.display = "block";
       document.getElementById("crdiv").style.display = "block";
-      dmi.combine_mutns.disabled = false;
-      dmi.synergistic_epistasis.disabled = false;
+      dmi.combine_mutns.readOnly = false;
+      dmi.synergistic_epistasis.readOnly = false;
    }
 }
 
@@ -420,13 +420,13 @@ function show_hide_mutation_upload_form(i) {
         // under population substructure, and vice-versa
     if (dmi.upload_mutations.checked) {
            document.getElementById("upload_mutations_div").style.display = "block";
-           //dmi.mutn_file_id.disabled = false;
+           //dmi.mutn_file_id.readOnly = false;
            window.scrollBy(0,500);
         } else if (dmi.altruistic.checked) {
            document.getElementById("upload_mutations_div").style.display = "block";
         } else {
           document.getElementById("upload_mutations_div").style.display = "none";
-          //dmi.mutn_file_id.disabled = true;
+          //dmi.mutn_file_id.readOnly = true;
         }
 }
 
@@ -434,9 +434,9 @@ function fxn_migration() {
    x = parseInt(1*dmi.num_indiv_exchanged.value);
    max = parseInt(1*dmi.pop_size.value);
    if(x == 0) {
-      dmi.migration_generations.disabled = true;
+      dmi.migration_generations.readOnly = true;
    } else {
-      dmi.migration_generations.disabled = false;
+      dmi.migration_generations.readOnly = false;
       //dmi.migration_generations.value = 1;
       if(x > max || x < 0) alert("Value must be between 0 and " + max);
    }
@@ -465,16 +465,16 @@ function fxn_tribes(max_tribes) {
    }
 
    if (dmi.tribal_competition.checked) {
-      dmi.tc_scaling_factor.disabled = false;
-      dmi.group_heritability.disabled = false;
+      dmi.tc_scaling_factor.readOnly = false;
+      dmi.group_heritability.readOnly = false;
       dmi.tc_scaling_factor.select();
       status("Group competition is still under development. Proceed with caution. Must set extinction threshold > 0 for tribal fission.");
       if(dmi.extinction_threshold.value == 0.0)  {
          dmi.extinction_threshold.value = 0.1;
       }
    } else {
-      dmi.tc_scaling_factor.disabled = true;
-      dmi.group_heritability.disabled = true;
+      dmi.tc_scaling_factor.readOnly = true;
+      dmi.group_heritability.readOnly = true;
       status("");
    }
 
@@ -491,18 +491,18 @@ function fxn_tribes(max_tribes) {
 
 function fxn_clone() {
    if (dmi.clonal_reproduction.checked) {
-      dmi.fraction_self_fertilization.disabled = true;
-      dmi.num_contrasting_alleles.disabled = true;
-      dmi.max_total_fitness_increase.disabled = true;
-      dmi.dynamic_linkage.disabled = true;
-      dmi.haploid_chromosome_number.disabled = true;
+      dmi.fraction_self_fertilization.readOnly = true;
+      dmi.num_contrasting_alleles.readOnly = true;
+      dmi.max_total_fitness_increase.readOnly = true;
+      dmi.dynamic_linkage.readOnly = true;
+      dmi.haploid_chromosome_number.readOnly = true;
       dmi.num_linkage_subunits.value = 1;
    } else {
-      dmi.fraction_self_fertilization.disabled = false;
-      dmi.num_contrasting_alleles.disabled = false;
-      dmi.max_total_fitness_increase.disabled = false;
-      dmi.dynamic_linkage.disabled = false;
-      dmi.haploid_chromosome_number.disabled = false;
+      dmi.fraction_self_fertilization.readOnly = false;
+      dmi.num_contrasting_alleles.readOnly = false;
+      dmi.max_total_fitness_increase.readOnly = false;
+      dmi.dynamic_linkage.readOnly = false;
+      dmi.haploid_chromosome_number.readOnly = false;
       //dmi.num_linkage_subunits.value = 1000;
    }
 }
@@ -548,14 +548,14 @@ function fxn_pop_growth_model(i) {
   //   status("NOTE: Changed simulation engine to C");
   //}
   if (i == 0) {
-     dmi.pop_growth_rate.disabled = true;
+     dmi.pop_growth_rate.readOnly = true;
      document.getElementById("gen").innerText =
                         "Generations:";
      document.getElementById("pop").innerText =
                         "Population size (per subpopulation):";
      status("");
   } else if (i == 1) {
-     dmi.pop_growth_rate.disabled = false;
+     dmi.pop_growth_rate.readOnly = false;
      document.getElementById("pgr").innerText =
                         "    :: intrinsic growth rate:";
      document.getElementById("gen").innerText =
@@ -568,7 +568,7 @@ function fxn_pop_growth_model(i) {
      dmi.pop_growth_rate.title = "1.00 - 1.26"; 
      status("WARNING: dynamic populations are experimental and largely untested");
   } else if (i == 2) {
-     dmi.pop_growth_rate.disabled = false;
+     dmi.pop_growth_rate.readOnly = false;
      document.getElementById("pgr").innerText =
                         "    :: maximum reproductive rate of an individual:";
      document.getElementById("gen").innerText =
@@ -581,7 +581,7 @@ function fxn_pop_growth_model(i) {
      dmi.pop_growth_rate.title = "0.0 - 1.0"; 
      status("WARNING: dynamic populations are experimental and largely untested");
   } else {
-     dmi.pop_growth_rate.disabled = false;
+     dmi.pop_growth_rate.readOnly = false;
      status("");
   }
 

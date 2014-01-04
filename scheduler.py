@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sqlite3 as lite
 import threading
+import config
 import time
 
 #inspired from:
@@ -21,7 +22,7 @@ class scheduler(object):
         # Connect to DB 
         self.con = None
         try: 
-            self.con = lite.connect('scipaas.db')    
+            self.con = lite.connect(config.database)
         except lite.Error, e:
             print "Error %s:" % e.args[0]
             sys.exit(1)

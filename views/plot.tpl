@@ -13,7 +13,7 @@
 
 <div class="tab-page">
 
-   <h3>mutations</h3>
+   <h3 align="center">{{title}}</h3>
 
    <div id="mutations" style="width:600px;height:370px;"></div> 
    <script id="source" language="javascript" type="text/javascript"> 
