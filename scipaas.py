@@ -49,28 +49,39 @@ def execute(app,cid):
         ofn = run_dir + os.sep + myapps[app].outfn
 	    # this path works for OSX
         rel_path = os.pardir + os.sep + os.pardir + os.sep + os.pardir + os.sep + os.pardir + os.sep 
-        cmd = rel_path + myapps[app].exe
-	    # this path works for Windows
-        #cmd = myapps[app].exe 
-        f = open(ofn,'w')
-        p = subprocess.Popen([cmd], cwd=run_dir, stdout=subprocess.PIPE)
+        # method 1 - use a pipeline process
+        #cmd = rel_path + myapps[app].exe
+	    ## this path works for Windows
+        ##cmd = myapps[app].exe 
+        #f = open(ofn,'w')
+        #p = subprocess.Popen([cmd], cwd=run_dir, stdout=subprocess.PIPE)
+
+        # method 2 - use system call approach
+        #stdout = open("mendel.out","w")
+        cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
+        print "cmd:",cmd
+        #subprocess.call(cmd, cwd=run_dir, shell=True)
+        os.system("cd " + run_dir + ";" + cmd + " &")
+        redirect("/"+app+"/"+cid+"/monitor")
+
         # schedule job
-        sched.qsub(cmd)
-        pbuffer = ''
-        while p.poll() is None:
-            out = p.stdout.readline()
-            f.write(out)
-            pbuffer += out 
-        p.wait()
-        f.close()
-        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user }
-        return template('output',params)
+        #sched.qsub(cmd)
+        #pbuffer = ''
+        #while p.poll() is None:
+        #    out = p.stdout.readline()
+        #    f.write(out)
+        #    pbuffer += out 
+        #p.wait()
+        #f.close()
+        #params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user }
+        #return template('output',params)
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
-        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user }
+        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
+                   'err': e }
         return template('error',params)
-        #return "ERROR: failed to start job"
+        ##return "ERROR: failed to start job"
 
 @get('/<app>/<cid>/output')
 def output(app,cid):
@@ -82,7 +93,23 @@ def output(app,cid):
     f.close()
     params = { 'cid': cid, 'output': output, 'app': app, 'user': user }
     return template('output', params)
-   
+
+@get('/<app>/<cid>/tail')
+def tail(app,cid):
+    global user
+    num_lines = 40
+    run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
+    ofn = run_dir + os.sep + myapps[app].outfn
+    f = open(ofn,'r')
+    output = f.readlines()
+    print 'len(output):',len(output)
+    myoutput = output[len(output)-num_lines:]
+    xoutput = ''.join(myoutput)
+    print xoutput
+    f.close()
+    params = { 'cid': cid, 'output': xoutput, 'app': app, 'user': user }
+    return template('output', params)
+
 @route('/')
 def root():
     return template('overview')
@@ -281,6 +308,16 @@ def plot_interface(app,cid,pltid):
         params = { 'cid': cid, 'data': data, 'app': app, 'user': user, 
                    'title': title, 'bars': bars }
         return template('plot', params)
+
+@get('/<app>/<cid>/data/<pltid>')
+def get_data():
+    pass
+
+@get('/<app>/<cid>/monitor')
+def monitor(app,cid):
+    global user
+    params = { 'cid': cid, 'app': app, 'user': user }
+    return template('monitor', params)
 
 @post('/apps/upload')
 def do_upload():

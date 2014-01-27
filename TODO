@@ -3,10 +3,16 @@ Next:
   o add bar plot ability
   o specify x-legend, y-legend
   o specify x-min, x-max, y-min, y-max
-- real-time data monitor
 - when click confirm show input file
+- some code for managing the EC2 machine
 - move code to load apps into apps.py
 - edit app page
+- find a way to populate select/option form fields using template
+    # http://stackoverflow.com/questions/20444285/how-do-i-populate-a-select-tag-with-flask
+    <select name="option" width="300px">
+    {% for o in option_list %}
+        <option name="{{ o.optid }}" SELECTED>{{ o.optid }}</option>
+    </select>
 
 --
 Feature Requests
@@ -27,6 +33,7 @@ Feature Requests
 - integration to openshift
 
 Bug fixes
+- starting from an old case doesnt bring up old case params, but rather defaults
 - when form items are disabled by JS they don't show up in the forms data structure
   (fix in apps.write_params() method)
 
@@ -57,3 +64,4 @@ Completed
   o rename app
   o put different app categories into database
 - add ability to handle multiple plots
+- real-time data monitor
