@@ -1,4 +1,5 @@
 %include header title='Available Plots'
+%include navbar
 
 <body onload="init()">
 <script>
@@ -22,7 +23,7 @@ td {text-align: center}
 
 <h1>{{app}}</h1>
 
-<h2 align=center>Select option below</h2>
+<h2 align=center>Available plots for {{cid}}</h2>
 
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53

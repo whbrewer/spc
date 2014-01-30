@@ -29,6 +29,8 @@ the input parameters.</p>
 
 <h2>Step 2: Add app to database</h2>
 
+<p>This step stores the information in the form below to the apps 
+table in the database.</p>
 <form action="/apps/add" method="post">
 App Name: <input type="text" name="appname">
 
@@ -54,12 +56,22 @@ App Name: <input type="text" name="appname">
 <hr>
 
 <h2>Step 3: Create app view template</h2>
+<p>This step reads the default input deck uploaded
+in the zip file and creates a HTML view template file.</p>
 <form method="post" action="/apps/create_view">
    <input type="text" name="appname">
    <input type="submit">
 </form>
-<hr>
 
+<hr>
+<h2>Step 4: Load new app</h2>
+<p>This step loads into memory all the apps defined in the 
+SciPaaS database, which should now include the new app as well.</a>
+<form method="get" action="/apps/load">
+   <input type="submit" value="Load">
+</form>
+
+<!--
 <h2>Step 4: Configure app</h2>
 <form>
 Type of input deck:
@@ -77,12 +89,7 @@ Command to execute: <input type="text" name="exe">
 <input name="monitor" type="checkbox"> Monitor<br>
 <input name="plots"   type="checkbox"> Plots<br>
 </form>
-
-<hr>
-<h2>Step 5: Load new app</h2>
-<form method="get" action="/apps/load">
-   <input type="submit" value="Load">
-</form>
+-->
 
 <!--
 <h2>Input form</h2>

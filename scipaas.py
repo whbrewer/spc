@@ -10,6 +10,7 @@ import uploads
 import users
 import config
 import sqlite3 as lite
+import shutil
 
 # default user - if not logged in
 user = "guest"
@@ -55,17 +56,6 @@ def execute(app,cid):
         ##cmd = myapps[app].exe 
         #f = open(ofn,'w')
         #p = subprocess.Popen([cmd], cwd=run_dir, stdout=subprocess.PIPE)
-
-        # method 2 - use system call approach
-        #stdout = open("mendel.out","w")
-        cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
-        print "cmd:",cmd
-        #subprocess.call(cmd, cwd=run_dir, shell=True)
-        os.system("cd " + run_dir + ";" + cmd + " &")
-        redirect("/"+app+"/"+cid+"/monitor")
-
-        # schedule job
-        #sched.qsub(cmd)
         #pbuffer = ''
         #while p.poll() is None:
         #    out = p.stdout.readline()
@@ -73,8 +63,21 @@ def execute(app,cid):
         #    pbuffer += out 
         #p.wait()
         #f.close()
+
+        # method 2 - use system call approach
+        #stdout = open("mendel.out","w")
+        cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
+        print "cmd:",cmd
+        #subprocess.call(cmd, cwd=run_dir, shell=True)
+        os.system("cd " + run_dir + ";" + cmd + " &")
+
+        # schedule job - currently this just means put it in the database
+        sched.qsub(cmd)
+
         #params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user }
         #return template('output',params)
+
+        redirect("/"+app+"/"+cid+"/monitor")
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -83,12 +86,20 @@ def execute(app,cid):
         return template('error',params)
         ##return "ERROR: failed to start job"
 
-@get('/<app>/<cid>/output')
-def output(app,cid):
+@get('/<app>/output')
+def output(app):
     global user
+    cid = request.query.cid
+    print 'cid:',cid
     run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
     ofn = run_dir + os.sep + myapps[app].outfn
-    f = open(ofn,'r')
+    try:
+        f = open(ofn,'r')
+    except IOError:
+        e = "the file cannot be opened or does not exist"
+        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
+                   'err': e }
+        return template('error',params)
     output = f.read()
     f.close()
     params = { 'cid': cid, 'output': output, 'app': app, 'user': user }
@@ -97,15 +108,13 @@ def output(app,cid):
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
     global user
-    num_lines = 40
+    num_lines = 30
     run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
     ofn = run_dir + os.sep + myapps[app].outfn
     f = open(ofn,'r')
     output = f.readlines()
-    print 'len(output):',len(output)
     myoutput = output[len(output)-num_lines:]
     xoutput = ''.join(myoutput)
-    print xoutput
     f.close()
     params = { 'cid': cid, 'output': xoutput, 'app': app, 'user': user }
     return template('output', params)
@@ -236,7 +245,6 @@ def getstart(app):
         params = myapps[app].params
     else:
         params,_,_ = myapps[app].read_params(user,cid)
-    #params['cid'] = params['case_id']
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
@@ -246,11 +254,12 @@ def getstart(app):
 def list(app):
     global user
     str = ''
-    cid = request.forms.get('cid')
     for case in os.listdir(myapps[app].user_dir+os.sep+user+os.sep+app):
-        str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a><br>\n'
+        str += '<form action="/'+app+'/delete/'+case+'">'
+        str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a>'
+        str += '<input type="image" src="/static/trash_can.gif"></form>\n'
     params = { 'content': str }
-    params['cid'] = cid
+    params['cid'] = request.forms.get('cid')
     params['app'] = app
     params['user'] = user
     return template('list', params)
@@ -258,13 +267,24 @@ def list(app):
 @get('/<app>/plots')
 @get('/<app>/<cid>/plots')
 def get_plots(db,app):
-    try: print cid
-    except: cid='test00'
+    cid = request.query.cid
+    #try: print cid
+    #except: cid='test00'
     c = db.execute('select pltid, type, filename, col1, col2, title from apps natural join plots where name=?',(app,))
     result = c.fetchall()
     c.close()
-    params = { 'app': app, 'cid': cid } 
+    params = { 'app': app, 'cid': cid, 'user': user } 
     return template('plots', params, rows=result)
+
+@get('/<app>/delete/<cid>')
+def delete_cid(app,cid):
+    path = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
+    print "deleting path",path
+    try:
+        shutil.rmtree(path)
+    except:
+        return "ERROR: there was a problem when trying to delete"
+    redirect("/"+app+"/list")
 
 @get('/<app>/plots/delete/<pltid>')
 def delete_plot(db,app,pltid):
@@ -284,7 +304,6 @@ def plot_interface(app,cid,pltid):
     global user
     p = plots.plot()
     (plottype,plotfn,col1,col2,title) = p.read(app,pltid)
-    print 'plottype is:', plottype
 
     # if plot not in DB return error
     if plottype is None:

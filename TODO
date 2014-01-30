@@ -23,7 +23,6 @@ Feature Requests
 - info about app page... e.g. intro to importance of Burger's eqn
 - JS/Ajax check if appname already exists
 - user page/user management: my apps, change passwd, etc.
-- case management
 - file manager... or data button to see data in output files
 - implement ConfigParser -- possibly move to supporting INI files
   + generic xml or ini reader
@@ -55,6 +54,7 @@ Tests
   strings, etc.
 
 Completed
+- case management
 - app management: update, delete, and finish add section
   o move 
   o upload
