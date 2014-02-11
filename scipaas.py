@@ -45,11 +45,11 @@ def confirm_form(app):
 def execute(app,cid):
     global user
     try:
-        run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
-        print 'run_dir:',run_dir
-        ofn = run_dir + os.sep + myapps[app].outfn
+        #run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
+        #print 'run_dir:',run_dir
+        #ofn = run_dir + os.sep + myapps[app].outfn
 	    # this path works for OSX
-        rel_path = os.pardir + os.sep + os.pardir + os.sep + os.pardir + os.sep + os.pardir + os.sep 
+        #rel_path=(os.pardir+os.sep)*4
         # method 1 - use a pipeline process
         #cmd = rel_path + myapps[app].exe
 	    ## this path works for Windows
@@ -65,19 +65,22 @@ def execute(app,cid):
         #f.close()
 
         # method 2 - use system call approach
-        #stdout = open("mendel.out","w")
-        cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
-        print "cmd:",cmd
-        #subprocess.call(cmd, cwd=run_dir, shell=True)
-        os.system("cd " + run_dir + ";" + cmd + " &")
+        #cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
+        #print "cmd:",cmd
+        #os.system("cd " + run_dir + ";" + cmd + " &")
+        ## couldn't easily get subprocess.call to run in background mode
+        ##stdout = open("mendel.out","w")
+        ##subprocess.call(cmd, cwd=run_dir, stdout=stdout, shell=True)
 
         # schedule job - currently this just means put it in the database
-        sched.qsub(cmd)
+        #sched.qsub(cmd)
+        sched.qsub(myapps[app].appid,cid)
 
         #params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user }
         #return template('output',params)
 
-        redirect("/"+app+"/"+cid+"/monitor")
+        #redirect("/"+app+"/"+cid+"/monitor")
+        redirect("/jobs")
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -123,12 +126,46 @@ def tail(app,cid):
 def root():
     return template('overview')
 
+@route('/jobs')
+def show_jobs(db):
+    global user
+    #result = sched.qstat()
+    c = db.execute('SELECT * FROM jobs')
+    result = c.fetchall()
+    c.close()
+    params = {}
+    params['cid'] = 'test00'
+    params['app'] = default_app
+    params['user'] = user
+    return template('jobs', params, rows=result)
+
+@route('/jobs/delete/<jid>')
+def delete_job(jid):
+    sched.qdel(jid)
+    redirect("/jobs")
+
+@route('/jobs/run/<jid>')
+def run_job(db,jid):
+    cmd = 'select name,cid from apps natural join jobs where jid=?'
+    c = db.execute(cmd,(jid,))
+    [(app,cid)] = c.fetchall()
+    print 'result:',app,cid
+    c.close()
+    rel_path=(os.pardir+os.sep)*4
+    run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
+    print 'run_dir:',run_dir
+    cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
+    print "cmd:",cmd
+    os.system("cd " + run_dir + ";" + cmd + " &")
+    sched.qdel(jid)
+    redirect("/"+app+"/"+cid+"/monitor")
+
 @route('/<app>')
 def show_app(app):
     global user, myapps
     # parameters for return template
     params = myapps[app].params
-    print app, 'params:',params
+    #print app, 'params:',params
     params['cid'] = 'test00'
     params['app'] = app
     params['user'] = user

@@ -1,4 +1,5 @@
 Next:
+- job scheduler/queuing system
 - plotting:
   o add bar plot ability
   o specify x-legend, y-legend
@@ -35,6 +36,7 @@ Bug fixes
 - starting from an old case doesnt bring up old case params, but rather defaults
 - when form items are disabled by JS they don't show up in the forms data structure
   (fix in apps.write_params() method)
+- error when click plot when case id not set... need to warn user beforehand
 
 Refactoring
 - CRUD superclass... all models inherit from CRUD superclass

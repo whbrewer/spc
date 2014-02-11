@@ -31,7 +31,7 @@ for easily uploading and running scientific apps in the cloud.</p>
 <h1>Installed Apps</h1>
 
 %# template to generate a HTML table from a list of tuples
-%# from bottle documentaion 0.12-dev p.53
+%# from bottle documentation 0.12-dev p.53
 
 <table border="1">
 <tr> <th><a href="/apps/show/name">Name</a></th> <th>Description</th> <th><a href="/apps/show/category">Category</a></th> <th><a href="/apps/show/language">Language</a></th> <th>Delete</th> </tr>
