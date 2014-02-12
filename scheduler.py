@@ -3,6 +3,7 @@ import sqlite3 as lite
 import threading
 import config
 import time
+import os
 
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
@@ -33,9 +34,11 @@ class scheduler(object):
 
     def assignTask(self):
         while(True):
-            print "scheduler:", self.qstat(), "jobs in queued state"
-            #if(self.qstat() > 0):
-            #    continue
+            print "scheduler:", self.qstat(), "jobs in queued state",\
+                time.asctime()
+            j = self.qfront()
+            if j is not None and j > 0:
+                self.start(j)            
             time.sleep(5) 
 
     def qsub(self,appid,cid):
@@ -46,14 +49,15 @@ class scheduler(object):
         self.con.commit()
 
     def qfront(self):
-        cur = self.con.cursor()
+        self.connector = lite.connect(config.database)
+        cur = self.connector.cursor()
         cmd = "select jid from jobs where state = 'Q' limit 1"
         (jid) = cur.execute(cmd).fetchone()
-        return jid
-
-    #def last(self):
-    #    cur = self.con.cursor()
-    #    return cur.lastrowid
+        self.connector.close()
+        if jid is not None:
+            return jid[0]
+        else:
+            return -1
 
     def qdel(self,jid):
         print "jid is:",jid
@@ -76,44 +80,35 @@ class scheduler(object):
         return c[0]
 
     def start(self,jid):
+        global myapps
+        #print 'start:',jid
         connector = lite.connect(config.database)
-        cmd = 'select name,cid from apps natural join jobs where jid=?'
-        c = db.execute(cmd,(jid,))
-        [(app,cid)] = c.fetchall()
-        print 'result:',app,cid
-        rel_path=(os.pardir+os.sep)*4
-        run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
-        print 'run_dir:',run_dir
-        cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
-        print "cmd:",cmd
-        os.system("cd " + run_dir + ";" + cmd + " &")
-        #sched.qdel(jid)
         cmd = "update jobs set state = 'R' where jid=?"
-        c = db.execute(cmd,(jid,))
+        c = connector.execute(cmd,(jid,))
+        connector.commit()
+
+        cmd = 'select name,cid from apps natural join jobs where jid=?'
+        c = connector.execute(cmd,(jid,))
+        [(app,cid)] = c.fetchall()
+        #print 'result:',app,cid
+        rel_path=(os.pardir+os.sep)*4
+        user = "guest"
+        run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
+        #print 'run_dir:',run_dir
+        exe = config.apps_dir + os.sep + app + os.sep + app
+        outfn = app + ".out"
+        cmd = rel_path + exe + " > " + outfn
+        #print "cmd:",cmd
+        t = threading.Thread(target = self.start_job(run_dir,cmd))
+        t.start()
+
+        connector.execute('delete from jobs where jid = ?', (jid,))
+        connector.commit()
         c.close()
-        redirect("/"+app+"/"+cid+"/monitor")
+
+    def start_job(self,run_dir,cmd):
+        print 'starting thread to run job:',run_dir, cmd
+        os.system("cd " + run_dir + ";" + cmd )
 
     def stop(self):
         pass
-
-    def __allocate(self):
-        pass
-    
-    def __terminate(self):
-        pass
-
-#if __name__ == "__main__":
-#    sched = scheduler()
-#    sched.qsub('test')
-#    print 'top row id:', sched.qpop()
-
-#if __name__ == "__main__":
-#    sched = scheduler()
-#    hw_thread = threading.Thread(target = assignTask)
-#    hw_thread.daemon = True
-#    hw_thread.start()
-#    try:
-#        time.sleep(500000)
-#
-#    except KeyboardInterrupt:
-#        print '\nGoodbye!'
