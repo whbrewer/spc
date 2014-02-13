@@ -51,5 +51,3 @@ for easily uploading and running scientific apps in the cloud.</p>
 </tr> 
 %end
 </table>
-
-%include footer

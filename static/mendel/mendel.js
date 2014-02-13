@@ -47,27 +47,7 @@ function set_random_caseid() {
 
 function fxn_set_this_caseid() {
     dmi.case_id.focus();
-        // get string from control panel
-        var a = parent.frames.contents.caseidform.case_id.value;
-        // get just the case_id (in case of format uid/caseid)
-        var b = a.substring(a.length-6);
-        // get the last three characters
-        var c = b.substring(3);
-        c = String.fromCharCode(97 + Math.round(Math.random() * 25));
-        c += String.fromCharCode(97 + Math.round(Math.random() * 25));
-        c += String.fromCharCode(97 + Math.round(Math.random() * 25));
-        var d = b.substring(0,3); 
-        var e = d + c;
-        if(dmi.caseid_cb.checked) {
-           if(dmi.case_id.value == "") {
-              set_random_caseid();
-              dmi.case_id.select();
-           } else {
-              dmi.case_id.value = e;
-           }          
-        } else {
-           dmi.case_id.value = "";
-        }
+    set_random_caseid();
 }
 
 function fxn_opf(x, min, max) {

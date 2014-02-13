@@ -13,4 +13,9 @@
 
 <img id="loadingImage" src="/static/ajax_loader.gif" style="visibility:hidden"/> 
 
+<hr>
+<pre>
+{{!inputs}}
+</pre>
+
 %include footer

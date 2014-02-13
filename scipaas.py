@@ -7,6 +7,7 @@ import sys, os, re
 import plots
 import apps
 import uploads
+import uuid
 import users
 import config
 import sqlite3 as lite
@@ -31,14 +32,19 @@ def confirm_form(app):
     # as some apps will not use case_id
     try:
         cid = request.forms['case_id']
+        #cid = uuid.uuid1
     except: 
         return "ERROR: problem with template... case_id not in form"
-    params = {'cid': cid, 'app': app, 'user': user }
+    #params = {'cid': cid, 'app': app, 'user': user }
     #print 'cid:%s,app:%s' % (cid, app)
 
-    if(myapps[app].write_params(request.forms,user)):
+    myapps[app].write_params(request.forms,user)
+    inputs = slurp_file(app,cid,myapps[app].simfn)
+    params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user }
+
+    try:
         return template('confirm', params)
-    else:
+    except:
         return 'ERROR: failed to write parameters to file'
 
 @post('/<app>/<cid>/execute')
@@ -74,13 +80,13 @@ def execute(app,cid):
 
         # schedule job - currently this just means put it in the database
         #sched.qsub(cmd)
-        sched.qsub(myapps[app].appid,cid)
+        sched.qsub(app,cid,user)
 
         #params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user }
         #return template('output',params)
 
         #redirect("/"+app+"/"+cid+"/monitor")
-        redirect("/jobs")
+        redirect("/jobs/"+app)
 
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -93,26 +99,36 @@ def execute(app,cid):
 def output(app):
     global user
     cid = request.query.cid
-    print 'cid:',cid
-    run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
-    ofn = run_dir + os.sep + myapps[app].outfn
-    try:
-        f = open(ofn,'r')
-    except IOError:
-        e = "the file cannot be opened or does not exist"
-        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
-                   'err': e }
-        return template('error',params)
-    output = f.read()
-    f.close()
+    output = slurp_file(app,cid,myapps[app].outfn)
     params = { 'cid': cid, 'output': output, 'app': app, 'user': user }
     return template('output', params)
+
+@get('/<app>/inputs')
+def inputs(app):
+    global user
+    cid = request.query.cid
+    inputs = slurp_file(app,cid,myapps[app].simfn)
+    params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user }
+    return template('inputs', params)
+
+def slurp_file(app,cid,filename):
+    global user
+    run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
+    fn = run_dir + os.sep + filename
+    print "slurp_file:",fn
+    try:
+        f = open(fn,'r')
+        inputs = f.read()
+        f.close()
+        return inputs
+    except IOError:
+        return("ERROR: the file cannot be opened or does not exist")
 
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
     global user
     num_lines = 30
-    run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
+    run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
     ofn = run_dir + os.sep + myapps[app].outfn
     f = open(ofn,'r')
     output = f.readlines()
@@ -127,7 +143,8 @@ def root():
     return template('overview')
 
 @route('/jobs')
-def show_jobs(db):
+@route('/jobs/<app>')
+def show_jobs(db,app=default_app):
     global user
     #result = sched.qstat()
     c = db.execute('SELECT * FROM jobs')
@@ -135,7 +152,8 @@ def show_jobs(db):
     c.close()
     params = {}
     params['cid'] = 'test00'
-    params['app'] = default_app
+    #params['app'] = default_app
+    params['app'] = app
     params['user'] = user
     return template('jobs', params, rows=result)
 
@@ -146,8 +164,8 @@ def delete_job(jid):
 
 @route('/jobs/run/<jid>')
 def run_job(db,jid):
-    cmd = 'select name,cid from apps natural join jobs where jid=?'
-    c = db.execute(cmd,(jid,))
+    query = 'select name,cid from apps natural join jobs where jid=?'
+    c = db.execute(query,(jid,))
     [(app,cid)] = c.fetchall()
     print 'result:',app,cid
     c.close()
@@ -276,16 +294,19 @@ def edit_app(appid):
 @get('/<app>/start')
 def getstart(app):
     global user
-    params = myapps[app].params
-    cid = request.forms.get('cid')
-    if cid is '':
+    try:
         params = myapps[app].params
-    else:
-        params,_,_ = myapps[app].read_params(user,cid)
-    params['cid'] = cid
-    params['app'] = app
-    params['user'] = user
-    return template(myapps[app].appname, params)
+        cid = request.forms.get('cid')
+        if cid is '':
+            params = myapps[app].params
+        else:
+            params,_,_ = myapps[app].read_params(user,cid)
+        params['cid'] = cid
+        params['app'] = app
+        params['user'] = user
+        return template(myapps[app].appname, params)
+    except:
+        redirect("/apps/show/name")
 
 @get('/<app>/list')
 def list(app):

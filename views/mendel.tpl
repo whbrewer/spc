@@ -1142,4 +1142,6 @@
 <script language="Javascript">fxn_synergistic_epistasis_disable();</script>
 <script language="Javascript">document.getElementById("ptv").style.display = "none";</script>
 <script language="Javascript">dmi.pop_growth_rate.readOnly = false;</script>
-</body></html>
+
+%include footer
+

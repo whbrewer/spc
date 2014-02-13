@@ -8,12 +8,13 @@ import os
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
 
-#CREATE TABLE jobs (
+#CREATE TABLE "jobs" (
 #jid integer primary key autoincrement,
-#appid integer, 
-#cid integer,
+#user text,
+#app text,
+#cid text,
 #state char(1),
-#time_submit text 
+#time_submit text
 #);
 
 class scheduler(object):
@@ -41,18 +42,18 @@ class scheduler(object):
                 self.start(j)            
             time.sleep(5) 
 
-    def qsub(self,appid,cid):
+    def qsub(self,app,cid,user):
         cur = self.con.cursor()
-        cmd = 'insert into jobs values (null, ?, ?, ?, ?);'
+        query = 'insert into jobs values (null, ?, ?, ?, ?, ?);'
         state = 'Q'
-        cur.execute(cmd,(appid,cid,state,time.asctime())) 
+        cur.execute(query,(user,app,cid,state,time.asctime())) 
         self.con.commit()
 
     def qfront(self):
         self.connector = lite.connect(config.database)
         cur = self.connector.cursor()
-        cmd = "select jid from jobs where state = 'Q' limit 1"
-        (jid) = cur.execute(cmd).fetchone()
+        query = "select jid from jobs where state = 'Q' limit 1"
+        (jid) = cur.execute(query).fetchone()
         self.connector.close()
         if jid is not None:
             return jid[0]
@@ -73,8 +74,8 @@ class scheduler(object):
             print "Error %s:" % e.args[0]
             sys.exit(1)
         cur = self.connector.cursor()
-        cmd = "Select count(jid) from jobs where state='Q'"
-        cur.execute(cmd)
+        query = "Select count(jid) from jobs where state='Q'"
+        cur.execute(query)
         c = cur.fetchone()
         self.connector.close()
         return c[0]
@@ -83,21 +84,20 @@ class scheduler(object):
         global myapps
         #print 'start:',jid
         connector = lite.connect(config.database)
-        cmd = "update jobs set state = 'R' where jid=?"
-        c = connector.execute(cmd,(jid,))
+        query = "update jobs set state = 'R' where jid=?"
+        c = connector.execute(query,(jid,))
         connector.commit()
 
-        cmd = 'select name,cid from apps natural join jobs where jid=?'
-        c = connector.execute(cmd,(jid,))
-        [(app,cid)] = c.fetchall()
+        query = 'select user,app,cid from jobs where jid=?'
+        c = connector.execute(query,(jid,))
+        [(user,app,cid)] = c.fetchall()
         #print 'result:',app,cid
         rel_path=(os.pardir+os.sep)*4
-        user = "guest"
         run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
         #print 'run_dir:',run_dir
         exe = config.apps_dir + os.sep + app + os.sep + app
         outfn = app + ".out"
-        cmd = rel_path + exe + " > " + outfn
+        cmd = rel_path + exe + " >& " + outfn
         #print "cmd:",cmd
         t = threading.Thread(target = self.start_job(run_dir,cmd))
         t.start()

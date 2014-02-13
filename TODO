@@ -1,5 +1,7 @@
 Next:
-- job scheduler/queuing system
+- add UID 
+- add better ability to handle html select option, etc.
+- fix bar plotting
 - plotting:
   o add bar plot ability
   o specify x-legend, y-legend
@@ -17,8 +19,6 @@ Next:
 
 --
 Feature Requests
-- continuous updating of screen output: Ajax or built-in alternative
-  + data monitoring system: ajax and python-based
 - plotting subsystem
   o plotting system using matplotlib
 - info about app page... e.g. intro to importance of Burger's eqn
@@ -56,6 +56,11 @@ Tests
   strings, etc.
 
 Completed
+- continuous updating of screen output: Ajax or built-in alternative
+  + data monitoring system: ajax and python-based
+- add footer
+- add jobs button
+- job scheduler/queuing system
 - case management
 - app management: update, delete, and finish add section
   o move 
