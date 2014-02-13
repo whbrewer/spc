@@ -1,12 +1,10 @@
 Next:
-- add UID 
 - add better ability to handle html select option, etc.
 - fix bar plotting
 - plotting:
   o add bar plot ability
   o specify x-legend, y-legend
   o specify x-min, x-max, y-min, y-max
-- when click confirm show input file
 - some code for managing the EC2 machine
 - move code to load apps into apps.py
 - edit app page
@@ -56,6 +54,9 @@ Tests
   strings, etc.
 
 Completed
+- add ability to reload parameters from old case
+- when click confirm show input file
+- add UID 
 - continuous updating of screen output: Ajax or built-in alternative
   + data monitoring system: ajax and python-based
 - add footer

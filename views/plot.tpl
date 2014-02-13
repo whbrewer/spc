@@ -20,7 +20,8 @@
       $(function () {
       var d1 = {{data}};
       var data = [ { label: "deleterious", data: d1, 
-                     bars: { show: {{bars}}, autoWidth: true } , 
+                     //bars: { show: {{bars}}, autoWidth: true } , 
+                     bars: { show: {{bars}}, barWidth: 0.0001 } , 
                      color: "rgb(200,0,0)" } ];
 
       var options = {
@@ -28,6 +29,7 @@
          xaxis:  { axisLabel: 'Generations', axisLabelFontSizePixels: 12 },
          yaxis:  { axisLabel: 'Mutations', axisLabelOffset: -30, 
                    axisLabelFontSizePixels: 12 },
+                   //axisLabelFontSizePixels: 12, max: 0.01 },
          grid:   { hoverable: true, clickable: true },
          selection: { mode: "xy" }
       };
@@ -68,5 +70,7 @@
    </script>
 
 </div>
+
+<p><label><input id="zoom" type="checkbox" CHECKED />Zoom to selection.</label> Double click to restore to original plot.</p>
 
 %include footer

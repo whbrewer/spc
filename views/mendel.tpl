@@ -13,7 +13,7 @@
 %include navbar
 
 <body onload="fxn_init()" bgcolor=ffffff>
-<table width=550><tr><td valign=top><em>Note: using default parameters<br> </em><br></td><font color=red></font>
+<table width=550>
 <!-- 
 <td align=right valign=bottom>
 <form name="template_form" method=post action="start.pl">
@@ -36,6 +36,7 @@
 <INPUT class="start" type="submit" value="Submit" accesskey="X">
 
 <!-- <div class="navbar"> -->
+<!--
              <input class="" type="text" name="case_id" value=""  
                          placeholder="caseid"
                    title="Case ID must be 6 characters" accesskey="C">
@@ -45,6 +46,7 @@
             <input class="css-checkbox" type="checkbox" name="caseid_cb" 
                    title="Generate a new random Case ID (U)"
                    onclick="fxn_set_this_caseid()" accesskey="U" tabindex="101">
+-->
             <div class="tribe" id="tribediv" style="display:none">
                 Tribe:
             <select name="tribe_id">

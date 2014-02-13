@@ -31,13 +31,14 @@ def confirm_form(app):
     # if case_id not in form will throw error, but just ignore it
     # as some apps will not use case_id
     try:
-        cid = request.forms['case_id']
-        #cid = uuid.uuid1
+        #cid = request.forms['case_id']
+        cid = str(uuid.uuid4())[:6]
     except: 
         return "ERROR: problem with template... case_id not in form"
-    #params = {'cid': cid, 'app': app, 'user': user }
-    #print 'cid:%s,app:%s' % (cid, app)
-
+    print 'cid:%s,app:%s' % (cid, app)
+    # this is only valid for mendel or similar programs that use a case_id 
+    # parameter have to fix this in the future
+    request.forms['case_id'] = cid 
     myapps[app].write_params(request.forms,user)
     inputs = slurp_file(app,cid,myapps[app].simfn)
     params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user }
@@ -48,52 +49,27 @@ def confirm_form(app):
         return 'ERROR: failed to write parameters to file'
 
 @post('/<app>/<cid>/execute')
-def execute(app,cid):
+def execute(db,app,cid):
     global user
+    #cid = request.forms.get('cid')
+    print 'execute:',app,cid
+    params = {}
     try:
-        #run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
-        #print 'run_dir:',run_dir
-        #ofn = run_dir + os.sep + myapps[app].outfn
-	    # this path works for OSX
-        #rel_path=(os.pardir+os.sep)*4
-        # method 1 - use a pipeline process
-        #cmd = rel_path + myapps[app].exe
-	    ## this path works for Windows
-        ##cmd = myapps[app].exe 
-        #f = open(ofn,'w')
-        #p = subprocess.Popen([cmd], cwd=run_dir, stdout=subprocess.PIPE)
-        #pbuffer = ''
-        #while p.poll() is None:
-        #    out = p.stdout.readline()
-        #    f.write(out)
-        #    pbuffer += out 
-        #p.wait()
-        #f.close()
-
-        # method 2 - use system call approach
-        #cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
-        #print "cmd:",cmd
-        #os.system("cd " + run_dir + ";" + cmd + " &")
-        ## couldn't easily get subprocess.call to run in background mode
-        ##stdout = open("mendel.out","w")
-        ##subprocess.call(cmd, cwd=run_dir, stdout=stdout, shell=True)
-
-        # schedule job - currently this just means put it in the database
-        #sched.qsub(cmd)
+        c = db.execute('SELECT * FROM jobs')
+        result = c.fetchall()
+        c.close()
+        params['cid'] = cid
+        params['app'] = app
+        params['user'] = user
         sched.qsub(app,cid,user)
-
-        #params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user }
-        #return template('output',params)
-
-        #redirect("/"+app+"/"+cid+"/monitor")
-        redirect("/jobs/"+app)
-
+        #return template('jobs', params, rows=result)
+        #return template('jobs', params)
+        redirect("/jobs/"+app+"?cid="+cid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
                    'err': e }
         return template('error',params)
-        ##return "ERROR: failed to start job"
 
 @get('/<app>/output')
 def output(app):
@@ -144,14 +120,16 @@ def root():
 
 @route('/jobs')
 @route('/jobs/<app>')
-def show_jobs(db,app=default_app):
+#@route('/jobs/<cid>')
+def show_jobs(db,app=default_app):#,cid=''):
     global user
     #result = sched.qstat()
+    cid = request.query.cid
     c = db.execute('SELECT * FROM jobs')
     result = c.fetchall()
     c.close()
     params = {}
-    params['cid'] = 'test00'
+    params['cid'] = cid
     #params['app'] = default_app
     params['app'] = app
     params['user'] = user
@@ -184,7 +162,7 @@ def show_app(app):
     # parameters for return template
     params = myapps[app].params
     #print app, 'params:',params
-    params['cid'] = 'test00'
+    params['cid'] = '' 
     params['app'] = app
     params['user'] = user
     return template(app, params)
@@ -210,7 +188,7 @@ def login_submit(db):
     if u.authenticate(user,password):
         params = myapps[default_app].params
         params['app'] = default_app
-        params['cid'] = ''
+        params['cid'] = '' 
         params['user'] = user
         tpl = myapps[default_app].appname 
         return template(tpl, params)
@@ -296,7 +274,7 @@ def getstart(app):
     global user
     try:
         params = myapps[app].params
-        cid = request.forms.get('cid')
+        cid = request.query.cid
         if cid is '':
             params = myapps[app].params
         else:
@@ -321,13 +299,15 @@ def list(app):
     params['app'] = app
     params['user'] = user
     return template('list', params)
+    #params['cid'] = request.forms.get('cid')
+    #params['app'] = app
+    #params['user'] = user
+    #return template('list2', params)
 
 @get('/<app>/plots')
 @get('/<app>/<cid>/plots')
 def get_plots(db,app):
     cid = request.query.cid
-    #try: print cid
-    #except: cid='test00'
     c = db.execute('select pltid, type, filename, col1, col2, title from apps natural join plots where name=?',(app,))
     result = c.fetchall()
     c.close()

@@ -112,15 +112,12 @@ class f90(app):
         f.close
         return 1
 
-    # student - needs to modify reader and writer so that can handle
-    # multiple values for each parameter
-    #def read_params(self,cid=template_dir):
     def read_params(self,user=None,cid=None):
         '''read the namelist file and return as a dictionary'''
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = self.user_dir + os.sep + user + os.sep + self.appname + os.sep + cid
+            fn = self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid
         # append name of input file to end of string
         fn += os.sep + self.simfn
         params = dict()

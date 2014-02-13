@@ -8,8 +8,6 @@
 <div class="tab-page">
 <h2 class="tab">basic</h2>
 <table><tbody>
-<tr><td>case_id:</td>
-<td><input type="text" name="case_id" value="{{case_id}}"/></td></tr>
 <tr><td>dna:</td>
 <td><input type="text" name="dna" value="{{dna}}"/></td></tr>
 </tbody></table>

@@ -1,5 +1,5 @@
 <div class="footer">
-app:{{app}} &nbsp; user:{{user}}
+app:{{app}} &bull; user:{{user}} &bull; cid:{{cid}}
 </div>
 </body>
 </html>

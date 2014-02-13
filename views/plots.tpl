@@ -21,7 +21,7 @@ function edit(id) {
 td {text-align: center}
 </style>
 
-<h1>{{app}}</h1>
+<!--<h1>{{app}}</h1>-->
 
 <h2 align=center>Available plots for {{cid}}</h2>
 
