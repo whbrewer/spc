@@ -168,9 +168,9 @@
        <tr>
           <td width=350>1. Distribution type:</td>
           <td>
-        <select name="fitness_distrib_type" 
+        <select id="fitness_distrib_type" name="fitness_distrib_type"
                         onchange="fxn_fitness_distrib_type_change()">
-        <option SELECTED VALUE="1">Natural distribution (Weibull)<option VALUE="0">All mutations equal<option VALUE="2" readOnly=true>All mutations neutral<option VALUE="3" readOnly=true>Weibull + second mode
+        <option VALUE="1">Natural distribution (Weibull)<option VALUE="0">All mutations equal<option VALUE="2" readOnly=true>All mutations neutral<option VALUE="3" readOnly=true>Weibull + second mode
         </select>
           </td>
        </tr>
@@ -478,9 +478,9 @@
                            target="status" title="selection_scheme"
                    tabindex="128">Selection scheme:</a>
             </ol></LABEL></td>               
-        <td><select NAME="selection_scheme" accesskey="5"
+        <td><select id="selection_scheme" name="selection_scheme" accesskey="5"
              onchange="fxn_selection(this.value)" >
-             <option VALUE="1">Truncation selection<option SELECTED VALUE="2">Unrestricted probability selection <option VALUE="3">Strict proportionality probability selection <option VALUE="4">Partial truncation selection </select></td>
+             <option VALUE="1">Truncation selection<option VALUE="2">Unrestricted probability selection <option VALUE="3">Strict proportionality probability selection <option VALUE="4">Partial truncation selection </select></td>
      </tr>   
      </table>
      
@@ -578,10 +578,9 @@
            :: <a class="plain" href="/static/mendel/help.html#pgm"
                  target="status" title="pop_growth_model">
               population growth model:</a></LABEL> </td>
-        <td><select NAME="pop_growth_model" accesskey="5"
-             onchange="fxn_pop_growth_model(this.value)"  i
-              >
-             <option SELECTED VALUE="0">Off (fixed population size) <option VALUE="1">Exponential growth <option VALUE="2">Carrying capacity model</select></td>
+        <td><select id="pop_growth_model" name="pop_growth_model" accesskey="5"
+             onchange="fxn_pop_growth_model(this.value)">
+             <option VALUE="0">Off (fixed population size) <option VALUE="1">Exponential growth <option VALUE="2">Carrying capacity model</select></td>
      </tr>   
      <tr>
         <td><LABEL for="pop_growth_rate">
@@ -687,8 +686,8 @@
             3. <a class="plain" href="/static/mendel/help.html#mm"
            target="status" title="migration_model">
            Migration model:</a></LABEL></td>
-        <td><select NAME="migration_model" id="migration_model">
-               <option SELECTED VALUE="1">Ring pass <option VALUE="2">Stepping-stone model<option VALUE="3">Island model
+        <td><select id="migration_model" name="migration_model">
+               <option VALUE="1">Ring pass <option VALUE="2">Stepping-stone model<option VALUE="3">Island model
             </select>
         </td>
      </tr>
@@ -960,8 +959,8 @@
      7. <a class="plain" href="/static/mendel/help.html#rq"
            target="status" title="run_queue" tabindex="138">
            Queuing system:</a></LABEL></td>
-        <td><select NAME= "run_queue" style="width=10em" title="hi-mem option only works on epiphany" >
-            <option SELECTED VALUE="noq" >No queue<option VALUE="atq" >ATQ<option VALUE="pbs" readOnly=true>PBS<option VALUE="himem" readOnly=true>HI-MEM 
+        <td><select id="run_queue" name="run_queue" style="width=10em" title="hi-mem option only works on epiphany" >
+            <option VALUE="noq" >No queue<option VALUE="atq" >ATQ<option VALUE="pbs" readOnly=true>PBS<option VALUE="himem" readOnly=true>HI-MEM 
         </td>
         </select>
      </tr>
@@ -970,8 +969,8 @@
      8. <a class="plain" href="/static/mendel/help.html#cv"
                target="status">Simulation Engine:</a></LABEL></td>
         <td>
-           <select NAME="engine" id="engine" >
-           <option SELECTED VALUE="f" >Fortran<option VALUE="c" >C<option VALUE="j" readOnly=true>Java
+           <select name="engine" id="engine" >
+           <option VALUE="f" >Fortran<option VALUE="c" >C<option VALUE="j" readOnly=true>Java
            </select>   
         </td>
      </tr>
@@ -1140,10 +1139,19 @@
 
 </form>
 
-<script language="Javascript">dmi = document.mendel_input</script>
-<script language="Javascript">fxn_synergistic_epistasis_disable();</script>
-<script language="Javascript">document.getElementById("ptv").style.display = "none";</script>
-<script language="Javascript">dmi.pop_growth_rate.readOnly = false;</script>
+<script>
+dmi = document.mendel_input;
+fxn_synergistic_epistasis_disable();
+document.getElementById("ptv").style.display = "none";
+dmi.pop_growth_rate.readOnly = false;
+// set select option boxes with proper values
+document.getElementById('fitness_distrib_type').value={{fitness_distrib_type}};
+document.getElementById('selection_scheme').value={{selection_scheme}};
+document.getElementById('pop_growth_model').value={{pop_growth_model}};
+document.getElementById('migration_model').value={{migration_model}};
+document.getElementById('run_queue').value={{run_queue}};
+document.getElementById('engine').value={{engine}};
+</script>
 
 %include footer
 

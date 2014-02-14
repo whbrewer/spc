@@ -1,19 +1,10 @@
 Next:
-- add better ability to handle html select option, etc.
-- fix bar plotting
 - plotting:
-  o add bar plot ability
   o specify x-legend, y-legend
   o specify x-min, x-max, y-min, y-max
 - some code for managing the EC2 machine
 - move code to load apps into apps.py
 - edit app page
-- find a way to populate select/option form fields using template
-    # http://stackoverflow.com/questions/20444285/how-do-i-populate-a-select-tag-with-flask
-    <select name="option" width="300px">
-    {% for o in option_list %}
-        <option name="{{ o.optid }}" SELECTED>{{ o.optid }}</option>
-    </select>
 
 --
 Feature Requests
@@ -31,7 +22,6 @@ Feature Requests
 - integration to openshift
 
 Bug fixes
-- starting from an old case doesnt bring up old case params, but rather defaults
 - when form items are disabled by JS they don't show up in the forms data structure
   (fix in apps.write_params() method)
 - error when click plot when case id not set... need to warn user beforehand
@@ -54,9 +44,15 @@ Tests
   strings, etc.
 
 Completed
+- starting from an old case doesnt bring up old case params, but rather defaults
+- add better ability to handle html select option, etc.
+- find a way to populate select/option form fields using template
+    # http://stackoverflow.com/questions/20444285/how-do-i-populate-a-select-tag-with-flask
+- fix bar plotting
 - add ability to reload parameters from old case
 - when click confirm show input file
 - add UID 
+- add bar plot ability
 - continuous updating of screen output: Ajax or built-in alternative
   + data monitoring system: ajax and python-based
 - add footer

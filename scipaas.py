@@ -55,15 +55,10 @@ def execute(db,app,cid):
     print 'execute:',app,cid
     params = {}
     try:
-        c = db.execute('SELECT * FROM jobs')
-        result = c.fetchall()
-        c.close()
         params['cid'] = cid
         params['app'] = app
         params['user'] = user
         sched.qsub(app,cid,user)
-        #return template('jobs', params, rows=result)
-        #return template('jobs', params)
         redirect("/jobs/"+app+"?cid="+cid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -123,14 +118,12 @@ def root():
 #@route('/jobs/<cid>')
 def show_jobs(db,app=default_app):#,cid=''):
     global user
-    #result = sched.qstat()
     cid = request.query.cid
-    c = db.execute('SELECT * FROM jobs')
+    c = db.execute('SELECT * FROM jobs ORDER BY jid DESC')
     result = c.fetchall()
     c.close()
     params = {}
     params['cid'] = cid
-    #params['app'] = default_app
     params['app'] = app
     params['user'] = user
     return template('jobs', params, rows=result)
@@ -161,7 +154,6 @@ def show_app(app):
     global user, myapps
     # parameters for return template
     params = myapps[app].params
-    #print app, 'params:',params
     params['cid'] = '' 
     params['app'] = app
     params['user'] = user
@@ -287,7 +279,7 @@ def getstart(app):
         redirect("/apps/show/name")
 
 @get('/<app>/list')
-def list(app):
+def list(db,app):
     global user
     str = ''
     for case in os.listdir(myapps[app].user_dir+os.sep+user+os.sep+app):
@@ -299,10 +291,13 @@ def list(app):
     params['app'] = app
     params['user'] = user
     return template('list', params)
+    #c = db.execute('SELECT * FROM cases_' + user)
+    #result = c.fetchall()
+    #c.close()
     #params['cid'] = request.forms.get('cid')
     #params['app'] = app
     #params['user'] = user
-    #return template('list2', params)
+    #return template('list2', params, rows=result)
 
 @get('/<app>/plots')
 @get('/<app>/<cid>/plots')

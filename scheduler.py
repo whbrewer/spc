@@ -35,8 +35,8 @@ class scheduler(object):
 
     def assignTask(self):
         while(True):
-            print "scheduler:", self.qstat(), "jobs in queued state",\
-                time.asctime()
+            #print "scheduler:", self.qstat(), "jobs in queued state", 
+            #time.asctime()
             j = self.qfront()
             if j is not None and j > 0:
                 self.start(j)            
@@ -82,7 +82,6 @@ class scheduler(object):
 
     def start(self,jid):
         global myapps
-        #print 'start:',jid
         connector = lite.connect(config.database)
         query = "update jobs set state = 'R' where jid=?"
         c = connector.execute(query,(jid,))
@@ -91,18 +90,16 @@ class scheduler(object):
         query = 'select user,app,cid from jobs where jid=?'
         c = connector.execute(query,(jid,))
         [(user,app,cid)] = c.fetchall()
-        #print 'result:',app,cid
         rel_path=(os.pardir+os.sep)*4
         run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
-        #print 'run_dir:',run_dir
         exe = config.apps_dir + os.sep + app + os.sep + app
         outfn = app + ".out"
         cmd = rel_path + exe + " >& " + outfn
-        #print "cmd:",cmd
         t = threading.Thread(target = self.start_job(run_dir,cmd))
         t.start()
 
-        connector.execute('delete from jobs where jid = ?', (jid,))
+        query = "update jobs set state = 'C' where jid=?"
+        connector.execute(query, (jid,))
         connector.commit()
         c.close()
 
@@ -110,5 +107,5 @@ class scheduler(object):
         print 'starting thread to run job:',run_dir, cmd
         os.system("cd " + run_dir + ";" + cmd )
 
-    def stop(self):
+    def stop_job(self):
         pass
