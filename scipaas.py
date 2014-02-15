@@ -86,7 +86,6 @@ def slurp_file(app,cid,filename):
     global user
     run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
     fn = run_dir + os.sep + filename
-    print "slurp_file:",fn
     try:
         f = open(fn,'r')
         inputs = f.read()
@@ -201,15 +200,21 @@ def load_apps(db):
     except lite.Error, e:
         print "Error %s:" % e.args[0]
         sys.exit(1)
-    c = db.execute('SELECT name,appid FROM apps')
+    c = db.execute('SELECT name,appid,input_format FROM apps')
     result = c.fetchall()
     c.close()
     myapps = {}
     for row in result:   
         name = row[0]
         appid = row[1]
+        input_format = row[2]
         print 'loading: %s id: %s' % (name,appid)
-        myapp = apps.f90(name,appid)
+        if(input_format=='namelist'):
+            myapp = apps.namelist(name,appid)
+        elif(input_format=='ini'):
+            myapp = apps.ini(name,appid)
+        else:
+            return 'ERROR: input_format ',input_format,' not supported'
         myapps[name] = myapp
     default_app = name # simple soln - use last app read from DB
     return 0
@@ -232,16 +237,17 @@ def addapp():
     description = request.forms.get('description')
     category = request.forms.get('category')
     language = request.forms.get('language')  
+    input_format = request.forms.get('input_format')
     # put in db
     a = apps.app()
-    a.create(appname,description,category,language)
+    a.create(appname,description,category,language,input_format)
     redirect("/apps/show/name")
 
 @post('/apps/create_view')
 def create_view():
     appname = request.forms.get('appname')
-    myapp = apps.f90(appname)
-    #params,_,_ = myapp.read_params()
+    #myapp = apps.namelist(appname)
+    params,_,_ = myapp.read_params()
     if myapp.write_html_template():
         return "SUCCESS: successfully output template"
     else:

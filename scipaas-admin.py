@@ -8,7 +8,8 @@ sys.argv[1:]
 
 if(sys.argv[1] == "create"):
     if sys.argv[2]: 
-        myapp = apps.f90(sys.argv[2])
+        #myapp = apps.namelist(sys.argv[2])
+        myapp = apps.ini(sys.argv[2])
     params,_,_ = myapp.read_params()
     if myapp.write_html_template():
         print "successfully output template"
@@ -16,8 +17,8 @@ if(sys.argv[1] == "create"):
 #try:
 #    if(sys.argv[1] == "n"):
         #if sys.argv[2]: 
-        #myapp = apps.f90(argv[2])
-#        myapp = apps.f90('burger')
+        #myapp = apps.namelist(argv[2])
+#        myapp = apps.namelist('burger')
 #        params = myapp.read_params()
 #        if myapp.write_html_template():
 #		    print "successfully output template"

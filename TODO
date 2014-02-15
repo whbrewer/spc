@@ -1,4 +1,5 @@
 Next:
+- implement ConfigParser to read-in nemo input file
 - plotting:
   o specify x-legend, y-legend
   o specify x-min, x-max, y-min, y-max

@@ -31,6 +31,7 @@ the input parameters.</p>
 
 <p>This step stores the information in the form below to the apps 
 table in the database.</p>
+
 <form action="/apps/add" method="post">
 App Name: <input type="text" name="appname">
 
@@ -49,6 +50,12 @@ App Name: <input type="text" name="appname">
    <option SELECTED value="python">Python
    <option value="fortran">Fortran
    <option value="c">C
+</select>
+
+<br>Input format:
+<select name="input_format">
+   <option SELECTED value="namelist">Namelist
+   <option value="ini">INI
 </select>
 
 <br><input type="submit">
