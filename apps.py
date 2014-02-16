@@ -119,9 +119,9 @@ class namelist(app):
 
         f = open(fn, 'w')
         # need to know what attributes are in what blocks
-        for block in self.blockorder:
-            f.write("&%s\n" % block)
-            for key in self.blockmap[block]:
+        for section in self.blockorder:
+            f.write("&%s\n" % section)
+            for key in self.blockmap[section]:
                 # if the keys are not in the params, it means that
                 # the checkboxes were not checked, so add the keys
                 # to the form_params here and set the values to False.
@@ -162,10 +162,10 @@ class namelist(app):
         blockorder = []
  
         for line in open(fn, 'rU'):
-            m = re.search(r'&(\w+)',line) # block title
+            m = re.search(r'&(\w+)',line) # section title
             n = re.search(r'(\w+)\s?=\s?(.*$)',line) # parameter
             if m:
-                block = m.group(1)  
+                section = m.group(1)  
                 blockorder += [ m.group(1) ]
             elif n:
                 # Delete apostrophes and commas
@@ -173,10 +173,9 @@ class namelist(app):
                 # Delete Fortran comments and whitespace
                 params[n.group(1)] = re.sub(r'\!.*$', "", val).strip()
                 # Append to blocks e.g. {'basic': ['case_id', 'mutn_rate']}
-                blockmap.setdefault(block,[]).append(n.group(1))
+                blockmap.setdefault(section,[]).append(n.group(1))
 		#print n.group(1), val
         return params, blockmap, blockorder
-    # convert some into dropdown boxes
 
 class ini(app):
 
@@ -206,18 +205,23 @@ class ini(app):
         blockorder = []
         for section in Config.sections():
             options = Config.options(section)
+            blockorder += [ section ]
             for option in options:
                 try:
                     params[option] = Config.get(section, option)
+                    blockmap.setdefault(section,[]).append(option)
                     if params[option] == -1:
                         DebugPrint("skip: %s" % option)
                 except:
                     print("exception on %s!" % option)
                     params[option] = None
-        print 'params:',params
+        #print 'params:',params
+        #print 'blockmap:',blockmap
+        #print 'blockorder:',blockorder
         return params, blockmap, blockorder
 
     def write_params(self,form_params,user):
+        Config = ConfigParser.ConfigParser()
         cid = form_params['case_id']
         sim_dir=self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid+os.sep
         if not os.path.exists(sim_dir):
@@ -230,11 +234,12 @@ class ini(app):
             i += 1
             print i,fp, form_params[fp]
 
-        # lets create that config file for next time...
-        cfgfile = open("c:\\next.ini",'w')
-        Config.add_section('Person')
-        Config.set('Person','HasEyes',True)
-        Config.set('Person','Age', 50)
+        # create the ini file
+        cfgfile = open(fn,'w')
+        for section in self.blockorder:
+            Config.add_section(section)
+            for key in self.blockmap[section]:
+                Config.set(section,key,form_params[key])
         Config.write(cfgfile)
         cfgfile.close()
         return 1

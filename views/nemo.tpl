@@ -5,6 +5,161 @@
 <form action="/{{app}}/confirm" method="post">
 <input class="start" type="submit" value="confirm" />
 <div class="tab-pane" id="tab-pane-1">
+<div class="tab-page">
+<h2 class="tab">SIMULATION</h2>
+<table><tbody>
+<tr><td>logfile:</td>
+<td><input type="text" name="logfile" value="{{logfile}}"/></td></tr>
+<tr><td>run_mode:</td>
+<td><input type="text" name="run_mode" value="{{run_mode}}"/></td></tr>
+<tr><td>random_seed:</td>
+<td><input type="text" name="random_seed" value="{{random_seed}}"/></td></tr>
+<tr><td>root_dir:</td>
+<td><input type="text" name="root_dir" value="{{root_dir}}"/></td></tr>
+<tr><td>replicates:</td>
+<td><input type="text" name="replicates" value="{{replicates}}"/></td></tr>
+<tr><td>generations:</td>
+<td><input type="text" name="generations" value="{{generations}}"/></td></tr>
+<tr><td>filename:</td>
+<td><input type="text" name="filename" value="{{filename}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">POPULATION</h2>
+<table><tbody>
+<tr><td>patch_number:</td>
+<td><input type="text" name="patch_number" value="{{patch_number}}"/></td></tr>
+<tr><td>patch_capacity:</td>
+<td><input type="text" name="patch_capacity" value="{{patch_capacity}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">LIFE CYCLE EVENTS</h2>
+<table><tbody>
+<tr><td>breed_selection:</td>
+<td><input type="text" name="breed_selection" value="{{breed_selection}}"/></td></tr>
+<tr><td>save_stats:</td>
+<td><input type="text" name="save_stats" value="{{save_stats}}"/></td></tr>
+<tr><td>disperse_evoldisp:</td>
+<td><input type="text" name="disperse_evoldisp" value="{{disperse_evoldisp}}"/></td></tr>
+<tr><td>aging:</td>
+<td><input type="text" name="aging" value="{{aging}}"/></td></tr>
+<tr><td>save_files:</td>
+<td><input type="text" name="save_files" value="{{save_files}}"/></td></tr>
+<tr><td>store:</td>
+<td><input type="text" name="store" value="{{store}}"/></td></tr>
+<tr><td>extinction:</td>
+<td><input type="text" name="extinction" value="{{extinction}}"/></td></tr>
+<tr><td>selection_trait:</td>
+<td><input type="text" name="selection_trait" value="{{selection_trait}}"/></td></tr>
+<tr><td>selection_model:</td>
+<td><input type="text" name="selection_model" value="{{selection_model}}"/></td></tr>
+<tr><td>extinction_rate:</td>
+<td><input type="text" name="extinction_rate" value="{{extinction_rate}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">MATING SYSTEM</h2>
+<table><tbody>
+<tr><td>mating_system:</td>
+<td><input type="text" name="mating_system" value="{{mating_system}}"/></td></tr>
+<tr><td>mean_fecundity:</td>
+<td><input type="text" name="mean_fecundity" value="{{mean_fecundity}}"/></td></tr>
+<tr><td>mating_proportion:</td>
+<td><input type="text" name="mating_proportion" value="{{mating_proportion}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">DISPERSAL LCE</h2>
+<table><tbody>
+<tr><td>dispersal_model:</td>
+<td><input type="text" name="dispersal_model" value="{{dispersal_model}}"/></td></tr>
+<tr><td>dispersal_cost:</td>
+<td><input type="text" name="dispersal_cost" value="{{dispersal_cost}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">OUTPUT</h2>
+<table><tbody>
+<tr><td>stat_log_time:</td>
+<td><input type="text" name="stat_log_time" value="{{stat_log_time}}"/></td></tr>
+<tr><td>stat_dir:</td>
+<td><input type="text" name="stat_dir" value="{{stat_dir}}"/></td></tr>
+<tr><td>ntrl_save_freq:</td>
+<td><input type="text" name="ntrl_save_freq" value="{{ntrl_save_freq}}"/></td></tr>
+<tr><td>ntrl_output_dir:</td>
+<td><input type="text" name="ntrl_output_dir" value="{{ntrl_output_dir}}"/></td></tr>
+<tr><td>ntrl_output_logtime:</td>
+<td><input type="text" name="ntrl_output_logtime" value="{{ntrl_output_logtime}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">LCE</h2>
+<table><tbody>
+<tr><td>store_dir:</td>
+<td><input type="text" name="store_dir" value="{{store_dir}}"/></td></tr>
+<tr><td>store_generation:</td>
+<td><input type="text" name="store_generation" value="{{store_generation}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">NEUTRAL MARKERS</h2>
+<table><tbody>
+<tr><td>ntrl_loci:</td>
+<td><input type="text" name="ntrl_loci" value="{{ntrl_loci}}"/></td></tr>
+<tr><td>ntrl_all:</td>
+<td><input type="text" name="ntrl_all" value="{{ntrl_all}}"/></td></tr>
+<tr><td>ntrl_mutation_rate:</td>
+<td><input type="text" name="ntrl_mutation_rate" value="{{ntrl_mutation_rate}}"/></td></tr>
+<tr><td>ntrl_recombination_rate:</td>
+<td><input type="text" name="ntrl_recombination_rate" value="{{ntrl_recombination_rate}}"/></td></tr>
+<tr><td>ntrl_mutation_model:</td>
+<td><input type="text" name="ntrl_mutation_model" value="{{ntrl_mutation_model}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">GENETIC LOAD</h2>
+<table><tbody>
+<tr><td>delet_loci:</td>
+<td><input type="text" name="delet_loci" value="{{delet_loci}}"/></td></tr>
+<tr><td>delet_init_freq:</td>
+<td><input type="text" name="delet_init_freq" value="{{delet_init_freq}}"/></td></tr>
+<tr><td>delet_mutation_rate:</td>
+<td><input type="text" name="delet_mutation_rate" value="{{delet_mutation_rate}}"/></td></tr>
+<tr><td>delet_mutation_model:</td>
+<td><input type="text" name="delet_mutation_model" value="{{delet_mutation_model}}"/></td></tr>
+<tr><td>delet_recombination_rate:</td>
+<td><input type="text" name="delet_recombination_rate" value="{{delet_recombination_rate}}"/></td></tr>
+<tr><td>delet_effects_mean:</td>
+<td><input type="text" name="delet_effects_mean" value="{{delet_effects_mean}}"/></td></tr>
+<tr><td>delet_dominance_mean:</td>
+<td><input type="text" name="delet_dominance_mean" value="{{delet_dominance_mean}}"/></td></tr>
+<tr><td>delet_effects_distribution:</td>
+<td><input type="text" name="delet_effects_distribution" value="{{delet_effects_distribution}}"/></td></tr>
+<tr><td>delet_effects_dist_param1:</td>
+<td><input type="text" name="delet_effects_dist_param1" value="{{delet_effects_dist_param1}}"/></td></tr>
+<tr><td>delet_effects_dist_param2:</td>
+<td><input type="text" name="delet_effects_dist_param2" value="{{delet_effects_dist_param2}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">FITNESS MODELS</h2>
+<table><tbody>
+<tr><td>delet_fitness_model:</td>
+<td><input type="text" name="delet_fitness_model" value="{{delet_fitness_model}}"/></td></tr>
+<tr><td>delet_genot_logtime:</td>
+<td><input type="text" name="delet_genot_logtime" value="{{delet_genot_logtime}}"/></td></tr>
+</tbody></table>
+</div>
+<div class="tab-page">
+<h2 class="tab">DISPERSAL TRAIT</h2>
+<table><tbody>
+<tr><td>disp_mutation_rate:</td>
+<td><input type="text" name="disp_mutation_rate" value="{{disp_mutation_rate}}"/></td></tr>
+<tr><td>disp_mutation_mean:</td>
+<td><input type="text" name="disp_mutation_mean" value="{{disp_mutation_mean}}"/></td></tr>
+</tbody></table>
+</div>
 </div>
 </form>
 %include footer

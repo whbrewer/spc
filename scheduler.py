@@ -94,7 +94,8 @@ class scheduler(object):
         run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
         exe = config.apps_dir + os.sep + app + os.sep + app
         outfn = app + ".out"
-        cmd = rel_path + exe + " >& " + outfn
+        #cmd = rel_path + exe + " >& " + outfn
+        cmd = rel_path + exe + " " + app + ".ini >& " + outfn
         t = threading.Thread(target = self.start_job(run_dir,cmd))
         t.start()
 

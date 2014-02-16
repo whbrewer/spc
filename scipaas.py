@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from bottle import *
 from bottle.ext import sqlite
 import scheduler
