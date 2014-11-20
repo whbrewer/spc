@@ -197,7 +197,7 @@ class ini(app):
             fn = self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid
         # append name of input file to end of string
         fn += os.sep + self.simfn
-        print 'fn:',fn
+        #print 'fn:',fn
         Config = ConfigParser.ConfigParser()
         out = Config.read(fn)
         params = {}

@@ -1,5 +1,6 @@
 Next:
-- implement ConfigParser to read-in nemo input file
+- be able to click jobs, click start, use appname and jid to bring up correct start page
+- be able to submit job description from start page
 - plotting:
   o specify x-legend, y-legend
   o specify x-min, x-max, y-min, y-max
@@ -45,6 +46,7 @@ Tests
   strings, etc.
 
 Completed
+- implement ConfigParser to read-in nemo input file
 - starting from an old case doesnt bring up old case params, but rather defaults
 - add better ability to handle html select option, etc.
 - find a way to populate select/option form fields using template

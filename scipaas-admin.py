@@ -5,6 +5,11 @@ import sys
 import os
 
 sys.argv[1:]
+usage = "usage: sys.argv[0] create appname"
+
+if (len(sys.argv) < 3):
+    print usage
+    sys.exit()
 
 if(sys.argv[1] == "create"):
     if sys.argv[2]: 
@@ -13,6 +18,8 @@ if(sys.argv[1] == "create"):
     params,_,_ = myapp.read_params()
     if myapp.write_html_template():
         print "successfully output template"
+else:
+    print usage
 
 #try:
 #    if(sys.argv[1] == "n"):

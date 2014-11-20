@@ -1,7 +1,9 @@
 <div class="navbar">
+<!--
 <a href="/apps/show/name" border=0>
    <img align="right" height="43" src="/static/scipaas.png"/>
 </a>
+-->
 <form id="plotform" action="/{{app}}" method="get">
 <input type="text" class="cid" name="cid" id="cid" value="{{cid}}"/>
 <input type="submit" formaction="/{{app}}/start" class="start" value="start"/>

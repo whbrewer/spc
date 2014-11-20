@@ -80,7 +80,25 @@ input.cid {
 .output { left: 500px; top: 0px; background: #a62300; color: black }
 .jobs   { left: 600px; top: 0px; background: #0a0a0a; color: black }
 
-.footer {
+.lfooter a:link {color: white; text-decoration:none;}
+.lfooter a:visited {color: white;}
+.lfooter a:hover {color: yellow;}
+
+.lfooter {
+   text-align: left;
+   position: fixed;
+   font-size: 18px;
+   bottom: 0px;
+   left:0px;
+   width: 100%;
+   height: 20px;
+   /*background: rgba(0,66,174,0.1);*/
+   background: rgba(0,0,0,0.5);
+   z-index: 20;
+}
+
+.rfooter {
+   color: white;
    text-align: right;
    position: fixed;
    font-size: 18px;
@@ -92,3 +110,4 @@ input.cid {
    background: rgba(0,0,0,0.5);
    z-index: 10;
 }
+

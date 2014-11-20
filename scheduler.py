@@ -44,9 +44,10 @@ class scheduler(object):
 
     def qsub(self,app,cid,user):
         cur = self.con.cursor()
-        query = 'insert into jobs values (null, ?, ?, ?, ?, ?);'
+        query = 'insert into jobs values (null, ?, ?, ?, ?, ?, ?);'
         state = 'Q'
-        cur.execute(query,(user,app,cid,state,time.asctime())) 
+        description = 'none'
+        cur.execute(query,(user,app,cid,state,time.asctime(),description)) 
         self.con.commit()
 
     def qfront(self):
