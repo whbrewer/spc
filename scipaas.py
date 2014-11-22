@@ -23,6 +23,7 @@ class Users(models.Model): pass
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
 USER_ID_SESSION_KEY = 'user_id'
+APP_SESSION_KEY = 'app'
 
 session_opts = {
     'session.type': 'file',
@@ -33,9 +34,6 @@ session_opts = {
 
 app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
-
-# default user - if not logged in
-user = "guest"
 
 # sqlite plugin
 plugin = ext.sqlite.Plugin(dbfile=config.database)
@@ -138,9 +136,40 @@ def root():
 #@route('/jobs/<cid>')
 def show_jobs(db,app=default_app):#,cid=''):
     if not authorized(): redirect('/login')
+    if app not in myapps: redirect('/apps')
+    global user
+    cid = request.query.cid
+    c = db.execute('SELECT * FROM jobs where user = \'' + user + '\' ORDER BY jid DESC')
+    result = c.fetchall()
+    c.close()
+    params = {}
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    return template('jobs', params, rows=result)
+
+@get('/wall/<app>')
+def show_wall(db,app):
+    if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
     c = db.execute('SELECT * FROM jobs ORDER BY jid DESC')
+    result = c.fetchall()
+    c.close()
+    params = {}
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    return template('jobs', params, rows=result)
+
+@route('/jobs/<app>')
+#@route('/jobs/<cid>')
+def show_jobs(db,app=default_app):#,cid=''):
+    if not authorized(): redirect('/login')
+    if app not in myapps: redirect('/apps')
+    global user
+    cid = request.query.cid
+    c = db.execute('SELECT * FROM jobs where user = \'' + user + '\' ORDER BY jid DESC')
     result = c.fetchall()
     c.close()
     params = {}
@@ -174,12 +203,15 @@ def run_job(db,jid):
 def show_app(app):
     if not authorized(): redirect('/login')
     global user, myapps
+    # set a session variable to keep track of the current app
+    s = request.environ.get('beaker.session')
+    s[APP_SESSION_KEY] = app
     # parameters for return template
     params = myapps[app].params
     params['cid'] = '' 
     params['app'] = app
     params['user'] = user
-    return template(app, params)
+    return template(config.apps_dir+os.sep+app, params)
 
 @get('/login')
 @get('/login/<referrer>')
@@ -202,6 +234,7 @@ def static(filepath):
 
 @post('/login')
 def post_login(db):
+    global user
     s = request.environ.get('beaker.session')
     #user = request.forms.user
     user = request.forms.get('user')
@@ -210,29 +243,13 @@ def post_login(db):
     # if password matches, set the USER_ID_SESSION_KEY
     hashpw = hashlib.sha256(pw).hexdigest()
     if hashpw == users[0].passwd:
-        s[USER_ID_SESSION_KEY] = users[0].user
+        user = s[USER_ID_SESSION_KEY] = users[0].user
     else:
         return "<p>Login failed: wrong username or password</p>"
     # if referred to login from another page redirect to referring page
     referrer = request.forms.referrer
     if referrer: redirect('/'+referrer)
     else: redirect('/')
-
-#    global user
-#    s = request.environ.get('beaker.session')
-#    user     = request.forms.get('user')
-#    passwd = request.forms.get('passwd')
-#    u = users.user()
-#    if u.authenticate(user,passwd):
-#        s[USER_ID_SESSION_KEY] = user
-#        params = myapps[default_app].params
-#        params['app'] = default_app
-#        params['cid'] = '' 
-#        params['user'] = user
-#        tpl = myapps[default_app].appname 
-#        return template(tpl, params)
-#    else:
-#        return "<p>Login failed: wrong username or password</p>"
 
 @get('/register')
 def get_register():
@@ -348,6 +365,7 @@ def edit_app(appid):
 @get('/<app>/start')
 def getstart(app):
     global user
+    if myapps[app].appname not in myapps: redirect('/apps')
     try:
         params = myapps[app].params
         cid = request.query.cid
@@ -375,17 +393,13 @@ def list(db,app):
     params['app'] = app
     params['user'] = user
     return template('list', params)
-    #c = db.execute('SELECT * FROM cases_' + user)
-    #result = c.fetchall()
-    #c.close()
-    #params['cid'] = request.forms.get('cid')
-    #params['app'] = app
-    #params['user'] = user
-    #return template('list2', params, rows=result)
 
 @get('/<app>/plots')
 @get('/<app>/<cid>/plots')
 def get_plots(db,app):
+    global user
+    if myapps[app].appname not in myapps: redirect('/apps')
+    if not authorized(): redirect('/login')
     cid = request.query.cid
     c = db.execute('select pltid, type, filename, col1, col2, title from apps natural join plots where name=?',(app,))
     result = c.fetchall()
@@ -489,10 +503,14 @@ def do_upload():
 
 def authorized():
     '''Return True if user is already logged in, False otherwise'''
+    global user
     s = request.environ.get('beaker.session')
     s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY,False)
-    if not s[USER_ID_SESSION_KEY]: return False
-    else: return True
+    if not s[USER_ID_SESSION_KEY]: 
+        return False
+    else: 
+        user = s[USER_ID_SESSION_KEY]
+        return True
 
 if __name__ == "__main__":
     db = lite.connect(config.database)
