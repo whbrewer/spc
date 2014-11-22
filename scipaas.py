@@ -1,18 +1,38 @@
 #!/usr/bin/env python
+
+# web framework
 from bottle import *
 from bottle.ext import sqlite
-import scheduler
-import subprocess
-import string, random
-import sys, os, re
+import macaron as models
+import sqlite3 as lite
+# python built-ins
+import uuid, hashlib, shutil, string
+import random, subprocess, sys, os, re
+# other SciPaaS modules
+import config
 import plots
 import apps
 import uploads
-import uuid
 import users
-import config
-import sqlite3 as lite
-import shutil
+import scheduler
+
+### ORM stuff
+install(models.MacaronPlugin(config.database))
+class Users(models.Model): pass
+
+### session management configuration ###
+from beaker.middleware import SessionMiddleware
+USER_ID_SESSION_KEY = 'user_id'
+
+session_opts = {
+    'session.type': 'file',
+    'session.cookie_expires': 300,
+    'session.data_dir': './data',
+    'session.auto': True
+}
+
+app = SessionMiddleware(app(), session_opts)
+### end session management configuration ###
 
 # default user - if not logged in
 user = "guest"
@@ -117,6 +137,7 @@ def root():
 @route('/jobs/<app>')
 #@route('/jobs/<cid>')
 def show_jobs(db,app=default_app):#,cid=''):
+    if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
     c = db.execute('SELECT * FROM jobs ORDER BY jid DESC')
@@ -151,6 +172,7 @@ def run_job(db,jid):
 
 @route('/<app>')
 def show_app(app):
+    if not authorized(): redirect('/login')
     global user, myapps
     # parameters for return template
     params = myapps[app].params
@@ -160,32 +182,85 @@ def show_app(app):
     return template(app, params)
 
 @get('/login')
-def login_form():
-    return '''<form method="POST" action="/login">
-                <input name="user"     type="text" />
-                <input name="password" type="password" />
-                <input type="submit" />
-              </form>'''
+@get('/login/<referrer>')
+def get_login(referrer=''):
+    return template('login',{'referrer': referrer})
 
-@route('/static/:path#.+#', name='static')
-def static(path):
-    return static_file(path, root='static')
+@get('/logout')
+def logout():
+    s = request.environ.get('beaker.session')
+    s.delete()
+    redirect('/')
+
+@route('/static/<filepath:path>')
+def static(filepath):
+    return static_file(filepath, root='static')
+
+#@route('/static/:path#.+#', name='static')
+#def static(path):
+#    return static_file(path, root='static')
 
 @post('/login')
-def login_submit(db):
-    global user
-    user     = request.forms.get('user')
-    password = request.forms.get('password')
-    u = users.user()
-    if u.authenticate(user,password):
-        params = myapps[default_app].params
-        params['app'] = default_app
-        params['cid'] = '' 
-        params['user'] = user
-        tpl = myapps[default_app].appname 
-        return template(tpl, params)
+def post_login(db):
+    s = request.environ.get('beaker.session')
+    #user = request.forms.user
+    user = request.forms.get('user')
+    pw = request.forms.passwd
+    users = Users.select("user=?", [ user ])
+    # if password matches, set the USER_ID_SESSION_KEY
+    hashpw = hashlib.sha256(pw).hexdigest()
+    if hashpw == users[0].passwd:
+        s[USER_ID_SESSION_KEY] = users[0].user
     else:
         return "<p>Login failed: wrong username or password</p>"
+    # if referred to login from another page redirect to referring page
+    referrer = request.forms.referrer
+    if referrer: redirect('/'+referrer)
+    else: redirect('/')
+
+#    global user
+#    s = request.environ.get('beaker.session')
+#    user     = request.forms.get('user')
+#    passwd = request.forms.get('passwd')
+#    u = users.user()
+#    if u.authenticate(user,passwd):
+#        s[USER_ID_SESSION_KEY] = user
+#        params = myapps[default_app].params
+#        params['app'] = default_app
+#        params['cid'] = '' 
+#        params['user'] = user
+#        tpl = myapps[default_app].appname 
+#        return template(tpl, params)
+#    else:
+#        return "<p>Login failed: wrong username or password</p>"
+
+@get('/register')
+def get_register():
+    return template('register')
+
+@post('/register')
+def post_register():
+    user = request.forms.user
+    pw1 = request.forms.password1
+    pw2 = request.forms.password2
+    if pw1 == pw2:
+        hashpw = hashlib.sha256(pw1).hexdigest()
+        u = Users.create(user=user, passwd=hashpw)
+        models.bake()
+        redirect('/login')
+    else:
+        return template('register')
+
+@post('/check_user')
+def check_user():
+    # currently this won't work until we install Macaron ORM
+    users = Users.select("user=?", [ request.forms.user ] )
+    try:
+        for u in users:
+            continue
+        if u: return 'true'
+    except:
+        return 'false'
 
 @get('/apps')
 def showapps():
@@ -222,6 +297,7 @@ def load_apps(db):
 
 @get('/apps/show/<sort>')
 def getapps(db,sort="name"):
+    if not authorized(): redirect('/login')
     c = db.execute('SELECT * FROM apps ORDER BY ' + sort) 
     result = c.fetchall()
     c.close()
@@ -229,6 +305,7 @@ def getapps(db,sort="name"):
 
 @get('/apps/add')
 def create_app_form():
+    if not authorized(): redirect('/login')
     return static_file('addapp.html', root='static')
 
 @post('/apps/add')
@@ -410,8 +487,15 @@ def do_upload():
     else:
         return "ERROR: must be already a file"
 
+def authorized():
+    '''Return True if user is already logged in, False otherwise'''
+    s = request.environ.get('beaker.session')
+    s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY,False)
+    if not s[USER_ID_SESSION_KEY]: return False
+    else: return True
+
 if __name__ == "__main__":
     db = lite.connect(config.database)
     load_apps(db)
-    run(host='0.0.0.0', port=8081, debug=True)
+    run(app=app, host='0.0.0.0', port=8081, debug=True)
 

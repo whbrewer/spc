@@ -2,8 +2,6 @@
 import sqlite3 as lite
 import config
 
-#CREATE TABLE users(uid integer primary key autoincrement, user varchar(20), pass 
-
 class user(object):
 
     def __init__(self):
