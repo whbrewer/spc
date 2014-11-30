@@ -13,12 +13,11 @@ import config
 import plots
 import apps
 import uploads
-import users
 import scheduler
+from models import *
 
 ### ORM stuff
 install(models.MacaronPlugin(config.database))
-class Users(models.Model): pass
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
