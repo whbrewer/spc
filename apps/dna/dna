@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+from bio import DNA 
+import re
+
+#dna1 = DNA('CGACAAGGATTAGTAGTTTAC') 
+fn = 'dna.in'
+#f = open(fn,'r')
+#s = raw_input('enter string of DNA:')
+
+for line in open(fn, 'rU'):
+    m = re.search('dna\s?=\s?(.*$)',line) # parameter
+    if m:
+        # Delete apostrophes and commas
+        s = re.sub(r"[',]", "", m.group(1))
+        print "string is: ", s
+
+dna1 = DNA(s)
+print "Reverse complement is: ", dna1.reversecomplement() 
+print "%G+C is:", dna1.gc() 
+print "Codons are:", dna1.codons() 
