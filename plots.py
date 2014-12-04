@@ -9,7 +9,7 @@ class plot(object):
         # Connect to DB 
         self.con = None
         try:
-            self.con = lite.connect(config.database)
+            self.con = lite.connect(config.db)
         except lite.Error, e:
             print "Error %s:" % e.args[0]
             sys.exit(1)

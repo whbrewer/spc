@@ -8,22 +8,13 @@ import os
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
 
-#CREATE TABLE "jobs" (
-#jid integer primary key autoincrement,
-#user text,
-#app text,
-#cid text,
-#state char(1),
-#time_submit text
-#);
-
 class scheduler(object):
 
     def __init__(self):
         # Connect to DB 
         self.con = None
         try: 
-            self.con = lite.connect(config.database)
+            self.con = lite.connect(config.db)
         except lite.Error, e:
             print "Error %s:" % e.args[0]
             sys.exit(1)
@@ -51,7 +42,7 @@ class scheduler(object):
         self.con.commit()
 
     def qfront(self):
-        self.connector = lite.connect(config.database)
+        self.connector = lite.connect(config.db)
         cur = self.connector.cursor()
         query = "select jid from jobs where state = 'Q' limit 1"
         (jid) = cur.execute(query).fetchone()
@@ -70,7 +61,7 @@ class scheduler(object):
 
     def qstat(self):
         try: 
-            self.connector = lite.connect(config.database)
+            self.connector = lite.connect(config.db)
         except lite.Error, e:
             print "Error %s:" % e.args[0]
             sys.exit(1)
@@ -83,7 +74,7 @@ class scheduler(object):
 
     def start(self,jid):
         global myapps
-        connector = lite.connect(config.database)
+        connector = lite.connect(config.db)
         query = "update jobs set state = 'R' where jid=?"
         c = connector.execute(query,(jid,))
         connector.commit()

@@ -13,7 +13,7 @@ import config, plots, apps, uploads, scheduler
 from models import *
 
 ### ORM stuff
-install(macaron.MacaronPlugin(config.database))
+install(macaron.MacaronPlugin(config.db))
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
@@ -31,7 +31,7 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # sqlite plugin
-plugin = ext.sqlite.Plugin(dbfile=config.database)
+plugin = ext.sqlite.Plugin(dbfile=config.db)
 install(plugin)
 
 # create instance of scheduler
@@ -231,16 +231,19 @@ def static(filepath):
 def post_login(db):
     global user
     s = request.environ.get('beaker.session')
-    #user = request.forms.user
     user = request.forms.get('user')
     pw = request.forms.passwd
+    err = "<p>Login failed: wrong username or password</p>"
     users = Users.select("user=?", [ user ])
     # if password matches, set the USER_ID_SESSION_KEY
     hashpw = hashlib.sha256(pw).hexdigest()
-    if hashpw == users[0].passwd:
-        user = s[USER_ID_SESSION_KEY] = users[0].user
-    else:
-        return "<p>Login failed: wrong username or password</p>"
+    try:
+        if hashpw == users[0].passwd:
+            user = s[USER_ID_SESSION_KEY] = users[0].user
+        else:
+            return err
+    except:
+        return err
     # if referred to login from another page redirect to referring page
     referrer = request.forms.referrer
     if referrer: redirect('/'+referrer)
@@ -284,11 +287,13 @@ def load_apps(db):
     global myapps, default_app
     # Connect to DB 
     try:
-        db = lite.connect(config.database)
+        db = lite.connect(config.db)
+        c = db.execute('SELECT name,appid,input_format FROM apps')
     except lite.Error, e:
         print "Error %s:" % e.args[0]
+        print "MAKE SURE DATABASE EXIST."
+        print "If running for the first time, run \"./scipaas-admin.py init\" to create a db"
         sys.exit(1)
-    c = db.execute('SELECT name,appid,input_format FROM apps')
     result = c.fetchall()
     c.close()
     myapps = {}
@@ -508,7 +513,7 @@ def authorized():
         return True
 
 if __name__ == "__main__":
-    db = lite.connect(config.database)
+    db = lite.connect(config.db)
     load_apps(db)
     run(app=app, host='0.0.0.0', port=8081, debug=True)
 

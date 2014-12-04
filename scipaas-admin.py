@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import apps
-import sys, os
+import sys, os, shutil
 import macaron 
+import config
 from models import * 
 
 sys.argv[1:]
@@ -13,16 +14,13 @@ usage = "usage: " + sys.argv[0] + " create appname"
 #    sys.exit()
 
 def initdb():
+    """Initializes database file"""
     import hashlib
 
-    """Initializes database file"""
-    # Deletes database file if exists.
-    db = "test.db"
+    db = config.db
+    # make a backup copy if file exists
     if os.path.isfile(db): 
-        # make backup copy using python built-in
-        # after implementing copy function can rename db to scipaas.db
-        #mv db db+".bak"
-        os.unlink(db)
+        shutil.copyfile(db, db+".bak")
 
     # Initializes Macaron
     macaron.macaronage(db)
@@ -57,6 +55,8 @@ def initdb():
     hashpw = hashlib.sha256(pw).hexdigest()
 
     u = Users.create(user=user, passwd=hashpw)
+    a = Apps.create(name="dna",description="Compute reverse complement, GC content, and codon analysis of given DNA string.",
+        category="bioinformatics",language="python",input_format="namelist")
     macaron.bake()
 
 if(sys.argv[1] == "create"):
