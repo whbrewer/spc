@@ -1,5 +1,9 @@
 Next:
-- be able to click jobs, click start, use appname and jid to bring up correct start page
+- if there is only one plot, show it on clicking the plot button
+- about app template
+- wall info
+- do AJAX update on job scheduler and output instead of meta-refresh
+
 - be able to submit job description from start page
 - plotting:
   o specify x-legend, y-legend
@@ -16,9 +20,8 @@ Feature Requests
 - JS/Ajax check if appname already exists
 - user page/user management: my apps, change passwd, etc.
 - file manager... or data button to see data in output files
-- implement ConfigParser -- possibly move to supporting INI files
+x implement ConfigParser -- possibly move to supporting INI files
   + generic xml or ini reader
-- job scheduler/queuing system
 - implement haml templates
 - workflow system
 - integration to openshift
@@ -46,6 +49,8 @@ Tests
   strings, etc.
 
 Completed
+- be able to click jobs, click start, use appname and jid to bring up correct start page
+- job scheduler/queuing system
 - implement ConfigParser to read-in nemo input file
 - starting from an old case doesnt bring up old case params, but rather defaults
 - add better ability to handle html select option, etc.

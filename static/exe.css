@@ -76,9 +76,9 @@ input.cid {
 .start  { left: 100px; top: 0px; background: #759d00; color: white }
 .inputs { left: 200px; top: 0px; background: #bf4e30; color: white }
 .output { left: 300px; top: 0px; background: #a62300; color: black }
-.plot   { left: 400px; top: 0px; background: #280671; color: white }
-.jobs   { left: 500px; top: 0px; background: #0a0a0a; color: black }
-.wall   { left: 600px; top: 0px; background: #4112AE; color: white }
+.plot   { left: 400px; top: 0px; background: #4112AE; color: white }
+.jobs   { left: 500px; top: 0px; background: #280671; color: black }
+.wall   { left: 600px; top: 0px; background: #0a0a0a; color: white }
 
 .lfooter a:link {color: white; text-decoration:none;}
 .lfooter a:visited {color: white;}

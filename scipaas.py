@@ -3,21 +3,17 @@
 # web framework
 from bottle import *
 from bottle.ext import sqlite
-import macaron as models
+import macaron
 import sqlite3 as lite
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 # other SciPaaS modules
-import config
-import plots
-import apps
-import uploads
-import scheduler
+import config, plots, apps, uploads, scheduler
 from models import *
 
 ### ORM stuff
-install(models.MacaronPlugin(config.database))
+install(macaron.MacaronPlugin(config.database))
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
@@ -159,7 +155,7 @@ def show_wall(db,app):
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    return template('jobs', params, rows=result)
+    return template('wall', params, rows=result)
 
 @route('/jobs/<app>')
 #@route('/jobs/<cid>')
@@ -262,7 +258,7 @@ def post_register():
     if pw1 == pw2:
         hashpw = hashlib.sha256(pw1).hexdigest()
         u = Users.create(user=user, passwd=hashpw)
-        models.bake()
+        macaron.bake()
         redirect('/login')
     else:
         return template('register')

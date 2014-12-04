@@ -1,5 +1,5 @@
 %include header title='Job scheduler'
-<meta http-equiv="refresh" content="5">
+<!--<meta http-equiv="refresh" content="5">-->
 
 <body onload="init()">
 %include navbar
