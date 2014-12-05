@@ -141,7 +141,8 @@ class namelist(app):
                 m = re.search(r'[a-zA-Z]{2}',form_params[key])
                 if m:
                     #if not re.search('[0-9.]*e+[0-9]*|[FT]',m.group()):
-                    if not re.search('[0-9].*[0-9]^|[FT]',m.group()):
+                    #if not re.search('[0-9].*[0-9]^|[FT]',m.group()):
+                    if not re.search('[0-9].*[0-9]',m.group()):
                         form_params[key] = "'" + form_params[key] + "'"
 
                 f.write(key + ' = ' + form_params[key] + "\n")

@@ -22,8 +22,8 @@ APP_SESSION_KEY = 'app'
 
 session_opts = {
     'session.type': 'file',
-    'session.cookie_expires': 300,
-    'session.data_dir': './data',
+    'session.cookie_expires': True, # delete cookies when browser closed
+    'session.data_dir': config.user_dir,
     'session.auto': True
 }
 
@@ -341,7 +341,6 @@ def addapp():
 @post('/apps/create_view')
 def create_view():
     appname = request.forms.get('appname')
-    #myapp = apps.namelist(appname)
     params,_,_ = myapp.read_params()
     if myapp.write_html_template():
         return "SUCCESS: successfully output template"

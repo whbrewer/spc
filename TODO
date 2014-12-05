@@ -2,7 +2,10 @@ Next:
 - if there is only one plot, show it on clicking the plot button
 - about app template
 - wall info
+- if values not defined in default <appname>.in file check for that 
+  in the template e.g. % if not defined ...
 - do AJAX update on job scheduler and output instead of meta-refresh
+- store cookie of which app the user was previously using, and go straight to that app
 
 - be able to submit job description from start page
 - plotting:
