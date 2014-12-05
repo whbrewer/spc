@@ -112,9 +112,7 @@ class namelist(app):
         fn = sim_dir + self.simfn
 
         ## output parameters to output log
-        #i = 0
-        #for fp in form_params:
-        #    i += 1
+        #for i, fp in enumerate(form_params):
         #    print i,fp, form_params[fp]
 
         f = open(fn, 'w')
