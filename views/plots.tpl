@@ -53,13 +53,28 @@ td {text-align: center}
 <form method="post" action="/{{app}}/plots/create">
    Filename to plot (use <cid> to use the case id): <input type="text" name="fn"><br>
    Title: <input type="text" name="title"><br>
-   X-Column: <input type="text" name="col1"><br>
-   Y-Column: <input type="text" name="col2"><br>
+   X-Column: 
+   <select name="col1">
+       <option value="1">1</option>
+       <option value="2">2</option>
+       <option value="3">3</option>
+       <option value="4">4</option>
+   </select><br>
+
+   Y-Column:
+   <select name="col2">
+       <option value="1">1</option>
+       <option value="2">2</option>
+       <option value="3">3</option>
+       <option value="4">4</option>
+   </select><br>
+
+   <!-- <input type="text" name="col1"><br> -->
+   <!-- <input type="text" name="col2"><br> -->
    Type of plot:
    <select name="ptype">
        <option VALUE="line">line</option>
-       <option VALUE="scatter">scatter</option>
-       <option VALUE="bar">bar</option>
+       <option VALUE="categories">categories (bar plot)</option>
    </select><br>
    <input type="submit">
 </form>

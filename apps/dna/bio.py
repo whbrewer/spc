@@ -6,7 +6,7 @@ class DNA:
     def __init__(self, s): 
         """Create DNA instance initialized to string s.""" 
         self.seq = s 
-     
+
     def transcribe(self): 
         """Return as rna string.""" 
         return self.seq.replace('T', 'U') 
@@ -38,7 +38,28 @@ class DNA:
  
     def codons(self): 
         """Return list of codons for the dna string.""" 
-        s = self.seq 
-        end = len(s) - (len(s) % 3) - 1 
-        codons = [s[i:i+3] for i in range(0, end, 3)] 
-        return codons 
+        return self.__histogram(self.__analyze(3))
+
+    def nucleotides(self): 
+        """Return list of codons for the dna string.""" 
+        return self.__histogram(self.__analyze(1))
+
+    def dinucleotides(self): 
+        """Return list of codons for the dna string.""" 
+        return self.__histogram(self.__analyze(2))
+ 
+    def __analyze(self,n):
+        s = self.seq
+        end = len(s) - (len(s) % n) - 1 
+        lx = [s[i:i+n] for i in range(0, end, n)] 
+        return lx
+
+    def __histogram(self,x):
+        """Compute a histogram""" 
+        d = dict()
+        for e in x:
+            if e not in d:
+                d[e] = 1
+            else:
+                d[e] += 1
+        return d

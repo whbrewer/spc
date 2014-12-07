@@ -18,10 +18,11 @@
    <div id="myplot" style="width:600px;height:370px;"></div> 
    <script id="source" language="javascript" type="text/javascript"> 
       $(function () {
-      var d1 = {{data}};
+      var d1 = {{!data}};
       var data = [ { label: "deleterious", data: d1, 
                      //bars: { show: {{bars}}, autoWidth: true } , 
-                     bars: { show: {{bars}}, barWidth: 0.0001 } , 
+                     //bars: { show: {{bars}}, barWidth: 0.0001 } , 
+                     bars: { show: {{bars}}, barWidth: 1.0 } , 
                      color: "rgb(200,0,0)" } ];
 
       var options = {

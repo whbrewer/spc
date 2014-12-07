@@ -7,10 +7,10 @@
 <div class="tab-pane" id="tab-pane-1">
 <div class="tab-page">
 <h2 class="tab">basic</h2>
-<table><tbody>
-<tr><td>dna:</td>
-<td><input type="text" name="dna" value="{{dna}}"/></td></tr>
-</tbody></table>
+Enter string of DNA to be analyzed:<br>
+<textarea name="dna" rows="4" cols="100">
+{{dna}}
+</textarea>
 </div>
 </div>
 </form>

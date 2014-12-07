@@ -445,6 +445,11 @@ def plot_interface(app,cid,pltid):
         bars = 'true'
     else:
         bars = 'false'
+     
+    if plottype == 'categories': 
+        tfn = 'plot-cat'
+    else:
+        tfn = 'plot-line' 
 
     sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
     if re.search(r'^\s*$', cid):
@@ -454,9 +459,10 @@ def plot_interface(app,cid,pltid):
         print sim_dir + plotfn
         p = plots.plot()
         data = p.get_data(sim_dir + plotfn,col1,col2)
-        params = { 'cid': cid, 'data': data, 'app': app, 'user': user, 
+        ticks = p.get_ticks(sim_dir + plotfn,col1,col2)
+        params = { 'cid': cid, 'data': data, 'app': app, 'user': user, 'ticks': ticks,
                    'title': title, 'bars': bars }
-        return template('plot', params)
+        return template(tfn, params)
 
 @get('/<app>/<cid>/data/<pltid>')
 def get_data():
