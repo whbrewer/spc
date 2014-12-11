@@ -25,6 +25,15 @@ QUICKSTART
                 so you can just click output several times until you see the result)
   Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  
 
+* To start a docker SciPaaS instance:
+
+      # Either use the published image
+      docker pull willscott/scipaas
+      # Or build your own
+      docker build -t scipaas .
+      # then run an instance of the loaded image.
+      docker run -d -P willscott/scipaas
+
 ----------
 QUESTIONS
 ----------
