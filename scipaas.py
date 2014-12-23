@@ -210,13 +210,10 @@ def run_job(db,jid):
     query = 'select name,cid from apps natural join jobs where jid=?'
     c = db.execute(query,(jid,))
     [(app,cid)] = c.fetchall()
-    print 'result:',app,cid
     c.close()
     rel_path=(os.pardir+os.sep)*4
     run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
-    print 'run_dir:',run_dir
     cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
-    print "cmd:",cmd
     os.system("cd " + run_dir + ";" + cmd + " &")
     sched.qdel(jid)
     redirect("/"+app+"/"+cid+"/monitor")
@@ -328,7 +325,7 @@ def load_apps(db):
         name = row[0]
         appid = row[1]
         input_format = row[2]
-        print 'loading: %s id: %s' % (name,appid)
+        print 'loading: %s (id: %s)' % (name,appid)
         if(input_format=='namelist'):
             myapp = apps.namelist(name,appid)
         elif(input_format=='ini'):

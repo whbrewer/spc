@@ -13,7 +13,8 @@
 <input type="submit" formaction="/plots" class="submit plot" value="plot"/>
 <input type="submit" formaction="/jobs" class="submit jobs" value="myjobs"/>
 <input type="submit" formaction="/wall" class="submit wall" value="wall"/>
-</form>
+</form> 
+<img class="clear" src="/static/images/clear_left.png" onclick="document.getElementById('cid').value=''"/>
 
 </div>
 

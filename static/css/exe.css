@@ -1,28 +1,3 @@
-/*
-input[type="submit"]
-{
-   z-index:1;
-   font-family: tacoma;
-   font-size: 20px;
-   width: 92px;
-   display: inline-block;
-   padding: 5px;
-   color: #fff;
-   text-decoration: none;
-   font-weight: bold;
-   line-height: 1;
-   -moz-border-radius: 5px;
-   -webkit-border-radius: 5px;
-   -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-   -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-   text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
-   position: fixed;
-   margin:4px;
-   border: solid 0px;
-   cursor: pointer;
-}
-*/
-
 .submit {
    z-index:1;
    font-family: tacoma;
@@ -96,12 +71,13 @@ input.cid {
 /* color scheme by colorschemedesigner.com */
 .exe    { left: 0px;   top: 0px; background: #759d00; color: white }
 .run    { left: 0px;   top: 0px; background: #759d00; color: white }
-.start  { left: 100px; top: 0px; background: #759d00; color: white }
-.inputs { left: 200px; top: 0px; background: #bf4e30; color: white }
-.output { left: 300px; top: 0px; background: #a62300; color: white }
-.plot   { left: 400px; top: 0px; background: #4112AE; color: white }
-.jobs   { left: 500px; top: 0px; background: #280671; color: white }
-.wall   { left: 600px; top: 0px; background: #0a0a0a; color: white }
+.clear  { left: 100px; top: -5px; position: fixed; }
+.start  { left: 150px; top: 0px; background: #759d00; color: white }
+.inputs { left: 250px; top: 0px; background: #bf4e30; color: white }
+.output { left: 350px; top: 0px; background: #a62300; color: white }
+.plot   { left: 450px; top: 0px; background: #4112AE; color: white }
+.jobs   { left: 550px; top: 0px; background: #280671; color: white }
+.wall   { left: 650px; top: 0px; background: #0a0a0a; color: white }
 
 .lfooter a:link {color: white; text-decoration:none;}
 .lfooter a:visited {color: white;}
