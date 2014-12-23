@@ -6,8 +6,9 @@ function showImage() {
    document.getElementById('loadingImage').style.visibility='visible';
 }
 
-function set_cid(cid) {
+function set_cid(cid,app) {
    document.getElementById('cid').value = cid;
+   document.getElementById('app').value = app;
 }
 
 /* 

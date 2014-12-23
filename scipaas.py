@@ -80,17 +80,19 @@ def execute(db,app,cid):
                    'err': e }
         return template('error',params)
 
-@get('/<app>/output')
-def output(app):
+@get('/output')
+def output():
     global user
+    app = request.query.app
     cid = request.query.cid
     output = slurp_file(app,cid,myapps[app].outfn)
     params = { 'cid': cid, 'output': output, 'app': app, 'user': user }
     return template('output', params)
 
-@get('/<app>/inputs')
-def inputs(app):
+@get('/inputs')
+def inputs():
     global user
+    app = request.query.app
     cid = request.query.cid
     inputs = slurp_file(app,cid,myapps[app].simfn)
     params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user }
@@ -127,12 +129,12 @@ def root():
     return template('overview')
 
 @route('/jobs')
-@route('/jobs/<app>')
-def show_jobs(db,app=default_app):#,cid=''):
+def show_jobs(db):#,cid=''):
     if not authorized(): redirect('/login')
-    if app not in myapps: redirect('/apps')
+    #if app not in myapps: redirect('/apps')
     global user
     cid = request.query.cid
+    app = request.query.app
     c = db.execute('SELECT * FROM jobs where user = \'' + user + '\' ORDER BY jid DESC')
     result = c.fetchall()
     c.close()
@@ -142,11 +144,12 @@ def show_jobs(db,app=default_app):#,cid=''):
     params['user'] = user
     return template('jobs', params, rows=result)
 
-@get('/wall/<app>')
-def get_wall(db,app):
+@get('/wall')
+def get_wall(db):
     if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
+    app = request.query.app
     c = db.execute('SELECT jid,user,app,cid,comment FROM jobs NATURAL JOIN wall ORDER BY jid DESC')
     result = c.fetchall()
     c.close()
@@ -156,8 +159,8 @@ def get_wall(db,app):
     params['user'] = user
     return template('wall', params, rows=result)
 
-@post('/wall/<app>')
-def post_wall(db,app):
+@post('/wall')
+def post_wall(db):
     if not authorized(): redirect('/login')
     cid = request.forms.cid
     jid = request.forms.jid
@@ -377,9 +380,10 @@ def edit_app(appid):
     params = {'name': name, 'description': description, 'category': category, 'language': language }
     return template(app_edit, params)
 
-@get('/<app>/start')
-def getstart(app):
+@get('/start')
+def getstart():
     global user
+    app = request.query.app
     if myapps[app].appname not in myapps: redirect('/apps')
     try:
         params = myapps[app].params
@@ -409,10 +413,10 @@ def list(db,app):
     params['user'] = user
     return template('list', params)
 
-@get('/<app>/plots')
-@get('/<app>/<cid>/plots')
-def get_plots(db,app):
+@get('/plots')
+def get_plots(db):
     global user
+    app = request.query.app
     if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
     cid = request.query.cid
@@ -422,32 +426,39 @@ def get_plots(db,app):
     params = { 'app': app, 'cid': cid, 'user': user } 
     return template('plots', params, rows=result)
 
-@get('/<app>/delete/<cid>')
-def delete_cid(app,cid):
-    path = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
-    print "deleting path",path
-    try:
-        shutil.rmtree(path)
-    except:
-        return "ERROR: there was a problem when trying to delete"
-    redirect("/"+app+"/list")
+# Note: this conflicts with delete_plot function below
+#@get('/<app>/delete/<cid>')
+#def delete_cid(app,cid):
+#    path = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
+#    print "deleting path",path
+#    try:
+#        shutil.rmtree(path)
+#    except:
+#        return "ERROR: there was a problem when trying to delete"
+#    redirect("/"+app+"/list")
 
-@get('/<app>/plots/delete/<pltid>')
-def delete_plot(db,app,pltid):
+@get('/plots/delete/<pltid>')
+def delete_plot(db,pltid):
+    app = request.query.app
+    cid = request.query.cid
     p = plots.plot()
     p.delete(pltid)
-    redirect ('/' + app + '/plots')
+    redirect ('/plots?app='+app)
 
-@post('/<app>/plots/create')
-def create_plot(app):
+@post('/plots/create')
+def create_plot():
+    app = request.forms.get('app')
+    cid = request.forms.get('cid')
     p = plots.plot()
     r = request
     p.create(myapps[app].appid,r.forms['ptype'],r.forms['fn'],r.forms['col1'],r.forms['col2'],r.forms['title'])
-    redirect ('/' + app + '/plots')
+    redirect ('/plots?app='+app+'&cid='+cid)
 
-@get('/<app>/<cid>/plot/<pltid>')
-def plot_interface(app,cid,pltid):
+@get('/plot/<pltid>')
+def plot_interface(pltid):
     global user
+    app = request.query.app
+    cid = request.query.cid
     p = plots.plot()
     (plottype,plotfn,col1,col2,title) = p.read(app,pltid)
 

@@ -23,7 +23,7 @@ td {text-align: center}
 
 <!--<h1>{{app}}</h1>-->
 
-<h2 align=center>Available plots for {{cid}}</h2>
+<h2 align=center>Available plots for {{app}} app ({{cid}})</h2>
 
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53
@@ -37,8 +37,8 @@ td {text-align: center}
   <td>{{row[2]}}</td>
   <td>{{row[3]}}</td>
   <td>{{row[4]}}</td>
-  <td><a href="/{{app}}/{{cid}}/plot/{{row[0]}}">plot</a> -
-      <a href="/{{app}}/plots/delete/{{row[0]}}">delete</a> 
+  <td><a href="/plot/{{row[0]}}?app={{app}}&cid={{cid}}"><img src="/static/plot.png"></a> -
+      <a href="/plots/delete/{{row[0]}}?app={{app}}&cid={{cid}}">delete</a> 
   <!--
   <form method="get" action="/apps/delete/{{row[0]}}">
      <td><input type="button" value="delete"></td> 
@@ -48,9 +48,10 @@ td {text-align: center}
 %end
 </table>
 
-<h2>Add a new plot to: {{app}}</h2>
+<hr>
+<h2>Add a new plot to {{app}} app</h2>
 
-<form method="post" action="/{{app}}/plots/create">
+<form method="post" action="/plots/create">
    Filename to plot (use <cid> to use the case id): <input type="text" name="fn"><br>
    Title: <input type="text" name="title"><br>
    X-Column: 
@@ -59,6 +60,11 @@ td {text-align: center}
        <option value="2">2</option>
        <option value="3">3</option>
        <option value="4">4</option>
+       <option value="5">5</option>
+       <option value="6">6</option>
+       <option value="7">7</option>
+       <option value="8">8</option>
+       <option value="9">9</option>
    </select><br>
 
    Y-Column:
@@ -67,6 +73,11 @@ td {text-align: center}
        <option value="2">2</option>
        <option value="3">3</option>
        <option value="4">4</option>
+       <option value="5">5</option>
+       <option value="6">6</option>
+       <option value="7">7</option>
+       <option value="8">8</option>
+       <option value="9">9</option>
    </select><br>
 
    <!-- <input type="text" name="col1"><br> -->
@@ -76,6 +87,8 @@ td {text-align: center}
        <option VALUE="line">line</option>
        <option VALUE="categories">categories (bar plot)</option>
    </select><br>
+   <input type="hidden" name="app" value="{{app}}">
+   <input type="hidden" name="cid" value="{{cid}}">
    <input type="submit">
 </form>
 
