@@ -1,5 +1,5 @@
-<link rel="Stylesheet" type="text/css" href="/static/login.css" />
-<script src="/static/flot-0.8.2/jquery.js"></script>
+<link rel="Stylesheet" type="text/css" href="/static/css/login.css" />
+<script src="/static/flot/jquery.js"></script>
 <script src="/static/register.js"></script>
 
 <script>

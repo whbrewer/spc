@@ -18,7 +18,7 @@ class plot(object):
         y = ''
         for line in open(fn, 'rU'):
             # don't parse comments
-            print line
+            #print line
             if re.search(r'#',line): continue
             x = line.split()
             if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
@@ -31,7 +31,7 @@ class plot(object):
         i = 0
         for line in open(fn, 'rU'):
             # don't parse comments
-            print line
+            #print line
             if re.search(r'#',line): continue
             x = line.split()
             if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
@@ -50,7 +50,7 @@ class plot(object):
 
     def read(self,app,pltid):
         cur = self.con.cursor()
-        print app
+        #print app
         # in the future this has to support reading multiple plots
         result = cur.execute('select type, filename, col1, col2, title from apps natural join plots where name=? and pltid=?',(app,pltid)).fetchone()
         if result is None:

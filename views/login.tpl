@@ -1,4 +1,4 @@
-<link rel="Stylesheet" type="text/css" href="/static/login.css" />
+<link rel="Stylesheet" type="text/css" href="/static/css/login.css" />
 
 <body>
 

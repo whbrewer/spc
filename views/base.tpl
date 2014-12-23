@@ -3,7 +3,7 @@
 
 <head>      
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="Stylesheet" type="text/css" href="/static/css.css" />
+<link rel="Stylesheet" type="text/css" href="/static/css/css.css" />
 <title>
 % if defined('title'):
 {{ title }} 

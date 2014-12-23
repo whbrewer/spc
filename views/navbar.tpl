@@ -1,7 +1,7 @@
 <div class="navbar">
 <!--
 <a href="/apps/show/name" border=0>
-   <img align="right" height="43" src="/static/scipaas.png"/>
+<img align="left" height="43" src="/static/images/scipaas.png"/>
 </a>
 -->
 <form id="plotform" action="/{{app}}" method="get">

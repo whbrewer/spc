@@ -37,7 +37,7 @@ td {text-align: center}
   <td>{{row[2]}}</td>
   <td>{{row[3]}}</td>
   <td>{{row[4]}}</td>
-  <td><a href="/plot/{{row[0]}}?app={{app}}&cid={{cid}}"><img src="/static/plot.png"></a> -
+  <td><a href="/plot/{{row[0]}}?app={{app}}&cid={{cid}}"><img src="/static/images/plot.png"></a> -
       <a href="/plots/delete/{{row[0]}}?app={{app}}&cid={{cid}}">delete</a> 
   <!--
   <form method="get" action="/apps/delete/{{row[0]}}">

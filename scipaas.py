@@ -108,7 +108,7 @@ def slurp_file(app,cid,filename):
         f.close()
         return inputs
     except IOError:
-        return("ERROR: the file cannot be opened or does not exist")
+        return("ERROR: the file cannot be opened or does not exist.\nSelect a case id first.")
 
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
@@ -162,6 +162,7 @@ def get_wall(db):
 @post('/wall')
 def post_wall(db):
     if not authorized(): redirect('/login')
+    app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
     comment = request.forms.comment
@@ -461,6 +462,7 @@ def plot_interface(pltid):
     cid = request.query.cid
     p = plots.plot()
     (plottype,plotfn,col1,col2,title) = p.read(app,pltid)
+    params = {'app': app, 'cid': cid, 'user': user} 
 
     # if plot not in DB return error
     if plottype is None:
@@ -480,7 +482,8 @@ def plot_interface(pltid):
 
     sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
     if re.search(r'^\s*$', cid):
-        return "Error: no case id specified"
+        params['err']="No case id specified. First select a case id from the list of jobs."
+        return template('error', params)
     else:
         plotfn = re.sub(r"<cid>", cid, plotfn)
         print sim_dir + plotfn

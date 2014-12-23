@@ -3,8 +3,6 @@
 <body onload="init()">
 %include navbar
 
-ERROR: {{err}}
-
-<hr>
+<h2> ERROR: {{err}} </h2>
 
 %include footer

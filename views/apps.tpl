@@ -17,13 +17,13 @@ function edit(id) {
 </script>
 
 <center>
-<a href="/"><img src="/static/scipaas.png" width="50%"></a>
+<a href="/"><img src="/static/images/scipaas.png" width="50%"></a>
 <p><font size="+2"><i>a scientific platform-as-a-service</i></font></p>
 </center>
 
 <p>
 <font size="+1">
-<a href="/apps/add"><img src="/static/plus.png" align=left valign=bottom></a>
+<a href="/apps/add"><img src="/static/images/plus.png" align=left valign=bottom></a>
 SciPaaS is a middleware execution platform
 for easily uploading and running scientific apps in the cloud.</p>
 </font>
