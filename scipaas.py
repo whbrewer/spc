@@ -128,7 +128,6 @@ def root():
 
 @route('/jobs')
 @route('/jobs/<app>')
-#@route('/jobs/<cid>')
 def show_jobs(db,app=default_app):#,cid=''):
     if not authorized(): redirect('/login')
     if app not in myapps: redirect('/apps')
@@ -144,11 +143,11 @@ def show_jobs(db,app=default_app):#,cid=''):
     return template('jobs', params, rows=result)
 
 @get('/wall/<app>')
-def show_wall(db,app):
+def get_wall(db,app):
     if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
-    c = db.execute('SELECT * FROM jobs ORDER BY jid DESC')
+    c = db.execute('SELECT jid,user,app,cid,comment FROM jobs NATURAL JOIN wall ORDER BY jid DESC')
     result = c.fetchall()
     c.close()
     params = {}
@@ -157,8 +156,25 @@ def show_wall(db,app):
     params['user'] = user
     return template('wall', params, rows=result)
 
+@post('/wall/<app>')
+def post_wall(db,app):
+    if not authorized(): redirect('/login')
+    cid = request.forms.cid
+    jid = request.forms.jid
+    comment = request.forms.comment
+    # save comment to db
+    w = Wall.create(jid=jid, comment=comment)
+    macaron.bake() 
+    users = Users.select("user=?", [ user ])
+    # get all wall comments
+    result = Wall.select("id=?", [ "*" ] )
+    params = {}
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    return template('wall', params, rows=result)
+
 @route('/jobs/<app>')
-#@route('/jobs/<cid>')
 def show_jobs(db,app=default_app):#,cid=''):
     if not authorized(): redirect('/login')
     if app not in myapps: redirect('/apps')
@@ -375,7 +391,7 @@ def getstart(app):
         params['cid'] = cid
         params['app'] = app
         params['user'] = user
-        return template(myapps[app].appname, params)
+        return template('apps/' + myapps[app].appname, params)
     except:
         redirect("/apps/show/name")
 

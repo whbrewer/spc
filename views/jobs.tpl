@@ -14,6 +14,11 @@
   <td><a href="/jobs/delete/{{row[0]}}"><img src="/static/trash_can.gif"></a></td>
   <td><a href="/{{row[2]}}/{{row[3]}}/monitor">monitor</a></td>
   <td><a onclick="set_cid('{{row[3]}}')">set</a></td>
+  <td><input type="radio" onclick="set_cid('{{row[3]}}')"></td>
+  <td><form method="post" action="/wall/{{app}}">
+      <input type="hidden" name="jid" value="{{row[0]}}">
+      <input type="text" name="comment">
+      <input type="submit" value="Post to wall"></a></form></td>
 </tr> 
 %end
 </table>

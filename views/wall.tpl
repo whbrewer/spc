@@ -4,14 +4,16 @@
 <body onload="init()">
 %include navbar
 
-<table border="0">
-<tr> <th>jid</th> <th>user</th> <th>app</th> <th>cid</th> <th>state</th> <th>time_submit</th> <th>description</th> </tr>
+<table border="1">
+<tr> <th>jid</th> <th>user</th> <th>app</th> <th>cid</th> <th>comment</th> </tr>
 %for row in rows:
   <tr>
-  %for col in row:
-    <td>{{col}}</td>
-  %end
-</tr> 
+  <td>{{row[0]}}</td>
+  <td>{{row[1]}}</td>
+  <td>{{row[2]}}</td>
+  <td>{{row[3]}}</td>
+  <td>{{row[4]}}</td>
+  </tr> 
 %end
 </table>
 

@@ -7,11 +7,18 @@ import config
 from models import * 
 
 sys.argv[1:]
-usage = "usage: " + sys.argv[0] + " create appname"
 
-#if (len(sys.argv) < 3):
-#    print usage
-#    sys.exit()
+def usage():
+    buf =  "usage: sp <command> [appname]\n\n"
+    buf += "commonly used commands:\n"
+    buf += "init     initialize a database for scipaas\n"
+    buf += "go       start the server\n"
+    buf += "create   create a new app named appname\n"
+    return buf
+
+if (len(sys.argv) == 1):
+    print usage()
+    sys.exit()
 
 def initdb():
     """Initializes database file"""
@@ -44,10 +51,15 @@ def initdb():
         appid integer,  type varchar(80), filename varchar(80), col1 integer, col2 integer, 
         title varchar(80), foreign key (appid) references apps(appid))"""
 
+    SQL_T_WALL = """CREATE TABLE wall(
+        id integer primary key autoincrement, jid integer, comment varchar(80), 
+        foreign key (jid) references jobs)"""
+
     macaron.execute(SQL_T_USERS)
     macaron.execute(SQL_T_JOBS)
     macaron.execute(SQL_T_APPS)
     macaron.execute(SQL_T_PLOTS)
+    macaron.execute(SQL_T_WALL)
 
     # create a default user/pass as guest/guest
     user = "guest"
@@ -71,8 +83,11 @@ if(sys.argv[1] == "create"):
         print "successfully output template"
 elif (sys.argv[1] == "init"):
     initdb()
+elif (sys.argv[1] == "go"):
+    os.system("python scipaas.py")
 else:
-    print usage
+    print "ERROR: option not supprted"
+    sys.exit()
 
 #try:
 #    if(sys.argv[1] == "n"):
