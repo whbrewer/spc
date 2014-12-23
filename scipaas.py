@@ -150,7 +150,7 @@ def get_wall(db):
     global user
     cid = request.query.cid
     app = request.query.app
-    c = db.execute('SELECT jid,user,app,cid,comment FROM jobs NATURAL JOIN wall ORDER BY jid DESC')
+    c = db.execute('SELECT id,user,app,cid,comment FROM jobs NATURAL JOIN wall ORDER BY jid DESC')
     result = c.fetchall()
     c.close()
     params = {}
@@ -176,7 +176,7 @@ def post_wall(db):
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    return template('wall', params, rows=result)
+    redirect('/wall')
 
 @route('/jobs/<app>')
 def show_jobs(db,app=default_app):#,cid=''):

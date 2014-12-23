@@ -1,11 +1,21 @@
-%include header title='Job scheduler'
-<!--<meta http-equiv="refresh" content="5">-->
+%include header title='Wall'
 
 <body onload="init()">
 %include navbar
 
-<table border="1">
-<tr> <th>jid</th> <th>user</th> <th>app</th> <th>cid</th> <th>comment</th> </tr>
+<h2 align=center>Wall</h2>
+
+<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<thead>
+<tr> 
+   <th>id</th> 
+   <th>user</th> 
+   <th>app</th> 
+   <th>cid</th> 
+   <th>comment</th> 
+</tr>
+</thead>
+
 %for row in rows:
   <tr>
   <td>{{row[0]}}</td>

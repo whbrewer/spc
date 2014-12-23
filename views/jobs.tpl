@@ -1,16 +1,33 @@
 %include header title='Job scheduler'
-<!--<meta http-equiv="refresh" content="5">-->
 
 <body onload="init()">
 %include navbar
 
-<table border="1">
-<tr> <th>jid</th> <th>user</th> <th>app</th> <th>cid</th> <th>state</th> <th>time_submit</th> <th>description</th> <th>delete</th> <th>monitor</th></tr>
+<h2 align=center>{{user}}'s jobs</h2>
+
+<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<thead>
+<tr>
+  <th>jid</th> 
+  <th>app</th> 
+  <th>cid</th> 
+  <th>state</th> 
+  <th>time_submit</th> 
+  <th>description</th> 
+  <th>delete</th> 
+  <th>monitor</th>
+</tr>
+</thead>
+
 %for row in rows:
   <tr>
-  %for col in row:
-    <td>{{col}}</td>
-  %end
+  <td>{{row[0]}}</td>
+  <td>{{row[2]}}</td>
+  <td>{{row[3]}}</td>
+  <td>{{row[4]}}</td>
+  <td>{{row[5]}}</td>
+  <td>{{row[6]}}</td>
+
   <td><a href="/jobs/delete/{{row[0]}}"><img src="/static/images/trash_can.gif"></a></td>
   <td><a href="/{{row[2]}}/{{row[3]}}/monitor">monitor</a></td>
   <td><a onclick="set_cid('{{row[3]}}','{{row[2]}}')">set</a></td>

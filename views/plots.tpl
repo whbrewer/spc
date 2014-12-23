@@ -28,8 +28,17 @@ td {text-align: center}
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53
 
-<table border="1" cellpadding=10 align=center>
-<tr bgcolor="dfdfdf" > <th>Title</th> <th>Type</th> <th>Filename</th> <th>X-Column</th> <th>Y-Column</th> <th>Action</th> </tr>
+<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<thead>
+<tr>
+   <th>Title</th> 
+   <th>Type</th> 
+   <th>Filename</th> 
+   <th>X-Column</th> 
+   <th>Y-Column</th> 
+   <th>Action</th> 
+</tr>
+</thead>
 %for row in rows:
   <tr>
   <td>{{row[5]}}</td>
@@ -37,7 +46,7 @@ td {text-align: center}
   <td>{{row[2]}}</td>
   <td>{{row[3]}}</td>
   <td>{{row[4]}}</td>
-  <td><a href="/plot/{{row[0]}}?app={{app}}&cid={{cid}}"><img src="/static/images/plot.png"></a> -
+  <td><a href="/plot/{{row[0]}}?app={{app}}&cid={{cid}}">plot</a> -
       <a href="/plots/delete/{{row[0]}}?app={{app}}&cid={{cid}}">delete</a> 
   <!--
   <form method="get" action="/apps/delete/{{row[0]}}">
