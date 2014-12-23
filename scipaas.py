@@ -76,8 +76,7 @@ def execute(db,app,cid):
         redirect("/jobs/"+app+"?cid="+cid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
-        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
-                   'err': e }
+        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e }
         return template('error',params)
 
 @get('/output')
@@ -85,26 +84,36 @@ def output():
     global user
     app = request.query.app
     cid = request.query.cid
-    if re.search("/",cid):
-        (u,c) = cid.split("/") 
-    else:
-        u = user
-    output = slurp_file(app,c,myapps[app].outfn,u)
-    params = { 'cid': cid, 'output': output, 'app': app, 'user': u }
-    return template('output', params)
+    try:
+        if re.search("/",cid):
+            (u,c) = cid.split("/") 
+        else:
+            u = user
+            c = cid
+        output = slurp_file(app,c,myapps[app].outfn,u)
+        params = { 'cid': cid, 'output': output, 'app': app, 'user': u }
+        return template('output', params)
+    except:
+        params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
+        return template('error', params)
 
 @get('/inputs')
 def inputs():
     global user
     app = request.query.app
     cid = request.query.cid
-    if re.search("/",cid):
-        (u,c) = cid.split("/") 
-    else:
-        u = user
-    inputs = slurp_file(app,c,myapps[app].simfn,u)
-    params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': u }
-    return template('inputs', params)
+    try:
+        if re.search("/",cid):
+            (u,c) = cid.split("/") 
+        else:
+            u = user
+            c = cid
+        inputs = slurp_file(app,c,myapps[app].simfn,u)
+        params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': u }
+        return template('inputs', params)
+    except:
+        params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
+        return template('error', params)
 
 def slurp_file(app,cid,filename,user):
     run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
@@ -391,11 +400,11 @@ def getstart():
     app = request.query.app
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
-    if re.search("/",cid):
-        (u,cid) = cid.split("/") 
-    else:
-        u = user
     try:
+        if re.search("/",cid):
+            (u,cid) = cid.split("/") 
+        else:
+            u = user
         params = myapps[app].params
         if cid is '':
             params = myapps[app].params
@@ -428,23 +437,12 @@ def get_plots(db):
     app = request.query.app
     if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
-    cid = request.query.cid
     c = db.execute('select pltid, type, filename, col1, col2, title from apps natural join plots where name=?',(app,))
     result = c.fetchall()
     c.close()
+    cid = request.query.cid
     params = { 'app': app, 'cid': cid, 'user': user } 
     return template('plots', params, rows=result)
-
-# Note: this conflicts with delete_plot function below
-#@get('/<app>/delete/<cid>')
-#def delete_cid(app,cid):
-#    path = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
-#    print "deleting path",path
-#    try:
-#        shutil.rmtree(path)
-#    except:
-#        return "ERROR: there was a problem when trying to delete"
-#    redirect("/"+app+"/list")
 
 @get('/plots/delete/<pltid>')
 def delete_plot(db,pltid):
@@ -465,16 +463,22 @@ def create_plot():
 
 @get('/plot/<pltid>')
 def plot_interface(pltid):
-    global user
     app = request.query.app
     cid = request.query.cid
+
+    if re.search("/",cid):
+        (u,c) = cid.split("/") 
+    else:
+        u = user
+        c = cid
+
     p = plots.plot()
     (plottype,plotfn,col1,col2,title) = p.read(app,pltid)
-    params = {'app': app, 'cid': cid, 'user': user} 
+    params = {'app': app, 'cid': cid, 'user': u} 
 
     # if plot not in DB return error
     if plottype is None:
-        params = { 'cid': cid, 'app': app, 'user': user }
+        params = { 'cid': cid, 'app': app, 'user': u }
         params['err'] = "Sorry! This app does not support plotting capability"
         return template('error', params)
 
@@ -488,17 +492,17 @@ def plot_interface(pltid):
     else:
         tfn = 'plot-line' 
 
-    sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
-    if re.search(r'^\s*$', cid):
+    sim_dir = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+c+os.sep
+    #if re.search(r'^\s*$', cid):
+    if not cid:
         params['err']="No case id specified. First select a case id from the list of jobs."
         return template('error', params)
     else:
-        plotfn = re.sub(r"<cid>", cid, plotfn)
-        print sim_dir + plotfn
+        plotfn = re.sub(r"<cid>", c, plotfn)
         p = plots.plot()
         data = p.get_data(sim_dir + plotfn,col1,col2)
         ticks = p.get_ticks(sim_dir + plotfn,col1,col2)
-        params = { 'cid': cid, 'data': data, 'app': app, 'user': user, 'ticks': ticks,
+        params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks,
                    'title': title, 'bars': bars }
         return template(tfn, params)
 

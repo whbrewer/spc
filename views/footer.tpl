@@ -4,7 +4,27 @@
 </div>
 
 <div class="rfooter">
-app:{{app}} &bull; user:{{user}} &bull; cid:{{cid}}
+
+%if defined('app'):
+    app:{{app}} 
+%else:
+    app:none
+%end
+&bull; 
+
+%if defined('user'):
+    user:{{user}} 
+%else:
+    user:none
+%end
+&bull; 
+
+%if defined('cid'):
+    cid:{{cid}}
+%else:
+    cid:none
+%end
+
 </div>
 </body>
 </html>
