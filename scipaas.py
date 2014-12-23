@@ -54,7 +54,7 @@ def confirm_form(app):
     # parameter have to fix this in the future
     request.forms['case_id'] = cid 
     myapps[app].write_params(request.forms,user)
-    inputs = slurp_file(app,cid,myapps[app].simfn)
+    inputs = slurp_file(app,cid,myapps[app].simfn,user)
     params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user }
 
     try:
@@ -85,8 +85,12 @@ def output():
     global user
     app = request.query.app
     cid = request.query.cid
-    output = slurp_file(app,cid,myapps[app].outfn)
-    params = { 'cid': cid, 'output': output, 'app': app, 'user': user }
+    if re.search("/",cid):
+        (u,c) = cid.split("/") 
+    else:
+        u = user
+    output = slurp_file(app,c,myapps[app].outfn,u)
+    params = { 'cid': cid, 'output': output, 'app': app, 'user': u }
     return template('output', params)
 
 @get('/inputs')
@@ -94,12 +98,15 @@ def inputs():
     global user
     app = request.query.app
     cid = request.query.cid
-    inputs = slurp_file(app,cid,myapps[app].simfn)
-    params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user }
+    if re.search("/",cid):
+        (u,c) = cid.split("/") 
+    else:
+        u = user
+    inputs = slurp_file(app,c,myapps[app].simfn,u)
+    params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': u }
     return template('inputs', params)
 
-def slurp_file(app,cid,filename):
-    global user
+def slurp_file(app,cid,filename,user):
     run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
     fn = run_dir + os.sep + filename
     try:
@@ -240,12 +247,12 @@ def logout():
     redirect('/')
 
 @route('/static/<filepath:path>')
-def static(filepath):
+def server_static(filepath):
     return static_file(filepath, root='static')
 
-#@route('/static/:path#.+#', name='static')
-#def static(path):
-#    return static_file(path, root='static')
+@get('/favicon.ico')
+def get_favicon():
+    return server_static('favicon.ico')
 
 @post('/login')
 def post_login(db):
@@ -386,16 +393,20 @@ def getstart():
     global user
     app = request.query.app
     if myapps[app].appname not in myapps: redirect('/apps')
+    cid = request.query.cid
+    if re.search("/",cid):
+        (u,cid) = cid.split("/") 
+    else:
+        u = user
     try:
         params = myapps[app].params
-        cid = request.query.cid
         if cid is '':
             params = myapps[app].params
         else:
-            params,_,_ = myapps[app].read_params(user,cid)
+            params,_,_ = myapps[app].read_params(u,cid)
         params['cid'] = cid
         params['app'] = app
-        params['user'] = user
+        params['user'] = u
         return template('apps/' + myapps[app].appname, params)
     except:
         redirect("/apps/show/name")

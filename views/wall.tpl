@@ -23,6 +23,7 @@
   <td>{{row[2]}}</td>
   <td>{{row[3]}}</td>
   <td>{{row[4]}}</td>
+  <td><a onclick="set_cid('{{row[1]}}/{{row[3]}}','{{row[2]}}')">set</a></td>
   </tr> 
 %end
 </table>
