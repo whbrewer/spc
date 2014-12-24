@@ -3,7 +3,7 @@
 <body onload="init()">
 %include navbar
 
-<h2 align=center>{{user}}'s jobs</h2>
+<h1 align=center>{{user}}'s jobs</h1>
 
 <table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
 <thead>

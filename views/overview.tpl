@@ -1,7 +1,7 @@
 %include header title='Overview'
 
 <center>
-<img src="/static/scipaas.png" width="50%">
+<img src="/static/images/scipaas.png" width="50%">
 <p><font size="+2"><i>a scientific platform-as-a-service</i></font></p> 
 </center>
 

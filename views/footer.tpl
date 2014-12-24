@@ -1,5 +1,5 @@
 <div class="lfooter">
-<a href="/apps/show/name">SCIPAAS</a> &bull; 
+<a href="/">SCIPAAS</a> &bull; 
 <a href="/logout">logout</a>
 </div>
 

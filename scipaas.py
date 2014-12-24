@@ -397,10 +397,10 @@ def edit_app(appid):
 @get('/start')
 def getstart():
     global user
-    app = request.query.app
-    if myapps[app].appname not in myapps: redirect('/apps')
-    cid = request.query.cid
     try:
+        app = request.query.app
+        if myapps[app].appname not in myapps: redirect('/apps')
+        cid = request.query.cid
         if re.search("/",cid):
             (u,cid) = cid.split("/") 
         else:
@@ -415,7 +415,9 @@ def getstart():
         params['user'] = u
         return template('apps/' + myapps[app].appname, params)
     except:
-        redirect("/apps/show/name")
+        params = {'err': "must first select an app to run by clicking apps button."}
+        return template('error', params)
+        #redirect("/apps/show/name")
 
 @get('/<app>/list')
 def list(db,app):
@@ -434,15 +436,19 @@ def list(db,app):
 @get('/plots')
 def get_plots(db):
     global user
-    app = request.query.app
-    if myapps[app].appname not in myapps: redirect('/apps')
-    if not authorized(): redirect('/login')
-    c = db.execute('select pltid, type, filename, col1, col2, title from apps natural join plots where name=?',(app,))
-    result = c.fetchall()
-    c.close()
-    cid = request.query.cid
-    params = { 'app': app, 'cid': cid, 'user': user } 
-    return template('plots', params, rows=result)
+    try:
+        app = request.query.app
+        if myapps[app].appname not in myapps: redirect('/apps')
+        if not authorized(): redirect('/login')
+        c = db.execute('select pltid, type, filename, col1, col2, title from apps natural join plots where name=?',(app,))
+        result = c.fetchall()
+        c.close()
+        cid = request.query.cid
+        params = { 'app': app, 'cid': cid, 'user': user } 
+        return template('plots', params, rows=result)
+    except:
+        params = {'err': "must first select an app to plot by clicking apps button"}
+        return template('error', params)
 
 @get('/plots/delete/<pltid>')
 def delete_plot(db,pltid):

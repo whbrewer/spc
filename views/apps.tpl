@@ -1,4 +1,5 @@
 %include header title='Installed Apps'
+%include navbar
 
 <body onload="init()">
 <script>
@@ -16,25 +17,22 @@ function edit(id) {
 }
 </script>
 
-<center>
-<a href="/"><img src="/static/images/scipaas.png" width="50%"></a>
-<p><font size="+2"><i>a scientific platform-as-a-service</i></font></p>
-</center>
-
-<p>
-<font size="+1">
-<a href="/apps/add"><img src="/static/images/plus.png" align=left valign=bottom></a>
-SciPaaS is a middleware execution platform
-for easily uploading and running scientific apps in the cloud.</p>
-</font>
-
 <h1>Installed Apps</h1>
 
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53
 
-<table border="1">
-<tr> <th><a href="/apps/show/name">Name</a></th> <th>Description</th> <th><a href="/apps/show/category">Category</a></th> <th><a href="/apps/show/language">Language</a></th> <th>Delete</th> </tr>
+<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<thead>
+<tr> 
+<th><a href="/apps/show/name">Name</a></th> 
+<th>Description</th> 
+<th><a href="/apps/show/category">Category</a></th> 
+<th><a href="/apps/show/language">Language</a></th> 
+<th>Delete</th> 
+</tr>
+</thead>
+
 %for row in rows:
   <tr>
   <td><a href="/{{row[1]}}">{{row[1]}}</a></td>
@@ -51,3 +49,6 @@ for easily uploading and running scientific apps in the cloud.</p>
 </tr> 
 %end
 </table>
+<a href="/apps/add"><img src="/static/images/plus.png" align=left valign=bottom>Add an app</a>
+
+%include footer

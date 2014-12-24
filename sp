@@ -14,6 +14,8 @@ def usage():
     buf += "init     initialize a database for scipaas\n"
     buf += "go       start the server\n"
     buf += "create   create a new app named appname\n"
+    buf += "search   search for available apps\n"
+    buf += "install  install an app\n"
     return buf
 
 if (len(sys.argv) == 1):
@@ -85,6 +87,10 @@ elif (sys.argv[1] == "init"):
     initdb()
 elif (sys.argv[1] == "go"):
     os.system("python scipaas.py")
+elif (sys.argv[1] == "search"):
+    print "search feature not yet implemented"
+elif (sys.argv[1] == "install"):
+    print "install feature not yet working"
 else:
     print "ERROR: option not supprted"
     sys.exit()
