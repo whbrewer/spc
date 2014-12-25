@@ -13,6 +13,7 @@
    <th>app</th> 
    <th>cid</th> 
    <th>comment</th> 
+   <th>set</th>
 </tr>
 </thead>
 
@@ -23,7 +24,7 @@
   <td>{{row[2]}}</td>
   <td>{{row[3]}}</td>
   <td>{{row[4]}}</td>
-  <td><a onclick="set_cid('{{row[1]}}/{{row[3]}}','{{row[2]}}')">set</a></td>
+  <td><a style="cursor: pointer" onclick="set_cid('{{row[1]}}/{{row[3]}}','{{row[2]}}')"><u>set</u></a></td>
   </tr> 
 %end
 </table>

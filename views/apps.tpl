@@ -40,7 +40,6 @@ function edit(id) {
   <td>{{row[3]}}</td>
   <td>{{row[4]}}</td>
   <td><a href="/apps/delete/{{row[0]}}">delete</a></td>
-  <td><a href="/apps/edit/{{row[0]}}">edit</a></td>
   <!--
   <form method="get" action="/apps/delete/{{row[0]}}">
      <td><input type="button" value="delete"></td> 

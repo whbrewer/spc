@@ -7,7 +7,7 @@
   <script type="text/javascript" src="/static/tablesorter/jquery.tablesorter.js"></script>
 
   <link rel="stylesheet" href="/static/css/jq.css" type="text/css" media="print, projection, screen" />
-  <link rel="stylesheet" href="/static/tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+  <link rel="stylesheet" href="/static/tablesorter/style.css" type="text/css" media="print, projection, screen" />
 
   <link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
   <link type="text/css" rel="StyleSheet" href="/static/css/exe.css" />

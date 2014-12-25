@@ -25,16 +25,17 @@ if (len(sys.argv) == 1):
     sys.exit()
 
 db = config.db
+# make a backup copy if file exists
+if(sys.argv[1] == "init") {
+    if os.path.isfile(db): 
+        shutil.copyfile(db, db+".bak")
+}
 # Initializes Macaron
 macaron.macaronage(db)
 
 def initdb():
     """Initializes database file"""
     import hashlib
-
-    # make a backup copy if file exists
-    if os.path.isfile(db): 
-        shutil.copyfile(db, db+".bak")
 
     # Creates tables
     SQL_T_APPS = """CREATE TABLE IF NOT EXISTS apps(
@@ -111,7 +112,6 @@ if __name__ == "__main__":
     elif (sys.argv[1] == "search"):
         print notyet
     elif (sys.argv[1] == "install"):
-        print notyet
         durl = url+'/'+sys.argv[2]+'.zip' 
         print 'durl is:',durl
         dlfile(durl)
