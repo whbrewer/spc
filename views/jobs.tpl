@@ -1,7 +1,7 @@
-%include header title='Job scheduler'
+%include('header')
 
 <body onload="init()">
-%include navbar
+%include('navbar')
 
 <h1 align=center>{{user}}'s jobs</h1>
 

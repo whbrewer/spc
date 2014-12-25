@@ -26,10 +26,9 @@ if (len(sys.argv) == 1):
 
 db = config.db
 # make a backup copy if file exists
-if(sys.argv[1] == "init") {
+if(sys.argv[1] == "init"):
     if os.path.isfile(db): 
         shutil.copyfile(db, db+".bak")
-}
 # Initializes Macaron
 macaron.macaronage(db)
 

@@ -1,5 +1,5 @@
-%include header title='Installed Apps'
-%include navbar
+%include('header')
+%include('navbar')
 
 <body onload="init()">
 <script>

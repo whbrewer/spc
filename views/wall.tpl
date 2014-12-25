@@ -1,7 +1,7 @@
-%include header title='Wall'
+%include('header')
 
 <body onload="init()">
-%include navbar
+%include('navbar')
 
 <h1 align=center>Wall</h1>
 
@@ -29,4 +29,4 @@
 %end
 </table>
 
-%include footer
+%include('footer')

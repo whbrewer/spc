@@ -13,7 +13,7 @@
   <link type="text/css" rel="StyleSheet" href="/static/css/exe.css" />
   <link type="text/css" rel="StyleSheet" href="/static/css/tab.webfx.css"/>
 
-  <title>{{title or 'No title'}}</title>
+  <title>SciPaaS</title>
   <script type="text/javascript">
     setupAllTabs();
   </script>

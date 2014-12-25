@@ -1,4 +1,4 @@
-%include header title='Edit App'
+%include('header')
 
 <body onload="init()">
 <script>

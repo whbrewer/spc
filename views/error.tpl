@@ -1,8 +1,8 @@
-%include header title='Menu'
+%include('header')
 
 <body onload="init()">
-%include navbar
+%include('navbar')
 
 <h2> ERROR: {{err}} </h2>
 
-%include footer
+%include('footer')

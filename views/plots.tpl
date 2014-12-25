@@ -1,5 +1,5 @@
-%include header title='Available Plots'
-%include navbar
+%include('header')
+%include('navbar')
 
 <body onload="init()">
 <script>
@@ -100,4 +100,4 @@ td {text-align: center}
    <input type="submit">
 </form>
 
-%include footer
+%include('footer')

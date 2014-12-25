@@ -2,7 +2,7 @@
 <script language="javascript" type="text/javascript" src="/static/flot/jquery.js"></script>
 
 <body onload="init()">
-%include navbar
+%include('navbar')
 
 <div id="output" style="width:648px;height:200px;"></div>
 

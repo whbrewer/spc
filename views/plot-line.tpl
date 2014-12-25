@@ -1,4 +1,4 @@
-%include header title='Menu'
+%include('header')
 <script language="javascript" type="text/javascript" src="/static/flot/excanvas.js"></script> 
 <script language="javascript" type="text/javascript" src="/static/flot/jquery.js"></script>
 <script language="javascript" type="text/javascript" src="/static/flot/jquery.flot.js"></script>
@@ -7,7 +7,7 @@
 <script language="javascript" type="text/javascript" src="/static/flot/jquery.flot.fillbetween.js"></script>
 
 <body onload="init()">
-%include navbar
+%include('navbar')
 
 <h1>Plots {{cid}}</h1>
 
@@ -74,4 +74,4 @@
 
 <p><label><input id="zoom" type="checkbox" CHECKED />Zoom to selection.</label> Double click to restore to original plot.</p>
 
-%include footer
+%include('footer')

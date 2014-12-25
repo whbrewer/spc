@@ -1,4 +1,4 @@
-%include header title='Overview'
+%include('header')
 
 <center>
 <img src="/static/images/scipaas.png" width="50%">

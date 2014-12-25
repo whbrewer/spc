@@ -1,11 +1,11 @@
-%include header title='Menu'
+%include('header')
 <link href="/static/css/flot.css" rel="stylesheet" type="text/css">
 <script language="javascript" type="text/javascript" src="/static/flot/jquery.js"></script>
 <script language="javascript" type="text/javascript" src="/static/flot/jquery.flot.js"></script>
 <script language="javascript" type="text/javascript" src="/static/flot/jquery.flot.categories.js"></script>
 
 <body onload="init()">
-%include navbar
+%include('navbar')
 
 <div class="tab-page">
 
@@ -47,4 +47,4 @@
 
 </body>
 
-%include footer
+%include('footer')

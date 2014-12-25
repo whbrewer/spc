@@ -1,5 +1,5 @@
-%include header title='Menu'
-%include navbar
+%include('header')
+%include('navbar')
 
 <h1>Output</h1>
 
@@ -7,4 +7,4 @@
 {{!output}}
 </pre>
 
-%include footer
+%include('footer')
