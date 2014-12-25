@@ -6,11 +6,11 @@ QUICKSTART
 
 * To create and initialize the database which SciPaaS uses: 
   
-      scipaas-admin.py init
+      sp init
 
 * To start running the web server: 
 
-      python scipaas.py
+      sp go
 
 * To run the dna case in scipaas:
 

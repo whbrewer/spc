@@ -187,7 +187,8 @@ def post_wall(db):
     macaron.bake() 
     users = Users.select("user=?", [ user ])
     # get all wall comments
-    result = Wall.select("id=?", [ "*" ] )
+    #result = Wall.select("id=?", [ "*" ] )
+    result = Wall.all()
     params = {}
     params['cid'] = cid
     params['app'] = app

@@ -4,9 +4,14 @@ import apps
 import sys, os, shutil
 import macaron 
 import config
+import urllib2
+import xml.etree.ElementTree as ET
 from models import * 
 
 sys.argv[1:]
+
+#url = 'https://scihub.s3-us-west-1.amazonaws.com'
+url = 'https://s3-us-west-1.amazonaws.com/scihub'
 
 def usage():
     buf =  "usage: sp <command> [appname]\n\n"
@@ -15,6 +20,7 @@ def usage():
     buf += "go       start the server\n"
     buf += "create   create a new app named appname\n"
     buf += "search   search for available apps\n"
+    buf += "list     [available|installed] \n"
     buf += "install  install an app\n"
     return buf
 
@@ -22,17 +28,17 @@ if (len(sys.argv) == 1):
     print usage()
     sys.exit()
 
+db = config.db
+# Initializes Macaron
+macaron.macaronage(db)
+
 def initdb():
     """Initializes database file"""
     import hashlib
 
-    db = config.db
     # make a backup copy if file exists
     if os.path.isfile(db): 
         shutil.copyfile(db, db+".bak")
-
-    # Initializes Macaron
-    macaron.macaronage(db)
 
     # Creates tables
     SQL_T_APPS = """CREATE TABLE IF NOT EXISTS apps(
@@ -76,21 +82,64 @@ def initdb():
     p = Plots.create(appid=1,type="categories",filename="codons.out",col1=1,col2=2,title="Codons")
     macaron.bake()
 
-if(sys.argv[1] == "create"):
-    if sys.argv[2]: 
-        #myapp = apps.namelist(sys.argv[2])
-        myapp = apps.ini(sys.argv[2])
-    params,_,_ = myapp.read_params()
-    if myapp.write_html_template():
-        print "successfully output template"
-elif (sys.argv[1] == "init"):
-    initdb()
-elif (sys.argv[1] == "go"):
-    os.system("python scipaas.py")
-elif (sys.argv[1] == "search"):
-    print "search feature not yet implemented"
-elif (sys.argv[1] == "install"):
-    print "install feature not yet working"
-else:
-    print "ERROR: option not supprted"
-    sys.exit()
+notyet = "this feature not yet working"
+
+# http://stackoverflow.com/questions/4028697/how-do-i-download-a-zip-file-in-python-using-urllib2
+def dlfile(url):
+    # Open the url
+    try:
+        f = urllib2.urlopen(url)
+        print "downloading " + url
+        # Open our local file for writing
+        with open(os.path.basename(url), "wb") as local_file:
+            local_file.write(f.read())
+    #handle errors
+    except urllib2.HTTPError, e:
+        print "HTTP Error:", e.code, url
+    except urllib2.URLError, e:
+        print "URL Error:", e.reason, url
+
+# process command line options
+if __name__ == "__main__":
+    if(sys.argv[1] == "create"):
+        if sys.argv[2]: 
+            #myapp = apps.namelist(sys.argv[2])
+            myapp = apps.ini(sys.argv[2])
+        params,_,_ = myapp.read_params()
+        if myapp.write_html_template():
+            print "successfully output template"
+    elif (sys.argv[1] == "init"):
+        initdb()
+    elif (sys.argv[1] == "go"):
+        os.system("python scipaas.py")
+    elif (sys.argv[1] == "search"):
+        print notyet
+    elif (sys.argv[1] == "install"):
+        print notyet
+        durl = url+'/'+sys.argv[2]+'.zip' 
+        print 'durl is:',durl
+        dlfile(durl)
+
+    elif (sys.argv[1] == "list"):
+        list_usage = "usage: sp list [available|installed]"
+        if (len(sys.argv) == 3):
+            if (sys.argv[2] == "installed"):
+                result = Apps.all()
+                for r in result:
+                    print r.name
+            elif (sys.argv[2] == "available"):
+                response = urllib2.urlopen(url)
+                html = response.read()
+                root = ET.fromstring(html)
+                for child in root.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Contents"):
+                    for c in child.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Key"):
+                        (app,ext) = c.text.split(".")
+                        print app 
+            else:
+                print list_usage
+        else:
+            print list_usage
+    else:
+        print "ERROR: option not supprted"
+        sys.exit()
+
