@@ -8,7 +8,6 @@ import ConfigParser
 # and the input file is the name of the app + '.in'
 apps_dir = config.apps_dir
 user_dir = config.user_dir
-template_dir = config.template_dir
 # end set 
 
 # future feature

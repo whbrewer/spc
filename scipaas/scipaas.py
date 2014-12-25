@@ -326,7 +326,7 @@ def load_apps(db):
     except lite.Error, e:
         print "Error %s:" % e.args[0]
         print "MAKE SURE DATABASE EXIST."
-        print "If running for the first time, run \"./scipaas-admin.py init\" to create a db"
+        print "If running for the first time, run \"sp init\" to create a db"
         sys.exit(1)
     result = c.fetchall()
     c.close()
@@ -335,7 +335,8 @@ def load_apps(db):
         name = row[0]
         appid = row[1]
         input_format = row[2]
-        print 'loading: %s (id: %s)' % (name,appid)
+        #print 'loading: %s (id: %s)' % (name,appid)
+        print 'loading: %s' % (name)
         if(input_format=='namelist'):
             myapp = apps.namelist(name,appid)
         elif(input_format=='ini'):

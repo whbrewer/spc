@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 
-import apps
-import sys, os, shutil
-import macaron 
-import config
-import urllib2
+from scipaas import apps, macaron, config
+from scipaas.models import *
+import sys, os, shutil, urllib2
 import xml.etree.ElementTree as ET
-from models import * 
 
 sys.argv[1:]
 
-#url = 'https://scihub.s3-us-west-1.amazonaws.com'
 url = 'https://s3-us-west-1.amazonaws.com/scihub'
 
 def usage():
@@ -111,7 +107,7 @@ if __name__ == "__main__":
     elif (sys.argv[1] == "init"):
         initdb()
     elif (sys.argv[1] == "go"):
-        os.system("python scipaas.py")
+        os.system("python scipaas/scipaas.py")
     elif (sys.argv[1] == "search"):
         print notyet
     elif (sys.argv[1] == "install"):
