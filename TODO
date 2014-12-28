@@ -1,4 +1,5 @@
 Next:
+- improve add app interface, use ajax to check if app exists
 - if there is only one plot, show it on clicking the plot button
 - about app template
 - wall info

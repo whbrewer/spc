@@ -51,7 +51,7 @@ class app(object):
     def write_html_template(self):
     # need to output according to blocks
         confirm="/{{app}}/confirm"
-        f = open('views/'+self.appname+'.tpl', 'w')
+        f = open('views/apps/'+self.appname+'.tpl', 'w')
         f.write("%include header title='confirm'\n")
         f.write("<body onload=\"init()\">\n")
         f.write("%include navbar\n")
