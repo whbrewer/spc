@@ -27,6 +27,7 @@
 
   <td><a href="/jobs/delete/{{row[0]}}">delete</a> ::
       <a href="/{{row[2]}}/{{row[3]}}/monitor">monitor</a> :: 
+      <!-- <a href="/jobs/stop/{{row[2]}}">stop</a> :: -->
       <a style="cursor: pointer" onclick="set_cid('{{row[3]}}','{{row[2]}}')"><u>set</u></a><br><br>
       <form method="post" action="/wall">
       <input type="hidden" name="app" value="{{app}}">

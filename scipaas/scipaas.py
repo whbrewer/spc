@@ -145,7 +145,7 @@ def root():
     return template('overview')
 
 @route('/jobs')
-def show_jobs(db):#,cid=''):
+def show_jobs(db):
     if not authorized(): redirect('/login')
     #if app not in myapps: redirect('/apps')
     global user
@@ -215,18 +215,24 @@ def delete_job(jid):
     sched.qdel(jid)
     redirect("/jobs")
 
-@route('/jobs/run/<jid>')
-def run_job(db,jid):
-    query = 'select name,cid from apps natural join jobs where jid=?'
-    c = db.execute(query,(jid,))
-    [(app,cid)] = c.fetchall()
-    c.close()
-    rel_path=(os.pardir+os.sep)*4
-    run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
-    cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
-    os.system("cd " + run_dir + ";" + cmd + " &")
-    sched.qdel(jid)
-    redirect("/"+app+"/"+cid+"/monitor")
+# this doesnt work.. needs to be run as a separate thread
+@get('/jobs/stop/<app>')
+def stop_job(db,app):
+    os.system("killall " + app)
+    redirect("/jobs")
+
+#@route('/jobs/run/<jid>')
+#def run_job(db,jid):
+#    query = 'select name,cid from apps natural join jobs where jid=?'
+#    c = db.execute(query,(jid,))
+#    [(app,cid)] = c.fetchall()
+#    c.close()
+#    rel_path=(os.pardir+os.sep)*4
+#    run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
+#    cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
+#    os.system("cd " + run_dir + ";" + cmd + " &")
+#    sched.qdel(jid)
+#    redirect("/"+app+"/"+cid+"/monitor")
 
 @route('/<app>')
 def show_app(app):

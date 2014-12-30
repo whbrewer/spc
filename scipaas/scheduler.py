@@ -98,5 +98,5 @@ class scheduler(object):
         print 'starting thread to run job:',run_dir, cmd
         os.system("cd " + run_dir + ";" + cmd )
 
-    def stop_job(self):
-        pass
+    def stop(self,app):
+        os.system("killall " + app)

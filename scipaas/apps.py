@@ -2,6 +2,7 @@ import re, sys, os
 import config
 import sqlite3 as lite
 import ConfigParser
+import xml.etree.ElementTree as ET
 
 # using convention over configuration 
 # the executable is the name of the app
@@ -84,7 +85,7 @@ class app(object):
 
 # user must write their own function for how to write the output file
 class namelist(app):
-    '''Class for plugging in Fortran apps ...'''
+    '''Class for reading/writing Fortran namelist.input style files.'''
     
     def __init__(self,appname,appid=0):
         self.appname = appname
@@ -240,4 +241,78 @@ class ini(app):
                 Config.set(section,key,form_params[key])
         Config.write(cfgfile)
         cfgfile.close()
+        return 1
+
+class xml(app):
+    '''Class for reading/writing XML files.'''
+
+    def __init__(self,appname,appid=0):
+        self.appname = appname
+        self.appid = appid
+        self.appdir = apps_dir + os.sep + appname
+        self.outfn = appname + '.out'
+        self.simfn = appname + '.xml'
+        self.user_dir = user_dir
+        self.params, self.blockmap, self.blockorder = self.read_params()
+        self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
+
+    def read_params(self,user=None,cid=None):
+        '''read the namelist file and return as a dictionary'''
+        if cid is None or user is None:
+            fn = self.appdir
+        else:
+            fn = self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid
+        # append name of input file to end of string
+        fn += os.sep + self.simfn
+        tree = ET.parse(fn)
+        root = tree.getroot()
+        #for child in root:
+        #    print child.tag, child.attrib, child.text
+        params = {}
+        blockmap = {}
+        blockorder = []
+
+        # Currently does not support multiple subsections within xml file
+        # but needs to be included in the future 
+        section = "root"
+        blockorder += [ section ]
+        for child in root:
+            try:
+                params[child.tag] = child.text
+                blockmap.setdefault(section,[]).append(child.tag)
+                if params[child.tag] == -1:
+                    DebugPrint("skip: %s" % child.tag)
+            except:
+                print("exception on %s!" % child.tag)
+                params[child.tag] = None
+
+        print '\nparams:',params
+        print '\nblockmap:',blockmap
+        print '\nblockorder:',blockorder
+        return params, blockmap, blockorder
+
+    def write_params(self,form_params,user):
+        cid = form_params['case_id']
+        sim_dir=self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid+os.sep
+        if not os.path.exists(sim_dir):
+            os.makedirs(sim_dir)
+        fn = sim_dir + self.simfn
+
+        # write params to file
+        i = 0
+        for fp in form_params:
+            i += 1
+            print i,fp, form_params[fp]
+
+            root = ET.Element("root")
+            doc = ET.SubElement(root, "doc")
+
+            for i in self.blockorder:
+                for key in self.blockmap[section]:
+                    field1 = ET.SubElement(doc, "field1")
+                    field1.set("name", "blah")
+                    field1.text = "some value1"
+
+            tree = ET.ElementTree(root)
+            tree.write(fn)
         return 1

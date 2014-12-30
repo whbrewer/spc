@@ -10,13 +10,15 @@ sys.argv[1:]
 url = 'https://s3-us-west-1.amazonaws.com/scihub'
 
 def usage():
-    buf =  "usage: sp <command> [appname]\n\n"
+    buf =  "usage: sp <command> [options]\n\n"
     buf += "commonly used commands:\n"
     buf += "init     initialize a database for scipaas\n"
     buf += "go       start the server\n"
-    buf += "create   create a new app named appname\n"
+    buf += "create   create a view template for appname\n"
+    buf += "            e.g. sp create myapp\n"
     buf += "search   search for available apps\n"
-    buf += "list     [available|installed] \n"
+    buf += "list     list installed or available apps\n"
+    buf += "            e.g. sp list [available|installed] \n"
     buf += "install  install an app\n"
     return buf
 
@@ -98,12 +100,26 @@ def dlfile(url):
 # process command line options
 if __name__ == "__main__":
     if(sys.argv[1] == "create"):
-        if sys.argv[2]: 
-            #myapp = apps.namelist(sys.argv[2])
-            myapp = apps.ini(sys.argv[2])
-        params,_,_ = myapp.read_params()
-        if myapp.write_html_template():
-            print "successfully output template"
+        if (len(sys.argv) == 3): 
+            i = Apps.select("name=?",[ sys.argv[2] ])
+            input_format = i[0].input_format
+            print 'input format is:',input_format
+            if sys.argv[2]: 
+                if input_format == 'namelist':
+                    myapp = apps.namelist(sys.argv[2])
+                elif input_format == 'ini':
+                    myapp = apps.ini(sys.argv[2])
+                elif input_format == 'xml':
+                    myapp = apps.xml(sys.argv[2])
+                elif input_format == 'json':
+                    myapp = apps.json(sys.argv[2])
+                else:
+                    print "ERROR: input format type not supported:", input_format
+            params,_,_ = myapp.read_params()
+            if myapp.write_html_template():
+                print "successfully output template"
+        else:
+            print "usage: sp create appname"
     elif (sys.argv[1] == "init"):
         initdb()
     elif (sys.argv[1] == "go"):
