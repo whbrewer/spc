@@ -245,7 +245,6 @@ class ini(app):
 
 class xml(app):
     '''Class for reading/writing XML files.'''
-
     def __init__(self,appname,appid=0):
         self.appname = appname
         self.appid = appid
@@ -262,10 +261,12 @@ class xml(app):
             fn = self.appdir
         else:
             fn = self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid
+
         # append name of input file to end of string
         fn += os.sep + self.simfn
         tree = ET.parse(fn)
         root = tree.getroot()
+        self.rootlabel = root.tag
         #for child in root:
         #    print child.tag, child.attrib, child.text
         params = {}
@@ -274,45 +275,38 @@ class xml(app):
 
         # Currently does not support multiple subsections within xml file
         # but needs to be included in the future 
-        section = "root"
-        blockorder += [ section ]
-        for child in root:
-            try:
-                params[child.tag] = child.text
-                blockmap.setdefault(section,[]).append(child.tag)
-                if params[child.tag] == -1:
-                    DebugPrint("skip: %s" % child.tag)
-            except:
-                print("exception on %s!" % child.tag)
-                params[child.tag] = None
-
-        print '\nparams:',params
-        print '\nblockmap:',blockmap
-        print '\nblockorder:',blockorder
+        for section in root:
+            blockorder += [ section.tag ]
+            for child in section.getchildren():
+                try:
+                    params[child.tag] = child.text
+                    blockmap.setdefault(section.tag,[]).append(child.tag)
+                    if params[child.tag] == -1:
+                        DebugPrint("skip: %s" % child.tag)
+                except:
+                    print("exception on %s!" % child.tag)
+                    params[child.tag] = None
+        #print '\nparams:',params
+        #print '\nblockmap:',blockmap
+        #print '\nblockorder:',blockorder
         return params, blockmap, blockorder
 
     def write_params(self,form_params,user):
+        """Write parameters to file."""
         cid = form_params['case_id']
         sim_dir=self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid+os.sep
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = sim_dir + self.simfn
 
-        # write params to file
-        i = 0
-        for fp in form_params:
-            i += 1
-            print i,fp, form_params[fp]
+        f = open(fn, 'w')
+        f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
 
-            root = ET.Element("root")
-            doc = ET.SubElement(root, "doc")
-
-            for i in self.blockorder:
-                for key in self.blockmap[section]:
-                    field1 = ET.SubElement(doc, "field1")
-                    field1.set("name", "blah")
-                    field1.text = "some value1"
-
-            tree = ET.ElementTree(root)
-            tree.write(fn)
+        f.write("<"+self.rootlabel+">\n")
+        for section in self.blockorder:
+            f.write("<%s>\n" % section)
+            for key in self.blockmap[section]:
+                f.write("\t<"+key+">"+form_params[key]+"</"+key+">\n")
+            f.write("</%s>\n" % section)
+        f.write("</"+self.rootlabel+">\n")
         return 1

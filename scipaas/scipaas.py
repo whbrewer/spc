@@ -8,6 +8,7 @@ import sqlite3 as lite
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
+import cgi
 # other SciPaaS modules
 import config, plots, apps, uploads, scheduler
 from models import *
@@ -55,8 +56,9 @@ def confirm_form(app):
     request.forms['case_id'] = cid 
     myapps[app].write_params(request.forms,user)
     inputs = slurp_file(app,cid,myapps[app].simfn,user)
+    # convert html tags to entities (e.g. < to &lt;)
+    inputs = cgi.escape(inputs)
     params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user }
-
     try:
         return template('confirm', params)
     except:
@@ -66,7 +68,7 @@ def confirm_form(app):
 def execute(db,app,cid):
     global user
     #cid = request.forms.get('cid')
-    print 'execute:',app,cid
+    #print 'execute:',app,cid
     params = {}
     try:
         params['cid'] = cid
@@ -347,6 +349,10 @@ def load_apps(db):
             myapp = apps.namelist(name,appid)
         elif(input_format=='ini'):
             myapp = apps.ini(name,appid)
+        elif(input_format=='xml'):
+            myapp = apps.xml(name,appid)
+        elif(input_format=='json'):
+            myapp = apps.json(name,appid)
         else:
             return 'ERROR: input_format ',input_format,' not supported'
         myapps[name] = myapp

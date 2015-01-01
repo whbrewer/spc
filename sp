@@ -151,6 +151,6 @@ if __name__ == "__main__":
         else:
             print list_usage
     else:
-        print "ERROR: option not supprted"
+        print "ERROR: option not supported"
         sys.exit()
 
