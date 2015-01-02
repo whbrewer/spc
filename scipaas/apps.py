@@ -286,6 +286,13 @@ class xml(app):
                 except:
                     print("exception on %s!" % child.tag)
                     params[child.tag] = None
+        if not params:
+            print "ERROR: parameters not read correctly.\n"
+            print "Please check xml file, and make sure it has a tree depth of three:"
+            print "\t(1) a root element,"
+            print "\t(2) subelements for each sections, and "
+            print "\t(3) sub-elements under each section."
+            sys.exit()
         #print '\nparams:',params
         #print '\nblockmap:',blockmap
         #print '\nblockorder:',blockorder

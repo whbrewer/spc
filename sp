@@ -124,6 +124,7 @@ if __name__ == "__main__":
         else:
             print "usage: sp create appname"
     elif (sys.argv[1] == "init"):
+        print "creating database " + config.db
         initdb()
     elif (sys.argv[1] == "go"):
         os.system("python scipaas/scipaas.py")
