@@ -45,7 +45,7 @@ def initdb():
         language varchar(20), input_format)"""
 
     SQL_T_USERS = """CREATE TABLE IF NOT EXISTS users(
-        uid integer primary key autoincrement, user varchar(20), 
+        uid integer primary key autoincrement, user varchar(20) unique, 
         passwd varchar(20))"""
 
     SQL_T_JOBS = """CREATE TABLE IF NOT EXISTS jobs(
@@ -73,6 +73,9 @@ def initdb():
     hashpw = hashlib.sha256(pw).hexdigest()
 
     u = Users.create(user=user, passwd=hashpw)
+    # following two users are reserved for beaker sessions
+    u = Users.create(user="container_file")
+    u = Users.create(user="container_file_lock")
     a = Apps.create(name="dna",description="Compute reverse complement, GC content, and codon analysis of given DNA string.",
         category="bioinformatics",language="python",input_format="namelist")
     p = Plots.create(appid=1,type="categories",filename="din.out",col1=1,col2=2,title="Dinucleotides")

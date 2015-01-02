@@ -310,11 +310,13 @@ def post_register():
 
 @post('/check_user')
 def check_user():
-    # currently this won't work until we install Macaron ORM
-    users = Users.select("user=?", [ request.forms.user ] )
+    """This is the server-side AJAX function to check if a username exists in the DB."""
+    #if not user: user = request.forms.user
+    user = request.forms.user
+    users = Users.select("user=?", [ user ] )
     try:
-        for u in users:
-            continue
+        for u in users: continue
+        # return booleans as strings here b/c they get parsed by JavaScript
         if u: return 'true'
     except:
         return 'false'
@@ -578,6 +580,10 @@ def authorized():
     else: 
         user = s[USER_ID_SESSION_KEY]
         return True
+
+#@error(500)
+#def error500(error):
+#   return "Sorry, there was a 500 server error: " + str(error)
 
 if __name__ == "__main__":
     db = lite.connect(config.db)

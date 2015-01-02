@@ -14,10 +14,12 @@ function checkUser(user) {
             alert("Username " + user + " is taken.\nPlease use another name.");
             $("#user").css("background-color","#D3ABAE")
             $("#user").select()
+            $("#submit").prop('disabled',true)
             //$("#user").val('')
          } else {
             document.reg_form.password1.focus()
             $("#user").css("background-color","#86C98A")
+            $("#submit").prop('disabled',false)
          }
       }
    })
@@ -34,7 +36,7 @@ function checkUser(user) {
         Password<br>
         <input type="password" name="password1" id="password1"><br>
         <input type="password" name="password2" id="password2"><br>
-        <input type="submit" value="Register" class="btn"><br><br>
+        <input type="submit" id="submit" value="Register" class="btn"><br><br>
     </form>
 </div>
 

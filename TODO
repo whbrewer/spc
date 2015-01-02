@@ -1,6 +1,8 @@
 Next:
+- Fix security vulnerability: check_user after user submits. make sure new user is not created if username
+  already in DB.  
 - add stop button to jobs page.  problem is need to have another thread
-  to be able to stop the job
+  to be able to stop the job.  try using RQ (Redis Queue, python-rq.org)
 - improve add app interface, use ajax to check if app exists
 - if there is only one plot, show it on clicking the plot button
 - about app template
@@ -26,8 +28,6 @@ Feature Requests
 - JS/Ajax check if appname already exists
 - user page/user management: my apps, change passwd, etc.
 - file manager... or data button to see data in output files
-x implement ConfigParser -- possibly move to supporting INI files
-  + generic xml or ini reader
 - implement haml templates
 - workflow system
 - integration to openshift
@@ -55,6 +55,8 @@ Tests
   strings, etc.
 
 Completed
+- implement ConfigParser -- possibly move to supporting INI files
+- generic xml or ini reader
 - be able to click jobs, click start, use appname and jid to bring up correct start page
 - job scheduler/queuing system
 - implement ConfigParser to read-in nemo input file
