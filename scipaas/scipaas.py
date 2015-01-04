@@ -3,8 +3,11 @@
 # web framework
 from bottle import *
 from bottle.ext import sqlite
+# database stuff
 import macaron
 import sqlite3 as lite
+from dal import DAL, Field
+#from gluon import DAL, Field
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
@@ -35,10 +38,28 @@ app = SessionMiddleware(app(), session_opts)
 plugin = ext.sqlite.Plugin(dbfile=config.db)
 install(plugin)
 
+# DAL
+#db2 = DAL('sqlite://storage.sqlite', folder="../")
+db2 = DAL('sqlite://storage.sqlite', auto_import=True)
+#db2 = DAL('sqlite://' + config.db, folder="../", auto_import=True)
+
 # create instance of scheduler
 sched = scheduler.scheduler()
 
 pbuffer = ''
+
+@get('/test')
+def test():
+    #person = db2.define_table('person', Field('name', 'string'))
+    #id = person.insert(name='James')
+    
+    user = db2.define_table('users', Field('id','integer'), 
+                                     Field('user', 'string'), 
+                                     Field('passwd','string'), migrate=False)
+    name = user(2)
+    #rows = db2(db2.user).select()
+    #return "id: " + str(id)
+    return "name: " + str(name.user)
 
 @post('/<app>/confirm')
 def confirm_form(app):
