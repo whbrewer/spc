@@ -29,22 +29,20 @@ function edit(id) {
 <th>Description</th> 
 <th><a href="/apps/show/category">Category</a></th> 
 <th><a href="/apps/show/language">Language</a></th> 
-<th>Delete</th> 
 </tr>
 </thead>
 
 %for row in rows:
   <tr>
-  <td><a href="/{{row[1]}}">{{row[1]}}</a></td>
-  <td>{{row[2]}}</td>
-  <td>{{row[3]}}</td>
-  <td>{{row[4]}}</td>
-  <td><a href="/apps/delete/{{row[0]}}">delete</a></td>
-  <!--
-  <form method="get" action="/apps/delete/{{row[0]}}">
+  <td><a href="/{{row['name']}}">{{row['name']}}</a></td>
+  <td>{{row['description']}}</td>
+  <td>{{row['input_format']}}</td>
+  <td>{{row['language']}}</td>
+<!--
+  <form method="post" action="/apps/delete/{row[0]}}">
      <td><input type="button" value="delete"></td> 
   </form>
-  -->
+-->
 </tr> 
 %end
 </table>

@@ -41,15 +41,15 @@ td {text-align: center}
 </thead>
 %for row in rows:
   <tr>
-  <td>{{row[5]}}</td>
-  <td>{{row[1]}}</td>
-  <td>{{row[2]}}</td>
-  <td>{{row[3]}}</td>
-  <td>{{row[4]}}</td>
-  <td><a href="/plot/{{row[0]}}?app={{app}}&cid={{cid}}">plot</a> -
-      <a href="/plots/delete/{{row[0]}}?app={{app}}&cid={{cid}}">delete</a> 
+     <td>{{row['plots']['title']}}</td>
+     <td>{{row['plots']['type']}}</td>
+     <td>{{row['plots']['filename']}}</td>
+     <td>{{row['plots']['col1']}}</td>
+     <td>{{row['plots']['col2']}}</td>
+  <td><a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> -
+      <a href="/plots/delete/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">delete</a> 
   <!--
-  <form method="get" action="/apps/delete/{{row[0]}}">
+  <form method="get" action="/apps/delete/{row[0]}}">
      <td><input type="button" value="delete"></td> 
   </form>
   -->

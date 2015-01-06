@@ -11,10 +11,10 @@ function checkUser(user) {
       complete: function(xhr){
          var response = eval(xhr.responseText);
          if (response) {
-            alert("Username " + user + " is taken.\nPlease use another name.");
             $("#user").css("background-color","#D3ABAE")
             $("#user").select()
             $("#submit").prop('disabled',true)
+            alert("Username " + user + " is taken.\nPlease use another name.");
             //$("#user").val('')
          } else {
             document.reg_form.password1.focus()

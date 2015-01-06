@@ -4,20 +4,23 @@
 from bottle import *
 from bottle.ext import sqlite
 # database stuff
-import macaron
+#import macaron
 import sqlite3 as lite
 from dal import DAL, Field
-#from gluon import DAL, Field
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 import cgi
 # other SciPaaS modules
-import config, plots, apps, uploads, scheduler
-from models import *
+import config, uploads, scheduler
+import apps as appmod
+import plots as plotmod
+#from models import *
 
-### ORM stuff
-install(macaron.MacaronPlugin(config.db))
+### ORM/DAL stuff
+#install(macaron.MacaronPlugin(config.db))
+db2 = DAL('sqlite://storage.sqlite', auto_import=True, migrate=False)
+#db2 = models()
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
@@ -38,59 +41,37 @@ app = SessionMiddleware(app(), session_opts)
 plugin = ext.sqlite.Plugin(dbfile=config.db)
 install(plugin)
 
-# DAL
-#db2 = DAL('sqlite://storage.sqlite', folder="../")
-db2 = DAL('sqlite://storage.sqlite', auto_import=True, migrate=False)
-#db2 = DAL('sqlite://' + config.db, folder="../", auto_import=True)
-
 # create instance of scheduler
 sched = scheduler.scheduler()
 
 pbuffer = ''
 
-@get('/dal')
-def dal():
-    #person = db2.define_table('person', Field('name', 'string'))
-    #id = person.insert(name='James')
-    
-    user = db2.define_table('users', Field('id','integer'), 
-                                     Field('user', 'string'), 
-                                     Field('passwd','string'))
-    name = user(2)
-
-    apps = db2.define_table('apps', Field('id','integer'),
-                                    Field('name','string'),
-                                    Field('description','string'),
-                                    Field('category','string'),
-                                    Field('language','string'),
-                                    Field('input_format','string'))
-    app = apps(11)
-
-    jobs = db2.define_table('jobs', Field('id','integer'),
-                                    Field('user','string'),
-                                    Field('app','string'),
-                                    Field('state','string'),
-                                    Field('time_submit','string'),
-                                    Field('description','string'))
-    job = jobs(154)
-
-    plots = db2.define_table('plots', Field('id','integer'),
-                                      Field('appid','integer'),
-                                      Field('type','string'),
-                                      Field('filename','string'),
-                                      Field('col1','integer'),
-                                      Field('col2','integer'),
-                                      Field('title','string'))
-
-    plot = plots(1)
-   
-    wall = db2.define_table('wall', Field('id','integer'),
-                                   Field('jid','integer'),
-                                   Field('comment','string'))
-    
-    #rows = db2(db2.user).select()
-    #return "id: " + str(id)
-    return "name: " + name.user + " app: " + app.name  + " job: " + job.state + " plot: " + plot.filename + " wall: " + wall(1).comment
+users = db2.define_table('users', Field('id','integer'), 
+                                  Field('user', 'string'), 
+                                  Field('passwd','string'))
+apps = db2.define_table('apps', Field('id','integer'),
+                                Field('name','string'),
+                                Field('description','string'),
+                                Field('category','string'),
+                                Field('language','string'),
+                                Field('input_format','string'))
+jobs = db2.define_table('jobs', Field('id','integer'),
+                                Field('user','string'),
+                                Field('app','string'),
+                                Field('cid','string'),
+                                Field('state','string'),
+                                Field('time_submit','string'),
+                                Field('description','string'))
+plots = db2.define_table('plots', Field('id','integer'),
+                                  Field('appid','integer'),
+                                  Field('type','string'),
+                                  Field('filename','string'),
+                                  Field('col1','integer'),
+                                  Field('col2','integer'),
+                                  Field('title','string'))
+wall = db2.define_table('wall', Field('id','integer'),
+                                Field('jid','integer'),
+                                Field('comment','string'))
 
 @post('/<app>/confirm')
 def confirm_form(app):
@@ -127,7 +108,8 @@ def execute(db,app,cid):
         params['app'] = app
         params['user'] = user
         sched.qsub(app,cid,user)
-        redirect("/jobs/"+app+"?cid="+cid)
+        #redirect("/jobs/"+app+"?cid="+cid)
+        redirect("/jobs?app="+app+"&cid="+cid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e }
@@ -205,9 +187,7 @@ def show_jobs(db):
     global user
     cid = request.query.cid
     app = request.query.app
-    c = db.execute('SELECT * FROM jobs where user = \'' + user + '\' ORDER BY jid DESC')
-    result = c.fetchall()
-    c.close()
+    result = db2(users.user==user).select(jobs.ALL)
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -216,13 +196,13 @@ def show_jobs(db):
 
 @get('/wall')
 def get_wall(db):
+    """Return the records from the wall table."""
     if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
     app = request.query.app
-    c = db.execute('SELECT id,user,app,cid,comment FROM jobs NATURAL JOIN wall ORDER BY jid DESC')
-    result = c.fetchall()
-    c.close()
+    # note: =~ means sort by descending order
+    result = db2(jobs.id==wall.jid).select(orderby=~wall.id)
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -237,32 +217,15 @@ def post_wall(db):
     jid = request.forms.jid
     comment = request.forms.comment
     # save comment to db
-    w = Wall.create(jid=jid, comment=comment)
-    macaron.bake() 
-    users = Users.select("user=?", [ user ])
+    wall.insert(jid=jid, comment=comment)
+    db2.commit()
     # get all wall comments
-    #result = Wall.select("id=?", [ "*" ] )
-    result = Wall.all()
+    result = db2().select(wall.ALL)
     params = {}
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     redirect('/wall')
-
-@route('/jobs/<app>')
-def show_jobs(db,app=default_app):#,cid=''):
-    if not authorized(): redirect('/login')
-    if app not in myapps: redirect('/apps')
-    global user
-    cid = request.query.cid
-    c = db.execute('SELECT * FROM jobs where user = \'' + user + '\' ORDER BY jid DESC')
-    result = c.fetchall()
-    c.close()
-    params = {}
-    params['cid'] = cid
-    params['app'] = app
-    params['user'] = user
-    return template('jobs', params, rows=result)
 
 @route('/jobs/delete/<jid>')
 def delete_job(jid):
@@ -274,19 +237,6 @@ def delete_job(jid):
 def stop_job(db,app):
     os.system("killall " + app)
     redirect("/jobs")
-
-#@route('/jobs/run/<jid>')
-#def run_job(db,jid):
-#    query = 'select name,cid from apps natural join jobs where jid=?'
-#    c = db.execute(query,(jid,))
-#    [(app,cid)] = c.fetchall()
-#    c.close()
-#    rel_path=(os.pardir+os.sep)*4
-#    run_dir = myapps[app].user_dir + os.sep + user + os.sep + myapps[app].appname + os.sep + cid
-#    cmd = rel_path + myapps[app].exe + " > " + myapps[app].outfn
-#    os.system("cd " + run_dir + ";" + cmd + " &")
-#    sched.qdel(jid)
-#    redirect("/"+app+"/"+cid+"/monitor")
 
 @route('/<app>')
 def show_app(app):
@@ -325,15 +275,15 @@ def get_favicon():
 def post_login(db):
     global user
     s = request.environ.get('beaker.session')
-    user = request.forms.get('user')
+    user = users(user=request.forms.get('user'))
     pw = request.forms.passwd
     err = "<p>Login failed: wrong username or password</p>"
-    users = Users.select("user=?", [ user ])
     # if password matches, set the USER_ID_SESSION_KEY
     hashpw = hashlib.sha256(pw).hexdigest()
     try:
-        if hashpw == users[0].passwd:
-            user = s[USER_ID_SESSION_KEY] = users[0].user
+        if hashpw == user.passwd:
+            # set global user and session key
+            user = s[USER_ID_SESSION_KEY] = user.user
         else:
             return err
     except:
@@ -354,8 +304,8 @@ def post_register():
     pw2 = request.forms.password2
     if pw1 == pw2:
         hashpw = hashlib.sha256(pw1).hexdigest()
-        u = Users.create(user=user, passwd=hashpw)
-        macaron.bake()
+        users.insert(user=user, passwd=hashpw)
+        db2.commit()
         redirect('/login')
     else:
         return template('register')
@@ -363,15 +313,10 @@ def post_register():
 @post('/check_user')
 def check_user():
     """This is the server-side AJAX function to check if a username exists in the DB."""
-    #if not user: user = request.forms.user
-    user = request.forms.user
-    users = Users.select("user=?", [ user ] )
-    try:
-        for u in users: continue
-        # return booleans as strings here b/c they get parsed by JavaScript
-        if u: return 'true'
-    except:
-        return 'false'
+    this = users(user=request.forms.user)
+    # return booleans as strings here b/c they get parsed by JavaScript
+    if this: return 'true'
+    else: return 'false'
 
 @get('/apps')
 def showapps():
@@ -383,30 +328,27 @@ def load_apps(db):
     global myapps, default_app
     # Connect to DB 
     try:
-        db = lite.connect(config.db)
-        c = db.execute('SELECT name,id,input_format FROM apps')
-    except lite.Error, e:
+        result = db2().select(apps.ALL)
+    except e:
         print "Error %s:" % e.args[0]
         print "MAKE SURE DATABASE EXIST."
         print "If running for the first time, run \"sp init\" to create a db"
         sys.exit(1)
-    result = c.fetchall()
-    c.close()
     myapps = {}
     for row in result:   
-        name = row[0]
-        appid = row[1]
-        input_format = row[2]
+        name = row['name']
+        appid = row['id']
+        input_format = row['input_format']
         #print 'loading: %s (id: %s)' % (name,appid)
         print 'loading: %s' % (name)
         if(input_format=='namelist'):
-            myapp = apps.namelist(name,appid)
+            myapp = appmod.namelist(name,appid)
         elif(input_format=='ini'):
-            myapp = apps.ini(name,appid)
+            myapp = appmod.ini(name,appid)
         elif(input_format=='xml'):
-            myapp = apps.xml(name,appid)
+            myapp = appmod.xml(name,appid)
         elif(input_format=='json'):
-            myapp = apps.json(name,appid)
+            myapp = appmod.json(name,appid)
         else:
             return 'ERROR: input_format ',input_format,' not supported'
         myapps[name] = myapp
@@ -416,9 +358,7 @@ def load_apps(db):
 @get('/apps/show/<sort>')
 def getapps(db,sort="name"):
     if not authorized(): redirect('/login')
-    c = db.execute('SELECT * FROM apps ORDER BY ' + sort) 
-    result = c.fetchall()
-    c.close()
+    result = db2().select(apps.ALL)
     return template('apps', rows=result)
 
 @get('/apps/add')
@@ -448,11 +388,11 @@ def create_view():
     else:
         return "ERROR: there was a problem when creating view"
 
-@get('/apps/delete/<appid>')
-def delete_app(appid):
-    a = apps.app()
-    a.delete(appid)
-    redirect("/apps/show/name")
+#@post('/apps/delete/<appid>')
+#def delete_app(appid):
+#    a = apps.app()
+#    a.delete(appid)
+#    redirect("/apps/show/name")
 
 @get('/apps/edit/<appid>')
 def edit_app(appid):
@@ -504,25 +444,22 @@ def list(db,app):
 @get('/plots')
 def get_plots(db):
     global user
-    try:
-        app = request.query.app
-        if myapps[app].appname not in myapps: redirect('/apps')
-        if not authorized(): redirect('/login')
-        c = db.execute('select pltid, type, filename, col1, col2, title from apps natural join plots where name=?',(app,))
-        result = c.fetchall()
-        c.close()
-        cid = request.query.cid
-        params = { 'app': app, 'cid': cid, 'user': user } 
-        return template('plots', params, rows=result)
-    except:
-        params = {'err': "must first select an app to plot by clicking apps button"}
-        return template('error', params)
+    #try:
+    app = request.query.app
+    if myapps[app].appname not in myapps: redirect('/apps')
+    if not authorized(): redirect('/login')
+    result = db2(apps.id==plots.appid).select()
+    params = { 'app': app, 'cid': request.query.cid, 'user': user } 
+    return template('plots', params, rows=result)
+    #except:
+    #    params = {'err': "must first select an app to plot by clicking apps button"}
+    #    return template('error', params)
 
 @get('/plots/delete/<pltid>')
 def delete_plot(db,pltid):
     app = request.query.app
     cid = request.query.cid
-    p = plots.plot()
+    p = plotmod.plot()
     p.delete(pltid)
     redirect ('/plots?app='+app)
 
@@ -530,7 +467,7 @@ def delete_plot(db,pltid):
 def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
-    p = plots.plot()
+    p = plotmod.plot()
     r = request
     p.create(myapps[app].appid,r.forms['ptype'],r.forms['fn'],r.forms['col1'],r.forms['col2'],r.forms['title'])
     redirect ('/plots?app='+app+'&cid='+cid)
@@ -546,7 +483,7 @@ def plot_interface(pltid):
         u = user
         c = cid
 
-    p = plots.plot()
+    p = plotmod.plot()
     (plottype,plotfn,col1,col2,title) = p.read(app,pltid)
     params = {'app': app, 'cid': cid, 'user': u} 
 
@@ -573,7 +510,7 @@ def plot_interface(pltid):
         return template('error', params)
     else:
         plotfn = re.sub(r"<cid>", c, plotfn)
-        p = plots.plot()
+        p = plotmod.plot()
         data = p.get_data(sim_dir + plotfn,col1,col2)
         ticks = p.get_ticks(sim_dir + plotfn,col1,col2)
         params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks,
