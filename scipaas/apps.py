@@ -15,8 +15,6 @@ user_dir = config.user_dir
 #workflow = "login >> start >> confirm >> execute"
 class app(object):
 
-#CREATE TABLE apps(appid integer primary key autoincrement, name varchar(20), description varchar(80), category varchar(20), language varchar(20));
-
     def __init__(self):
         # Connect to DB 
         self.con = None
@@ -34,7 +32,7 @@ class app(object):
 
     def read(self,appid):
         cur = self.con.cursor()
-        (name,description,language,category) = cur.execute('select name,description,language,category from apps where appid=?',(appid,))
+        (name,description,language,category) = cur.execute('select name,description,language,category from apps where id=?',(appid,))
         for i in result: print i
         return (name,description,language,category)
 
@@ -43,7 +41,7 @@ class app(object):
 
     def delete(self,appid):
         cur = self.con.cursor()
-        cur.execute('delete from apps where appid = (?)',(appid,))
+        cur.execute('delete from apps where id = (?)',(appid,))
         self.con.commit()
 
     def deploy(self):

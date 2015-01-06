@@ -52,7 +52,7 @@ class plot(object):
         cur = self.con.cursor()
         #print app
         # in the future this has to support reading multiple plots
-        result = cur.execute('select type, filename, col1, col2, title from apps natural join plots where name=? and pltid=?',(app,pltid)).fetchone()
+        result = cur.execute('select type, filename, col1, col2, title from apps natural join plots where name=? and id=?',(app,pltid)).fetchone()
         if result is None:
             return None
         else:
@@ -65,7 +65,7 @@ class plot(object):
 
     def delete(self,pid):
         cur = self.con.cursor()
-        cur.execute('delete from plots where pltid = (?)',(pid,))
+        cur.execute('delete from plots where id = (?)',(pid,))
         self.con.commit()
 
     def update(self,pid):

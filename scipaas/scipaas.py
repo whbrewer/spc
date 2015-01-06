@@ -40,7 +40,7 @@ install(plugin)
 
 # DAL
 #db2 = DAL('sqlite://storage.sqlite', folder="../")
-db2 = DAL('sqlite://storage.sqlite', auto_import=True)
+db2 = DAL('sqlite://storage.sqlite', auto_import=True, migrate=False)
 #db2 = DAL('sqlite://' + config.db, folder="../", auto_import=True)
 
 # create instance of scheduler
@@ -48,18 +48,49 @@ sched = scheduler.scheduler()
 
 pbuffer = ''
 
-@get('/test')
-def test():
+@get('/dal')
+def dal():
     #person = db2.define_table('person', Field('name', 'string'))
     #id = person.insert(name='James')
     
     user = db2.define_table('users', Field('id','integer'), 
                                      Field('user', 'string'), 
-                                     Field('passwd','string'), migrate=False)
+                                     Field('passwd','string'))
     name = user(2)
+
+    apps = db2.define_table('apps', Field('id','integer'),
+                                    Field('name','string'),
+                                    Field('description','string'),
+                                    Field('category','string'),
+                                    Field('language','string'),
+                                    Field('input_format','string'))
+    app = apps(11)
+
+    jobs = db2.define_table('jobs', Field('id','integer'),
+                                    Field('user','string'),
+                                    Field('app','string'),
+                                    Field('state','string'),
+                                    Field('time_submit','string'),
+                                    Field('description','string'))
+    job = jobs(154)
+
+    plots = db2.define_table('plots', Field('id','integer'),
+                                      Field('appid','integer'),
+                                      Field('type','string'),
+                                      Field('filename','string'),
+                                      Field('col1','integer'),
+                                      Field('col2','integer'),
+                                      Field('title','string'))
+
+    plot = plots(1)
+   
+    wall = db2.define_table('wall', Field('id','integer'),
+                                   Field('jid','integer'),
+                                   Field('comment','string'))
+    
     #rows = db2(db2.user).select()
     #return "id: " + str(id)
-    return "name: " + str(name.user)
+    return "name: " + name.user + " app: " + app.name  + " job: " + job.state + " plot: " + plot.filename + " wall: " + wall(1).comment
 
 @post('/<app>/confirm')
 def confirm_form(app):
@@ -353,7 +384,7 @@ def load_apps(db):
     # Connect to DB 
     try:
         db = lite.connect(config.db)
-        c = db.execute('SELECT name,appid,input_format FROM apps')
+        c = db.execute('SELECT name,id,input_format FROM apps')
     except lite.Error, e:
         print "Error %s:" % e.args[0]
         print "MAKE SURE DATABASE EXIST."

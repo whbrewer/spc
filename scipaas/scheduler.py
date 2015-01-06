@@ -44,7 +44,7 @@ class scheduler(object):
     def qfront(self):
         self.connector = lite.connect(config.db)
         cur = self.connector.cursor()
-        query = "select jid from jobs where state = 'Q' limit 1"
+        query = "select id from jobs where state = 'Q' limit 1"
         (jid) = cur.execute(query).fetchone()
         self.connector.close()
         if jid is not None:
@@ -54,7 +54,7 @@ class scheduler(object):
 
     def qdel(self,jid):
         cur = self.con.cursor()
-        cur.execute('delete from jobs where jid = ?', (jid,))
+        cur.execute('delete from jobs where id = ?', (jid,))
         self.con.commit()
         return 1
 
@@ -65,7 +65,7 @@ class scheduler(object):
             print "Error %s:" % e.args[0]
             sys.exit(1)
         cur = self.connector.cursor()
-        query = "Select count(jid) from jobs where state='Q'"
+        query = "Select count(id) from jobs where state='Q'"
         cur.execute(query)
         c = cur.fetchone()
         self.connector.close()
@@ -74,11 +74,11 @@ class scheduler(object):
     def start(self,jid):
         global myapps
         connector = lite.connect(config.db)
-        query = "update jobs set state = 'R' where jid=?"
+        query = "update jobs set state = 'R' where id=?"
         c = connector.execute(query,(jid,))
         connector.commit()
 
-        query = 'select user,app,cid from jobs where jid=?'
+        query = 'select user,app,cid from jobs where id=?'
         c = connector.execute(query,(jid,))
         [(user,app,cid)] = c.fetchall()
         rel_path=(os.pardir+os.sep)*4
@@ -89,7 +89,7 @@ class scheduler(object):
         t = threading.Thread(target = self.start_job(run_dir,cmd))
         t.start()
 
-        query = "update jobs set state = 'C' where jid=?"
+        query = "update jobs set state = 'C' where id=?"
         connector.execute(query, (jid,))
         connector.commit()
         c.close()

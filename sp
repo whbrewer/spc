@@ -14,11 +14,9 @@ def usage():
     buf += "commonly used commands:\n"
     buf += "init     initialize a database for scipaas\n"
     buf += "go       start the server\n"
-    buf += "create   create a view template for appname\n"
-    buf += "            e.g. sp create myapp\n"
+    buf += "create   create a view template for appname (e.g. sp create myapp)\n"
     buf += "search   search for available apps\n"
-    buf += "list     list installed or available apps\n"
-    buf += "            e.g. sp list [available|installed] \n"
+    buf += "list     list installed or available apps (e.g. sp list [available|installed]) \n"
     buf += "install  install an app\n"
     return buf
 
@@ -40,20 +38,20 @@ def initdb():
 
     # Creates tables
     SQL_T_APPS = """CREATE TABLE IF NOT EXISTS apps(
-        appid integer primary key autoincrement, 
+        id integer primary key autoincrement, 
         name varchar(20), description varchar(80), category varchar(20), 
         language varchar(20), input_format)"""
 
     SQL_T_USERS = """CREATE TABLE IF NOT EXISTS users(
-        uid integer primary key autoincrement, user varchar(20) unique, 
+        id integer primary key autoincrement, user varchar(20) unique, 
         passwd varchar(20))"""
 
     SQL_T_JOBS = """CREATE TABLE IF NOT EXISTS jobs(
-        jid integer primary key autoincrement, user text, app text,
+        id integer primary key autoincrement, user text, app text,
         cid text, state char(1), time_submit text, description text)"""
 
     SQL_T_PLOTS = """CREATE TABLE IF NOT EXISTS plots(
-        pltid integer primary key autoincrement, 
+        id integer primary key autoincrement, 
         appid integer,  type varchar(80), filename varchar(80), col1 integer, col2 integer, 
         title varchar(80), foreign key (appid) references apps(appid))"""
 
@@ -131,9 +129,13 @@ if __name__ == "__main__":
     elif (sys.argv[1] == "search"):
         print notyet
     elif (sys.argv[1] == "install"):
-        durl = url+'/'+sys.argv[2]+'.zip' 
-        print 'durl is:',durl
-        dlfile(durl)
+        install_usage = "usage: sp install appname"
+        if len(sys.argv) == 3:
+            durl = url+'/'+sys.argv[2]+'.zip' 
+            print 'durl is:',durl
+            dlfile(durl)
+        else:
+            print install_usage
 
     elif (sys.argv[1] == "list"):
         list_usage = "usage: sp list [available|installed]"
