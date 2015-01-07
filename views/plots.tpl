@@ -42,7 +42,7 @@ td {text-align: center}
 %for row in rows:
   <tr>
      <td>{{row['plots']['title']}}</td>
-     <td>{{row['plots']['type']}}</td>
+     <td>{{row['plots']['ptype']}}</td>
      <td>{{row['plots']['filename']}}</td>
      <td>{{row['plots']['col1']}}</td>
      <td>{{row['plots']['col2']}}</td>

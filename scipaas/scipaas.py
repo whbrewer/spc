@@ -55,14 +55,14 @@ jobs = db2.define_table('jobs', Field('id','integer'),
                                 Field('time_submit','string'),
                                 Field('description','string'))
 plots = db2.define_table('plots', Field('id','integer'),
-                                  Field('appid','integer'),
-                                  Field('type','string'),
+                                  Field('appid',db2.apps),
+                                  Field('ptype','string'),
                                   Field('filename','string'),
                                   Field('col1','integer'),
                                   Field('col2','integer'),
                                   Field('title','string'))
 wall = db2.define_table('wall', Field('id','integer'),
-                                Field('jid','integer'),
+                                Field('jid',db2.jobs),
                                 Field('comment','string'))
 
 @post('/<app>/confirm')
@@ -453,17 +453,17 @@ def get_plots():
 def delete_plot(pltid):
     app = request.query.app
     cid = request.query.cid
-    p = plotmod.plot()
-    p.delete(pltid)
+    del db2.plots[pltid]
+    db2.commit()
     redirect ('/plots?app='+app)
 
 @post('/plots/create')
 def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
-    p = plotmod.plot()
     r = request
-    p.create(myapps[app].appid,r.forms['ptype'],r.forms['fn'],r.forms['col1'],r.forms['col2'],r.forms['title'])
+    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],filename=r.forms['fn'],col1=r.forms['col1'],col2=r.forms['col2'],title=r.forms['title'])
+    db2.commit()
     redirect ('/plots?app='+app+'&cid='+cid)
 
 @get('/plot/<pltid>')
@@ -481,7 +481,7 @@ def plot_interface(pltid):
     query = (apps.id==plots.appid) & (apps.name==app) & (plots.id==pltid)
     result = db2(query).select()[0]
 
-    plottype = result['plots']['type']
+    plottype = result['plots']['ptype']
     plotfn = result['plots']['filename']
     col1 = result['plots']['col1']
     col2 = result['plots']['col2']

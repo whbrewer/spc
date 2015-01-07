@@ -24,6 +24,11 @@ class SciPaasTest(unittest.TestCase):
 # inputs
 # outputs
 # plot functions
+    # create a plot
+    # delete a plot
+    # show a plot
+        # bar chart
+        # line chart
 # schedule functions
 
 # others:

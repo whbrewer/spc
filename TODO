@@ -1,5 +1,5 @@
 Currently working on: 
-- line 498 in scipaas.py
+- line 453 in scipaas.py delete_plot()
 
 Next:
 - implement data abstraction layer, dal.py, so that SP can use GAE
