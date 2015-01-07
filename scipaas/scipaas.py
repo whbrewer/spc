@@ -2,10 +2,7 @@
 
 # web framework
 from bottle import *
-from bottle.ext import sqlite
-# database stuff
-#import macaron
-import sqlite3 as lite
+# data access layer
 from dal import DAL, Field
 # python built-ins
 import uuid, hashlib, shutil, string
@@ -18,8 +15,7 @@ import plots as plotmod
 #from models import *
 
 ### ORM/DAL stuff
-#install(macaron.MacaronPlugin(config.db))
-db2 = DAL('sqlite://storage.sqlite', auto_import=True, migrate=False)
+db2 = DAL('sqlite://scipaas.db', auto_import=True, migrate=False)
 #db2 = models()
 
 ### session management configuration ###
@@ -36,10 +32,6 @@ session_opts = {
 
 app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
-
-# sqlite plugin
-plugin = ext.sqlite.Plugin(dbfile=config.db)
-install(plugin)
 
 # create instance of scheduler
 sched = scheduler.scheduler()
@@ -98,7 +90,7 @@ def confirm_form(app):
         return 'ERROR: failed to write parameters to file'
 
 @post('/<app>/<cid>/execute')
-def execute(db,app,cid):
+def execute(app,cid):
     global user
     #cid = request.forms.get('cid')
     #print 'execute:',app,cid
@@ -181,7 +173,7 @@ def root():
     return template('overview')
 
 @route('/jobs')
-def show_jobs(db):
+def show_jobs():
     if not authorized(): redirect('/login')
     #if app not in myapps: redirect('/apps')
     global user
@@ -195,7 +187,7 @@ def show_jobs(db):
     return template('jobs', params, rows=result)
 
 @get('/wall')
-def get_wall(db):
+def get_wall():
     """Return the records from the wall table."""
     if not authorized(): redirect('/login')
     global user
@@ -210,7 +202,7 @@ def get_wall(db):
     return template('wall', params, rows=result)
 
 @post('/wall')
-def post_wall(db):
+def post_wall():
     if not authorized(): redirect('/login')
     app = request.forms.app
     cid = request.forms.cid
@@ -234,7 +226,7 @@ def delete_job(jid):
 
 # this doesnt work.. needs to be run as a separate thread
 @get('/jobs/stop/<app>')
-def stop_job(db,app):
+def stop_job(app):
     os.system("killall " + app)
     redirect("/jobs")
 
@@ -272,7 +264,7 @@ def get_favicon():
     return server_static('favicon.ico')
 
 @post('/login')
-def post_login(db):
+def post_login():
     global user
     s = request.environ.get('beaker.session')
     user = users(user=request.forms.get('user'))
@@ -323,7 +315,7 @@ def showapps():
     redirect("/apps/show/name")
 
 @get('/apps/load')
-def load_apps(db):
+def load_apps():
     # this needs to be moved into apps.py in the future
     global myapps, default_app
     # Connect to DB 
@@ -356,7 +348,7 @@ def load_apps(db):
     return 0
 
 @get('/apps/show/<sort>')
-def getapps(db,sort="name"):
+def getapps(sort="name"):
     if not authorized(): redirect('/login')
     result = db2().select(apps.ALL)
     return template('apps', rows=result)
@@ -388,7 +380,8 @@ def create_view():
     else:
         return "ERROR: there was a problem when creating view"
 
-#@post('/apps/delete/<appid>')
+# this is dangerous... needs to be POST not GET
+#@get('/apps/delete/<appid>')
 #def delete_app(appid):
 #    a = apps.app()
 #    a.delete(appid)
@@ -428,7 +421,7 @@ def getstart():
         #redirect("/apps/show/name")
 
 @get('/<app>/list')
-def list(db,app):
+def list(app):
     global user
     str = ''
     for case in os.listdir(myapps[app].user_dir+os.sep+user+os.sep+app):
@@ -442,13 +435,14 @@ def list(db,app):
     return template('list', params)
 
 @get('/plots')
-def get_plots(db):
+def get_plots():
     global user
     #try:
     app = request.query.app
     if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
-    result = db2(apps.id==plots.appid).select()
+    query = (apps.id==plots.appid) & (apps.name==app)
+    result = db2(query).select()
     params = { 'app': app, 'cid': request.query.cid, 'user': user } 
     return template('plots', params, rows=result)
     #except:
@@ -456,7 +450,7 @@ def get_plots(db):
     #    return template('error', params)
 
 @get('/plots/delete/<pltid>')
-def delete_plot(db,pltid):
+def delete_plot(pltid):
     app = request.query.app
     cid = request.query.cid
     p = plotmod.plot()
@@ -484,7 +478,15 @@ def plot_interface(pltid):
         c = cid
 
     p = plotmod.plot()
-    (plottype,plotfn,col1,col2,title) = p.read(app,pltid)
+    query = (apps.id==plots.appid) & (apps.name==app) & (plots.id==pltid)
+    result = db2(query).select()[0]
+
+    plottype = result['plots']['type']
+    plotfn = result['plots']['filename']
+    col1 = result['plots']['col1']
+    col2 = result['plots']['col2']
+    title = result['plots']['title']
+
     params = {'app': app, 'cid': cid, 'user': u} 
 
     # if plot not in DB return error
@@ -575,7 +577,6 @@ def authorized():
 #   return "Sorry, there was a 500 server error: " + str(error)
 
 if __name__ == "__main__":
-    db = lite.connect(config.db)
-    load_apps(db)
+    load_apps()
     run(app=app, host='0.0.0.0', port=8081, debug=True)
 

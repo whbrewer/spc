@@ -1,3 +1,6 @@
+Currently working on: 
+- line 498 in scipaas.py
+
 Next:
 - implement data abstraction layer, dal.py, so that SP can use GAE
     * due to namespace conflicts, need to create the dal model as a separate class, 

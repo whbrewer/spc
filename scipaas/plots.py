@@ -48,15 +48,14 @@ class plot(object):
         cur.execute('insert into plots values (NULL,?,?,?,?,?,?)',(appid,ptype,fn,col1,col2,title))
         self.con.commit()
 
-    def read(self,app,pltid):
-        cur = self.con.cursor()
-        #print app
-        # in the future this has to support reading multiple plots
-        result = cur.execute('select type, filename, col1, col2, title from apps natural join plots where name=? and id=?',(app,pltid)).fetchone()
-        if result is None:
-            return None
-        else:
-            return (result[0],result[1],result[2],result[3],result[4])
+#    def read(self,app,pltid):
+#        cur = self.con.cursor()
+#        # in the future this has to support reading multiple plots
+#        result = cur.execute('select type, filename, col1, col2, title from apps natural join plots where name=? and id=?',(app,pltid)).fetchone()
+#        if result is None:
+#            return None
+#        else:
+#            return (result[0],result[1],result[2],result[3],result[4])
 
     def show(self):
         cur = self.con.cursor()
