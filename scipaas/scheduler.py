@@ -1,12 +1,21 @@
 #!/usr/bin/env python
 import sqlite3 as lite
-import threading
+import threading, time, os
 import config
-import time
-import os
+from dal import DAL, Field
 
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
+
+db2 = DAL('sqlite://scipaas.db', auto_import=True, migrate=False)
+
+jobs = db2.define_table('jobs', Field('id','integer'),
+                                Field('user','string'),
+                                Field('app','string'),
+                                Field('cid','string'),
+                                Field('state','string'),
+                                Field('time_submit','string'),
+                                Field('description','string'))
 
 class scheduler(object):
 

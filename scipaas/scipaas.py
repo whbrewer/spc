@@ -15,8 +15,8 @@ import plots as plotmod
 #from models import *
 
 ### ORM/DAL stuff
-db2 = DAL('sqlite://scipaas.db', auto_import=True, migrate=False)
-#db2 = models()
+db = DAL('sqlite://scipaas.db', auto_import=True, migrate=False)
+#db = models()
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
@@ -38,31 +38,31 @@ sched = scheduler.scheduler()
 
 pbuffer = ''
 
-users = db2.define_table('users', Field('id','integer'), 
+users = db.define_table('users', Field('id','integer'), 
                                   Field('user', 'string'), 
                                   Field('passwd','string'))
-apps = db2.define_table('apps', Field('id','integer'),
+apps = db.define_table('apps', Field('id','integer'),
                                 Field('name','string'),
                                 Field('description','string'),
                                 Field('category','string'),
                                 Field('language','string'),
                                 Field('input_format','string'))
-jobs = db2.define_table('jobs', Field('id','integer'),
+jobs = db.define_table('jobs', Field('id','integer'),
                                 Field('user','string'),
                                 Field('app','string'),
                                 Field('cid','string'),
                                 Field('state','string'),
                                 Field('time_submit','string'),
                                 Field('description','string'))
-plots = db2.define_table('plots', Field('id','integer'),
-                                  Field('appid',db2.apps),
+plots = db.define_table('plots', Field('id','integer'),
+                                  Field('appid',db.apps),
                                   Field('ptype','string'),
                                   Field('filename','string'),
                                   Field('col1','integer'),
                                   Field('col2','integer'),
                                   Field('title','string'))
-wall = db2.define_table('wall', Field('id','integer'),
-                                Field('jid',db2.jobs),
+wall = db.define_table('wall', Field('id','integer'),
+                                Field('jid',db.jobs),
                                 Field('comment','string'))
 
 @post('/<app>/confirm')
@@ -179,7 +179,7 @@ def show_jobs():
     global user
     cid = request.query.cid
     app = request.query.app
-    result = db2(users.user==user).select(jobs.ALL)
+    result = db(users.user==user).select(jobs.ALL)
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -194,7 +194,7 @@ def get_wall():
     cid = request.query.cid
     app = request.query.app
     # note: =~ means sort by descending order
-    result = db2(jobs.id==wall.jid).select(orderby=~wall.id)
+    result = db(jobs.id==wall.jid).select(orderby=~wall.id)
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -210,9 +210,9 @@ def post_wall():
     comment = request.forms.comment
     # save comment to db
     wall.insert(jid=jid, comment=comment)
-    db2.commit()
+    db.commit()
     # get all wall comments
-    result = db2().select(wall.ALL)
+    result = db().select(wall.ALL)
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -297,7 +297,7 @@ def post_register():
     if pw1 == pw2:
         hashpw = hashlib.sha256(pw1).hexdigest()
         users.insert(user=user, passwd=hashpw)
-        db2.commit()
+        db.commit()
         redirect('/login')
     else:
         return template('register')
@@ -320,7 +320,7 @@ def load_apps():
     global myapps, default_app
     # Connect to DB 
     try:
-        result = db2().select(apps.ALL)
+        result = db().select(apps.ALL)
     except e:
         print "Error %s:" % e.args[0]
         print "MAKE SURE DATABASE EXIST."
@@ -350,7 +350,7 @@ def load_apps():
 @get('/apps/show/<sort>')
 def getapps(sort="name"):
     if not authorized(): redirect('/login')
-    result = db2().select(apps.ALL)
+    result = db().select(apps.ALL)
     return template('apps', rows=result)
 
 @get('/apps/add')
@@ -442,7 +442,7 @@ def get_plots():
     if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
     query = (apps.id==plots.appid) & (apps.name==app)
-    result = db2(query).select()
+    result = db(query).select()
     params = { 'app': app, 'cid': request.query.cid, 'user': user } 
     return template('plots', params, rows=result)
     #except:
@@ -453,8 +453,8 @@ def get_plots():
 def delete_plot(pltid):
     app = request.query.app
     cid = request.query.cid
-    del db2.plots[pltid]
-    db2.commit()
+    del db.plots[pltid]
+    db.commit()
     redirect ('/plots?app='+app)
 
 @post('/plots/create')
@@ -463,7 +463,7 @@ def create_plot():
     cid = request.forms.get('cid')
     r = request
     plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],filename=r.forms['fn'],col1=r.forms['col1'],col2=r.forms['col2'],title=r.forms['title'])
-    db2.commit()
+    db.commit()
     redirect ('/plots?app='+app+'&cid='+cid)
 
 @get('/plot/<pltid>')
@@ -479,7 +479,7 @@ def plot_interface(pltid):
 
     p = plotmod.plot()
     query = (apps.id==plots.appid) & (apps.name==app) & (plots.id==pltid)
-    result = db2(query).select()[0]
+    result = db(query).select()[0]
 
     plottype = result['plots']['ptype']
     plotfn = result['plots']['filename']
