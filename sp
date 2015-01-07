@@ -24,7 +24,8 @@ if (len(sys.argv) == 1):
     print usage()
     sys.exit()
 
-db = config.db
+#db = config.db
+db = "scipaas.db"
 # make a backup copy if file exists
 if(sys.argv[1] == "init"):
     if os.path.isfile(db): 
@@ -52,8 +53,8 @@ def initdb():
 
     SQL_T_PLOTS = """CREATE TABLE IF NOT EXISTS plots(
         id integer primary key autoincrement, 
-        appid integer,  type varchar(80), filename varchar(80), col1 integer, col2 integer, 
-        title varchar(80), foreign key (appid) references apps(appid))"""
+        appid integer,  ptype varchar(80), filename varchar(80), col1 integer, col2 integer, 
+        title varchar(80))""" # foreign key (appid) references apps(appid))
 
     SQL_T_WALL = """CREATE TABLE wall(
         id integer primary key autoincrement, jid integer, comment varchar(80), 

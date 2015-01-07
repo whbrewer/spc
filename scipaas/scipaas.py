@@ -15,7 +15,7 @@ import plots as plotmod
 #from models import *
 
 ### ORM/DAL stuff
-db = DAL('sqlite://scipaas.db', auto_import=True, migrate=False)
+db = DAL(config.db, auto_import=True, migrate=False)
 #db = models()
 
 ### session management configuration ###
@@ -39,31 +39,31 @@ sched = scheduler.scheduler()
 pbuffer = ''
 
 users = db.define_table('users', Field('id','integer'), 
-                                  Field('user', 'string'), 
-                                  Field('passwd','string'))
+                                 Field('user', 'string'), 
+                                 Field('passwd','string'))
 apps = db.define_table('apps', Field('id','integer'),
-                                Field('name','string'),
-                                Field('description','string'),
-                                Field('category','string'),
-                                Field('language','string'),
-                                Field('input_format','string'))
+                               Field('name','string'),
+                               Field('description','string'),
+                               Field('category','string'),
+                               Field('language','string'),
+                               Field('input_format','string'))
 jobs = db.define_table('jobs', Field('id','integer'),
-                                Field('user','string'),
-                                Field('app','string'),
-                                Field('cid','string'),
-                                Field('state','string'),
-                                Field('time_submit','string'),
-                                Field('description','string'))
+                               Field('user','string'),
+                               Field('app','string'),
+                               Field('cid','string'),
+                               Field('state','string'),
+                               Field('time_submit','string'),
+                               Field('description','string'))
 plots = db.define_table('plots', Field('id','integer'),
-                                  Field('appid',db.apps),
-                                  Field('ptype','string'),
-                                  Field('filename','string'),
-                                  Field('col1','integer'),
-                                  Field('col2','integer'),
-                                  Field('title','string'))
+                                 Field('appid',db.apps),
+                                 Field('ptype','string'),
+                                 Field('filename','string'),
+                                 Field('col1','integer'),
+                                 Field('col2','integer'),
+                                 Field('title','string'))
 wall = db.define_table('wall', Field('id','integer'),
-                                Field('jid',db.jobs),
-                                Field('comment','string'))
+                               Field('jid',db.jobs),
+                               Field('comment','string'))
 
 @post('/<app>/confirm')
 def confirm_form(app):
@@ -331,8 +331,8 @@ def load_apps():
         name = row['name']
         appid = row['id']
         input_format = row['input_format']
-        #print 'loading: %s (id: %s)' % (name,appid)
-        print 'loading: %s' % (name)
+        print 'loading: %s (id: %s)' % (name,appid)
+        #print 'loading: %s' % (name)
         if(input_format=='namelist'):
             myapp = appmod.namelist(name,appid)
         elif(input_format=='ini'):
@@ -367,7 +367,7 @@ def addapp():
     language = request.forms.get('language')  
     input_format = request.forms.get('input_format')
     # put in db
-    a = apps.app()
+    a = appmod.app()
     a.create(appname,description,category,language,input_format)
     redirect("/apps/show/name")
 
@@ -381,19 +381,19 @@ def create_view():
         return "ERROR: there was a problem when creating view"
 
 # this is dangerous... needs to be POST not GET
-#@get('/apps/delete/<appid>')
-#def delete_app(appid):
-#    a = apps.app()
-#    a.delete(appid)
-#    redirect("/apps/show/name")
+@get('/apps/delete/<appid>')
+def delete_app(appid):
+    a = appmod.app()
+    a.delete(appid)
+    redirect("/apps/show/name")
 
 @get('/apps/edit/<appid>')
 def edit_app(appid):
     return 'SORRY - this function has not yet been implemented'
-    a = apps.app()
-    (name,description,category,language) = a.read(appid)
-    params = {'name': name, 'description': description, 'category': category, 'language': language }
-    return template(app_edit, params)
+    #a = appmod.app()
+    #(name,description,category,language) = a.read(appid)
+    #params = {'name':name, 'description':description, 'category':category, 'language':language }
+    #return template(app_edit, params)
 
 @get('/start')
 def getstart():
@@ -540,7 +540,7 @@ def do_upload():
     if ext not in ('.zip','.txt'):
         return 'ERROR: File extension not allowed.'
     try:
-        save_path_dir = apps.apps_dir + os.sep + name
+        save_path_dir = appmod.apps_dir + os.sep + name
         save_path = save_path_dir + ext
         if os.path.isfile(save_path):
             return 'ERROR: zip file exists already. Please remove first.'

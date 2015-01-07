@@ -1,11 +1,14 @@
 Currently working on: 
-- line 453 in scipaas.py delete_plot()
+- remove macaron/sqlite references from sp
+- consolidate dal db instance into models.py
 
 Next:
 - implement data abstraction layer, dal.py, so that SP can use GAE
     * due to namespace conflicts, need to create the dal model as a separate class, 
       i.e. plots table accessed by myclass.plots
 - write unit tests!!
+- for errors especially in try/except structures, try to show some error message
+  that is consistent with why it actually crashed.
 - implement worker queues
     * add stop button to jobs page.  problem is need to have another thread
       to be able to stop the job.  try using RQ (Redis Queue, python-rq.org)

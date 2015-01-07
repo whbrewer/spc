@@ -17,6 +17,7 @@ class SciPaasTest(unittest.TestCase):
 
 # app functions
 # add/create app
+   # add to db
 # deleting app
 # uploading app
     # test that when file unzips the unzipped directory is the same as the zip file name

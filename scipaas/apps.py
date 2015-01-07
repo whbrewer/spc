@@ -1,8 +1,8 @@
 import re, sys, os
 import config
-import sqlite3 as lite
 import ConfigParser
 import xml.etree.ElementTree as ET
+from dal import DAL, Field
 
 # using convention over configuration 
 # the executable is the name of the app
@@ -11,38 +11,38 @@ apps_dir = config.apps_dir
 user_dir = config.user_dir
 # end set 
 
+db = DAL(config.db, auto_import=True, migrate=False)
+
+dbapps = db.define_table('apps', Field('id','integer'),
+                               Field('name','string'),
+                               Field('description','string'),
+                               Field('category','string'),
+                               Field('language','string'),
+                               Field('input_format','string'))
+
 # future feature
 #workflow = "login >> start >> confirm >> execute"
 class app(object):
 
     def __init__(self):
-        # Connect to DB 
-        self.con = None
-        try:
-            self.con = lite.connect(config.db)
-        except lite.Error, e:
-            print "Error %s:" % e.args[0]
-            sys.exit(1)
+        pass
 
-    def create(self,name,description,category,language,input_format):
-        cur = self.con.cursor()
-        cur.execute('insert into apps values (NULL,?,?,?,?,?)',
-                   (name,description,category,language,input_format))
-        self.con.commit()
+    def create(self,name,desc,cat,lang,info):
+        dbapps.insert(name=name,description=desc,category=cat,language=lang,input_format=info)
+        db.commit()
 
-    def read(self,appid):
-        cur = self.con.cursor()
-        (name,description,language,category) = cur.execute('select name,description,language,category from apps where id=?',(appid,))
-        for i in result: print i
-        return (name,description,language,category)
+    #def read(self,appid):
+        #cur = self.con.cursor()
+        #(name,description,language,category) = cur.execute('select name,description,language,category from apps where id=?',(appid,))
+        #for i in result: print i
+        #return (name,description,language,category)
 
     def update(self):
         pass
 
     def delete(self,appid):
-        cur = self.con.cursor()
-        cur.execute('delete from apps where id = (?)',(appid,))
-        self.con.commit()
+        del dbapps[appid]
+        db.commit()
 
     def deploy(self):
         pass
@@ -158,6 +158,10 @@ class namelist(app):
         blockmap = dict() 
         blockorder = []
  
+        if not os.path.isfile(fn):
+            print "ERROR: input file does not exist: " + fn
+            sys.exit(-1)
+
         for line in open(fn, 'rU'):
             m = re.search(r'&(\w+)',line) # section title
             n = re.search(r'(\w+)\s?=\s?(.*$)',line) # parameter
