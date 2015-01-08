@@ -6,7 +6,7 @@ from dal import DAL, Field
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
 
-db = DAL(config.db, auto_import=True, migrate=False)
+db = DAL(config.uri, auto_import=True, migrate=False)
 
 jobs = db.define_table('jobs', Field('id','integer'),
                                Field('user','string'),

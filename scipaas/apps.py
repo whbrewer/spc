@@ -3,6 +3,7 @@ import config
 import ConfigParser
 import xml.etree.ElementTree as ET
 from dal import DAL, Field
+from model import *
 
 # using convention over configuration 
 # the executable is the name of the app
@@ -10,15 +11,6 @@ from dal import DAL, Field
 apps_dir = config.apps_dir
 user_dir = config.user_dir
 # end set 
-
-db = DAL(config.db, auto_import=True, migrate=False)
-
-dbapps = db.define_table('apps', Field('id','integer'),
-                               Field('name','string'),
-                               Field('description','string'),
-                               Field('category','string'),
-                               Field('language','string'),
-                               Field('input_format','string'))
 
 # future feature
 #workflow = "login >> start >> confirm >> execute"
@@ -28,7 +20,7 @@ class app(object):
         pass
 
     def create(self,name,desc,cat,lang,info):
-        dbapps.insert(name=name,description=desc,category=cat,language=lang,input_format=info)
+        apps.insert(name=name,description=desc,category=cat,language=lang,input_format=info)
         db.commit()
 
     #def read(self,appid):
@@ -41,7 +33,7 @@ class app(object):
         pass
 
     def delete(self,appid):
-        del dbapps[appid]
+        del apps[appid]
         db.commit()
 
     def deploy(self):

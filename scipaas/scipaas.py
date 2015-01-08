@@ -12,11 +12,7 @@ import cgi
 import config, uploads, scheduler
 import apps as appmod
 import plots as plotmod
-#from models import *
-
-### ORM/DAL stuff
-db = DAL(config.db, auto_import=True, migrate=False)
-#db = models()
+from model import *
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
@@ -37,33 +33,6 @@ app = SessionMiddleware(app(), session_opts)
 sched = scheduler.scheduler()
 
 pbuffer = ''
-
-users = db.define_table('users', Field('id','integer'), 
-                                 Field('user', 'string'), 
-                                 Field('passwd','string'))
-apps = db.define_table('apps', Field('id','integer'),
-                               Field('name','string'),
-                               Field('description','string'),
-                               Field('category','string'),
-                               Field('language','string'),
-                               Field('input_format','string'))
-jobs = db.define_table('jobs', Field('id','integer'),
-                               Field('user','string'),
-                               Field('app','string'),
-                               Field('cid','string'),
-                               Field('state','string'),
-                               Field('time_submit','string'),
-                               Field('description','string'))
-plots = db.define_table('plots', Field('id','integer'),
-                                 Field('appid',db.apps),
-                                 Field('ptype','string'),
-                                 Field('filename','string'),
-                                 Field('col1','integer'),
-                                 Field('col2','integer'),
-                                 Field('title','string'))
-wall = db.define_table('wall', Field('id','integer'),
-                               Field('jid',db.jobs),
-                               Field('comment','string'))
 
 @post('/<app>/confirm')
 def confirm_form(app):
@@ -319,13 +288,12 @@ def load_apps():
     # this needs to be moved into apps.py in the future
     global myapps, default_app
     # Connect to DB 
-    try:
-        result = db().select(apps.ALL)
-    except e:
-        print "Error %s:" % e.args[0]
-        print "MAKE SURE DATABASE EXIST."
-        print "If running for the first time, run \"sp init\" to create a db"
-        sys.exit(1)
+    #try:
+    result = db().select(apps.ALL)
+    #except:
+    #    print "Error: MAKE SURE DATABASE EXIST."
+    #    print "If running for the first time, run \"sp init\" to create a db"
+    #    sys.exit(1)
     myapps = {}
     for row in result:   
         name = row['name']

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from scipaas import apps, macaron, config
-from scipaas.models import *
+from scipaas.model import *
 import sys, os, shutil, urllib2
 import xml.etree.ElementTree as ET
 
@@ -10,7 +10,7 @@ sys.argv[1:]
 url = 'https://s3-us-west-1.amazonaws.com/scihub'
 
 def usage():
-    buf =  "usage: sp <command> [options]\n\n"
+    buf =  "SciPaaS usage: sp <command> [options]\n\n"
     buf += "commonly used commands:\n"
     buf += "init     initialize a database for scipaas\n"
     buf += "go       start the server\n"
@@ -24,8 +24,7 @@ if (len(sys.argv) == 1):
     print usage()
     sys.exit()
 
-#db = config.db
-db = "scipaas.db"
+db = config.db
 # make a backup copy if file exists
 if(sys.argv[1] == "init"):
     if os.path.isfile(db): 
