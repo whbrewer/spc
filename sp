@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
-from scipaas import apps, macaron, config
+from scipaas import macaron, config
+from scipaas import apps as appmod
 from scipaas.model import *
 import sys, os, shutil, urllib2
 import xml.etree.ElementTree as ET
+
+class Plots(macaron.Model): pass
+class Users(macaron.Model): pass
+class Apps(macaron.Model): pass
 
 sys.argv[1:]
 
@@ -107,13 +112,13 @@ if __name__ == "__main__":
             print 'input format is:',input_format
             if sys.argv[2]: 
                 if input_format == 'namelist':
-                    myapp = apps.namelist(sys.argv[2])
+                    myapp = appmod.namelist(sys.argv[2])
                 elif input_format == 'ini':
-                    myapp = apps.ini(sys.argv[2])
+                    myapp = appmod.ini(sys.argv[2])
                 elif input_format == 'xml':
-                    myapp = apps.xml(sys.argv[2])
+                    myapp = appmod.xml(sys.argv[2])
                 elif input_format == 'json':
-                    myapp = apps.json(sys.argv[2])
+                    myapp = appmod.json(sys.argv[2])
                 else:
                     print "ERROR: input format type not supported:", input_format
             params,_,_ = myapp.read_params()

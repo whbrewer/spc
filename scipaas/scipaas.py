@@ -34,6 +34,30 @@ sched = scheduler.scheduler()
 
 pbuffer = ''
 
+@get('/mpl')
+def matplotlib():
+    """Generate a random image using Matplotlib and display it"""
+    from pylab import savefig
+    import numpy as np
+    import StringIO
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    fig = Figure()
+    ax = fig.add_subplot(111)
+    ax.imshow(np.random.rand(100, 100), interpolation='nearest')
+    canvas = FigureCanvas(fig)
+    png_output = StringIO.StringIO()
+    canvas.print_png(png_output)
+    # save file
+    if not os.path.exists(config.tmp_dir):
+        os.makedirs(config.tmp_dir)
+    fn = str(uuid.uuid4())+'.png'
+    fig.savefig(config.tmp_dir+os.sep+fn)
+    #response.content_type = 'image/png'
+    #return png_output.getvalue()
+    params = {'image': fn}
+    return template('plot-mpl', params)
+
 @post('/<app>/confirm')
 def confirm_form(app):
     global user
@@ -539,6 +563,14 @@ def authorized():
     else: 
         user = s[USER_ID_SESSION_KEY]
         return True
+
+#def module_exists(module_name):
+#    try:
+#        __import__(module_name)
+#    except ImportError:
+#        return False
+#    else:
+#        return True
 
 #@error(500)
 #def error500(error):
