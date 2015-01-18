@@ -8,6 +8,7 @@ class plot(object):
         pass
 
     def get_data(self,fn,col1,col2):
+        """return data as string in format [ [x1,y1], [x2,y2], ... ]"""
         y = ''
         for line in open(fn, 'rU'):
             # don't parse comments
@@ -18,6 +19,17 @@ class plot(object):
                 y += '[ ' + x[col1-1] + ', ' + x[col2-1] + '], ' 
         s = "[ %s ]" % y
         return s
+
+    def get_column_of_data(self,fn,col):
+        y = []
+        for line in open(fn, 'rU'):
+            # don't parse comments
+            #print line
+            if re.search(r'#',line): continue
+            x = line.split()
+            if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
+                y += [ x[col-1] ] 
+        return y
 
     def get_ticks(self,fn,col1,col2):
         y = ''

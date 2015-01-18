@@ -94,6 +94,7 @@ td {text-align: center}
    <select name="ptype">
        <option VALUE="line">line</option>
        <option VALUE="categories">categories (bar plot)</option>
+       <option VALUE="matplotlib">matplotlib</option>
    </select><br>
    <input type="hidden" name="app" value="{{app}}">
    <input type="hidden" name="cid" value="{{cid}}">

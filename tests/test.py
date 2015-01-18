@@ -30,6 +30,7 @@ class SciPaasTest(unittest.TestCase):
     # show a plot
         # bar chart
         # line chart
+        # matplot lib route
 # schedule functions
 
 # others:

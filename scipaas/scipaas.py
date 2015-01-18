@@ -34,20 +34,43 @@ sched = scheduler.scheduler()
 
 pbuffer = ''
 
-@get('/mpl')
-def matplotlib():
+@get('/mpl/<pltid>')
+def matplotlib(pltid):
     """Generate a random image using Matplotlib and display it"""
     from pylab import savefig
     import numpy as np
     import StringIO
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
+    global user
+    app = request.query.app
+    cid = request.query.cid
+
     fig = Figure()
     ax = fig.add_subplot(111)
-    ax.imshow(np.random.rand(100, 100), interpolation='nearest')
+    # random contour plot
+    #ax.imshow(np.random.rand(100, 100), interpolation='nearest')
+
+    # get data from file to plot
+    p = plotmod.plot()
+    query = (apps.id==plots.appid) & (apps.name==app) & (plots.id==pltid)
+    result = db(query).select()[0]
+    plottype = result['plots']['ptype']
+    plotfn = result['plots']['filename']
+    col1 = result['plots']['col1']
+    col2 = result['plots']['col2']
+    title = result['plots']['title']
+    plotfn = re.sub(r"<cid>", cid, plotfn)
+    sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
+    xx = p.get_column_of_data(sim_dir+plotfn,col1)
+    yy = p.get_column_of_data(sim_dir+plotfn,col2)
+
+    # plot
+    ax.plot(xx, yy)
     canvas = FigureCanvas(fig)
     png_output = StringIO.StringIO()
     canvas.print_png(png_output)
+
     # save file
     if not os.path.exists(config.tmp_dir):
         os.makedirs(config.tmp_dir)
@@ -494,6 +517,8 @@ def plot_interface(pltid):
      
     if plottype == 'categories': 
         tfn = 'plot-cat'
+    #elif:
+    #    return mpl()
     else:
         tfn = 'plot-line' 
 
