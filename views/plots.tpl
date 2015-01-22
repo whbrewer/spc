@@ -92,9 +92,10 @@ td {text-align: center}
    <!-- <input type="text" name="col2"><br> -->
    Type of plot:
    <select name="ptype">
-       <option VALUE="line">line</option>
-       <option VALUE="categories">categories (bar plot)</option>
-       <option VALUE="matplotlib">matplotlib</option>
+       <option VALUE="flot-line">flot/line</option>
+       <option VALUE="flot-bar">flot/bar</option>
+       <option VALUE="mpl-line">matplotlib/line</option>
+       <option VALUE="mpl-bar">matplotlib/bar</option>
    </select><br>
    <input type="hidden" name="app" value="{{app}}">
    <input type="hidden" name="cid" value="{{cid}}">

@@ -1,5 +1,6 @@
 Currently working on: 
-- integration with matplotlib
+- add ability to get data from line1 to line2
+- add "Files" button
 - use dal.py to create initdb in sp
 - create reader for generic input file
 
@@ -72,6 +73,7 @@ Tests
   strings, etc.
 
 Completed
+- integration with matplotlib
 - implement data abstraction layer, dal.py, so that SP can use GAE
     * due to namespace conflicts, need to create the dal model as a separate class, 
       i.e. plots table accessed by myclass.plots

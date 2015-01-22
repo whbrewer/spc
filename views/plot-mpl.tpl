@@ -1,7 +1,7 @@
 %include('header')
 %include('navbar')
 
-<h1>Inputs</h1>
+<h1>Matplotlib {{cid}}</h1>
 
 <img src="../static/tmp/{{!image}}">
 

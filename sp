@@ -81,9 +81,9 @@ def initdb():
     u = Users.create(user="container_file_lock")
     a = Apps.create(name="dna",description="Compute reverse complement, GC content, and codon analysis of given DNA string.",
         category="bioinformatics",language="python",input_format="namelist")
-    p = Plots.create(appid=1,type="categories",filename="din.out",col1=1,col2=2,title="Dinucleotides")
-    p = Plots.create(appid=1,type="categories",filename="nucs.out",col1=1,col2=2,title="Nucleotides")
-    p = Plots.create(appid=1,type="categories",filename="codons.out",col1=1,col2=2,title="Codons")
+    p = Plots.create(appid=1,type="flot-bar",filename="din.out",col1=1,col2=2,title="Dinucleotides")
+    p = Plots.create(appid=1,type="flot-bar",filename="nucs.out",col1=1,col2=2,title="Nucleotides")
+    p = Plots.create(appid=1,type="flot-bar",filename="codons.out",col1=1,col2=2,title="Codons")
     macaron.bake()
 
 notyet = "this feature not yet working"

@@ -37,6 +37,9 @@ pbuffer = ''
 @get('/mpl/<pltid>')
 def matplotlib(pltid):
     """Generate a random image using Matplotlib and display it"""
+    # in the future create a private function __import__ to import third-party 
+    # libraries, so that it can respond gracefully.  See for example the 
+    # Examples section at https://docs.python.org/2/library/imp.html
     from pylab import savefig
     import numpy as np
     import StringIO
@@ -62,9 +65,18 @@ def matplotlib(pltid):
     sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
     xx = p.get_column_of_data(sim_dir+plotfn,col1)
     yy = p.get_column_of_data(sim_dir+plotfn,col2)
+    #xx = np.asarray(p.get_column_of_data(sim_dir+plotfn,col1))
+    #yy = np.asarray(p.get_column_of_data(sim_dir+plotfn,col2))
+    #print 'xx:',type(xx), xx
+    #print 'yy:',type(yy), yy
 
     # plot
-    ax.plot(xx, yy)
+    if plottype == 'mpl-line':
+        ax.plot(xx, yy)
+    elif plottype == 'mpl-bar':
+        ax.hist(xx, yy, normed=1, histtype='bar', rwidth=0.8)
+    else:
+        return "ERROR: plottype not supported"
     canvas = FigureCanvas(fig)
     png_output = StringIO.StringIO()
     canvas.print_png(png_output)
@@ -76,7 +88,7 @@ def matplotlib(pltid):
     fig.savefig(config.tmp_dir+os.sep+fn)
     #response.content_type = 'image/png'
     #return png_output.getvalue()
-    params = {'image': fn}
+    params = {'image': fn, 'cid': cid}
     return template('plot-mpl', params)
 
 @post('/<app>/confirm')
@@ -513,11 +525,11 @@ def plot_interface(pltid):
     else:
         bars = 'false'
      
-    if plottype == 'categories': 
-        tfn = 'plot-cat'
-    elif plottype == 'line':
-        tfn = 'plot-line' 
-    elif plottype == 'matplotlib':
+    if plottype == 'flot-bar': 
+        tfn = 'plot-flot-bar'
+    elif plottype == 'flot-line':
+        tfn = 'plot-flot-line' 
+    elif plottype == 'mpl-line' or plottype == 'mpl-bar':
         redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
     else:
         tfn = 'plot-line' 
