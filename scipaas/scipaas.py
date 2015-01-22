@@ -48,8 +48,6 @@ def matplotlib(pltid):
 
     fig = Figure()
     ax = fig.add_subplot(111)
-    # random contour plot
-    #ax.imshow(np.random.rand(100, 100), interpolation='nearest')
 
     # get data from file to plot
     p = plotmod.plot()
@@ -517,8 +515,10 @@ def plot_interface(pltid):
      
     if plottype == 'categories': 
         tfn = 'plot-cat'
-    #elif:
-    #    return mpl()
+    elif plottype == 'line':
+        tfn = 'plot-line' 
+    elif plottype == 'matplotlib':
+        redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
     else:
         tfn = 'plot-line' 
 
