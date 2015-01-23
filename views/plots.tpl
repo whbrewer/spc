@@ -34,8 +34,8 @@ td {text-align: center}
    <th>Title</th> 
    <th>Type</th> 
    <th>Filename</th> 
-   <th>X-Column</th> 
-   <th>Y-Column</th> 
+   <th>Column range</th> 
+   <th>Line range</th> 
    <th>Action</th> 
 </tr>
 </thead>
@@ -44,8 +44,8 @@ td {text-align: center}
      <td>{{row['plots']['title']}}</td>
      <td>{{row['plots']['ptype']}}</td>
      <td>{{row['plots']['filename']}}</td>
-     <td>{{row['plots']['col1']}}</td>
-     <td>{{row['plots']['col2']}}</td>
+     <td>{{row['plots']['cols']}}</td>
+     <td>{{row['plots']['line_range']}}</td>
   <td><a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> -
       <a href="/plots/delete/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">delete</a> 
   <!--
@@ -60,46 +60,27 @@ td {text-align: center}
 <h1>Add a new plot to {{app}} app</h1>
 
 <form method="post" action="/plots/create">
-   Filename to plot (use <cid> to use the case id): <input type="text" name="fn"><br>
-   Title: <input type="text" name="title"><br>
-   X-Column: 
-   <select name="col1">
-       <option value="1">1</option>
-       <option value="2">2</option>
-       <option value="3">3</option>
-       <option value="4">4</option>
-       <option value="5">5</option>
-       <option value="6">6</option>
-       <option value="7">7</option>
-       <option value="8">8</option>
-       <option value="9">9</option>
-   </select><br>
-
-   Y-Column:
-   <select name="col2">
-       <option value="1">1</option>
-       <option value="2">2</option>
-       <option value="3">3</option>
-       <option value="4">4</option>
-       <option value="5">5</option>
-       <option value="6">6</option>
-       <option value="7">7</option>
-       <option value="8">8</option>
-       <option value="9">9</option>
-   </select><br>
-
+<table padding=10>
+   <tr><td>Filename to plot:</td>
+       <td><input type="text" name="fn"></td>
+       <td><em>Note: use &lt;cid&gt; to use the case id</em></td></tr>
+   <tr><td>Title:</td> <td><input type="text" name="title"></td></tr>
+   <tr><td>Column range:</td><td><input type="text" name="cols"></td><td><em>e.g. 1:2 to plot columns 1 and 2</em></td></tr>
+   <tr><td>Line range:</td><td><input type="text" name="line_range"></td><td><em>e.g. 3:53 to plot only lines 3 to 53</em></tr>
    <!-- <input type="text" name="col1"><br> -->
    <!-- <input type="text" name="col2"><br> -->
-   Type of plot:
-   <select name="ptype">
+   <tr><td>Type of plot:</td>
+   <td><select name="ptype">
        <option VALUE="flot-line">flot/line</option>
+       <option VALUE="flot-cat">flot/categories</option>
        <option VALUE="flot-bar">flot/bar</option>
        <option VALUE="mpl-line">matplotlib/line</option>
        <option VALUE="mpl-bar">matplotlib/bar</option>
-   </select><br>
+   </select></td></tr>
+   <tr><td></td><td><input type="submit"></td></tr>
    <input type="hidden" name="app" value="{{app}}">
    <input type="hidden" name="cid" value="{{cid}}">
-   <input type="submit">
+</table>
 </form>
 
 %include('footer')

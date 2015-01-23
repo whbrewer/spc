@@ -25,13 +25,16 @@ class plot(object):
 
     def get_column_of_data(self,fn,col):
         y = []
+        lineno = 0
         for line in open(fn, 'rU'):
-            # don't parse comments
-            #print line
-            if re.search(r'#',line): continue
-            x = line.split()
-            if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
-                y += [ x[col-1] ] 
+            lineno += 1
+            if lineno >= line1 and lineno <= line2:
+                # don't parse comments
+                #print line
+                if re.search(r'#',line): continue
+                x = line.split()
+                if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
+                    y += [ x[col-1] ] 
         return y
 
     def get_ticks(self,fn,col1,col2):

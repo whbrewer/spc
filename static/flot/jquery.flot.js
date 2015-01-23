@@ -2666,6 +2666,14 @@ Licensed under the MIT license.
                 for (var i = 0; i < points.length; i += ps) {
                     if (points[i] == null)
                         continue;
+
+                    //SJJ: options.bars.autoWidth has to be true for the current series 
+                    if (series.bars.autoWidth) {
+                        curBar = points[i];
+                        nextBar = points[i + ps];
+                        barRight = nextBar-curBar;
+                    }
+
                     drawBar(points[i], points[i + 1], points[i + 2], barLeft, barRight, fillStyleCallback, axisx, axisy, ctx, series.bars.horizontal, series.bars.lineWidth);
                 }
             }

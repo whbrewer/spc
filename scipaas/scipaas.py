@@ -58,8 +58,17 @@ def matplotlib(pltid):
     result = db(query).select()[0]
     plottype = result['plots']['ptype']
     plotfn = result['plots']['filename']
-    col1 = result['plots']['col1']
-    col2 = result['plots']['col2']
+
+    cols = result['plots']['cols']
+    line_range = result['plots']['line_range']
+    (col1str,col2str) = cols.split(":")
+    col1 = int(col1str)
+    col2 = int(col2str)
+    if line_range is not None:
+        (line1str,line2str) = line_range.split(":")
+        line1 = str(line1str)
+        line2 = str(line2str)
+
     title = result['plots']['title']
     plotfn = re.sub(r"<cid>", cid, plotfn)
     sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
@@ -85,6 +94,7 @@ def matplotlib(pltid):
     if not os.path.exists(config.tmp_dir):
         os.makedirs(config.tmp_dir)
     fn = str(uuid.uuid4())+'.png'
+    fig.set_size_inches(7.2,4.8)
     fig.savefig(config.tmp_dir+os.sep+fn)
     #response.content_type = 'image/png'
     #return png_output.getvalue()
@@ -487,7 +497,7 @@ def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
-    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],filename=r.forms['fn'],col1=r.forms['col1'],col2=r.forms['col2'],title=r.forms['title'])
+    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],filename=r.forms['fn'],cols=r.forms['cols'],line_range=r.forms['line_range'],title=r.forms['title'])
     db.commit()
     redirect ('/plots?app='+app+'&cid='+cid)
 
@@ -508,8 +518,17 @@ def plot_interface(pltid):
 
     plottype = result['plots']['ptype']
     plotfn = result['plots']['filename']
-    col1 = result['plots']['col1']
-    col2 = result['plots']['col2']
+
+    cols = result['plots']['cols']
+    line_range = result['plots']['line_range']
+    (col1str,col2str) = cols.split(":")
+    col1 = int(col1str)
+    col2 = int(col2str)
+    if line_range is not None:
+        (line1str,line2str) = line_range.split(":")
+        line1 = str(line1str)
+        line2 = str(line2str)
+
     title = result['plots']['title']
 
     params = {'app': app, 'cid': cid, 'user': u} 
@@ -520,13 +539,10 @@ def plot_interface(pltid):
         params['err'] = "Sorry! This app does not support plotting capability"
         return template('error', params)
 
-    if plottype == 'bar':
-        bars = 'true'
-    else:
-        bars = 'false'
-     
     if plottype == 'flot-bar': 
         tfn = 'plot-flot-bar'
+    elif plottype == 'flot-cat': 
+        tfn = 'plot-flot-cat'
     elif plottype == 'flot-line':
         tfn = 'plot-flot-line' 
     elif plottype == 'mpl-line' or plottype == 'mpl-bar':
@@ -544,8 +560,7 @@ def plot_interface(pltid):
         p = plotmod.plot()
         data = p.get_data(sim_dir + plotfn,col1,col2)
         ticks = p.get_ticks(sim_dir + plotfn,col1,col2)
-        params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks,
-                   'title': title, 'bars': bars }
+        params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks, 'title': title }
         return template(tfn, params)
 
 @get('/<app>/<cid>/data/<pltid>')
