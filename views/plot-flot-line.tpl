@@ -71,4 +71,5 @@
 
 <p><label><input id="zoom" type="checkbox" CHECKED />Zoom to selection.</label> Double click to restore to original plot.</p>
 
+%include('plot-footer')
 %include('footer')

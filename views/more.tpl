@@ -1,10 +1,10 @@
 %include('header')
 %include('navbar')
 
-<h1>Output</h1>
+<h1>{{fn}}</h1>
 
 <pre>
-{{!output}}
+{{!contents}}
 </pre>
 
 %include('footer')

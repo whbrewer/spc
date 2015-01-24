@@ -47,4 +47,5 @@
 
 </body>
 
+%include('plot-footer')
 %include('footer')

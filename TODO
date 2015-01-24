@@ -1,13 +1,14 @@
 Currently working on: 
-- add ability to get data from line1 to line2
-- add "Files" button
-- use dal.py to create initdb in sp
-- create reader for generic input file
+- add Data button to plots
 
 Next:
+- aggregate plots onto single page
+- add "list files" button, probably in myjobs
+- use dal.py to create initdb in sp
+- create reader for generic input file
 - for namelist.input files ignore comments !
 - ignore lines option for plotting files
-- log scale
+- plots: log scale, xrange, yrange, xtitle, ytitle
 - write unit tests!!
 - get scipaas working under gae
 - use matplotlib for plotting
@@ -73,6 +74,7 @@ Tests
   strings, etc.
 
 Completed
+- add ability to get data from line1 to line2
 - integration with matplotlib
 - implement data abstraction layer, dal.py, so that SP can use GAE
     * due to namespace conflicts, need to create the dal model as a separate class, 

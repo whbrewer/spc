@@ -34,73 +34,6 @@ sched = scheduler.scheduler()
 
 pbuffer = ''
 
-@get('/mpl/<pltid>')
-def matplotlib(pltid):
-    """Generate a random image using Matplotlib and display it"""
-    # in the future create a private function __import__ to import third-party 
-    # libraries, so that it can respond gracefully.  See for example the 
-    # Examples section at https://docs.python.org/2/library/imp.html
-    from pylab import savefig
-    import numpy as np
-    import StringIO
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-    from matplotlib.figure import Figure
-    global user
-    app = request.query.app
-    cid = request.query.cid
-
-    fig = Figure()
-    ax = fig.add_subplot(111)
-
-    # get data from file to plot
-    p = plotmod.plot()
-    query = (apps.id==plots.appid) & (apps.name==app) & (plots.id==pltid)
-    result = db(query).select()[0]
-    plottype = result['plots']['ptype']
-    plotfn = result['plots']['filename']
-
-    cols = result['plots']['cols']
-    line_range = result['plots']['line_range']
-    (col1str,col2str) = cols.split(":")
-    col1 = int(col1str)
-    col2 = int(col2str)
-    if line_range is not None:
-        (line1str,line2str) = line_range.split(":")
-        line1 = str(line1str)
-        line2 = str(line2str)
-
-    title = result['plots']['title']
-    plotfn = re.sub(r"<cid>", cid, plotfn)
-    sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
-    xx = p.get_column_of_data(sim_dir+plotfn,col1)
-    yy = p.get_column_of_data(sim_dir+plotfn,col2)
-    #xx = np.asarray(p.get_column_of_data(sim_dir+plotfn,col1))
-    #yy = np.asarray(p.get_column_of_data(sim_dir+plotfn,col2))
-    #print 'xx:',type(xx), xx
-    #print 'yy:',type(yy), yy
-
-    # plot
-    if plottype == 'mpl-line':
-        ax.plot(xx, yy)
-    elif plottype == 'mpl-bar':
-        ax.hist(xx, yy, normed=1, histtype='bar', rwidth=0.8)
-    else:
-        return "ERROR: plottype not supported"
-    canvas = FigureCanvas(fig)
-    png_output = StringIO.StringIO()
-    canvas.print_png(png_output)
-
-    # save file
-    if not os.path.exists(config.tmp_dir):
-        os.makedirs(config.tmp_dir)
-    fn = str(uuid.uuid4())+'.png'
-    fig.set_size_inches(7.2,4.8)
-    fig.savefig(config.tmp_dir+os.sep+fn)
-    #response.content_type = 'image/png'
-    #return png_output.getvalue()
-    params = {'image': fn, 'cid': cid}
-    return template('plot-mpl', params)
-
 @post('/<app>/confirm')
 def confirm_form(app):
     global user
@@ -143,6 +76,18 @@ def execute(app,cid):
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e }
         return template('error',params)
 
+@get('/more')
+def more():
+    """given a form with the attribute plotpath, output the file to the browser"""
+    global user
+    plotpath = request.query.plotpath
+    print 'plotpath:',plotpath
+    app = request.query.app
+    cid = request.query.cid
+    contents = slurp_file(plotpath)
+    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 'fn': plotpath }
+    return template('more', params)
+
 @get('/output')
 def output():
     global user
@@ -154,9 +99,11 @@ def output():
         else:
             u = user
             c = cid
-        output = slurp_file(app,c,myapps[app].outfn,u)
-        params = { 'cid': cid, 'output': output, 'app': app, 'user': u }
-        return template('output', params)
+        run_dir = myapps[app].user_dir+os.sep+u+os.sep+myapps[app].appname+os.sep+c
+        fn = run_dir + os.sep + myapps[app].outfn
+        output = slurp_file(fn)
+        params = { 'cid': cid, 'contents': output, 'app': app, 'user': u, 'fn': fn }
+        return template('more', params)
     except:
         params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
@@ -172,21 +119,22 @@ def inputs():
         else:
             u = user
             c = cid
-        inputs = slurp_file(app,c,myapps[app].simfn,u)
-        params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': u }
-        return template('inputs', params)
+        run_dir = myapps[app].user_dir+os.sep+u+os.sep+myapps[app].appname+os.sep+c
+        fn = run_dir + os.sep + myapps[app].simfn
+        inputs = slurp_file(fn)
+        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u, 'fn': fn }
+        return template('more', params)
     except:
         params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
-def slurp_file(app,cid,filename,user):
-    run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
-    fn = run_dir + os.sep + filename
+def slurp_file(path):
+    """read file given by path and return the contents of the file"""
     try:
-        f = open(fn,'r')
-        inputs = f.read()
+        f = open(path,'r')
+        data = f.read()
         f.close()
-        return inputs
+        return data
     except IOError:
         return("ERROR: the file cannot be opened or does not exist.\nSelect a case id first.")
 
@@ -557,11 +505,81 @@ def plot_interface(pltid):
         return template('error', params)
     else:
         plotfn = re.sub(r"<cid>", c, plotfn)
+        plotpath = sim_dir + plotfn
         p = plotmod.plot()
-        data = p.get_data(sim_dir + plotfn,col1,col2)
-        ticks = p.get_ticks(sim_dir + plotfn,col1,col2)
-        params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks, 'title': title }
+        data = p.get_data(plotpath,col1,col2)
+        ticks = p.get_ticks(plotpath,col1,col2)
+        params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks, 'title': title,
+                   'plotpath': plotpath } 
         return template(tfn, params)
+
+@get('/mpl/<pltid>')
+def matplotlib(pltid):
+    """Generate a random image using Matplotlib and display it"""
+    # in the future create a private function __import__ to import third-party 
+    # libraries, so that it can respond gracefully.  See for example the 
+    # Examples section at https://docs.python.org/2/library/imp.html
+    from pylab import savefig
+    import numpy as np
+    import StringIO
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    global user
+    app = request.query.app
+    cid = request.query.cid
+
+    fig = Figure()
+    ax = fig.add_subplot(111)
+
+    # get data from file to plot
+    p = plotmod.plot()
+    query = (apps.id==plots.appid) & (apps.name==app) & (plots.id==pltid)
+    result = db(query).select()[0]
+    plottype = result['plots']['ptype']
+    plotfn = result['plots']['filename']
+
+    cols = result['plots']['cols']
+    line_range = result['plots']['line_range']
+    (col1str,col2str) = cols.split(":")
+    col1 = int(col1str)
+    col2 = int(col2str)
+    if line_range is not None:
+        (line1str,line2str) = line_range.split(":")
+        line1 = str(line1str)
+        line2 = str(line2str)
+
+    title = result['plots']['title']
+    plotfn = re.sub(r"<cid>", cid, plotfn)
+    sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
+    plotpath = sim_dir + plotfn
+    xx = p.get_column_of_data(plotpath,col1)
+    yy = p.get_column_of_data(plotpath,col2)
+    #xx = np.asarray(p.get_column_of_data(sim_dir+plotfn,col1))
+    #yy = np.asarray(p.get_column_of_data(sim_dir+plotfn,col2))
+    #print 'xx:',type(xx), xx
+    #print 'yy:',type(yy), yy
+
+    # plot
+    if plottype == 'mpl-line':
+        ax.plot(xx, yy)
+    elif plottype == 'mpl-bar':
+        ax.hist(xx, yy, normed=1, histtype='bar', rwidth=0.8)
+    else:
+        return "ERROR: plottype not supported"
+    canvas = FigureCanvas(fig)
+    png_output = StringIO.StringIO()
+    canvas.print_png(png_output)
+
+    # save file
+    if not os.path.exists(config.tmp_dir):
+        os.makedirs(config.tmp_dir)
+    fn = str(uuid.uuid4())+'.png'
+    fig.set_size_inches(7.2,4.8)
+    fig.savefig(config.tmp_dir+os.sep+fn)
+    #response.content_type = 'image/png'
+    #return png_output.getvalue()
+    params = {'image': fn, 'cid': cid, 'pltid': pltid, 'plotpath': plotpath}
+    return template('plot-mpl', params)
 
 @get('/<app>/<cid>/data/<pltid>')
 def get_data():

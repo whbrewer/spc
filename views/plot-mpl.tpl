@@ -5,4 +5,5 @@
 
 <img src="../static/tmp/{{!image}}">
 
+%include('plot-footer')
 %include('footer')
