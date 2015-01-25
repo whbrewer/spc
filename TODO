@@ -1,5 +1,4 @@
 Currently working on: 
-- add Data button to plots
 
 Next:
 - aggregate plots onto single page
@@ -74,6 +73,7 @@ Tests
   strings, etc.
 
 Completed
+- add Data button to plots
 - add ability to get data from line1 to line2
 - integration with matplotlib
 - implement data abstraction layer, dal.py, so that SP can use GAE

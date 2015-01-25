@@ -6,6 +6,7 @@
 
 <body onload="init()">
 %include('navbar')
+%include('plots-inc')
 
 <div class="tab-page">
 

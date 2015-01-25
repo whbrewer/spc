@@ -8,8 +8,9 @@
 
 <body onload="init()">
 %include('navbar')
+%include('plots-inc')
 
-<h1>Plots {{cid}}</h1>
+<!--<h1>Plots {{cid}}</h1>-->
 
 <div class="tab-page">
 
@@ -41,16 +42,11 @@
       placeholder.bind("plotselected", function (event, ranges) {
         $("#selection").text(ranges.xaxis.from.toFixed(1) + " to " + ranges.xaxis.to.toFixed(1));
 
-        var zoom = $("#zoom").attr("checked");
-
-        if (zoom)
-            plot = $.plot(placeholder, data,
-                   $.extend(true, {}, options, {
-                      xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
-                      yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
-                   }));
-        else 
-           var plot = $.plot(placeholder, data, options);
+        plot = $.plot(placeholder, data,
+               $.extend(true, {}, options, {
+                  xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
+                  yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
+               }));
       });
 
       placeholder.bind("plothover", function (event, pos, item) {
@@ -68,8 +64,6 @@
    </script>
 
 </div>
-
-<p><label><input id="zoom" type="checkbox" CHECKED />Zoom to selection.</label> Double click to restore to original plot.</p>
 
 %include('plot-footer')
 %include('footer')

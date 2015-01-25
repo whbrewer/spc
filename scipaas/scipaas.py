@@ -81,7 +81,6 @@ def more():
     """given a form with the attribute plotpath, output the file to the browser"""
     global user
     plotpath = request.query.plotpath
-    print 'plotpath:',plotpath
     app = request.query.app
     cid = request.query.cid
     contents = slurp_file(plotpath)
@@ -498,6 +497,11 @@ def plot_interface(pltid):
     else:
         tfn = 'plot-line' 
 
+    # get list of all plots for this app
+    query = (apps.id==plots.appid) & (apps.name==app)
+    list_of_plots = db(query).select()
+    params = { 'app': app, 'cid': request.query.cid, 'user': user }
+
     sim_dir = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+c+os.sep
     #if re.search(r'^\s*$', cid):
     if not cid:
@@ -510,7 +514,7 @@ def plot_interface(pltid):
         data = p.get_data(plotpath,col1,col2)
         ticks = p.get_ticks(plotpath,col1,col2)
         params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks, 'title': title,
-                   'plotpath': plotpath } 
+                   'plotpath': plotpath, 'rows': list_of_plots } 
         return template(tfn, params)
 
 @get('/mpl/<pltid>')
@@ -578,12 +582,14 @@ def matplotlib(pltid):
     fig.savefig(config.tmp_dir+os.sep+fn)
     #response.content_type = 'image/png'
     #return png_output.getvalue()
-    params = {'image': fn, 'cid': cid, 'pltid': pltid, 'plotpath': plotpath}
-    return template('plot-mpl', params)
 
-@get('/<app>/<cid>/data/<pltid>')
-def get_data():
-    pass
+    # get list of all plots for this app
+    query = (apps.id==plots.appid) & (apps.name==app)
+    list_of_plots = db(query).select()
+
+    params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid, 'plotpath': plotpath, 
+              'rows': list_of_plots}
+    return template('plot-mpl', params)
 
 @get('/<app>/<cid>/monitor')
 def monitor(app,cid):
