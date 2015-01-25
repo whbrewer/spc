@@ -588,7 +588,7 @@ def matplotlib(pltid):
     list_of_plots = db(query).select()
 
     params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid, 'plotpath': plotpath, 
-              'rows': list_of_plots}
+              'title': title, 'rows': list_of_plots} 
     return template('plot-mpl', params)
 
 @get('/<app>/<cid>/monitor')

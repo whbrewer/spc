@@ -8,7 +8,7 @@
 %include('navbar')
 %include('plots-inc')
 
-<div class="tab-page">
+<div>
 
    <h3 align="center">{{title}}</h3>
 
@@ -48,5 +48,4 @@
 
 </body>
 
-%include('plot-footer')
 %include('footer')

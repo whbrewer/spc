@@ -12,7 +12,7 @@
 
 <!--<h1>Plots {{cid}}</h1>-->
 
-<div class="tab-page">
+<div>
 
    <h3 align="center">{{title}}</h3>
 
@@ -70,5 +70,4 @@
 
 </div>
 
-%include('plot-footer')
 %include('footer')
