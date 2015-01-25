@@ -9,9 +9,6 @@
 %include('plots-inc')
 
 <div>
-
-   <h3 align="center">{{title}}</h3>
-
    <script id="source" language="javascript" type="text/javascript"> 
       $(function () {
       var data = {{!data}};

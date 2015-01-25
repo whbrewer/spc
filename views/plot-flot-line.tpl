@@ -13,9 +13,6 @@
 <!--<h1>Plots {{cid}}</h1>-->
 
 <div>
-
-   <h3 align="center">{{title}}</h3>
-
    <div id="myplot" style="width:600px;height:370px;"></div> 
    <script id="source" language="javascript" type="text/javascript"> 
       $(function () {

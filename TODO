@@ -1,7 +1,8 @@
 Currently working on: 
 
 Next:
-- aggregate plots onto single page
+- add billing ability
+- add search button to myjobs
 - add "list files" button, probably in myjobs
 - use dal.py to create initdb in sp
 - create reader for generic input file
@@ -73,6 +74,7 @@ Tests
   strings, etc.
 
 Completed
+- aggregate plots onto single page
 - add Data button to plots
 - add ability to get data from line1 to line2
 - integration with matplotlib

@@ -49,7 +49,10 @@ def confirm_form(app):
     # parameter have to fix this in the future
     request.forms['case_id'] = cid 
     myapps[app].write_params(request.forms,user)
-    inputs = slurp_file(app,cid,myapps[app].simfn,user)
+    # read the file 
+    run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
+    fn = run_dir + os.sep + myapps[app].simfn
+    inputs = slurp_file(fn)
     # convert html tags to entities (e.g. < to &lt;)
     inputs = cgi.escape(inputs)
     params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user }
@@ -148,8 +151,8 @@ def tail(app,cid):
     myoutput = output[len(output)-num_lines:]
     xoutput = ''.join(myoutput)
     f.close()
-    params = { 'cid': cid, 'output': xoutput, 'app': app, 'user': user }
-    return template('output', params)
+    params = { 'cid': cid, 'contents': xoutput, 'app': app, 'user': user, 'fn': ofn }
+    return template('more', params)
 
 @route('/')
 def root():
@@ -578,7 +581,7 @@ def matplotlib(pltid):
     if not os.path.exists(config.tmp_dir):
         os.makedirs(config.tmp_dir)
     fn = str(uuid.uuid4())+'.png'
-    fig.set_size_inches(7.2,4.8)
+    fig.set_size_inches(7,4)
     fig.savefig(config.tmp_dir+os.sep+fn)
     #response.content_type = 'image/png'
     #return png_output.getvalue()
