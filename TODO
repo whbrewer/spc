@@ -1,6 +1,10 @@
 Currently working on: 
+- edit plots feature: when you click plot, you get the first plot
+  if you want to edit the plots, you need to click edit app or something
 
 Next:
+- refactor: create some kind of function to return 
+        sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
 - add billing ability
 - add search button to myjobs
 - add "list files" button, probably in myjobs

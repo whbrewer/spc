@@ -83,11 +83,11 @@ def execute(app,cid):
 def more():
     """given a form with the attribute plotpath, output the file to the browser"""
     global user
-    plotpath = request.query.plotpath
     app = request.query.app
     cid = request.query.cid
-    contents = slurp_file(plotpath)
-    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 'fn': plotpath }
+    filepath = request.query.filepath
+    contents = slurp_file(filepath)
+    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 'fn': filepath }
     return template('more', params)
 
 @get('/output')
@@ -383,27 +383,45 @@ def edit_app(appid):
 @get('/start')
 def getstart():
     global user
-    try:
-        app = request.query.app
-        if myapps[app].appname not in myapps: redirect('/apps')
-        cid = request.query.cid
-        if re.search("/",cid):
-            (u,cid) = cid.split("/") 
-        else:
-            u = user
+    #try:
+    app = request.query.app
+    if myapps[app].appname not in myapps: redirect('/apps')
+    cid = request.query.cid
+    if re.search("/",cid):
+        (u,cid) = cid.split("/") 
+    else:
+        u = user
+    params = myapps[app].params
+    # if no valid casename read default parameters
+    if not re.search("[a-z]",cid):
         params = myapps[app].params
-        if cid is '':
-            params = myapps[app].params
-        else:
-            params,_,_ = myapps[app].read_params(u,cid)
-        params['cid'] = cid
-        params['app'] = app
-        params['user'] = u
-        return template('apps/' + myapps[app].appname, params)
-    except:
-        params = {'err': "must first select an app to run by clicking apps button."}
-        return template('error', params)
-        #redirect("/apps/show/name")
+    else: # read parameters from file
+        params,_,_ = myapps[app].read_params(u,cid)
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = u
+    return template('apps/' + myapps[app].appname, params)
+    #except:
+    #    params = {'err': "must first select an app to run by clicking apps button."}
+    #    return template('error', params)
+    #    #redirect("/apps/show/name")
+
+@get('/list_files')
+def list_files():
+    global user
+    cid = request.query.cid
+    app = request.query.app
+    str = ''
+    path = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid
+    for fn in os.listdir(path):
+        #str += '<form action="/'+app+'/delete/'+fn+'">'
+        str += '<p><a href="/more?app='+app+'&cid='+cid+'&filepath='+path+os.sep+fn+'">'+fn+'</a></p>'
+        #str += '<input type="image" src="/static/images/trash_can.gif"></form>\n'
+    params = { 'content': str }
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    return template('list', params)
 
 @get('/<app>/list')
 def list(app):
@@ -412,7 +430,7 @@ def list(app):
     for case in os.listdir(myapps[app].user_dir+os.sep+user+os.sep+app):
         str += '<form action="/'+app+'/delete/'+case+'">'
         str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a>'
-        str += '<input type="image" src="/static/trash_can.gif"></form>\n'
+        str += '<input type="image" src="/static/images/trash_can.gif"></form>\n'
     params = { 'content': str }
     params['cid'] = request.forms.get('cid')
     params['app'] = app
