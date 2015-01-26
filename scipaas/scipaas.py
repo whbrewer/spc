@@ -429,7 +429,7 @@ def get_plots():
     query = (apps.id==plots.appid) & (apps.name==app)
     result = db(query).select()
     params = { 'app': app, 'cid': request.query.cid, 'user': user } 
-    return template('plots', params, rows=result)
+    return template('plots/plots', params, rows=result)
     #except:
     #    params = {'err': "must first select an app to plot by clicking apps button"}
     #    return template('error', params)
@@ -490,15 +490,15 @@ def plot_interface(pltid):
         return template('error', params)
 
     if plottype == 'flot-bar': 
-        tfn = 'plot-flot-bar'
+        tfn = 'plots/flot-bar'
     elif plottype == 'flot-cat': 
-        tfn = 'plot-flot-cat'
+        tfn = 'plots/flot-cat'
     elif plottype == 'flot-line':
-        tfn = 'plot-flot-line' 
+        tfn = 'plots/flot-line' 
     elif plottype == 'mpl-line' or plottype == 'mpl-bar':
         redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
     else:
-        tfn = 'plot-line' 
+        tfn = 'plots/plot-line' 
 
     # get list of all plots for this app
     query = (apps.id==plots.appid) & (apps.name==app)
@@ -592,7 +592,7 @@ def matplotlib(pltid):
 
     params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid, 'plotpath': plotpath, 
               'title': title, 'rows': list_of_plots} 
-    return template('plot-mpl', params)
+    return template('plots/matplotlib', params)
 
 @get('/<app>/<cid>/monitor')
 def monitor(app,cid):

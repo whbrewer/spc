@@ -30,7 +30,7 @@ function checkCase() {
 <input type="submit" formaction="/start" class="submit start" value="start"/>
 <input type="submit" formaction="/inputs" class="submit inputs" value="inputs" onclick="checkCase()" } />
 <input type="submit" formaction="/output" class="submit output" value="output"/>
-<input type="submit" formaction="/plots" class="submit plot" value="plot"/>
+<input type="submit" formaction="/plots" class="submit plot" value="plots"/>
 %else:
     <input type="hidden" name="app" id="app"/>
 %end

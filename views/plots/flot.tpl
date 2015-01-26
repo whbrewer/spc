@@ -8,20 +8,16 @@
 
 <body onload="init()">
 %include('navbar')
-%include('plots-inc')
+%include('plots/available')
 
 <!--<h1>Plots {{cid}}</h1>-->
 
 <div>
-
    <div id="myplot" style="width:600px;height:370px;"></div> 
    <script id="source" language="javascript" type="text/javascript"> 
       $(function () {
       var d1 = {{!data}};
       var data = [ { label: "deleterious", data: d1, 
-                     bars: { show: true, autoWidth: true } , 
-                     //bars: { show: true, barWidth: 0.0001 } , 
-                     //bars: { show: true, barWidth: 1.0 } , 
                      color: "rgb(200,0,0)" } ];
 
       var options = {
@@ -30,8 +26,7 @@
          yaxis:  { axisLabel: 'Mutations', axisLabelOffset: -30, 
                    axisLabelFontSizePixels: 12 },
                    //axisLabelFontSizePixels: 12, max: 0.01 },
-         //grid:   { hoverable: true, clickable: true },
-         grid:   { hoverable: false, clickable: true },
+         grid:   { hoverable: true, clickable: true },
          selection: { mode: "xy" }
       };
 
@@ -44,12 +39,11 @@
       placeholder.bind("plotselected", function (event, ranges) {
         $("#selection").text(ranges.xaxis.from.toFixed(1) + " to " + ranges.xaxis.to.toFixed(1));
 
-        //plot = $.plot(placeholder, data, options);
-        plot = $.plot(placeholder, data, 
+        plot = $.plot(placeholder, data,
                $.extend(true, {}, options, {
                   xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
                   yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
-              }));
+               }));
       });
 
       placeholder.bind("plothover", function (event, pos, item) {

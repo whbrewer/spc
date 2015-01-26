@@ -1,6 +1,6 @@
 %include('header')
 %include('navbar')
-%include('plots-inc')
+%include('plots/available')
 
 <!--<h1>Matplotlib {{cid}}</h1>-->
 

@@ -8,7 +8,7 @@
 
 <body onload="init()">
 %include('navbar')
-%include('plots-inc')
+%include('plots/available')
 
 <!--<h1>Plots {{cid}}</h1>-->
 
