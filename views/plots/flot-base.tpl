@@ -8,7 +8,7 @@
 
 <body onload="init()">
 %include('navbar')
-%include('plots/available')
+%include('plots/header')
 
 {{!base}}
 

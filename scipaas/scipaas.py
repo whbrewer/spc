@@ -72,8 +72,8 @@ def execute(app,cid):
         params['app'] = app
         params['user'] = user
         sched.qsub(app,cid,user)
-        #redirect("/jobs/"+app+"?cid="+cid)
-        redirect("/jobs?app="+app+"&cid="+cid)
+        #redirect("/jobs?app="+app+"&cid="+cid)
+        redirect("/monitor?app="+app+"&cid="+cid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e }
@@ -402,7 +402,7 @@ def getstart():
     params['user'] = u
     return template('apps/' + myapps[app].appname, params)
     #except:
-    #    params = {'err': "must first select an app to run by clicking apps button."}
+    #    params = {'err': "whoops there was a problem... start by clicking apps button"}
     #    return template('error', params)
     #    #redirect("/apps/show/name")
 
@@ -437,8 +437,8 @@ def list(app):
     params['user'] = user
     return template('list', params)
 
-@get('/plots')
-def get_plots():
+@get('/plots/edit')
+def editplot():
     global user
     #try:
     app = request.query.app
@@ -447,7 +447,7 @@ def get_plots():
     query = (apps.id==plots.appid) & (apps.name==app)
     result = db(query).select()
     params = { 'app': app, 'cid': request.query.cid, 'user': user } 
-    return template('plots/plots', params, rows=result)
+    return template('plots/edit', params, rows=result)
     #except:
     #    params = {'err': "must first select an app to plot by clicking apps button"}
     #    return template('error', params)
@@ -480,6 +480,13 @@ def plot_interface(pltid):
         u = user
         c = cid
 
+    # use pltid of 0 to trigger finding the first pltid for the current app
+    if int(pltid) == 0:
+        query = (apps.id==plots.appid) & (apps.name==app)
+        result = db(query).select()
+        pltid = result[0]['plots']['id']
+
+    # get the data for the pltid given
     p = plotmod.plot()
     query = (apps.id==plots.appid) & (apps.name==app) & (plots.id==pltid)
     result = db(query).select()[0]
@@ -507,6 +514,7 @@ def plot_interface(pltid):
         params['err'] = "Sorry! This app does not support plotting capability"
         return template('error', params)
 
+    # determine which view template to use
     if plottype == 'flot-bar': 
         tfn = 'plots/flot-bar'
     elif plottype == 'flot-cat': 
@@ -521,10 +529,10 @@ def plot_interface(pltid):
     # get list of all plots for this app
     query = (apps.id==plots.appid) & (apps.name==app)
     list_of_plots = db(query).select()
-    params = { 'app': app, 'cid': request.query.cid, 'user': user }
 
     sim_dir = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+c+os.sep
-    #if re.search(r'^\s*$', cid):
+
+    # return template view
     if not cid:
         params['err']="No case id specified. First select a case id from the list of jobs."
         return template('error', params)
@@ -612,9 +620,11 @@ def matplotlib(pltid):
               'title': title, 'rows': list_of_plots} 
     return template('plots/matplotlib', params)
 
-@get('/<app>/<cid>/monitor')
-def monitor(app,cid):
+@get('/monitor')
+def monitor():
     global user
+    cid = request.query.cid
+    app = request.query.app
     params = { 'cid': cid, 'app': app, 'user': user }
     return template('monitor', params)
 

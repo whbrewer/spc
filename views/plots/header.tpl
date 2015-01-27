@@ -1,3 +1,5 @@
+%include('navactions')
+
 <style type="text/css"> a {text-decoration: none} </style>
 
 <b>Available plots</b>
@@ -9,7 +11,7 @@
 <table width=600>
 <tr>
     <td>
-        <h3 align="left">{{title}}</h3>
+        <h3 align="left">{{title}} ({{cid}})</h3>
     </td>
     <td align="right">
         <div align="right">
@@ -20,6 +22,13 @@
                 <input type="submit" value="Show Data">
             </form>
         </div>
+    </td>
+    <td>
+            <form method="get" action="/plots/edit">
+                <input type="hidden" name="app" value="{{app}}">
+                <input type="hidden" name="cid" value="{{cid}}">
+                <input type="submit" value="Edit Plots">
+            </form>
     </td>
 </tr>
 </table>

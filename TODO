@@ -1,6 +1,8 @@
 Currently working on: 
 - edit plots feature: when you click plot, you get the first plot
   if you want to edit the plots, you need to click edit app or something
+- add action bar
+- store JS of plot in sqlite
 
 Next:
 - refactor: create some kind of function to return 

@@ -72,13 +72,13 @@ input.cid {
 .apps   { left: 0px;   top: 0px; background: #505050; color: white }
 .exe    { left: 0px;   top: 0px; background: #759d00; color: white }
 .run    { left: 0px;   top: 0px; background: #759d00; color: white }
+.jobs   { left: 100px; top: 0px; background: #280671; color: white }
+.wall   { left: 200px; top: 0px; background: #bf4e30; color: white }
+.start  { left: 300px; top: 0px; background: #759d00; color: white }
+.plot   { left: 400px; top: 0px; background: #4112AE; color: white }
+.inputs { left: 500px; top: 0px; background: #bf4e30; color: white }
+.output { left: 600px; top: 0px; background: #a62300; color: white }
 .clear  { left: 200px; top: -5px; position: fixed; }
-.start  { left: 250px; top: 0px; background: #759d00; color: white }
-.inputs { left: 350px; top: 0px; background: #bf4e30; color: white }
-.output { left: 450px; top: 0px; background: #a62300; color: white }
-.plot   { left: 550px; top: 0px; background: #4112AE; color: white }
-.jobs   { left: 650px; top: 0px; background: #280671; color: white }
-.wall   { left: 750px; top: 0px; background: #0a0a0a; color: white }
 
 .lfooter a:link {color: white; text-decoration:none;}
 .lfooter a:visited {color: white;}

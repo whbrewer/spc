@@ -1,5 +1,6 @@
 %include('header')
 %include('navbar')
+%include('navactions')
 
 <h1>{{fn}}</h1>
 

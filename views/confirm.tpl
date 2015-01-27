@@ -9,7 +9,7 @@
 
 <form action="/{{app}}/{{cid}}/execute" method="post">
 <!-- onclick="showImage()"> -->
-<input class="start" type="submit" value="execute"/>
+<input class="submit start" type="submit" value="execute"/>
 </form>
 
 <!-- <img id="loadingImage" src="/static/ajax_loader.gif" style="visibility:hidden"/> -->

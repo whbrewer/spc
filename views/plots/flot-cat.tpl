@@ -6,7 +6,7 @@
 
 <body onload="init()">
 %include('navbar')
-%include('plots/available')
+%include('plots/header')
 
 <div>
    <script id="source" language="javascript" type="text/javascript"> 
