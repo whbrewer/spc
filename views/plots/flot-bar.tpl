@@ -12,14 +12,14 @@
                      color: "rgb(200,0,0)" } ];
 
       var options = {
-         legend: { position: 'nw' },
-         xaxis:  { axisLabel: 'Generations', axisLabelFontSizePixels: 12 },
-         yaxis:  { axisLabel: 'Mutations', axisLabelOffset: -30, 
-                   axisLabelFontSizePixels: 12 },
-                   //axisLabelFontSizePixels: 12, max: 0.01 },
-         //grid:   { hoverable: true, clickable: true },
-         grid:   { hoverable: false, clickable: true },
-         selection: { mode: "xy" }
+           {{!options}}
+//         legend: { position: 'nw' },
+//         xaxis:  { axisLabel: 'Generations', axisLabelFontSizePixels: 12 },
+//         yaxis:  { axisLabel: 'Mutations', axisLabelOffset: -30, 
+//                   axisLabelFontSizePixels: 12 },
+//                   //axisLabelFontSizePixels: 12, max: 0.01 },
+//         grid:   { hoverable: false, clickable: true },
+//         selection: { mode: "xy" }
       };
 
       var placeholder = $("#myplot");

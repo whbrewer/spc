@@ -1,8 +1,6 @@
 Currently working on: 
-- edit plots feature: when you click plot, you get the first plot
-  if you want to edit the plots, you need to click edit app or something
-- add action bar
-- store JS of plot in sqlite
+- plot two datasets on single chart
+- show list of apps in dropdown box
 
 Next:
 - refactor: create some kind of function to return 
@@ -44,8 +42,11 @@ Next:
 
 --
 Feature Requests
-- plotting subsystem
-  o plotting system using matplotlib
+- billing model:
+   o based on CPU usage
+   o based on number of apps hosted
+   o based on number of times run
+   o based on amount of disk space used
 - info about app page... e.g. intro to importance of Burger's eqn
 - JS/Ajax check if appname already exists
 - user page/user management: my apps, change passwd, etc.
@@ -80,6 +81,12 @@ Tests
   strings, etc.
 
 Completed
+- store JS of plot options in sqlite
+- add action bar
+- plotting subsystem
+  o plotting system using matplotlib
+- edit plots feature: when you click plot, you get the first plot
+  if you want to edit the plots, you need to click edit app or something
 - aggregate plots onto single page
 - add Data button to plots
 - add ability to get data from line1 to line2

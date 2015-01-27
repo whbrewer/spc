@@ -25,7 +25,8 @@ plots = db.define_table('plots', Field('id','integer'),
                                  Field('filename','string'),
                                  Field('cols','string'),
                                  Field('line_range','string'),
-                                 Field('title','string'))
+                                 Field('title','string'),
+                                 Field('options','string'))
 wall = db.define_table('wall', Field('id','integer'),
                                Field('jid',db.jobs),
                                Field('comment','string'))

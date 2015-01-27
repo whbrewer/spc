@@ -44,7 +44,6 @@ def confirm_form(app):
         cid = str(uuid.uuid4())[:6]
     except: 
         return "ERROR: problem with template... case_id not in form"
-    print 'cid:%s,app:%s' % (cid, app)
     # this is only valid for mendel or similar programs that use a case_id 
     # parameter have to fix this in the future
     request.forms['case_id'] = cid 
@@ -458,16 +457,16 @@ def delete_plot(pltid):
     cid = request.query.cid
     del db.plots[pltid]
     db.commit()
-    redirect ('/plots?app='+app)
+    redirect ('/plots/edit?app='+app+'&cid='+cid)
 
 @post('/plots/create')
 def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
-    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],filename=r.forms['fn'],cols=r.forms['cols'],line_range=r.forms['line_range'],title=r.forms['title'])
+    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],filename=r.forms['fn'],cols=r.forms['cols'],line_range=r.forms['line_range'],title=r.forms['title'],options=r.forms['options'])
     db.commit()
-    redirect ('/plots?app='+app+'&cid='+cid)
+    redirect ('/plots/edit?app='+app+'&cid='+cid)
 
 @get('/plot/<pltid>')
 def plot_interface(pltid):
@@ -496,6 +495,7 @@ def plot_interface(pltid):
 
     cols = result['plots']['cols']
     line_range = result['plots']['line_range']
+    options = result['plots']['options']
     (col1str,col2str) = cols.split(":")
     col1 = int(col1str)
     col2 = int(col2str)
@@ -543,7 +543,7 @@ def plot_interface(pltid):
         data = p.get_data(plotpath,col1,col2)
         ticks = p.get_ticks(plotpath,col1,col2)
         params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks, 'title': title,
-                   'plotpath': plotpath, 'rows': list_of_plots } 
+                   'plotpath': plotpath, 'rows': list_of_plots, 'options': options } 
         return template(tfn, params)
 
 @get('/mpl/<pltid>')
