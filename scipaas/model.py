@@ -22,11 +22,14 @@ jobs = db.define_table('jobs', Field('id','integer'),
 plots = db.define_table('plots', Field('id','integer'),
                                  Field('appid',db.apps),
                                  Field('ptype','string'),
-                                 Field('filename','string'),
-                                 Field('cols','string'),
-                                 Field('line_range','string'),
                                  Field('title','string'),
-                                 Field('options','string'))
+                                 Field('options','string'),
+                                 Field('datadef','string'))
+datasource = db.define_table('datasource', Field('id','integer'),
+                                           Field('pltid','integer'),
+                                           Field('filename','string'),
+                                           Field('cols','string'),
+                                           Field('line_range','string'))
 wall = db.define_table('wall', Field('id','integer'),
                                Field('jid',db.jobs),
                                Field('comment','string'))

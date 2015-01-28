@@ -58,7 +58,8 @@ def initdb():
     SQL_T_PLOTS = """CREATE TABLE IF NOT EXISTS plots(
         id integer primary key autoincrement, 
         appid integer,  ptype varchar(80), filename varchar(80), cols varchar(20), 
-        line_range varchar(20), title varchar(80))""" # foreign key (appid) references apps(appid))
+        line_range varchar(20), title varchar(80), options varchar(1000))""" 
+        # foreign key (appid) references apps(appid))
 
     SQL_T_WALL = """CREATE TABLE wall(
         id integer primary key autoincrement, jid integer, comment varchar(80), 

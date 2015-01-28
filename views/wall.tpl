@@ -13,7 +13,7 @@
    <th>app</th> 
    <th>cid</th> 
    <th>comment</th> 
-   <th>set</th>
+   <th>start</th>
 </tr>
 </thead>
 
@@ -24,7 +24,8 @@
      <td>{{row['jobs']['app']}}</td>
      <td>{{row['jobs']['cid']}}</td>
      <td>{{row['wall']['comment']}}</td>
-     <td><a style="cursor: pointer" onclick="set_cid('{{row['jobs']['user']}}/{{row['jobs']['cid']}}','{{row['jobs']['app']}}')"><u>set</u></a></td>
+     <!--<td><a style="cursor: pointer" onclick="set_cid('{{row['jobs']['user']}}/{{row['jobs']['cid']}}','{{row['jobs']['app']}}')"><u>set</u></a></td>-->
+     <td><a href="/start?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">start</a></td>
   </tr> 
 %end
 </table>

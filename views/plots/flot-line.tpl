@@ -4,24 +4,37 @@
    <div id="myplot" style="width:600px;height:370px;"></div> 
    <script id="source" language="javascript" type="text/javascript"> 
       $(function () {
-      var d1 = {{!data}};
-      var data = [ { label: "deleterious", data: d1, 
-                     color: "rgb(200,0,0)" } ];
+      %i=0
+      %for d in data:
+      %i+=1
+          var d{{i}} = {{d}};
+      %end
+      var data = [
+          %if datadef:
+              {{!datadef}}
+          %else:
+              %i=0
+              %for d in data:
+              %i+=1
+                  { data: d{{i}} }, 
+              %end
+          %end
+      ]; 
 
       var options = {
-         legend: { position: 'nw' },
-         xaxis:  { axisLabel: 'Generations', axisLabelFontSizePixels: 12 },
-         yaxis:  { axisLabel: 'Mutations', axisLabelOffset: -30, 
-                   axisLabelFontSizePixels: 12 },
-                   //axisLabelFontSizePixels: 12, max: 0.01 },
-         grid:   { hoverable: true, clickable: true },
-         selection: { mode: "xy" }
+          %if options:
+              {{ !options }}
+          %else:
+              legend: { position: 'nw' },
+              xaxis:  { axisLabelFontSizePixels: 12 },
+              yaxis:  { axisLabelOffset: -30, 
+                        axisLabelFontSizePixels: 12 },
+              grid:   { hoverable: true, clickable: true },
+              selection: { mode: "xy" }
+          %end
       };
 
       var placeholder = $("#myplot");
-
-      //myplot = new plotter(placeholder, data, options)
-      //myplot.showPlot();
 
       // attach an event handler directly to the plot
       placeholder.bind("plotselected", function (event, ranges) {

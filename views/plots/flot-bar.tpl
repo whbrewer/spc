@@ -4,7 +4,7 @@
    <div id="myplot" style="width:600px;height:370px;"></div> 
    <script id="source" language="javascript" type="text/javascript"> 
       $(function () {
-      var d1 = {{!data}};
+      var d1 = {{!data[0]}};
       var data = [ { label: "deleterious", data: d1, 
                      bars: { show: true, autoWidth: true } , 
                      //bars: { show: true, barWidth: 0.0001 } , 

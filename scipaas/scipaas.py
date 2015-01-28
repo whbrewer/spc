@@ -164,7 +164,7 @@ def show_jobs():
     global user
     cid = request.query.cid
     app = request.query.app
-    result = db(users.user==user).select(jobs.ALL)
+    result = db(jobs.user==user).select()
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -459,12 +459,43 @@ def delete_plot(pltid):
     db.commit()
     redirect ('/plots/edit?app='+app+'&cid='+cid)
 
+@get('/plots/datasource/<pltid>')
+def get_datasource(pltid):
+    global user
+    app = request.query.app
+    cid = request.query.cid
+    if myapps[app].appname not in myapps: redirect('/apps')
+    if not authorized(): redirect('/login')
+    result = db(datasource.pltid==pltid).select()
+    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result } 
+    return template('plots/datasource', params, rows=result)
+
+@post('/plots/datasource_add')
+def add_datasource():
+    app = request.forms.get('app')
+    cid = request.forms.get('cid')
+    pltid = request.forms.get('pltid')
+    r = request
+    datasource.insert(pltid=pltid,filename=r.forms['fn'],cols=r.forms['cols'],line_range=r.forms['line_range'])
+    db.commit()
+    redirect ('/plots/datasource/'+pltid+'?app='+app+'&cid='+cid)
+
+@post('/plots/datasource_delete')
+def delete_plot():
+    app = request.forms.get('app')
+    cid = request.forms.get('cid')
+    pltid = request.forms.get('pltid')
+    dsid = request.forms.get('dsid')
+    del db.datasource[dsid]
+    db.commit()
+    redirect ('/plots/datasource/'+pltid+'?app='+app+'&cid='+cid)
+
 @post('/plots/create')
 def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
-    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],filename=r.forms['fn'],cols=r.forms['cols'],line_range=r.forms['line_range'],title=r.forms['title'],options=r.forms['options'])
+    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],filename=r.forms['fn'],cols=r.forms['cols'],line_range=r.forms['line_range'],title=r.forms['title'],options=r.forms['options'],data=r.forms['data'])
     db.commit()
     redirect ('/plots/edit?app='+app+'&cid='+cid)
 
@@ -472,6 +503,10 @@ def create_plot():
 def plot_interface(pltid):
     app = request.query.app
     cid = request.query.cid
+
+    if not cid:
+        params['err']="No case id specified. First select a case id from the list of jobs."
+        return template('error', params)
 
     if re.search("/",cid):
         (u,c) = cid.split("/") 
@@ -487,26 +522,12 @@ def plot_interface(pltid):
 
     # get the data for the pltid given
     p = plotmod.plot()
-    query = (apps.id==plots.appid) & (apps.name==app) & (plots.id==pltid)
-    result = db(query).select()[0]
+    result = db(plots.id==pltid).select()[0]
 
-    plottype = result['plots']['ptype']
-    plotfn = result['plots']['filename']
-
-    cols = result['plots']['cols']
-    line_range = result['plots']['line_range']
-    options = result['plots']['options']
-    (col1str,col2str) = cols.split(":")
-    col1 = int(col1str)
-    col2 = int(col2str)
-    if line_range is not None:
-        (line1str,line2str) = line_range.split(":")
-        line1 = str(line1str)
-        line2 = str(line2str)
-
-    title = result['plots']['title']
-
-    params = {'app': app, 'cid': cid, 'user': u} 
+    plottype = result['ptype']
+    options = result['options']
+    datadef = result['datadef']
+    title = result['title']
 
     # if plot not in DB return error
     if plottype is None:
@@ -532,19 +553,31 @@ def plot_interface(pltid):
 
     sim_dir = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+c+os.sep
 
-    # return template view
-    if not cid:
-        params['err']="No case id specified. First select a case id from the list of jobs."
-        return template('error', params)
-    else:
+    # extract data from files
+    data = []
+    result = db(datasource.pltid==pltid).select()
+    p = plotmod.plot()
+    
+    for r in result:
+        plotfn = r['filename']
+        cols = r['cols']
+        line_range = r['line_range']
         plotfn = re.sub(r"<cid>", c, plotfn)
         plotpath = sim_dir + plotfn
-        p = plotmod.plot()
-        data = p.get_data(plotpath,col1,col2)
+        (col1str,col2str) = cols.split(":")
+        col1 = int(col1str); col2 = int(col2str)
+        if line_range is not None:
+            (line1str,line2str) = line_range.split(":")
+            line1 = int(line1str); line2 = int(line2str)
+        dat = p.get_data(plotpath,col1,col2) 
+        #dat = [d.replace('?', '0') for d in dat]
+        data.append(dat)
+        #data.append(p.get_data(plotpath,col1,col2))
         ticks = p.get_ticks(plotpath,col1,col2)
-        params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks, 'title': title,
-                   'plotpath': plotpath, 'rows': list_of_plots, 'options': options } 
-        return template(tfn, params)
+
+    params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks, 'title': title,
+               'plotpath': plotpath, 'rows': list_of_plots, 'options': options, 'datadef': datadef } 
+    return template(tfn, params)
 
 @get('/mpl/<pltid>')
 def matplotlib(pltid):
@@ -564,24 +597,28 @@ def matplotlib(pltid):
     fig = Figure()
     ax = fig.add_subplot(111)
 
-    # get data from file to plot
+    # get info about plot 
     p = plotmod.plot()
-    query = (apps.id==plots.appid) & (apps.name==app) & (plots.id==pltid)
-    result = db(query).select()[0]
-    plottype = result['plots']['ptype']
-    plotfn = result['plots']['filename']
+    result = db(plots.id==pltid).select()[0]
+    plottype = result['ptype']
+    options = result['options']
+    title = result['title']
 
-    cols = result['plots']['cols']
-    line_range = result['plots']['line_range']
-    (col1str,col2str) = cols.split(":")
-    col1 = int(col1str)
-    col2 = int(col2str)
-    if line_range is not None:
-        (line1str,line2str) = line_range.split(":")
-        line1 = str(line1str)
-        line2 = str(line2str)
+    # get info about data source
+    # fix in the future to handle multiple data sources
+    result = db(datasource.pltid==pltid).select()
+    for r in result:
+        plotfn = r['filename']
+        cols = r['cols']
+        line_range = r['line_range']
+        (col1str,col2str) = cols.split(":")
+        col1 = int(col1str)
+        col2 = int(col2str)
+        if line_range is not None:
+            (line1str,line2str) = line_range.split(":")
+            line1 = int(line1str)
+            line2 = int(line2str)
 
-    title = result['plots']['title']
     plotfn = re.sub(r"<cid>", cid, plotfn)
     sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
     plotpath = sim_dir + plotfn

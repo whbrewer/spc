@@ -1,5 +1,6 @@
 Currently working on: 
-- plot two datasets on single chart
+- add xlabel, ylabel options to plots
+- add bar/chart and color options to datasource
 - show list of apps in dropdown box
 
 Next:
@@ -66,21 +67,8 @@ Refactoring
 - cleanup long pathnames such as sim_dir, run_dir, and fn in 
   apps.py and scipaas.py
 
-Tests
-- test new user registration
-- test new user registration same name as already exists
-- test user login 
-- test that when file unzips the unzipped directory is the same
-  as the zip file name
-- if click list when directory doesnt exist >> error 405
-- if click Upload but file not first selected >> error
-- upload verify works with .in and exe file
-- verify throws error with no .in file
-- verify throws error with no exe file
-- test if writing parameters correctly especially test booleans, integers,
-  strings, etc.
-
 Completed
+- plot two datasets on single chart
 - store JS of plot options in sqlite
 - add action bar
 - plotting subsystem

@@ -33,6 +33,9 @@ class SciPaasTest(unittest.TestCase):
         # matplot lib route
 # schedule functions
 
+# sp 
+# sp init
+
 # others:
 # if click list when directory doesnt exist >> error 405
 # if click Upload but file not first selected >> error

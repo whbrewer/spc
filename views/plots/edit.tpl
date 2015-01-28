@@ -36,22 +36,21 @@ td {text-align: center}
 <tr>
    <th>Title</th> 
    <th>Type</th> 
-   <th>Filename</th> 
-   <th>Column range</th> 
-   <th>Line range</th> 
+   <th>Options</th> 
+   <th>Data Definition</th> 
    <th>Action</th> 
 </tr>
 </thead>
 %for row in rows:
   <tr>
      <td>{{row['plots']['title']}}</td>
-     <td>{{row['plots']['ptype']}}</td>
-     <td>{{row['plots']['filename']}}</td>
-     <td>{{row['plots']['cols']}}</td>
-     <td>{{row['plots']['line_range']}}</td>
-  <td><a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> -
-      <a href="/plots/delete/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">delete</a> 
-  <!--    <a href="" onclick="load_plot({{row['plots']['filename']}})">load</a>-->
+     <td width="50">{{row['plots']['ptype']}}</td>
+     <td>{{row['plots']['options']}}</td>
+     <td>{{row['plots']['datadef']}}</td>
+  <td width="100"><a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> <br>
+      <a href="/plots/delete/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">delete</a> <br>
+      <a href="/plots/datasource/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">datasource</a></td>
+
   <!--
   <form method="get" action="/apps/delete/{row[0]}}">
      <td><input type="button" value="delete"></td> 
@@ -69,10 +68,6 @@ td {text-align: center}
        <td><input id="fn" type="text" name="fn"></td>
        <td><em>Note: use &lt;cid&gt; to use the case id</em></td></tr>
    <tr><td>Title:</td> <td><input type="text" name="title"></td></tr>
-   <tr><td>Column range:</td><td><input type="text" name="cols"></td><td><em>e.g. 1:2 to plot columns 1 and 2</em></td></tr>
-   <tr><td>Line range:</td><td><input type="text" name="line_range"></td><td><em>e.g. 3:53 to plot only lines 3 to 53</em></tr>
-   <!-- <input type="text" name="col1"><br> -->
-   <!-- <input type="text" name="col2"><br> -->
    <tr><td>Type of plot:</td>
    <td><select name="ptype">
        <option VALUE="flot-line">flot/line</option>
@@ -82,6 +77,7 @@ td {text-align: center}
        <option VALUE="mpl-bar">matplotlib/bar</option>
    </select></td></tr>
    <tr><td>options:</td> <td><textarea name="options"></textarea></td></tr>
+   <tr><td>data definition:</td> <td><textarea name="datadef"></textarea></td></tr>
    <tr><td></td><td><input type="submit"></td></tr>
    <input type="hidden" name="app" value="{{app}}">
    <input type="hidden" name="cid" value="{{cid}}">
