@@ -14,6 +14,7 @@
    <th>cid</th> 
    <th>comment</th> 
    <th>start</th>
+   <th>delete</th>
 </tr>
 </thead>
 
@@ -26,6 +27,7 @@
      <td>{{row['wall']['comment']}}</td>
      <!--<td><a style="cursor: pointer" onclick="set_cid('{{row['jobs']['user']}}/{{row['jobs']['cid']}}','{{row['jobs']['app']}}')"><u>set</u></a></td>-->
      <td><a href="/start?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">start</a></td>
+     <td><a href="/wall/delete/{{row['wall']['id']}}?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">delete</a></td>
   </tr> 
 %end
 </table>

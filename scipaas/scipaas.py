@@ -204,6 +204,14 @@ def post_wall():
     params['user'] = user
     redirect('/wall')
 
+@get('/wall/delete/<wid>')
+def delete_wall_item(wid):
+    app = request.query.app
+    cid = request.query.cid
+    del db.wall[wid]
+    db.commit()
+    redirect ('/wall?app='+app+'&cid='+cid)
+
 @route('/jobs/delete/<jid>')
 def delete_job(jid):
     sched.qdel(jid)
@@ -495,7 +503,7 @@ def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
-    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],filename=r.forms['fn'],cols=r.forms['cols'],line_range=r.forms['line_range'],title=r.forms['title'],options=r.forms['options'],data=r.forms['data'])
+    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],title=r.forms['title'],options=r.forms['options'],datadef=r.forms['datadef'])
     db.commit()
     redirect ('/plots/edit?app='+app+'&cid='+cid)
 
@@ -569,14 +577,18 @@ def plot_interface(pltid):
         if line_range is not None:
             (line1str,line2str) = line_range.split(":")
             line1 = int(line1str); line2 = int(line2str)
-        dat = p.get_data(plotpath,col1,col2) 
+            dat = p.get_data(plotpath,col1,col2,line1,line2) 
+        else: 
+            dat = p.get_data(plotpath,col1,col2)
+        # clean data
         #dat = [d.replace('?', '0') for d in dat]
         data.append(dat)
         #data.append(p.get_data(plotpath,col1,col2))
         ticks = p.get_ticks(plotpath,col1,col2)
 
-    params = { 'cid': cid, 'data': data, 'app': app, 'user': u, 'ticks': ticks, 'title': title,
-               'plotpath': plotpath, 'rows': list_of_plots, 'options': options, 'datadef': datadef } 
+    params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u, 
+               'ticks': ticks, 'title': title, 'plotpath': plotpath, 
+               'rows': list_of_plots, 'options': options, 'datadef': datadef } 
     return template(tfn, params)
 
 @get('/mpl/<pltid>')

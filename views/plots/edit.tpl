@@ -2,23 +2,6 @@
 %include('navbar')
 
 <body onload="init()">
-<script>
-//function delete(id) {
-//   if(!confirm("Are you sure to delete?")) return                      
-//      document.student_modify.action = "/apps/delete/id"
-//      document.student_modify.submit()
-//   }
-//}
-//function edit(id) {
-//   if(!confirm("Are you sure to delete?")) return                      
-//      document.student_modify.action = "/apps/delete/id"
-//      document.student_modify.submit()
-//   }
-//}
-//function load_plot(fn) {
-//   $("#fn").val(fn)
-//}
-</script>
 
 <style type="text/css">
 td {text-align: center}
@@ -47,8 +30,8 @@ td {text-align: center}
      <td width="50">{{row['plots']['ptype']}}</td>
      <td>{{row['plots']['options']}}</td>
      <td>{{row['plots']['datadef']}}</td>
-  <td width="100"><a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> <br>
-      <a href="/plots/delete/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">delete</a> <br>
+     <td width="100"><a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> <br><br>
+      <a href="/plots/delete/{{row['plots']['id']}}?app={{app}}&cid={{cid}}" onclick="if(confirm('confirm')) return true; return false">delete</a> <br><br>
       <a href="/plots/datasource/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">datasource</a></td>
 
   <!--
@@ -64,9 +47,6 @@ td {text-align: center}
 
 <form method="post" action="/plots/create">
 <table padding=10>
-   <tr><td>Filename to plot:</td>
-       <td><input id="fn" type="text" name="fn"></td>
-       <td><em>Note: use &lt;cid&gt; to use the case id</em></td></tr>
    <tr><td>Title:</td> <td><input type="text" name="title"></td></tr>
    <tr><td>Type of plot:</td>
    <td><select name="ptype">

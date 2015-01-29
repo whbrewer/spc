@@ -1,6 +1,10 @@
 Currently working on: 
-- add xlabel, ylabel options to plots
-- add bar/chart and color options to datasource
+- share plot to wall
+- add button to turn on ajax refreshing for any plot
+- add ability to tail file for plotting i.e. -100:0 means last 100 lines
+- add xlabel, ylabel, xrange, yrange, logscale, markings, display-order options to plots
+- add label, bar/chart and color options to datasource
+- add post-processing / cleaning data step
 - show list of apps in dropdown box
 
 Next:

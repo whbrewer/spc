@@ -30,5 +30,12 @@
                 <input type="submit" value="Edit Plots">
             </form>
     </td>
+    <td>
+            <form method="get" action="/plots/datasource/{{pltid}}">
+                <input type="hidden" name="app" value="{{app}}">
+                <input type="hidden" name="cid" value="{{cid}}">
+                <input type="submit" value="Edit Datasource">
+            </form>
+    </td>
 </tr>
 </table>

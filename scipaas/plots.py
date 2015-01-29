@@ -11,7 +11,12 @@ class plot(object):
         """return data as string in format [ [x1,y1], [x2,y2], ... ]"""
         y = ''
         lineno = 0
-        for line in open(fn, 'rU'):
+        data = open(fn, 'rU').readlines()
+        nlines = len(data)
+        # allow for tailing a file by giving a negative range, e.g. -100:10000
+        if line1 < 0:
+            line1 += nlines
+        for line in data:
             lineno += 1
             if lineno >= line1 and lineno <= line2:
                 # don't parse comments
@@ -26,7 +31,12 @@ class plot(object):
     def get_column_of_data(self,fn,col,line1=1,line2=1e6):
         y = []
         lineno = 0
-        for line in open(fn, 'rU'):
+        data = open(fn, 'rU').readlines()
+        nlines = len(data)
+        # allow for tailing a file by giving a negative range, e.g. -100:10000
+        if line1 < 0:
+            line1 += nlines
+        for line in data:
             lineno += 1
             if lineno >= line1 and lineno <= line2:
                 # don't parse comments
