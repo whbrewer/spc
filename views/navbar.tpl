@@ -36,6 +36,9 @@ function checkCase() {
 %end
 <input type="submit" formaction="/jobs" class="submit jobs" value="myjobs"/>
 <input type="submit" formaction="/wall" class="submit wall" value="wall"/>
+%if defined('app'):
+<input type="submit" formaction="/plots/edit" class="submit plot" value="plots"/>
+%end
 </form> 
 
 <!--<img class="clear" style="cursor: pointer" src="/static/images/clear_left.png" onclick="document.getElementById('cid').value=''"/>-->

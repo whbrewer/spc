@@ -30,9 +30,14 @@ td {text-align: center}
      <td width="50">{{row['plots']['ptype']}}</td>
      <td>{{row['plots']['options']}}</td>
      <td>{{row['plots']['datadef']}}</td>
-     <td width="100"><a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> <br><br>
-      <a href="/plots/delete/{{row['plots']['id']}}?app={{app}}&cid={{cid}}" onclick="if(confirm('confirm')) return true; return false">delete</a> <br><br>
-      <a href="/plots/datasource/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">datasource</a></td>
+     <td width="100">
+        %if not cid == '':
+            <a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> <br><br>
+        %end
+        <a href="/plots/delete/{{row['plots']['id']}}?app={{app}}&cid={{cid}}" 
+           onclick="if(confirm('confirm')) return true; return false">delete</a> <br><br>
+        <a href="/plots/datasource/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">datasource</a>
+     </td>
 
   <!--
   <form method="get" action="/apps/delete/{row[0]}}">

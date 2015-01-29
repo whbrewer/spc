@@ -483,8 +483,9 @@ def add_datasource():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     pltid = request.forms.get('pltid')
-    r = request
-    datasource.insert(pltid=pltid,filename=r.forms['fn'],cols=r.forms['cols'],line_range=r.forms['line_range'])
+    r = request.forms
+    datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'], line_range=r['line_range'],
+                      label=r['label'], ptype=r['ptype'], color=r['color'])
     db.commit()
     redirect ('/plots/datasource/'+pltid+'?app='+app+'&cid='+cid)
 

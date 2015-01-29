@@ -1,9 +1,15 @@
 Currently working on: 
-- share plot to wall
+- make datasource editable and save to db
+- work on FPG
+- when delete case in jobs, also delete file directory
+- add plot button to wall, so any user can plot any other user's case
+- add label, bar/chart and color options to datasource
+- share plot to wall (need to convert flot to image): 
+    see: http://stackoverflow.com/questions/15616925/save-flot-graph-as-image
+    see: https://plot.ly/feed/
 - add button to turn on ajax refreshing for any plot
 - add ability to tail file for plotting i.e. -100:0 means last 100 lines
 - add xlabel, ylabel, xrange, yrange, logscale, markings, display-order options to plots
-- add label, bar/chart and color options to datasource
 - add post-processing / cleaning data step
 - show list of apps in dropdown box
 

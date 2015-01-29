@@ -13,8 +13,7 @@
    <th>app</th> 
    <th>cid</th> 
    <th>comment</th> 
-   <th>start</th>
-   <th>delete</th>
+   <th>actions</th>
 </tr>
 </thead>
 
@@ -26,8 +25,10 @@
      <td>{{row['jobs']['cid']}}</td>
      <td>{{row['wall']['comment']}}</td>
      <!--<td><a style="cursor: pointer" onclick="set_cid('{{row['jobs']['user']}}/{{row['jobs']['cid']}}','{{row['jobs']['app']}}')"><u>set</u></a></td>-->
-     <td><a href="/start?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">start</a></td>
-     <td><a href="/wall/delete/{{row['wall']['id']}}?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">delete</a></td>
+     <td>
+        <a href="/start?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">start</a> - 
+        <a href="/wall/delete/{{row['wall']['id']}}?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}" onclick="if(confirm('confirm')) return true; return false">delete</a>
+     </td>
   </tr> 
 %end
 </table>
