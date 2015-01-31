@@ -8,6 +8,13 @@ from dal import DAL, Field
 
 db = DAL(config.uri, auto_import=True, migrate=False)
 
+apps = db.define_table('apps', Field('id','integer'),
+                               Field('name','string'),
+                               Field('description','string'),
+                               Field('category','string'),
+                               Field('language','string'),
+                               Field('input_format','string'),
+                               Field('cmd_line_opts','string'))
 jobs = db.define_table('jobs', Field('id','integer'),
                                Field('user','string'),
                                Field('app','string'),
@@ -31,7 +38,7 @@ class scheduler(object):
             j = self.qfront()
             if j is not None and j > 0:
                 self.start(j)            
-            time.sleep(5) 
+            time.sleep(1) 
 
     def qsub(self,app,cid,user):
         state = 'Q'
@@ -52,21 +59,31 @@ class scheduler(object):
         return db(db.jobs.state=='Q').count()
 
     def start(self,jid):
-        global myapps
         db.jobs[jid] = dict(state='R')
         db.commit()
 
         user = db.jobs(jid).user
         app = db.jobs(jid).app
         cid = db.jobs(jid).cid
+        cmd_line_opts = db(apps.name==app).select()[0]['cmd_line_opts']
 
         rel_path=(os.pardir+os.sep)*4
-        run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
-        exe = config.apps_dir + os.sep + app + os.sep + app
+        exe = config.apps_dir + os.sep + app + os.sep + app 
         outfn = app + ".out"
-        cmd = rel_path + exe + " " + app + ".ini >& " + outfn
+        if cmd_line_opts:
+            cmd = rel_path + exe + ' ' + cmd_line_opts + ' >& ' + outfn
+        else:
+            cmd = rel_path + exe + ' >& ' + outfn
+
+        run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
         t = threading.Thread(target = self.start_job(run_dir,cmd))
         t.start()
+
+        # let user know job has ended
+        f = open(run_dir+os.sep+outfn,"a")
+        print "outfile:", outfn
+        f.write("FINISHED EXECUTION")
+        f.close()
 
         db.jobs[jid] = dict(state='C')
         db.commit()
@@ -77,3 +94,4 @@ class scheduler(object):
 
     def stop(self,app):
         os.system("killall " + app)
+

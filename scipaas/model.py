@@ -6,12 +6,19 @@ db = DAL(config.uri, auto_import=True, migrate=False)
 users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),
                                  Field('passwd','string'))
+# this is also defined in scheduler.py
+# need to fix in the future
 apps = db.define_table('apps', Field('id','integer'),
                                Field('name','string'),
                                Field('description','string'),
                                Field('category','string'),
                                Field('language','string'),
-                               Field('input_format','string'))
+                               Field('input_format','string'),
+                               Field('cmd_line_opts','string'),
+                               Field('preprocess','integer'),
+                               Field('postprocess','integer'))
+# this is also defined in scheduler.py
+# need to fix in the future
 jobs = db.define_table('jobs', Field('id','integer'),
                                Field('user','string'),
                                Field('app','string'),

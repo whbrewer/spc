@@ -11,7 +11,7 @@
 <div>
    <script id="source" language="javascript" type="text/javascript"> 
       $(function () {
-      var data = {{!data}};
+      var data = {{!data[0]}};
 
         $.plot("#placeholder", [ data ], {
             series: {

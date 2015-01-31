@@ -9,7 +9,7 @@ import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 import cgi
 # other SciPaaS modules
-import config, uploads, scheduler
+import config, uploads, scheduler, process
 import apps as appmod
 import plots as plotmod
 from model import *
@@ -66,6 +66,18 @@ def execute(app,cid):
     #cid = request.forms.get('cid')
     #print 'execute:',app,cid
     params = {}
+
+    try:
+        if myapps[app].preprocess > 0:
+            run_params,_,_ = myapps[app].read_params(user,cid) 
+            processed_inputs = process.preprocess(run_params)
+            sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep+'fpg.in'
+            f = open(sim_dir,'w') 
+            f.write(processed_inputs)
+            f.close()
+    except:
+        pass
+
     try:
         params['cid'] = cid
         params['app'] = app
@@ -322,13 +334,15 @@ def load_apps():
     for row in result:   
         name = row['name']
         appid = row['id']
+        preprocess = row['preprocess']
+        postprocess = row['postprocess']
         input_format = row['input_format']
         print 'loading: %s (id: %s)' % (name,appid)
         #print 'loading: %s' % (name)
         if(input_format=='namelist'):
             myapp = appmod.namelist(name,appid)
         elif(input_format=='ini'):
-            myapp = appmod.ini(name,appid)
+            myapp = appmod.ini(name,appid,preprocess,postprocess)
         elif(input_format=='xml'):
             myapp = appmod.xml(name,appid)
         elif(input_format=='json'):
@@ -358,9 +372,12 @@ def addapp():
     category = request.forms.get('category')
     language = request.forms.get('language')  
     input_format = request.forms.get('input_format')
+    cmd_line_opts = request.forms.get('cmd_line_opts')
+    preprocess = request.forms.get('preprocess')
+    postprocess = request.forms.get('postprocess')
     # put in db
     a = appmod.app()
-    a.create(appname,description,category,language,input_format)
+    a.create(appname,description,category,language,input_format,cmd_line_opts,preprocess,postprocess)
     redirect("/apps/show/name")
 
 @post('/apps/create_view')
@@ -413,7 +430,7 @@ def getstart():
     #    return template('error', params)
     #    #redirect("/apps/show/name")
 
-@get('/list_files')
+@get('/files')
 def list_files():
     global user
     cid = request.query.cid
@@ -523,20 +540,25 @@ def plot_interface(pltid):
         u = user
         c = cid
 
+    sim_dir = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+c+os.sep
+
     # use pltid of 0 to trigger finding the first pltid for the current app
     if int(pltid) == 0:
         query = (apps.id==plots.appid) & (apps.name==app)
         result = db(query).select()
-        pltid = result[0]['plots']['id']
+        if result: pltid = result[0]['plots']['id']
+
+    p = plotmod.plot()
 
     # get the data for the pltid given
-    p = plotmod.plot()
-    result = db(plots.id==pltid).select()[0]
-
-    plottype = result['ptype']
-    options = result['options']
-    datadef = result['datadef']
-    title = result['title']
+    try:
+        result = db(plots.id==pltid).select()[0]
+        plottype = result['ptype']
+        options = result['options']
+        datadef = result['datadef']
+        title = result['title']
+    except:
+        redirect ('/plots/edit?app='+app+'&cid='+cid)
 
     # if plot not in DB return error
     if plottype is None:
@@ -560,13 +582,10 @@ def plot_interface(pltid):
     query = (apps.id==plots.appid) & (apps.name==app)
     list_of_plots = db(query).select()
 
-    sim_dir = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+c+os.sep
-
     # extract data from files
     data = []
     result = db(datasource.pltid==pltid).select()
-    p = plotmod.plot()
-    
+
     for r in result:
         plotfn = r['filename']
         cols = r['cols']
@@ -575,17 +594,24 @@ def plot_interface(pltid):
         plotpath = sim_dir + plotfn
         (col1str,col2str) = cols.split(":")
         col1 = int(col1str); col2 = int(col2str)
+        # do some postprocessing
         if line_range is not None:
             (line1str,line2str) = line_range.split(":")
             line1 = int(line1str); line2 = int(line2str)
-            dat = p.get_data(plotpath,col1,col2,line1,line2) 
+            if myapps[app].postprocess > 0:
+                dat = process.postprocess(plotpath,line1,line2)
+            else:
+                dat = p.get_data(plotpath,col1,col2,line1,line2) 
         else: 
             dat = p.get_data(plotpath,col1,col2)
         # clean data
         #dat = [d.replace('?', '0') for d in dat]
         data.append(dat)
         #data.append(p.get_data(plotpath,col1,col2))
-        ticks = p.get_ticks(plotpath,col1,col2)
+        if plottype == 'flot-cat':
+            ticks = p.get_ticks(plotpath,col1,col2)
+        else:
+            ticks = []
 
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u, 
                'ticks': ticks, 'title': title, 'plotpath': plotpath, 

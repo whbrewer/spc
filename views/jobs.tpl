@@ -30,7 +30,7 @@
       <a href="/inputs?cid={{row['cid']}}&app={{row['app']}}">inputs</a> ::
       <a href="/output?cid={{row['cid']}}&app={{row['app']}}">output</a> ::
       <a href="/plot/0?cid={{row['cid']}}&app={{row['app']}}">plot</a> ::
-      <a href="/list_files?cid={{row['cid']}}&app={{row['app']}}">files</a> ::
+      <a href="/files?cid={{row['cid']}}&app={{row['app']}}">files</a> ::
       <a href="/start?cid={{row['cid']}}&app={{row['app']}}">start</a> 
       <!--<a style="cursor: pointer" onclick="set_cid('{{row['cid']}}','{{row['app']}}')"><u>set</u></a><br><br>-->
       <br><br>

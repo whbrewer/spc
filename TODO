@@ -1,4 +1,8 @@
 Currently working on: 
+- add description to jobs... do a jobs natural join wall when displaying myjobs
+- star runs, and then able to sort on stars
+- keep a log of everytime scipaas crashes and what was the url
+- save run as template
 - make datasource editable and save to db
 - work on FPG
 - when delete case in jobs, also delete file directory
@@ -10,12 +14,10 @@ Currently working on:
 - add button to turn on ajax refreshing for any plot
 - add ability to tail file for plotting i.e. -100:0 means last 100 lines
 - add xlabel, ylabel, xrange, yrange, logscale, markings, display-order options to plots
-- add post-processing / cleaning data step
+- add pre-processing and post-processing (cleaning data) step
 - show list of apps in dropdown box
 
 Next:
-- refactor: create some kind of function to return 
-        sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
 - add billing ability
 - add search button to myjobs
 - add "list files" button, probably in myjobs
@@ -53,6 +55,7 @@ Next:
 
 --
 Feature Requests
+- templates
 - billing model:
    o based on CPU usage
    o based on number of apps hosted
@@ -72,6 +75,9 @@ Bug fixes
 - error when click plot when case id not set... need to warn user beforehand
 
 Refactoring
+- DRY out the __init__ functions, put all common items in inhereted classes into apps superclass 
+- create some kind of function to return 
+        sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
 - CRUD superclass... all models inherit from CRUD superclass
 - group common params that get passed to navbar in object?
 - cleanup long pathnames such as sim_dir, run_dir, and fn in 

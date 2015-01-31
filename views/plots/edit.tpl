@@ -57,7 +57,6 @@ td {text-align: center}
    <td><select name="ptype">
        <option VALUE="flot-line">flot/line</option>
        <option VALUE="flot-cat">flot/categories</option>
-       <option VALUE="flot-bar">flot/bar</option>
        <option VALUE="mpl-line">matplotlib/line</option>
        <option VALUE="mpl-bar">matplotlib/bar</option>
    </select></td></tr>

@@ -25,10 +25,11 @@ function edit(id) {
 <table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
 <thead>
 <tr> 
-<th><a href="/apps/show/name">Name</a></th> 
+<th>Name</th> 
 <th>Description</th> 
-<th><a href="/apps/show/category">Category</a></th> 
-<th><a href="/apps/show/language">Language</a></th> 
+<th>Category</th> 
+<th>Language</th> 
+<th>Command Line Options</th>
 </tr>
 </thead>
 
@@ -38,6 +39,7 @@ function edit(id) {
   <td>{{row['description']}}</td>
   <td>{{row['input_format']}}</td>
   <td>{{row['language']}}</td>
+  <td>{{row['cmd_line_opts']}}</td>
 <!--
   <form method="post" action="/apps/delete/{row[0]}}">
      <td><input type="button" value="delete"></td> 

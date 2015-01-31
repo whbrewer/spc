@@ -28,6 +28,12 @@ class plot(object):
         s = "[ %s ]" % y
         return s
 
+    def get_raw_data(self,fn,line1=1,line2=1e6):
+        """return data as an array..."""
+        y = []
+        data = open(fn, 'rU').readlines()
+        return data[line1:line2]
+
     def get_column_of_data(self,fn,col,line1=1,line2=1e6):
         y = []
         lineno = 0
