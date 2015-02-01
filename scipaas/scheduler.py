@@ -14,7 +14,7 @@ apps = db.define_table('apps', Field('id','integer'),
                                Field('category','string'),
                                Field('language','string'),
                                Field('input_format','string'),
-                               Field('cmd_line_opts','string'))
+                               Field('command','string'))
 jobs = db.define_table('jobs', Field('id','integer'),
                                Field('user','string'),
                                Field('app','string'),
@@ -46,7 +46,9 @@ class scheduler(object):
         db.commit()
 
     def qfront(self):
+        # this is giving a recursive cursor error, but it still works
         jid = db.jobs(db.jobs.state=='Q')
+        # trying to reduce the recursiveness didn't fix it... yet
         #jid = db(jobs.state=='Q')
         if jid: return jid.id
         else: return None
@@ -66,15 +68,18 @@ class scheduler(object):
         user = db.jobs(jid).user
         app = db.jobs(jid).app
         cid = db.jobs(jid).cid
-        cmd_line_opts = db(apps.name==app).select()[0]['cmd_line_opts']
+        command = db(apps.name==app).select()[0]['command']
+        print '** command: ', command
 
         rel_path=(os.pardir+os.sep)*4
         exe = config.apps_dir + os.sep + app + os.sep + app 
         outfn = app + ".out"
-        if cmd_line_opts:
-            cmd = rel_path + exe + ' ' + cmd_line_opts + ' >& ' + outfn
-        else:
-            cmd = rel_path + exe + ' >& ' + outfn
+        cmd = command + ' >& ' + outfn
+        #if command:
+        #    cmd = rel_path + exe + ' ' + command + ' >& ' + outfn
+        #else:
+        #    cmd = rel_path + exe + ' >& ' + outfn
+        print '*** command is:',cmd
 
         run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
         t = threading.Thread(target = self.start_job(run_dir,cmd))

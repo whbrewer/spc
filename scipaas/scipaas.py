@@ -161,11 +161,13 @@ def tail(app,cid):
     num_lines = 30
     run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
     ofn = run_dir + os.sep + myapps[app].outfn
-    f = open(ofn,'r')
-    output = f.readlines()
-    myoutput = output[len(output)-num_lines:]
-    xoutput = ''.join(myoutput)
-    f.close()
+    if os.path.exists(ofn):
+        f = open(ofn,'r')
+        output = f.readlines()
+        myoutput = output[len(output)-num_lines:]
+        xoutput = ''.join(myoutput)
+        f.close()
+    xoutput = 'file not created yet'
     params = { 'cid': cid, 'contents': xoutput, 'app': app, 'user': user, 'fn': ofn,
                'apps': myapps.keys() }
     return template('more', params)
@@ -382,12 +384,12 @@ def addapp():
     category = request.forms.get('category')
     language = request.forms.get('language')  
     input_format = request.forms.get('input_format')
-    cmd_line_opts = request.forms.get('cmd_line_opts')
+    command = request.forms.get('command')
     preprocess = request.forms.get('preprocess')
     postprocess = request.forms.get('postprocess')
     # put in db
     a = appmod.app()
-    a.create(appname,description,category,language,input_format,cmd_line_opts,preprocess,postprocess)
+    a.create(appname,description,category,language,input_format,command,preprocess,postprocess)
     redirect("/apps")
 
 @post('/apps/create_view')

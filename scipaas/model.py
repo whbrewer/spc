@@ -14,7 +14,7 @@ apps = db.define_table('apps', Field('id','integer'),
                                Field('category','string'),
                                Field('language','string'),
                                Field('input_format','string'),
-                               Field('cmd_line_opts','string'),
+                               Field('command','string'),
                                Field('preprocess','integer'),
                                Field('postprocess','integer'))
 # this is also defined in scheduler.py

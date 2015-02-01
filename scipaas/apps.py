@@ -19,9 +19,9 @@ class app(object):
     def __init__(self):
         pass
 
-    def create(self, name, desc, cat, lang, info, clo, pre, post):
+    def create(self, name, desc, cat, lang, info, cmd, pre, post):
         apps.insert(name=name, description=desc, category=cat, language=lang,  
-                    input_format=info, cmd_line_opts=clo, preprocess=pre, postprocess=post)
+                    input_format=info, command=cmd, preprocess=pre, postprocess=post)
         db.commit()
 
     #def read(self,appid):

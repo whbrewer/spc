@@ -1,4 +1,5 @@
 Currently working on: 
+- for jmendel to work correctly, need to get rid of categories
 - apps.py - need to specify a type with each parameter
 - how to deal with Booleans input parameters in a consistent way
   i.e. do you want to always output true or false??

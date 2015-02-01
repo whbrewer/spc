@@ -39,7 +39,7 @@ function edit(id) {
   <td>{{row['description']}}</td>
   <td>{{row['input_format']}}</td>
   <td>{{row['language']}}</td>
-  <td>{{row['cmd_line_opts']}}</td>
+  <td>{{row['command']}}</td>
 <!--
   <form method="post" action="/apps/delete/{row[0]}}">
      <td><input type="button" value="delete"></td> 
