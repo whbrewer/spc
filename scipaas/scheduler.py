@@ -47,9 +47,9 @@ class scheduler(object):
 
     def qfront(self):
         # this is giving a recursive cursor error, but it still works
+        # it is explained here... fix is to create a thread lock
+        # http://stackoverflow.com/questions/26629080/python-and-sqlite3-programmingerror-recursive-use-of-cursors-not-allowed
         jid = db.jobs(db.jobs.state=='Q')
-        # trying to reduce the recursiveness didn't fix it... yet
-        #jid = db(jobs.state=='Q')
         if jid: return jid.id
         else: return None
 
@@ -69,17 +69,11 @@ class scheduler(object):
         app = db.jobs(jid).app
         cid = db.jobs(jid).cid
         command = db(apps.name==app).select()[0]['command']
-        print '** command: ', command
 
-        rel_path=(os.pardir+os.sep)*4
+        #rel_path=(os.pardir+os.sep)*4
         exe = config.apps_dir + os.sep + app + os.sep + app 
         outfn = app + ".out"
         cmd = command + ' >& ' + outfn
-        #if command:
-        #    cmd = rel_path + exe + ' ' + command + ' >& ' + outfn
-        #else:
-        #    cmd = rel_path + exe + ' >& ' + outfn
-        print '*** command is:',cmd
 
         run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
         t = threading.Thread(target = self.start_job(run_dir,cmd))

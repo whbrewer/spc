@@ -167,7 +167,8 @@ def tail(app,cid):
         myoutput = output[len(output)-num_lines:]
         xoutput = ''.join(myoutput)
         f.close()
-    xoutput = 'file not created yet'
+    else:
+        xoutput = 'waiting to start...'
     params = { 'cid': cid, 'contents': xoutput, 'app': app, 'user': user, 'fn': ofn,
                'apps': myapps.keys() }
     return template('more', params)

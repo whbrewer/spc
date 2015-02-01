@@ -32,12 +32,6 @@ function checkCase() {
     %end
 </select>
 <!-- <input type="submit" formaction="/apps" class="submit apps" value="apps"/> -->
-%if defined('app'):
-    <!--<input type="hidden" name="app" id="app" value="{{app}}"/>-->
-    <input type="submit" formaction="/start" class="submit start" value="start"/>
-%else:
-    <!--<input type="hidden" name="app" id="app"/>-->
-%end
 <input type="submit" formaction="/jobs" class="submit jobs" value="myjobs"/>
 <input type="submit" formaction="/wall" class="submit wall" value="wall"/>
 %if defined('app'):
