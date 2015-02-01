@@ -1,8 +1,8 @@
 %include('header')
 <link href="/static/css/flot.css" rel="stylesheet" type="text/css">
-<script language="javascript" type="text/javascript" src="/static/flot/jquery.js"></script>
-<script language="javascript" type="text/javascript" src="/static/flot/jquery.flot.js"></script>
-<script language="javascript" type="text/javascript" src="/static/flot/jquery.flot.categories.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.js"></script>
+<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.categories.js"></script>
 
 <body onload="init()">
 %include('navbar')

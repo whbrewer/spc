@@ -205,6 +205,7 @@ def get_wall():
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
+    params['apps'] = myapps.keys()
     return template('wall', params, rows=result)
 
 @post('/wall')
@@ -480,11 +481,11 @@ def editplot():
     global user
     #try:
     app = request.query.app
-    if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
+    if app not in myapps: redirect('/apps')
     query = (apps.id==plots.appid) & (apps.name==app)
     result = db(query).select()
-    params = { 'app': app, 'cid': request.query.cid, 'user': user } 
+    params = { 'app': app, 'cid': request.query.cid, 'user': user, 'apps': myapps.keys() } 
     return template('plots/edit', params, rows=result)
     #except:
     #    params = {'err': "must first select an app to plot by clicking apps button"}
