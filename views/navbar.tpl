@@ -11,13 +11,11 @@ function checkCase() {
 </script>
 
 <div class="navbar">
-<!--
-<a href="/apps/show/name" border=0>
-<img align="left" height="43" src="/static/images/scipaas.png"/>
-</a>
--->
 
-<form id="plotform" action="/{{get('app','')}}" method="get">
+%if defined('app'):
+{{app}}
+%end
+<form id="plotform" action="/start" method="get">
 
 <!--
 %if defined('cid'):
@@ -27,12 +25,18 @@ function checkCase() {
 %end
 -->
 
-<input type="submit" formaction="/apps" class="submit apps" value="apps"/>
+<select name="app" onchange="this.form.submit()">
+    <option>app...
+    %for app in apps:
+       <option value="{{app}}">{{app}}
+    %end
+</select>
+<!-- <input type="submit" formaction="/apps" class="submit apps" value="apps"/> -->
 %if defined('app'):
-<input type="hidden" name="app" id="app" value="{{app}}"/>
-<input type="submit" formaction="/start" class="submit start" value="start"/>
+    <!--<input type="hidden" name="app" id="app" value="{{app}}"/>-->
+    <input type="submit" formaction="/start" class="submit start" value="start"/>
 %else:
-    <input type="hidden" name="app" id="app"/>
+    <!--<input type="hidden" name="app" id="app"/>-->
 %end
 <input type="submit" formaction="/jobs" class="submit jobs" value="myjobs"/>
 <input type="submit" formaction="/wall" class="submit wall" value="wall"/>

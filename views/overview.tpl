@@ -16,7 +16,7 @@ for easily uploading and running scientific apps in the cloud.</p>
 
 <ul>
 <li><a href="/login">Login/Register<p>
-<li><a href="/apps/show/name">Show Apps<p>
+<li><a href="/apps">Show Apps<p>
 <li><a href="/apps/add">Add App<p>
 </ul
 

@@ -54,7 +54,7 @@ def confirm_form(app):
     inputs = slurp_file(fn)
     # convert html tags to entities (e.g. < to &lt;)
     inputs = cgi.escape(inputs)
-    params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user }
+    params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user, 'apps': myapps.keys() }
     try:
         return template('confirm', params)
     except:
@@ -87,7 +87,8 @@ def execute(app,cid):
         redirect("/monitor?app="+app+"&cid="+cid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
-        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e }
+        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e, 
+                   'apps': myapps.keys() }
         return template('error',params)
 
 @get('/more')
@@ -98,7 +99,8 @@ def more():
     cid = request.query.cid
     filepath = request.query.filepath
     contents = slurp_file(filepath)
-    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 'fn': filepath }
+    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 'fn': filepath,
+               'apps': myapps.keys() }
     return template('more', params)
 
 @get('/output')
@@ -115,7 +117,8 @@ def output():
         run_dir = myapps[app].user_dir+os.sep+u+os.sep+myapps[app].appname+os.sep+c
         fn = run_dir + os.sep + myapps[app].outfn
         output = slurp_file(fn)
-        params = { 'cid': cid, 'contents': output, 'app': app, 'user': u, 'fn': fn }
+        params = { 'cid': cid, 'contents': output, 'app': app, 'user': u, 'fn': fn,
+                   'apps': myapps.keys() }
         return template('more', params)
     except:
         params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
@@ -135,7 +138,8 @@ def inputs():
         run_dir = myapps[app].user_dir+os.sep+u+os.sep+myapps[app].appname+os.sep+c
         fn = run_dir + os.sep + myapps[app].simfn
         inputs = slurp_file(fn)
-        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u, 'fn': fn }
+        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u, 'fn': fn,
+                   'apps': myapps.keys() }
         return template('more', params)
     except:
         params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
@@ -162,7 +166,8 @@ def tail(app,cid):
     myoutput = output[len(output)-num_lines:]
     xoutput = ''.join(myoutput)
     f.close()
-    params = { 'cid': cid, 'contents': xoutput, 'app': app, 'user': user, 'fn': ofn }
+    params = { 'cid': cid, 'contents': xoutput, 'app': app, 'user': user, 'fn': ofn,
+               'apps': myapps.keys() }
     return template('more', params)
 
 @route('/')
@@ -181,6 +186,7 @@ def show_jobs():
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
+    params['apps'] = myapps.keys()
     return template('jobs', params, rows=result)
 
 @get('/wall')
@@ -247,6 +253,7 @@ def show_app(app):
     params['cid'] = '' 
     params['app'] = app
     params['user'] = user
+    params['apps'] = myapps
     return template(config.apps_dir+os.sep+app, params)
 
 @get('/login')
@@ -317,7 +324,10 @@ def check_user():
 
 @get('/apps')
 def showapps():
-    redirect("/apps/show/name")
+    if not authorized(): redirect('/login')
+    result = db().select(apps.ALL)
+    params = { 'apps': myapps.keys() }
+    return template('apps', params, rows=result)
 
 @get('/apps/load')
 def load_apps():
@@ -353,11 +363,11 @@ def load_apps():
     default_app = name # simple soln - use last app read from DB
     return 0
 
-@get('/apps/show/<sort>')
-def getapps(sort="name"):
-    if not authorized(): redirect('/login')
-    result = db().select(apps.ALL)
-    return template('apps', rows=result)
+#@get('/apps/show/<sort>')
+#def getapps(sort="name"):
+#    if not authorized(): redirect('/login')
+#    result = db().select(apps.ALL)
+#    return template('apps', rows=result)
 
 @get('/apps/add')
 def create_app_form():
@@ -378,7 +388,7 @@ def addapp():
     # put in db
     a = appmod.app()
     a.create(appname,description,category,language,input_format,cmd_line_opts,preprocess,postprocess)
-    redirect("/apps/show/name")
+    redirect("/apps")
 
 @post('/apps/create_view')
 def create_view():
@@ -394,7 +404,7 @@ def create_view():
 def delete_app(appid):
     a = appmod.app()
     a.delete(appid)
-    redirect("/apps/show/name")
+    redirect("/apps")
 
 @get('/apps/edit/<appid>')
 def edit_app(appid):
@@ -424,11 +434,11 @@ def getstart():
     params['cid'] = cid
     params['app'] = app
     params['user'] = u
+    params['apps'] = myapps.keys()
     return template('apps/' + myapps[app].appname, params)
     #except:
     #    params = {'err': "whoops there was a problem... start by clicking apps button"}
     #    return template('error', params)
-    #    #redirect("/apps/show/name")
 
 @get('/files')
 def list_files():
@@ -445,6 +455,7 @@ def list_files():
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
+    params['apps'] = myapps.keys()
     return template('list', params)
 
 @get('/<app>/list')
@@ -701,7 +712,7 @@ def monitor():
     global user
     cid = request.query.cid
     app = request.query.app
-    params = { 'cid': cid, 'app': app, 'user': user }
+    params = { 'cid': cid, 'app': app, 'user': user, 'apps': myapps.keys() }
     return template('monitor', params)
 
 @post('/apps/upload')

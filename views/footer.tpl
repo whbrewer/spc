@@ -1,6 +1,7 @@
 <div class="lfooter">
 <a href="/">SCIPAAS</a> &bull; 
-<a href="/logout">logout</a>
+<a href="/logout">logout</a> &bull;
+<a href="/apps">apps</a>
 </div>
 
 <div class="rfooter">

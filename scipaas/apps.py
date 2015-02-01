@@ -236,6 +236,9 @@ class ini(app):
         for section in self.blockorder:
             Config.add_section(section)
             for key in self.blockmap[section]:
+                # for checkboxes that dont get sent when unchecked
+                if key not in form_params: form_params[key] = 'false'
+                #print key, form_params[key]
                 # if the user leaves the value blank, don't output the parameter
                 if form_params[key]:
                     Config.set(section,key,form_params[key])

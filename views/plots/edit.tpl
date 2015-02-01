@@ -17,6 +17,7 @@ td {text-align: center}
 <table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
 <thead>
 <tr>
+   <th>id</th>
    <th>Title</th> 
    <th>Type</th> 
    <th>Options</th> 
@@ -26,6 +27,7 @@ td {text-align: center}
 </thead>
 %for row in rows:
   <tr>
+     <td>{{row['plots']['id']}}</td>
      <td>{{row['plots']['title']}}</td>
      <td width="50">{{row['plots']['ptype']}}</td>
      <td>{{row['plots']['options']}}</td>

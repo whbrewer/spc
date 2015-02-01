@@ -47,6 +47,7 @@ class scheduler(object):
 
     def qfront(self):
         jid = db.jobs(db.jobs.state=='Q')
+        #jid = db(jobs.state=='Q')
         if jid: return jid.id
         else: return None
 

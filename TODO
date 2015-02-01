@@ -1,10 +1,13 @@
 Currently working on: 
+- apps.py - need to specify a type with each parameter
+- how to deal with Booleans input parameters in a consistent way
+  i.e. do you want to always output true or false??
+- work on getting Nemo working with pre- and post-processors
+- make datasource editable and save to db
 - add description to jobs... do a jobs natural join wall when displaying myjobs
 - star runs, and then able to sort on stars
 - keep a log of everytime scipaas crashes and what was the url
 - save run as template
-- make datasource editable and save to db
-- work on FPG
 - when delete case in jobs, also delete file directory
 - add plot button to wall, so any user can plot any other user's case
 - add label, bar/chart and color options to datasource
@@ -14,8 +17,6 @@ Currently working on:
 - add button to turn on ajax refreshing for any plot
 - add ability to tail file for plotting i.e. -100:0 means last 100 lines
 - add xlabel, ylabel, xrange, yrange, logscale, markings, display-order options to plots
-- add pre-processing and post-processing (cleaning data) step
-- show list of apps in dropdown box
 
 Next:
 - add billing ability
@@ -84,6 +85,9 @@ Refactoring
   apps.py and scipaas.py
 
 Completed
+- add pre-processing and post-processing (cleaning data) step
+- show list of apps in dropdown box
+- work on FPG
 - plot two datasets on single chart
 - store JS of plot options in sqlite
 - add action bar

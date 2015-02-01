@@ -5,28 +5,31 @@ def preprocess(params):
     """convert input key/value params to command-line style args"""
     str = ''
     for key, value in (params.iteritems()):
+        if key == 't_pseudo_data':
+           if value=='true': value = ''
+           else: continue # don't output anything when this param is false
         option = '-' + key.split('_')[0] # extract first letter
-        str += option + params[key] + ' ' 
+        str += option + value + ' ' 
     return str
 
 def postprocess(path,line1,line2):
-    """return data as an array..."""
+    """return data as an array...
+    turn data that looks like this:
+        100       0.98299944  200       1.00444448      300       0.95629907      
+    into something that looks like this:
+        [[100, 0.98299944], [200, 1.00444448], [300, 0.95629907], ... ]"""
     y = []
     data = open(path, 'rU').readlines()
     subdata = data[line1:line2]
-    #subdata = data[47:59]
     xx = []; yy = []
     for d in subdata: 
         xy = d.split()
         for (j,x) in enumerate(xy):
-            if j%2: # generations
-                yy += [x]
-            else: # fitness
-                xx += [x]
+            if j%2: yy += [x]
+            else:   xx += [x]
     data = [] 
     z = zip(xx,yy)
     for (x,y) in z:
         a = [ int(x), float(y) ]
         data += [ a ]
     return data
-
