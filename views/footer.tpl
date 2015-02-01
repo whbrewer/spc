@@ -6,17 +6,17 @@
 
 <div class="rfooter">
 
-%if defined('app'):
-    app:{{app}} 
-%else:
-    app:none
-%end
-&bull; 
-
 %if defined('user'):
     user:{{user}} 
 %else:
     user:none
+%end
+&bull; 
+
+%if defined('app'):
+    app:{{app}} 
+%else:
+    app:none
 %end
 &bull; 
 

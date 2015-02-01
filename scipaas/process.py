@@ -1,16 +1,20 @@
 #!/usr/bin/python
-from scipaas import apps as appmod
 
-def preprocess(params):
-    """convert input key/value params to command-line style args"""
+def preprocess(params,fn):
     str = ''
-    for key, value in (params.iteritems()):
-        if key == 't_pseudo_data':
-           if value=='true': value = ''
-           else: continue # don't output anything when this param is false
-        option = '-' + key.split('_')[0] # extract first letter
-        str += option + value + ' ' 
-    return str
+    if fn == 'fpg.in':  
+        """convert input key/value params to command-line style args"""
+        for key, value in (params.iteritems()):
+            if key == 't_pseudo_data':
+               if value=='true': value = ''
+               else: continue # don't output anything when this param is false
+            option = '-' + key.split('_')[0] # extract first letter
+            str += option + value + ' ' 
+        return str
+    else:
+        for key, value in (params.iteritems()):
+            str += key + ' ' + value + '\n'
+        return str
 
 def postprocess(path,line1,line2):
     """return data as an array...

@@ -68,10 +68,12 @@ def execute(app,cid):
     params = {}
 
     try:
-        if myapps[app].preprocess > 0:
+        print '** process',myapps[app].preprocess
+        if myapps[app].preprocess:
+            print '** process',myapps[app].preprocess
             run_params,_,_ = myapps[app].read_params(user,cid) 
-            processed_inputs = process.preprocess(run_params)
-            sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep+'fpg.in'
+            processed_inputs = process.preprocess(run_params,myapps[app].preprocess)
+            sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep+myapps[app].preprocess
             f = open(sim_dir,'w') 
             f.write(processed_inputs)
             f.close()
@@ -275,6 +277,10 @@ def logout():
 def server_static(filepath):
     return static_file(filepath, root='static')
 
+@route('/user_data/<filepath:path>')
+def server_static(filepath):
+    return static_file(filepath, root='user_data')
+
 @get('/favicon.ico')
 def get_favicon():
     return server_static('favicon.ico')
@@ -449,11 +455,27 @@ def list_files():
     global user
     cid = request.query.cid
     app = request.query.app
+    path = request.query.path
+    if not path:
+        path = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid
+        
+    binary_extensions = ['.bz2','.gz','.xz','.zip']
+    image_extensions = ['.png','.gif','.jpg']
     str = ''
-    path = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid
     for fn in os.listdir(path):
+        this_path = path + os.sep + fn
+        _, ext = os.path.splitext(this_path)
+        str += '<p>'        
+        if os.path.isdir(this_path): 
+            str += '<a href="/files?app='+app+'&cid='+cid+'&path='+this_path+'">'+fn+'/</a>'
+        elif ext in binary_extensions:
+            str += '<a href="'+this_path+'">'+fn+'</a>'
+        elif ext in image_extensions:
+            str += '<a href="'+this_path+'"><img src="'+this_path+'" width=100><br>'+fn+'</a>'
+        else:
+            str += '<a href="/more?app='+app+'&cid='+cid+'&filepath='+path+os.sep+fn+'">'+fn+'</a>'
+        str += '</p>'
         #str += '<form action="/'+app+'/delete/'+fn+'">'
-        str += '<p><a href="/more?app='+app+'&cid='+cid+'&filepath='+path+os.sep+fn+'">'+fn+'</a></p>'
         #str += '<input type="image" src="/static/images/trash_can.gif"></form>\n'
     params = { 'content': str }
     params['cid'] = cid
@@ -507,7 +529,8 @@ def get_datasource(pltid):
     if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
     result = db(datasource.pltid==pltid).select()
-    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result } 
+    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result,
+               'apps': myapps.keys() } 
     return template('plots/datasource', params, rows=result)
 
 @post('/plots/datasource_add')
@@ -630,7 +653,8 @@ def plot_interface(pltid):
 
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u, 
                'ticks': ticks, 'title': title, 'plotpath': plotpath, 
-               'rows': list_of_plots, 'options': options, 'datadef': datadef } 
+               'rows': list_of_plots, 'options': options, 'datadef': datadef,
+               'apps': myapps.keys() } 
     return template(tfn, params)
 
 @get('/mpl/<pltid>')
@@ -697,9 +721,10 @@ def matplotlib(pltid):
     # save file
     if not os.path.exists(config.tmp_dir):
         os.makedirs(config.tmp_dir)
-    fn = str(uuid.uuid4())+'.png'
+    fn = title+'.png'
     fig.set_size_inches(7,4)
-    fig.savefig(config.tmp_dir+os.sep+fn)
+    img_path = sim_dir + fn
+    fig.savefig(img_path)
     #response.content_type = 'image/png'
     #return png_output.getvalue()
 
@@ -708,7 +733,7 @@ def matplotlib(pltid):
     list_of_plots = db(query).select()
 
     params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid, 'plotpath': plotpath, 
-              'title': title, 'rows': list_of_plots} 
+              'img_path': img_path, 'title': title, 'rows': list_of_plots, 'apps': myapps.keys() } 
     return template('plots/matplotlib', params)
 
 @get('/monitor')

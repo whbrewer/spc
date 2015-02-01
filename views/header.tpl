@@ -10,9 +10,8 @@
     <link rel="stylesheet" href="/static/js/tablesorter/style.css" type="text/css" media="print, projection, screen" />
 
     <link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
-    <link type="text/css" rel="StyleSheet" href="/static/css/exe.css" />
+    <link type="text/css" rel="StyleSheet" href="/static/css/navbar.css" />
     <link type="text/css" rel="StyleSheet" href="/static/css/tab.webfx.css"/>
-    <link type="text/css" rel="StyleSheet" href="/static/css/dropdown.css"/>
 
     <title>SciPaaS</title>
     <script type="text/javascript">

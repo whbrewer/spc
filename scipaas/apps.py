@@ -59,10 +59,10 @@ class app(object):
                 str = "<tr><td>" + param + ":</td>\n"
                 str += "<td>"
                 if re.search("(TRUE|FALSE)",self.params[param]):
-                    str += "<input type=\"checkbox\" name=\"" + param + "\" "
+                    str += "    <input type=\"checkbox\" name=\"" + param + "\" "
                     str += "value=\"true\"/>"
                 else: 
-                    str += "<input type=\"text\" name=\"" + param + "\" "
+                    str += "    <input type=\"text\" name=\"" + param + "\" "
                     str += "value=\"{{" + param + "}}\"/>"
                 str += "</td></tr>\n"
                 f.write(str)

@@ -22,7 +22,7 @@ function checkCase() {
     <input type="hidden" name="app" value="{{app}}">
 %end
 
-<select name="app" onchange="this.form.submit()">
+<select class="submit apps" name="app" onchange="this.form.submit()">
     <option>app...
     %for a in apps:
        %if a == app:

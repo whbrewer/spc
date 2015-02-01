@@ -4,6 +4,6 @@
 
 <!--<h1>Matplotlib {{cid}}</h1>-->
 
-<img src="../static/tmp/{{!image}}">
+<img src="../{{img_path}}">
 
 %include('footer')
