@@ -19,28 +19,6 @@ body {
     max-width: 900px;
 }
 
-/*
-select {
-    background-color: rgb(150,150,150);
-    height: 30px; 
-    width: 98px;
-    position:absolute;
-    left: 3;
-    top: 4;
-    padding:10;
-    font-family: tacoma;
-    font-size: 20px;
-    font-weight: bold;
-    z-index:2;
-    margin:0;
-    border:0 none;
-    float:none;
-    opacity:0; 
-    cursor: pointer;
-    -webkit-appearance: menulist-button;
-}
-*/
-
 h1 {
     font-size: 150%;
     font-weight: normal;

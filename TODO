@@ -1,6 +1,5 @@
 Currently working on: 
-- for jmendel to work correctly, need to get rid of categories
-- apps.py - need to specify a type with each parameter
+- apps.py - need to specify a type with each parameter in input file
 - how to deal with Booleans input parameters in a consistent way
   i.e. do you want to always output true or false??
 - work on getting Nemo working with pre- and post-processors
@@ -86,6 +85,7 @@ Refactoring
   apps.py and scipaas.py
 
 Completed
+- for jmendel to work correctly, need to get rid of categories
 - add pre-processing and post-processing (cleaning data) step
 - show list of apps in dropdown box
 - work on FPG

@@ -81,7 +81,6 @@ class scheduler(object):
 
         # let user know job has ended
         f = open(run_dir+os.sep+outfn,"a")
-        print "outfile:", outfn
         f.write("FINISHED EXECUTION")
         f.close()
 

@@ -11,7 +11,7 @@ def preprocess(params,fn):
             option = '-' + key.split('_')[0] # extract first letter
             str += option + value + ' ' 
         return str
-    else:
+    elif fn == 'Nemo2.ini':
         for key, value in (params.iteritems()):
             str += key + ' ' + value + '\n'
         return str

@@ -68,9 +68,7 @@ def execute(app,cid):
     params = {}
 
     try:
-        print '** process',myapps[app].preprocess
         if myapps[app].preprocess:
-            print '** process',myapps[app].preprocess
             run_params,_,_ = myapps[app].read_params(user,cid) 
             processed_inputs = process.preprocess(run_params,myapps[app].preprocess)
             sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep+myapps[app].preprocess
@@ -474,7 +472,7 @@ def list_files():
             str += '<a href="'+this_path+'"><img src="'+this_path+'" width=100><br>'+fn+'</a>'
         else:
             str += '<a href="/more?app='+app+'&cid='+cid+'&filepath='+path+os.sep+fn+'">'+fn+'</a>'
-        str += '</p>'
+        str += '</p>\n'
         #str += '<form action="/'+app+'/delete/'+fn+'">'
         #str += '<input type="image" src="/static/images/trash_can.gif"></form>\n'
     params = { 'content': str }

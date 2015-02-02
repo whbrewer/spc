@@ -250,14 +250,46 @@ function fxn_fraction_neutral() {
    compute_u();
 }
 
-function fxn_polygenic_beneficials() {
+function fxn_polygenic_beneficials(init) {
+   fraction_neutral = dmi.fraction_neutral.value
+   fraction_fav_mutn = dmi.frac_fav_mutn.value
+   plot_allele_gens = dmi.plot_allele_gens.value
    if(dmi.polygenic_beneficials.checked) {
+      dmi.polygenic_init.disabled = false
+      dmi.polygenic_target.disabled = false
+      dmi.polygenic_effect.disabled = false
       dmi.track_neutrals.checked = true
       fxn_track_neutrals()
       dmi.fraction_neutral.value = 1.0
       dmi.frac_fav_mutn.value = 0.0
+      dmi.dynamic_linkage.checked = false
+      dmi.num_linkage_subunits.value = dmi.polygenic_target.value.length;
+      document.getElementById("fitness_distrib_type").selectedIndex = 1
+      fxn_fitness_distrib_type_init()
+      //dmi.haploid_chromosome_number.disabled = true
+      if(init==1) {
+         dmi.plot_allele_gens.value = plot_allele_gens;
+      } else {
+         dmi.plot_allele_gens.value = 1;
+      }
       compute_u();
-      status("setting on track_neutrals, setting fraction_neutral = 1.0")
+      status("setting on track_neutrals, setting fraction_neutral = 1.0, turning off dynamic linkage, setting num_linkage_subunits to length of target string, suppressing recombination, setting all mutations to equal effect")
+   } else {
+      dmi.polygenic_init.disabled = true
+      dmi.polygenic_target.disabled = true
+      dmi.polygenic_effect.disabled = true
+      dmi.frac_fav_mutn.disabled = false
+      dmi.fraction_neutral.value = fraction_neutral
+      dmi.frac_fav_mutn.value = fraction_fav_mutn
+      dmi.plot_allele_gens.value = plot_allele_gens
+   }
+}
+
+function fxn_polygenic_target() {
+   dmi.num_linkage_subunits.value = dmi.polygenic_target.value.length;
+   if(dmi.polygenic_init.value.length != dmi.polygenic_target.value.length) {
+      alert("WARNING: polygenic init string must be same length as target");
+      dmi.polygenic_init.select()
    }
 }
 
