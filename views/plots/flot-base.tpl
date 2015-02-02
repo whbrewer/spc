@@ -1,4 +1,5 @@
 %include('header')
+<script language="javascript" type="text/javascript" src="/static/js/canvas2image.js"></script> 
 <script language="javascript" type="text/javascript" src="/static/js/flot/excanvas.js"></script> 
 <script language="javascript" type="text/javascript" src="/static/js/flot/jquery.js"></script>
 <script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.js"></script>

@@ -799,5 +799,7 @@ def authorized():
 
 if __name__ == "__main__":
     load_apps()
+    #list all dependencies
+    #print sys.modules.keys()
     run(app=app, host='0.0.0.0', port=8081, debug=True)
 

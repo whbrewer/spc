@@ -45,7 +45,7 @@ def initdb():
     SQL_T_APPS = """CREATE TABLE IF NOT EXISTS apps(
         id integer primary key autoincrement, 
         name varchar(20), description varchar(80), category varchar(20), 
-        language varchar(20), input_format)"""
+        language varchar(20), input_format, command, preprocess, postprocess)"""
 
     SQL_T_USERS = """CREATE TABLE IF NOT EXISTS users(
         id integer primary key autoincrement, user varchar(20) unique, 
@@ -58,7 +58,7 @@ def initdb():
     SQL_T_PLOTS = """CREATE TABLE IF NOT EXISTS plots(
         id integer primary key autoincrement, 
         appid integer,  ptype varchar(80), filename varchar(80), cols varchar(20), 
-        line_range varchar(20), title varchar(80), options varchar(1000))""" 
+        line_range varchar(20), title varchar(80), options text, datadef text)""" 
         # foreign key (appid) references apps(appid))
 
     SQL_T_WALL = """CREATE TABLE wall(

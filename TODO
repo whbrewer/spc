@@ -1,4 +1,7 @@
 Currently working on: 
+- create a table which maps plots to datasource and get rid of pltid column in datasource
+- have a disabled flag for app, plots, etc. so that they can stay in the database
+  but not be acted upon
 - apps.py - need to specify a type with each parameter in input file
 - how to deal with Booleans input parameters in a consistent way
   i.e. do you want to always output true or false??
