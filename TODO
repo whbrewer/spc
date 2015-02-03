@@ -1,4 +1,5 @@
 Currently working on: 
+- remove flot-bar.tpl and rename flot-line.tpl to flot.tpl
 - create a table which maps plots to datasource and get rid of pltid column in datasource
 - have a disabled flag for app, plots, etc. so that they can stay in the database
   but not be acted upon
@@ -18,7 +19,6 @@ Currently working on:
     see: http://stackoverflow.com/questions/15616925/save-flot-graph-as-image
     see: https://plot.ly/feed/
 - add button to turn on ajax refreshing for any plot
-- add ability to tail file for plotting i.e. -100:0 means last 100 lines
 - add xlabel, ylabel, xrange, yrange, logscale, markings, display-order options to plots
 
 Next:
@@ -88,6 +88,7 @@ Refactoring
   apps.py and scipaas.py
 
 Completed
+- add ability to tail file for plotting i.e. -100:0 means last 100 lines
 - for jmendel to work correctly, need to get rid of categories
 - add pre-processing and post-processing (cleaning data) step
 - show list of apps in dropdown box

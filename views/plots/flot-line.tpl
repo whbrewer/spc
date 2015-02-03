@@ -27,7 +27,7 @@
           %i=0
           %for d in data:
           %i+=1
-              var d{{i}} = {{d}};
+              var d{{i}} = {{!d}};
           %end
           var data = [
               %if datadef:
