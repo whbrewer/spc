@@ -454,8 +454,12 @@ def list_files():
     cid = request.query.cid
     app = request.query.app
     path = request.query.path
+    if re.search("/",cid):
+        (u,cid) = cid.split("/") 
+    else:
+        u = user
     if not path:
-        path = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid
+        path = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+cid
         
     binary_extensions = ['.bz2','.gz','.xz','.zip']
     image_extensions = ['.png','.gif','.jpg']
@@ -478,7 +482,7 @@ def list_files():
     params = { 'content': str }
     params['cid'] = cid
     params['app'] = app
-    params['user'] = user
+    params['user'] = u
     params['apps'] = myapps.keys()
     return template('list', params)
 
@@ -801,5 +805,6 @@ if __name__ == "__main__":
     load_apps()
     #list all dependencies
     #print sys.modules.keys()
-    run(app=app, host='0.0.0.0', port=8081, debug=True)
+    #run(app=app, host='0.0.0.0', port=8081, debug=True)
+    run(server='cherrypy', app=app, host='0.0.0.0', port=8081, debug=True)
 

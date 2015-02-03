@@ -1,4 +1,7 @@
-Currently working on: 
+- implement worker queues
+    * add stop button to jobs page.  problem is need to have another thread
+      to be able to stop the job.  try using RQ (Redis Queue, python-rq.org)
+- special interest groups
 - remove flot-bar.tpl and rename flot-line.tpl to flot.tpl
 - create a table which maps plots to datasource and get rid of pltid column in datasource
 - have a disabled flag for app, plots, etc. so that they can stay in the database
@@ -9,7 +12,7 @@ Currently working on:
 - work on getting Nemo working with pre- and post-processors
 - make datasource editable and save to db
 - add description to jobs... do a jobs natural join wall when displaying myjobs
-- star runs, and then able to sort on stars
+- star favorite runs, and then able to sort on stars
 - keep a log of everytime scipaas crashes and what was the url
 - save run as template
 - when delete case in jobs, also delete file directory
@@ -32,13 +35,8 @@ Next:
 - plots: log scale, xrange, yrange, xtitle, ytitle
 - write unit tests!!
 - get scipaas working under gae
-- use matplotlib for plotting
 - for errors especially in try/except structures, try to show some error message
   that is consistent with why it actually crashed.
-- implement worker queues
-    * add stop button to jobs page.  problem is need to have another thread
-      to be able to stop the job.  try using RQ (Redis Queue, python-rq.org)
-
 - remove macaron/sqlite references from sp
 - improve add app interface, use ajax to check if app exists
 - if there is only one plot, show it on clicking the plot button
@@ -50,9 +48,6 @@ Next:
 - store cookie of which app the user was previously using, and go straight to that app
 
 - be able to submit job description from start page
-- plotting:
-  o specify x-legend, y-legend
-  o specify x-min, x-max, y-min, y-max
 - some code for managing the EC2 machine
 - move code to load apps into apps.py
 - edit app page
@@ -88,6 +83,10 @@ Refactoring
   apps.py and scipaas.py
 
 Completed
+- plotting:
+  o specify x-legend, y-legend
+  o specify x-min, x-max, y-min, y-max
+- use matplotlib for plotting
 - add ability to tail file for plotting i.e. -100:0 means last 100 lines
 - for jmendel to work correctly, need to get rid of categories
 - add pre-processing and post-processing (cleaning data) step

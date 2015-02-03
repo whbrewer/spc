@@ -27,7 +27,9 @@
      <!--<td><a style="cursor: pointer" onclick="set_cid('{{row['jobs']['user']}}/{{row['jobs']['cid']}}','{{row['jobs']['app']}}')"><u>set</u></a></td>-->
      <td>
         <a href="/start?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">start</a> - 
-        <a href="/wall/delete/{{row['wall']['id']}}?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}" onclick="if(confirm('confirm')) return true; return false">delete</a>
+        <a href="/plot/0?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">plot</a> - 
+        <a href="/files?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">files</a> - 
+        <a href="/wall/delete/{{row['wall']['id']}}?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}" onclick="if('{{user}}'=='{{row['jobs']['user']}}') return true; alert('ERROR: wrong user'); return false">delete</a>
      </td>
   </tr> 
 %end
