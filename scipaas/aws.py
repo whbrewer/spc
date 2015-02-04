@@ -1,5 +1,6 @@
 import boto, sys
 import boto.ec2
+import datetime
 
 class ec2(object):
     """start, stop, and status of EC2 instances"""
@@ -29,3 +30,10 @@ class ec2(object):
                 status['public_dns_name'] = inst.public_dns_name
                 status['launch_time'] = inst.launch_time
         return status
+
+    def uptime(self,launch_time):
+        """given launch time return uptime"""
+        lt_datetime = datetime.datetime.strptime(launch_time[:-5], '%Y-%m-%dT%H:%M:%S')
+        lt_delta = datetime.datetime.utcnow() - lt_datetime
+        return str(lt_delta)
+

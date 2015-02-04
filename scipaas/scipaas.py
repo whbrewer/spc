@@ -232,7 +232,9 @@ def aws_status(id):
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    status = aws_conn(id).status()
+    a = aws_conn(id)
+    status = a.status()
+    status['uptime'] = a.uptime(status['launch_time'])
     return template('aws_status',params,status=status)
 
 @get('/aws/start/<id>')
@@ -246,8 +248,9 @@ def aws_start(id):
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    aws_conn(id).start()
-    status = aws_conn(id).status()
+    a = aws_conn(id)
+    a.start()
+    status = a.status()
     return template('aws_status',params,status=status)
 
 @get('/aws/stop/<id>')
