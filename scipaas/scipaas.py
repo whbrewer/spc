@@ -12,6 +12,7 @@ import cgi
 import config, uploads, scheduler, process
 import apps as appmod
 import plots as plotmod
+import aws as awsmod
 from model import *
 
 ### session management configuration ###
@@ -173,12 +174,12 @@ def tail(app,cid):
                'apps': myapps.keys() }
     return template('more', params)
 
-@route('/')
+@get('/')
 def root():
     if not authorized(): redirect('/login')
     return template('overview')
 
-@route('/jobs')
+@get('/jobs')
 def show_jobs():
     if not authorized(): redirect('/login')
     #if app not in myapps: redirect('/apps')
@@ -192,6 +193,77 @@ def show_jobs():
     params['user'] = user
     params['apps'] = myapps.keys()
     return template('jobs', params, rows=result)
+
+@get('/aws')
+def get_aws():
+    if not authorized(): redirect('/login')
+    #if app not in myapps: redirect('/apps')
+    global user
+    cid = request.query.cid
+    app = request.query.app
+    creds = db().select(db.aws_credentials.ALL)
+    instances = db().select(db.aws_instances.ALL)
+    params = {}
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    params['apps'] = myapps.keys()
+    return template('aws',params,creds=creds,instances=instances)
+
+def aws_conn(id):
+    """create a connection to the EC2 machine and return the handle"""
+    creds = db(db.aws_credentials.id==id).select()[0]
+    account_id = creds['account_id']
+    secret = creds['secret']
+    key = creds['key']
+    instances = db(db.aws_instances.id==id).select()[0]
+    instance = instances['instance']
+    region = instances['region']
+    return awsmod.ec2(key,secret,account_id,instance,region)
+
+@get('/aws/status/<id>')
+def aws_status(id):
+    if not authorized(): redirect('/login')
+    global user
+    cid = request.query.cid
+    app = request.query.app
+    params = {}
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    params['apps'] = myapps.keys()
+    status = aws_conn(id).status()
+    return template('aws_status',params,status=status)
+
+@get('/aws/start/<id>')
+def aws_start(id):
+    if not authorized(): redirect('/login')
+    global user
+    cid = request.query.cid
+    app = request.query.app
+    params = {}
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    params['apps'] = myapps.keys()
+    aws_conn(id).start()
+    status = aws_conn(id).status()
+    return template('aws_status',params,status=status)
+
+@get('/aws/stop/<id>')
+def aws_stop(id):
+    if not authorized(): redirect('/login')
+    global user
+    cid = request.query.cid
+    app = request.query.app
+    params = {}
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    params['apps'] = myapps.keys()
+    a = aws_conn(id)
+    a.stop()
+    return template('aws_status',params,status=a.status())
 
 @get('/wall')
 def get_wall():
@@ -235,7 +307,7 @@ def delete_wall_item(wid):
     db.commit()
     redirect ('/wall?app='+app+'&cid='+cid)
 
-@route('/jobs/delete/<jid>')
+@get('/jobs/delete/<jid>')
 def delete_job(jid):
     sched.qdel(jid)
     redirect("/jobs")
@@ -246,7 +318,7 @@ def stop_job(app):
     os.system("killall " + app)
     redirect("/jobs")
 
-@route('/<app>')
+@get('/<app>')
 def show_app(app):
     if not authorized(): redirect('/login')
     global user, myapps
@@ -272,11 +344,11 @@ def logout():
     s.delete()
     redirect('/login')
 
-@route('/static/<filepath:path>')
+@get('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='static')
 
-@route('/user_data/<filepath:path>')
+@get('/user_data/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='user_data')
 
