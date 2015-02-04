@@ -175,6 +175,7 @@ def tail(app,cid):
 
 @route('/')
 def root():
+    if not authorized(): redirect('/login')
     return template('overview')
 
 @route('/jobs')
@@ -269,7 +270,7 @@ def get_login(referrer=''):
 def logout():
     s = request.environ.get('beaker.session')
     s.delete()
-    redirect('/')
+    redirect('/login')
 
 @route('/static/<filepath:path>')
 def server_static(filepath):
@@ -303,7 +304,7 @@ def post_login():
     # if referred to login from another page redirect to referring page
     referrer = request.forms.referrer
     if referrer: redirect('/'+referrer)
-    else: redirect('/')
+    else: redirect('/apps')
 
 @get('/register')
 def get_register():
