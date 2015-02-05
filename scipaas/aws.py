@@ -1,15 +1,17 @@
 import boto, sys
 import boto.ec2
 import datetime
+import math
 
 class ec2(object):
     """start, stop, and status of EC2 instances"""
 
-    def __init__(self, key, secret, account_id, instance, region):
+    def __init__(self, key, secret, account_id, instance, region, rate):
         # Connect to region
         self.conn = boto.ec2.connect_to_region(region, aws_access_key_id=key, 
                                                aws_secret_access_key=secret)
         self.instance = instance
+        self.rate = float(rate)
 
     def start(self):
         self.conn.start_instances(instance_ids=[self.instance])
@@ -37,3 +39,6 @@ class ec2(object):
         lt_delta = datetime.datetime.utcnow() - lt_datetime
         return str(lt_delta)
 
+    def charge(self,uptime):
+        (hour,minute,second) = uptime.split(':')
+        return (int(hour)+1)*self.rate

@@ -49,4 +49,6 @@ aws = db.define_table('aws_credentials', Field('id','integer'),
                                          Field('account_id','string'))
 aws = db.define_table('aws_instances', Field('id','integer'),
                                        Field('region','string'),
-                                       Field('instance','string'))
+                                       Field('instance','string'),
+                                       Field('type','string'),
+                                       Field('rate','double'))

@@ -4,10 +4,11 @@
 <h1>List of EC2 machines</h1>
 
 <table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
-    <thead><tr><th>Intance</th><th>Region</th><th>Actions</th></thead>
+    <thead><tr><th>Intance</th><th>Type</th><th>Region</th><th>Actions</th></thead>
     %for i in instances:
         <tr>
             <td>{{i['instance']}}</td> 
+            <td>{{i['type']}}</td> 
             <td>{{i['region']}}</td> 
             <td>
                 <a href="/aws/status/{{i['id']}}">status</a> - 

@@ -219,7 +219,8 @@ def aws_conn(id):
     instances = db(db.aws_instances.id==id).select()[0]
     instance = instances['instance']
     region = instances['region']
-    return awsmod.ec2(key,secret,account_id,instance,region)
+    rate = instances['rate']
+    return awsmod.ec2(key,secret,account_id,instance,region,rate)
 
 @get('/aws/status/<id>')
 def aws_status(id):
@@ -235,6 +236,7 @@ def aws_status(id):
     a = aws_conn(id)
     status = a.status()
     status['uptime'] = a.uptime(status['launch_time'])
+    status['charge since last boot'] = a.charge(status['uptime'])
     return template('aws_status',params,status=status)
 
 @get('/aws/start/<id>')

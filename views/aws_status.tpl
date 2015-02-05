@@ -9,4 +9,6 @@
 %end
 </pre>
 
+<p> <a href="http://{{status['public_dns_name']}}:8081/">http://{{status['public_dns_name']}}:8081</a> </p>
+
 %include('footer')
