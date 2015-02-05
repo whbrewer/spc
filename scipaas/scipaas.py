@@ -202,7 +202,10 @@ def get_aws():
     cid = request.query.cid
     app = request.query.app
     creds = db().select(db.aws_credentials.ALL)
-    instances = db().select(db.aws_instances.ALL)
+    # look for aws instances registered by the current user
+    # which means first need to get the uid
+    uid = db(users.user==user).select(users.id)[0]
+    instances = db(aws_instances.ownerid==uid).select()
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -222,52 +225,57 @@ def aws_conn(id):
     rate = instances['rate']
     return awsmod.ec2(key,secret,account_id,instance,region,rate)
 
-@get('/aws/status/<id>')
-def aws_status(id):
+@get('/aws/status/<aid>')
+def aws_status(aid):
     if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
     app = request.query.app
     params = {}
+    params['aid'] = aid
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    a = aws_conn(id)
+    a = aws_conn(aid)
     status = a.status()
     status['uptime'] = a.uptime(status['launch_time'])
     status['charge since last boot'] = a.charge(status['uptime'])
     return template('aws_status',params,status=status)
 
-@get('/aws/start/<id>')
-def aws_start(id):
+@get('/aws/start/<aid>')
+def aws_start(aid):
     if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
     app = request.query.app
     params = {}
+    params['aid'] = aid
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    a = aws_conn(id)
+    a = aws_conn(aid)
     a.start()
+    time.sleep(5) # takes a few seconds for the status to change on the Amazon end
     status = a.status()
     return template('aws_status',params,status=status)
 
-@get('/aws/stop/<id>')
-def aws_stop(id):
+@get('/aws/stop/<aid>')
+def aws_stop(aid):
     if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
     app = request.query.app
     params = {}
+    params['aid'] = aid
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    a = aws_conn(id)
+    a = aws_conn(aid)
     a.stop()
+    time.sleep(5) # takes a few seconds for the status to change on the Amazon end
     return template('aws_status',params,status=a.status())
 
 @get('/wall')

@@ -11,9 +11,9 @@
             <td>{{i['type']}}</td> 
             <td>{{i['region']}}</td> 
             <td>
-                <a href="/aws/status/{{i['id']}}">status</a> - 
-                <a href="/aws/start/{{i['id']}}">start</a> -
-                <a href="/aws/stop/{{i['id']}}">stop</a> 
+                <a href="/aws/status/{{i['id']}}">status</a> 
+                <!--<a href="/aws/start/{{i['id']}}">start</a> -->
+                <!--<a href="/aws/stop/{{i['id']}}">stop</a> -->
             </td>
         </tr>
     %end
