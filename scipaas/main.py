@@ -38,15 +38,10 @@ pbuffer = ''
 @post('/<app>/confirm')
 def confirm_form(app):
     global user
-    # if case_id not in form will throw error, but just ignore it
-    # as some apps will not use case_id
-    try:
-        #cid = request.forms['case_id']
-        cid = str(uuid.uuid4())[:6]
-    except: 
-        return "ERROR: problem with template... case_id not in form"
-    # this is only valid for mendel or similar programs that use a case_id 
-    # parameter have to fix this in the future
+    cid = str(uuid.uuid4())[:6]
+    # pass the case_id to be used by the program input parameters,
+    # if case_id is defined in the input deck it will be used
+    # otherwise it is ignored
     request.forms['case_id'] = cid 
     myapps[app].write_params(request.forms,user)
     # read the file 
@@ -109,6 +104,7 @@ def output():
     global user
     app = request.query.app
     cid = request.query.cid
+    check_user_var()
     try:
         if re.search("/",cid):
             (u,c) = cid.split("/") 
@@ -130,6 +126,7 @@ def inputs():
     global user
     app = request.query.app
     cid = request.query.cid
+    check_user_var()
     try:
         if re.search("/",cid):
             (u,c) = cid.split("/") 
@@ -159,6 +156,7 @@ def slurp_file(path):
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
     global user
+    check_user_var()
     num_lines = 30
     run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
     ofn = run_dir + os.sep + myapps[app].outfn
@@ -186,6 +184,7 @@ def show_jobs():
     global user
     cid = request.query.cid
     app = request.query.app
+    check_user_var()
     result = db(jobs.user==user).select()
     params = {}
     params['cid'] = cid
@@ -418,6 +417,14 @@ def check_user():
     if this: return 'true'
     else: return 'false'
 
+def check_user_var():
+    # this check is because user is global var when restarting scipaas
+    # user does not exist so return... need to implement better solution
+    # such as using a session variable to check for user
+    try: user
+    except: redirect('/apps')
+    return True
+
 @get('/apps')
 def showapps():
     if not authorized(): redirect('/login')
@@ -598,11 +605,13 @@ def editplot():
     global user
     #try:
     app = request.query.app
+    cid = request.query.cid
+    check_user_var()
     if not authorized(): redirect('/login')
     if app not in myapps: redirect('/apps')
     query = (apps.id==plots.appid) & (apps.name==app)
     result = db(query).select()
-    params = { 'app': app, 'cid': request.query.cid, 'user': user, 'apps': myapps.keys() } 
+    params = { 'app': app, 'cid': cid, 'user': user, 'apps': myapps.keys() } 
     return template('plots/edit', params, rows=result)
     #except:
     #    params = {'err': "must first select an app to plot by clicking apps button"}
@@ -621,6 +630,7 @@ def get_datasource(pltid):
     global user
     app = request.query.app
     cid = request.query.cid
+    check_user_var()
     if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
     result = db(datasource.pltid==pltid).select()
@@ -662,6 +672,7 @@ def create_plot():
 def plot_interface(pltid):
     app = request.query.app
     cid = request.query.cid
+    check_user_var()
 
     if not cid:
         params['err']="No case id specified. First select a case id from the list of jobs."
@@ -940,6 +951,7 @@ if __name__ == "__main__":
     load_apps()
     #list all dependencies
     #print sys.modules.keys()
-    #run(app=app, host='0.0.0.0', port=8081, debug=True)
+    #default_app() # Google App Engine
+    #run(app=app, host='0.0.0.0', port=8081, debug=True) # bottle
     run(server='cherrypy', app=app, host='0.0.0.0', port=8081, debug=True)
-
+    #run(server='rocket', app=app, host='0.0.0.0', port=8081, debug=True)

@@ -41,4 +41,6 @@ class ec2(object):
 
     def charge(self,uptime):
         (hour,minute,second) = uptime.split(':')
-        return (int(hour)+1)*self.rate
+        # add ability to handle "1 day, 13:11:30.159864"
+        #return (int(hour)+1)*self.rate
+        return True

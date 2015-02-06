@@ -131,7 +131,7 @@ if __name__ == "__main__":
         print "creating database " + config.db
         initdb()
     elif (sys.argv[1] == "go"):
-        os.system("python scipaas/scipaas.py")
+        os.system("python scipaas/main.py")
     elif (sys.argv[1] == "search"):
         print notyet
     elif (sys.argv[1] == "install"):

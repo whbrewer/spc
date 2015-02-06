@@ -10,16 +10,18 @@
 </pre>
 
 %if status['state']=="stopped":
-    <a href="/aws/start/{{aid}}">start</a>
+    <a href="/aws/start/{{aid}}">start machine</a>
 %elif status['state']=="running":
     <fieldset>
+    <center>
     <p> LINK: <a href="http://{{status['public_dns_name']}}:8081/">http://{{status['public_dns_name']}}:8081</a> </p>
     <form action="/zipget">
         <input type="text" size="35" name="zipkey">
         <input type="hidden" name="netloc" value="http://{{status['public_dns_name']}}:8081">
-        <input type="submit" value="get file">
+        <input type="submit" value="get case">
     </form>
     <a href="/aws/stop/{{aid}}">stop machine</a>
+    </center>
     </fieldset>
 %end
 
