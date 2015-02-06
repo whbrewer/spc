@@ -3,10 +3,11 @@
 <body onload="init()">
 %include navbar
 
-<h1>List</h1>
+<h1>{{cid}}</h1>
+{{!cases}}
 
+<hr>
 {{!content}}
-
 <hr>
 
 %include footer

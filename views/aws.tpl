@@ -19,4 +19,8 @@
     %end
 </table> 
 
+%if defined('status'):
+    {{status}}
+%end
+
 %include('footer')

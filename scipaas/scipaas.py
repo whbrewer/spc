@@ -7,7 +7,7 @@ from dal import DAL, Field
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
-import cgi
+import cgi, urllib2
 # other SciPaaS modules
 import config, uploads, scheduler, process
 import apps as appmod
@@ -211,6 +211,8 @@ def get_aws():
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
+    if request.query.status:
+        params['status'] = request.query.status
     return template('aws',params,creds=creds,instances=instances)
 
 def aws_conn(id):
@@ -546,14 +548,19 @@ def list_files():
         u = user
     if not path:
         path = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+cid
+
+    case_path = myapps[app].user_dir+os.sep+u+os.sep+app
         
     binary_extensions = ['.bz2','.gz','.xz','.zip']
     image_extensions = ['.png','.gif','.jpg']
-    str = ''
+    str = '<table>'
     for fn in os.listdir(path):
         this_path = path + os.sep + fn
         _, ext = os.path.splitext(this_path)
-        str += '<p>'        
+        str += '<tr>'
+        #str += '<td><form action="/'+app+'/delete/'+fn+'">'
+        #str += '<input type="image" src="/static/images/trash_can.gif"></form></td>\n'
+        str += '<td>'
         if os.path.isdir(this_path): 
             str += '<a href="/files?app='+app+'&cid='+cid+'&path='+this_path+'">'+fn+'/</a>'
         elif ext in binary_extensions:
@@ -562,29 +569,29 @@ def list_files():
             str += '<a href="'+this_path+'"><img src="'+this_path+'" width=100><br>'+fn+'</a>'
         else:
             str += '<a href="/more?app='+app+'&cid='+cid+'&filepath='+path+os.sep+fn+'">'+fn+'</a>'
-        str += '</p>\n'
-        #str += '<form action="/'+app+'/delete/'+fn+'">'
-        #str += '<input type="image" src="/static/images/trash_can.gif"></form>\n'
+        str += '</td></tr>\n'
+    str += '</table>'
     params = { 'content': str }
     params['cid'] = cid
     params['app'] = app
     params['user'] = u
     params['apps'] = myapps.keys()
-    return template('list', params)
+    params['cases'] = '<a href="/files?app='+app+'&cid='+cid+'&path='+case_path+'">cases</a>'
+    return template('files', params)
 
-@get('/<app>/list')
-def list(app):
-    global user
-    str = ''
-    for case in os.listdir(myapps[app].user_dir+os.sep+user+os.sep+app):
-        str += '<form action="/'+app+'/delete/'+case+'">'
-        str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a>'
-        str += '<input type="image" src="/static/images/trash_can.gif"></form>\n'
-    params = { 'content': str }
-    params['cid'] = request.forms.get('cid')
-    params['app'] = app
-    params['user'] = user
-    return template('list', params)
+#@get('/<app>/list')
+#def list(app):
+#    global user
+#    str = ''
+#    for case in os.listdir(myapps[app].user_dir+os.sep+user+os.sep+app):
+#        str += '<form action="/'+app+'/delete/'+case+'">'
+#        str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a>'
+#        str += '<input type="image" src="/static/images/trash_can.gif"></form>\n'
+#    params = { 'content': str }
+#    params['cid'] = request.forms.get('cid')
+#    params['app'] = app
+#    params['user'] = user
+#    return template('list', params)
 
 @get('/plots/edit')
 def editplot():
@@ -831,6 +838,48 @@ def monitor():
     app = request.query.app
     params = { 'cid': cid, 'app': app, 'user': user, 'apps': myapps.keys() }
     return template('monitor', params)
+
+@get('/zipcase')
+def zipcase():
+    """zip case on machine to prepare for download"""
+    global user
+    import zipfile
+    app = request.query.app
+    cid = request.query.cid
+    base_dir = myapps[app].user_dir+os.sep+user+os.sep+app
+    #zipkey = str(uuid.uuid4())
+    #path = config.tmp_dir+os.sep+zipkey+".zip"
+    path = base_dir+os.sep+cid+".zip"
+    zf = zipfile.ZipFile(path, mode='w')
+    sim_dir = base_dir+os.sep+cid
+    for fn in os.listdir(sim_dir):
+        zf.write(sim_dir+os.sep+fn)
+    zf.close()
+    #redirect("/jobs")
+    #redirect(path) # download file directly
+    #redirect("/aws?zipkey="+zipkey)
+    redirect("/aws?status="+path)
+
+@get('/zipget')
+def zipget():
+    """get zipfile from another machine, save to current machine"""
+    zipkey = request.query.zipkey
+    netloc = request.query.netloc
+    #url = netloc + os.sep + config.tmp_dir + os.sep + zipkey + ".zip"
+    url = netloc+os.sep+zipkey
+    try:
+        f = urllib2.urlopen(url)
+        print "downloading " + url
+        # Open our local file for writing
+        with open(os.path.basename(url), "wb") as local_file:
+            local_file.write(f.read())
+    #handle errors
+    except urllib2.HTTPError, e:
+        print "HTTP Error:", e.code, url
+    except urllib2.URLError, e:
+        print "URL Error:", e.reason, url
+    status = "file downloaded"
+    redirect("/aws?status="+status)
 
 @post('/apps/upload')
 def do_upload():

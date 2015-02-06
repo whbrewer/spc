@@ -31,6 +31,7 @@
       <a href="/output?cid={{row['cid']}}&app={{row['app']}}">output</a> ::
       <a href="/plot/0?cid={{row['cid']}}&app={{row['app']}}">plot</a> ::
       <a href="/files?cid={{row['cid']}}&app={{row['app']}}">files</a> ::
+      <a href="/zipcase?cid={{row['cid']}}&app={{row['app']}}">zip</a> ::
       <a href="/start?cid={{row['cid']}}&app={{row['app']}}">start</a> 
       <!--<a style="cursor: pointer" onclick="set_cid('{{row['cid']}}','{{row['app']}}')"><u>set</u></a><br><br>-->
       <br><br>

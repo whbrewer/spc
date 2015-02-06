@@ -4,8 +4,13 @@ import os, stat
 
 class uploader(object):
 
-    def __init__(self):
-        pass
+    def zip(self,save_path):
+        (path,fn) = save_path.split('/')
+        # this should be like filename.zip
+        fh = open(save_path, 'wb')
+        z = zipfile.ZipFile(fh)
+        z.extractall(path)
+        fh.close()
 
     def unzip(self,save_path):
         (path,fn) = save_path.split('/')
