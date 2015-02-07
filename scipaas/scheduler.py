@@ -76,8 +76,9 @@ class scheduler(object):
         cmd = command + ' >& ' + outfn
 
         run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
-        t = threading.Thread(target = self.start_job(run_dir,cmd))
-        t.start()
+        thread = threading.Thread(target = self.start_job(run_dir,cmd))
+        #thread.daemon = True # run in background
+        thread.start()
 
         # let user know job has ended
         f = open(run_dir+os.sep+outfn,"a")
@@ -93,4 +94,3 @@ class scheduler(object):
 
     def stop(self,app):
         os.system("killall " + app)
-

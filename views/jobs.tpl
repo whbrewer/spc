@@ -24,7 +24,7 @@
   <td>{{row['cid']}}</td>
   <td>{{row['state']}}</td>
   <td>{{row['time_submit']}}</td>
-  <td><a href="/jobs/delete/{{row['id']}}" onclick="if(confirm('confirm')) return true; return false">delete</a> ::
+  <td><a href="/jobs/delete/{{row['id']}}?cid={{row['cid']}}&app={{row['app']}}" onclick="if(confirm('confirm')) return true; return false">delete</a> ::
       <a href="/monitor?cid={{row['cid']}}&app={{row['app']}}">monitor</a> :: 
       <a href="/jobs/stop/{{row['app']}}">stop</a> ::
       <a href="/inputs?cid={{row['cid']}}&app={{row['app']}}">inputs</a> ::

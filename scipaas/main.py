@@ -323,6 +323,10 @@ def delete_wall_item(wid):
 
 @get('/jobs/delete/<jid>')
 def delete_job(jid):
+    app = request.query.app
+    cid = request.query.cid
+    path = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
+    shutil.rmtree(path)
     sched.qdel(jid)
     redirect("/jobs")
 
@@ -524,6 +528,7 @@ def edit_app(appid):
 @get('/start')
 def getstart():
     global user
+    check_user_var()
     #try:
     app = request.query.app
     if myapps[app].appname not in myapps: redirect('/apps')
@@ -961,5 +966,5 @@ if __name__ == "__main__":
     #print sys.modules.keys()
     #default_app() # Google App Engine
     #run(app=app, host='0.0.0.0', port=8081, debug=True) # bottle
-    run(server='cherrypy', app=app, host='0.0.0.0', port=8081, debug=True)
+    run(server=config.server, app=app, host='0.0.0.0', port=8081, debug=True)
     #run(server='rocket', app=app, host='0.0.0.0', port=8081, debug=True)
