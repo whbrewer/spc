@@ -5,9 +5,9 @@
 <div class="main left">
     <h1>Sign in</h1>
     <form action="/login" method="post">
-        Email<br>
+        Username:<br>
         <input type="text" name="user"><br>
-        Password<br>
+        Password:<br>
         <input type="password" name="passwd"><br>
         <a href="/forgot">Forgot your password?</a><br>
         <a href="/register">Register for an account</a><br>

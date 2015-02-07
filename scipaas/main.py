@@ -3,7 +3,7 @@
 # web framework
 from bottle import *
 # data access layer
-from dal import DAL, Field
+from gluon import DAL, Field
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
@@ -401,9 +401,10 @@ def post_register():
     user = request.forms.user
     pw1 = request.forms.password1
     pw2 = request.forms.password2
+    email = request.forms.email
     if pw1 == pw2:
         hashpw = hashlib.sha256(pw1).hexdigest()
-        users.insert(user=user, passwd=hashpw)
+        users.insert(user=user, passwd=hashpw, email=email)
         db.commit()
         redirect('/login')
     else:
@@ -411,11 +412,14 @@ def post_register():
 
 @post('/check_user')
 def check_user():
+    user = request.forms.user
     """This is the server-side AJAX function to check if a username exists in the DB."""
-    this = users(user=request.forms.user)
     # return booleans as strings here b/c they get parsed by JavaScript
-    if this: return 'true'
-    else: return 'false'
+    try:
+        this = db(users.user==user).select(users.id)[0]
+        return 'true'
+    except:
+        return 'false'
 
 def check_user_var():
     # this check is because user is global var when restarting scipaas
@@ -549,6 +553,7 @@ def list_files():
     cid = request.query.cid
     app = request.query.app
     path = request.query.path
+    check_user_var()
     if re.search("/",cid):
         (u,cid) = cid.split("/") 
     else:

@@ -1,11 +1,12 @@
-from dal import DAL, Field
+from gluon import DAL, Field
 import config
 
 db = DAL(config.uri, auto_import=True, migrate=False)
 
 users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),
-                                 Field('passwd','string'))
+                                 Field('passwd','string'),
+                                 Field('email','string'))
 # this is also defined in scheduler.py
 # need to fix in the future
 apps = db.define_table('apps', Field('id','integer'),

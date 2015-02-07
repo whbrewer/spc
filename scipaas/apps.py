@@ -2,7 +2,7 @@ import re, sys, os
 import config
 import ConfigParser
 import xml.etree.ElementTree as ET
-from dal import DAL, Field
+from gluon import DAL, Field
 from model import *
 
 # using convention over configuration 

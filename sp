@@ -49,7 +49,7 @@ def initdb():
 
     SQL_T_USERS = """CREATE TABLE IF NOT EXISTS users(
         id integer primary key autoincrement, user varchar(20) unique, 
-        passwd varchar(20))"""
+        passwd varchar(20), email varchar(80))"""
 
     SQL_T_JOBS = """CREATE TABLE IF NOT EXISTS jobs(
         id integer primary key autoincrement, user text, app text,
