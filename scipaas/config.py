@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# number of processors = number of jobs to simultaneously run
-np = 2 
 db = 'scipaas.db'
 uri = 'sqlite://'+db
 apps_dir = 'apps'
@@ -10,3 +8,4 @@ tmp_dir = 'static/tmp'
 # tornado, gae, twisted, diesel, meinheld, gunicorn, eventlet, gevent, 
 # rocket, bjoern, auto
 server = 'cherrypy'
+admin_email = 'ycompute@gmail.com'

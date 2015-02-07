@@ -2,8 +2,6 @@
 
 # web framework
 from bottle import *
-# data access layer
-from gluon import DAL, Field
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
@@ -13,6 +11,8 @@ import config, uploads, scheduler, process
 import apps as appmod
 import plots as plotmod
 import aws as awsmod
+# data access layer
+from gluon import DAL, Field
 from model import *
 
 ### session management configuration ###
@@ -59,8 +59,6 @@ def confirm_form(app):
 @post('/<app>/<cid>/execute')
 def execute(app,cid):
     global user
-    #cid = request.forms.get('cid')
-    #print 'execute:',app,cid
     params = {}
 
     try:
@@ -414,11 +412,11 @@ def post_register():
         try:
             server = smtplib.SMTP('localhost')
             message = user + " just registered to scipaas " + email
-            server.sendmail('admin@scipaas.com', ['ycompute@gmail.com'], message)
+            server.sendmail('admin@scipaas.com', [config.admin_email], message)
             server.quit()
             redirect('/login')
         except:
-            return "ERROR: SMTP server not setup on this machine"
+            redirect('/login')
     else:
         return template('register')
 
@@ -450,15 +448,10 @@ def showapps():
 
 @get('/apps/load')
 def load_apps():
-    # this needs to be moved into apps.py in the future
     global myapps, default_app
     # Connect to DB 
-    #try:
     result = db().select(apps.ALL)
-    #except:
-    #    print "Error: MAKE SURE DATABASE EXIST."
-    #    print "If running for the first time, run \"sp init\" to create a db"
-    #    sys.exit(1)
+    sys.exit(1)
     myapps = {}
     for row in result:   
         name = row['name']
@@ -481,12 +474,6 @@ def load_apps():
         myapps[name] = myapp
     default_app = name # simple soln - use last app read from DB
     return 0
-
-#@get('/apps/show/<sort>')
-#def getapps(sort="name"):
-#    if not authorized(): redirect('/login')
-#    result = db().select(apps.ALL)
-#    return template('apps', rows=result)
 
 @get('/apps/add')
 def create_app_form():
@@ -528,16 +515,11 @@ def delete_app(appid):
 @get('/apps/edit/<appid>')
 def edit_app(appid):
     return 'SORRY - this function has not yet been implemented'
-    #a = appmod.app()
-    #(name,description,category,language) = a.read(appid)
-    #params = {'name':name, 'description':description, 'category':category, 'language':language }
-    #return template(app_edit, params)
 
 @get('/start')
 def getstart():
     global user
     check_user_var()
-    #try:
     app = request.query.app
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
@@ -556,9 +538,6 @@ def getstart():
     params['user'] = u
     params['apps'] = myapps.keys()
     return template('apps/' + myapps[app].appname, params)
-    #except:
-    #    params = {'err': "whoops there was a problem... start by clicking apps button"}
-    #    return template('error', params)
 
 @get('/files')
 def list_files():
@@ -604,24 +583,9 @@ def list_files():
     params['cases'] = '<a href="/files?app='+app+'&cid='+cid+'&path='+case_path+'">cases</a>'
     return template('files', params)
 
-#@get('/<app>/list')
-#def list(app):
-#    global user
-#    str = ''
-#    for case in os.listdir(myapps[app].user_dir+os.sep+user+os.sep+app):
-#        str += '<form action="/'+app+'/delete/'+case+'">'
-#        str += '<a onclick="set_cid(\'' + case + '\')">' + case + '</a>'
-#        str += '<input type="image" src="/static/images/trash_can.gif"></form>\n'
-#    params = { 'content': str }
-#    params['cid'] = request.forms.get('cid')
-#    params['app'] = app
-#    params['user'] = user
-#    return template('list', params)
-
 @get('/plots/edit')
 def editplot():
     global user
-    #try:
     app = request.query.app
     cid = request.query.cid
     check_user_var()
@@ -631,9 +595,6 @@ def editplot():
     result = db(query).select()
     params = { 'app': app, 'cid': cid, 'user': user, 'apps': myapps.keys() } 
     return template('plots/edit', params, rows=result)
-    #except:
-    #    params = {'err': "must first select an app to plot by clicking apps button"}
-    #    return template('error', params)
 
 @get('/plots/delete/<pltid>')
 def delete_plot(pltid):
@@ -829,10 +790,6 @@ def matplotlib(pltid):
     plotpath = sim_dir + plotfn
     xx = p.get_column_of_data(plotpath,col1)
     yy = p.get_column_of_data(plotpath,col2)
-    #xx = np.asarray(p.get_column_of_data(sim_dir+plotfn,col1))
-    #yy = np.asarray(p.get_column_of_data(sim_dir+plotfn,col2))
-    #print 'xx:',type(xx), xx
-    #print 'yy:',type(yy), yy
 
     # plot
     if plottype == 'mpl-line':
@@ -852,8 +809,6 @@ def matplotlib(pltid):
     fig.set_size_inches(7,4)
     img_path = sim_dir + fn
     fig.savefig(img_path)
-    #response.content_type = 'image/png'
-    #return png_output.getvalue()
 
     # get list of all plots for this app
     query = (apps.id==plots.appid) & (apps.name==app)
@@ -879,17 +834,12 @@ def zipcase():
     app = request.query.app
     cid = request.query.cid
     base_dir = myapps[app].user_dir+os.sep+user+os.sep+app
-    #zipkey = str(uuid.uuid4())
-    #path = config.tmp_dir+os.sep+zipkey+".zip"
     path = base_dir+os.sep+cid+".zip"
     zf = zipfile.ZipFile(path, mode='w')
     sim_dir = base_dir+os.sep+cid
     for fn in os.listdir(sim_dir):
         zf.write(sim_dir+os.sep+fn)
     zf.close()
-    #redirect("/jobs")
-    #redirect(path) # download file directly
-    #redirect("/aws?zipkey="+zipkey)
     redirect("/aws?status="+path)
 
 @get('/zipget')
@@ -956,23 +906,6 @@ def authorized():
         user = s[USER_ID_SESSION_KEY]
         return True
 
-#def module_exists(module_name):
-#    try:
-#        __import__(module_name)
-#    except ImportError:
-#        return False
-#    else:
-#        return True
-
-#@error(500)
-#def error500(error):
-#   return "Sorry, there was a 500 server error: " + str(error)
-
 if __name__ == "__main__":
     load_apps()
-    #list all dependencies
-    #print sys.modules.keys()
-    #default_app() # Google App Engine
-    #run(app=app, host='0.0.0.0', port=8081, debug=True) # bottle
     run(server=config.server, app=app, host='0.0.0.0', port=8081, debug=True)
-    #run(server='rocket', app=app, host='0.0.0.0', port=8081, debug=True)
