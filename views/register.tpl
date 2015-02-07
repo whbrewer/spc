@@ -1,5 +1,7 @@
 <link rel="Stylesheet" type="text/css" href="/static/css/login.css" />
+<link rel="Stylesheet" type="text/css" href="/static/css/strength.css" />
 <script src="/static/js/flot/jquery.js"></script>
+<script src="/static/js/strength.js"></script>
 
 <script>
 function checkUser(user) {
@@ -41,12 +43,16 @@ function checkEmail(email) {
     <h1>Register</h1>
     <form name="reg_form" action="/register" method="post">
         <input placeholder="username" type="text" name="user" id="user" onchange="checkUser(this.value)"><br>
-        <input placeholder="password" type="password" name="password1" id="password1"><br>
+        <input placeholder="password" type="password" name="password1" id="password"><br>
         <input placeholder="password (again)" type="password" name="password2" id="password2"><br>
         <input placeholder="email address" type="text" name="email" onchange="checkEmail(this.value)"><br>
         <input type="submit" id="submit" value="Register" class="btn"><br><br>
     </form>
 </div>
+
+<script>
+$(document).ready(function ($) { $('#password').strength(); });
+</script>
 
 </body>
 </html>

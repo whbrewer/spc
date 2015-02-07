@@ -26,8 +26,9 @@ function edit(id) {
 <thead>
 <tr> 
 <th>Name</th> 
+<th>Category</th>
 <th>Description</th> 
-<th>Category</th> 
+<th>Input format</th> 
 <th>Language</th> 
 <th>Command Line Options</th>
 </tr>
@@ -36,6 +37,7 @@ function edit(id) {
 %for row in rows:
   <tr>
   <td><a href="/{{row['name']}}">{{row['name']}}</a></td>
+  <td>{{row['category']}}</td>
   <td>{{row['description']}}</td>
   <td>{{row['input_format']}}</td>
   <td>{{row['language']}}</td>

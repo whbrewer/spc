@@ -1,8 +1,8 @@
 - make egg package
 - parse json
-- fix username/email 
 - clickable rows
 - start working on parallel computing infrastructure
+- improve register app function
 
 - implement worker queues
     * add stop button to jobs page.  problem is need to have another thread
@@ -89,6 +89,7 @@ Refactoring
   apps.py and scipaas.py
 
 Completed
+- fix username/email 
 - plotting:
   o specify x-legend, y-legend
   o specify x-min, x-max, y-min, y-max
