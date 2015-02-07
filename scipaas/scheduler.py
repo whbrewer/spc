@@ -77,7 +77,7 @@ class scheduler(object):
 
         run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
         thread = threading.Thread(target = self.start_job(run_dir,cmd))
-        #thread.daemon = True # run in background
+        thread.daemon = True # run in background
         thread.start()
 
         # let user know job has ended

@@ -410,7 +410,15 @@ def post_register():
         hashpw = hashlib.sha256(pw1).hexdigest()
         users.insert(user=user, passwd=hashpw, email=email)
         db.commit()
-        redirect('/login')
+        # email user
+        try:
+            server = smtplib.SMTP('localhost')
+            message = user + " just registered to scipaas " + email
+            server.sendmail('admin@scipaas.com', ['ycompute@gmail.com'], message)
+            server.quit()
+            redirect('/login')
+        except:
+            return "ERROR: SMTP server not setup on this machine"
     else:
         return template('register')
 
