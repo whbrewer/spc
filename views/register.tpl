@@ -35,23 +35,32 @@ function checkEmail(email) {
         
     }
 }
+
+function validateForm() {
+    if($("#password1").val() == $("#password2").val()) {
+        return true;
+    } else {
+        alert("passwords do not match")
+        return false;
+    }
+}
 </script>
 
 <body>
 
 <div class="main left">
     <h1>Register</h1>
-    <form name="reg_form" action="/register" method="post">
+    <form name="reg_form" action="/register" method="post" onsubmit="return validateForm()">
         <input placeholder="username" type="text" name="user" id="user" onchange="checkUser(this.value)"><br>
-        <input placeholder="password" type="password" name="password1" id="password"><br>
+        <input placeholder="password" type="password" name="password1" id="password1"><br>
         <input placeholder="password (again)" type="password" name="password2" id="password2"><br>
-        <input placeholder="email address" type="text" name="email" onchange="checkEmail(this.value)"><br>
+        <input placeholder="email address" type="text" name="email" id="email" onchange="checkEmail(this.value)"><br>
         <input type="submit" id="submit" value="Register" class="btn"><br><br>
     </form>
 </div>
 
 <script>
-$(document).ready(function ($) { $('#password').strength(); });
+$(document).ready(function ($) { $('#password1').strength(); });
 </script>
 
 </body>

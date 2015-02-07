@@ -7,7 +7,7 @@ from gluon import DAL, Field
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
-import cgi, urllib2
+import cgi, urllib2, json, smtplib
 # other SciPaaS modules
 import config, uploads, scheduler, process
 import apps as appmod
@@ -705,6 +705,7 @@ def plot_interface(pltid):
         plottype = result['ptype']
         options = result['options']
         datadef = result['datadef']
+        #x = json.loads(datadef)
         title = result['title']
     except:
         redirect ('/plots/edit?app='+app+'&cid='+cid)
@@ -733,6 +734,8 @@ def plot_interface(pltid):
 
     # extract data from files
     data = []
+    ticks = []
+    plotpath = ''
     result = db(datasource.pltid==pltid).select()
 
     for r in result:
@@ -759,8 +762,8 @@ def plot_interface(pltid):
         #data.append(p.get_data(plotpath,col1,col2))
         if plottype == 'flot-cat':
             ticks = p.get_ticks(plotpath,col1,col2)
-        else:
-            ticks = []
+    if not result:
+        return template("error",err="need to specify at least one datasource")
 
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u, 
                'ticks': ticks, 'title': title, 'plotpath': plotpath, 
