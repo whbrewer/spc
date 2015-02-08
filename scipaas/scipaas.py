@@ -451,7 +451,6 @@ def load_apps():
     global myapps, default_app
     # Connect to DB 
     result = db().select(apps.ALL)
-    sys.exit(1)
     myapps = {}
     for row in result:   
         name = row['name']
@@ -460,7 +459,6 @@ def load_apps():
         postprocess = row['postprocess']
         input_format = row['input_format']
         print 'loading: %s (id: %s)' % (name,appid)
-        #print 'loading: %s' % (name)
         if(input_format=='namelist'):
             myapp = appmod.namelist(name,appid)
         elif(input_format=='ini'):

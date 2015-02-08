@@ -7,5 +7,6 @@ tmp_dir = 'static/tmp'
 # server options are: cgi, flup, wsgiref, waitress, cherrypy, paste, fapws3, 
 # tornado, gae, twisted, diesel, meinheld, gunicorn, eventlet, gevent, 
 # rocket, bjoern, auto
-server = 'cherrypy'
+#server = 'cherrypy'
+server = 'rocket'
 admin_email = 'ycompute@gmail.com'
