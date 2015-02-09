@@ -1,3 +1,3 @@
-__author__ = 'Marcel Hellkamp'
-__version__ = '0.12.8'
+__author__ = 'Wesley Brewer'
+__version__ = '0.10.0'
 __license__ = 'MIT'

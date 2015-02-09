@@ -3,6 +3,7 @@
 <body onload="init()">
 %include('navbar')
 <!--<meta http-equiv="refresh" content="5">-->
+%include('tablesorter')
 <h1 align=center>{{user}}'s jobs</h1>
 
 <table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">

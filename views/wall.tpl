@@ -2,6 +2,7 @@
 
 <body onload="init()">
 %include('navbar')
+%include('tablesorter')
 
 <h1 align=center>Wall</h1>
 

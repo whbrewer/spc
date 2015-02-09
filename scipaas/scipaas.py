@@ -198,10 +198,10 @@ def get_aws():
     global user
     cid = request.query.cid
     app = request.query.app
-    creds = db().select(db.aws_credentials.ALL)
+    creds = db().select(db.aws_creds.ALL)
     # look for aws instances registered by the current user
     # which means first need to get the uid
-    uid = db(users.user==user).select(users.id)[0]
+    uid = db(users.user==user).select(users.id).first()
     instances = db(aws_instances.ownerid==uid).select()
     params = {}
     params['cid'] = cid
@@ -212,13 +212,33 @@ def get_aws():
         params['status'] = request.query.status
     return template('aws',params,creds=creds,instances=instances)
 
+@post('/aws/creds')
+def aws_creds():
+    global user
+    a = request.forms.account_id
+    s = request.forms.secret
+    k = request.forms.key
+    uid = users(user=user).id
+    db.aws_creds.insert(account_id=a,secret=s,key=k,uid=uid)
+    db.commit()
+    redirect('/aws')
+
+@post('/aws/cred/delete')
+def aws_cred_del():
+    id = request.forms.id
+    del db.aws_creds[id]
+    db.commit()
+    redirect('/aws')
+
 def aws_conn(id):
     """create a connection to the EC2 machine and return the handle"""
-    creds = db(db.aws_credentials.id==id).select()[0]
+    global user
+    uid = users(user=user).id
+    creds = db(db.aws_creds.uid==uid).select().first()
     account_id = creds['account_id']
     secret = creds['secret']
     key = creds['key']
-    instances = db(db.aws_instances.id==id).select()[0]
+    instances = db(db.aws_instances.id==id).select().first()
     instance = instances['instance']
     region = instances['region']
     rate = instances['rate']
@@ -237,10 +257,10 @@ def aws_status(aid):
     params['user'] = user
     params['apps'] = myapps.keys()
     a = aws_conn(aid)
-    status = a.status()
-    status['uptime'] = a.uptime(status['launch_time'])
-    status['charge since last boot'] = a.charge(status['uptime'])
-    return template('aws_status',params,status=status)
+    astatus = a.status()
+    astatus['uptime'] = a.uptime(astatus['launch_time'])
+    astatus['charge since last boot'] = a.charge(astatus['uptime'])
+    return template('aws_status',params,astatus=astatus)
 
 @get('/aws/start/<aid>')
 def aws_start(aid):
@@ -257,8 +277,8 @@ def aws_start(aid):
     a = aws_conn(aid)
     a.start()
     time.sleep(5) # takes a few seconds for the status to change on the Amazon end
-    status = a.status()
-    return template('aws_status',params,status=status)
+    astatus = a.status()
+    return template('aws_status',params,astatus=astatus)
 
 @get('/aws/stop/<aid>')
 def aws_stop(aid):
@@ -275,7 +295,20 @@ def aws_stop(aid):
     a = aws_conn(aid)
     a.stop()
     time.sleep(5) # takes a few seconds for the status to change on the Amazon end
-    return template('aws_status',params,status=a.status())
+    return template('aws_status',params,astatus=a.status())
+
+@get('/account')
+def get_account():
+    if not authorized(): redirect('/login')
+    global user
+    app = request.query.app
+    check_user_var()
+    params = {}
+    params['app'] = app
+    params['user'] = user
+    params['apps'] = myapps.keys()
+    uid = users(user=user).id
+    return template('account',params)
 
 @get('/wall')
 def get_wall():
@@ -394,6 +427,39 @@ def post_login():
     if referrer: redirect('/'+referrer)
     else: redirect('/apps')
 
+@post('/account/change_password')
+def change_password():
+    # this is basically the same coding as the register function
+    # needs to be DRY'ed out in the future
+    global user
+    if not authorized(): redirect('/login')
+    opasswd = request.forms.opasswd
+    pw1 = request.forms.npasswd1
+    pw2 = request.forms.npasswd2
+    # check old passwd 
+    #user = request.forms.user
+    if _check_user_passwd(user,opasswd) and pw1 == pw2 and len(pw1) > 0:
+        u = users(user=user)
+        u.update_record(passwd=_hash_pass(pw1))
+        db.commit()
+    else:
+        return template('error',err="problem with password")
+    params = {}
+    params['status'] = "password changed"
+    return template('account',params)
+
+def _check_user_passwd(user,passwd):
+    """check password against database"""
+    u = users(user=user)
+    hashpw = _hash_pass(passwd)
+    if hashpw == u.passwd:
+        return True
+    else:
+        return False
+
+def _hash_pass(pw):
+    return hashlib.sha256(pw).hexdigest() 
+
 @get('/register')
 def get_register():
     return template('register')
@@ -405,14 +471,15 @@ def post_register():
     pw2 = request.forms.password2
     email = request.forms.email
     if pw1 == pw2:
-        hashpw = hashlib.sha256(pw1).hexdigest()
+        hashpw = _hash_pass(pw1)
         users.insert(user=user, passwd=hashpw, email=email)
         db.commit()
-        # email user
+        # email admin user
         try:
             server = smtplib.SMTP('localhost')
             message = user + " just registered to scipaas " + email
-            server.sendmail('admin@scipaas.com', [config.admin_email], message)
+            admin_email = db(users.user=="admin").select(users.email).first()
+            server.sendmail('admin@scipaas.com', [admin_email], message)
             server.quit()
             redirect('/login')
         except:
@@ -426,7 +493,7 @@ def check_user():
     """This is the server-side AJAX function to check if a username exists in the DB."""
     # return booleans as strings here b/c they get parsed by JavaScript
     try:
-        this = db(users.user==user).select(users.id)[0]
+        this = db(users.user==user).select(users.id).first()
         return 'true'
     except:
         return 'false'
@@ -666,14 +733,14 @@ def plot_interface(pltid):
     # use pltid of 0 to trigger finding the first pltid for the current app
     if int(pltid) == 0:
         query = (apps.id==plots.appid) & (apps.name==app)
-        result = db(query).select()
-        if result: pltid = result[0]['plots']['id']
+        result = db(query).select().first()
+        if result: pltid = result['plots']['id']
 
     p = plotmod.plot()
 
     # get the data for the pltid given
     try:
-        result = db(plots.id==pltid).select()[0]
+        result = db(plots.id==pltid).select().first()
         plottype = result['ptype']
         options = result['options']
         datadef = result['datadef']
@@ -763,7 +830,7 @@ def matplotlib(pltid):
 
     # get info about plot 
     p = plotmod.plot()
-    result = db(plots.id==pltid).select()[0]
+    result = db(plots.id==pltid).select().first()
     plottype = result['ptype']
     options = result['options']
     title = result['title']
@@ -812,8 +879,9 @@ def matplotlib(pltid):
     query = (apps.id==plots.appid) & (apps.name==app)
     list_of_plots = db(query).select()
 
-    params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid, 'plotpath': plotpath, 
-              'img_path': img_path, 'title': title, 'rows': list_of_plots, 'apps': myapps.keys() } 
+    params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid, 
+              'plotpath': plotpath, 'img_path': img_path, 'title': title, 
+              'rows': list_of_plots, 'apps': myapps.keys() } 
     return template('plots/matplotlib', params)
 
 @get('/monitor')

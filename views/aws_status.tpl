@@ -4,20 +4,20 @@
 <h1>Status of EC2 machine</h1>
 
 <pre>
-%for key,value in status.iteritems():
+%for key,value in astatus.iteritems():
     {{key}}: {{value}} 
 %end
 </pre>
 
-%if status['state']=="stopped":
+%if astatus['state']=="stopped":
     <a href="/aws/start/{{aid}}">start machine</a>
-%elif status['state']=="running":
+%elif astatus['state']=="running":
     <fieldset>
     <center>
-    <p> LINK: <a href="http://{{status['public_dns_name']}}:8081/">http://{{status['public_dns_name']}}:8081</a> </p>
+    <p> LINK: <a href="http://{{astatus['public_dns_name']}}:8081/">http://{{astatus['public_dns_name']}}:8081</a> </p>
     <form action="/zipget">
         <input type="text" size="35" name="zipkey">
-        <input type="hidden" name="netloc" value="http://{{status['public_dns_name']}}:8081">
+        <input type="hidden" name="netloc" value="http://{{astatus['public_dns_name']}}:8081">
         <input type="submit" value="get case">
     </form>
     <a href="/aws/stop/{{aid}}">stop machine</a>

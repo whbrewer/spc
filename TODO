@@ -1,3 +1,4 @@
+- on delete case from myjobs, cascade delete wall comments
 - send email on registration
 - make egg package
 - clickable rows

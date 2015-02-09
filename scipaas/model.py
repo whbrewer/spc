@@ -44,10 +44,11 @@ datasource = db.define_table('datasource', Field('id','integer'),
 wall = db.define_table('wall', Field('id','integer'),
                                Field('jid',db.jobs),
                                Field('comment','string'))
-aws_creds = db.define_table('aws_credentials', Field('id','integer'),
-                                               Field('key','string'),
-                                               Field('secret','string'),
-                                               Field('account_id','string'))
+aws_creds = db.define_table('aws_creds', Field('id','integer'),
+                                         Field('key','string'),
+                                         Field('secret','string'),
+                                         Field('account_id','string'),
+                                         Field('uid','string'))
 aws_instances = db.define_table('aws_instances', Field('id','integer'),
                                                  Field('region','string'),
                                                  Field('instance','string'),

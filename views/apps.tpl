@@ -16,6 +16,7 @@ function edit(id) {
    }
 }
 </script>
+%include('tablesorter')
 
 <h1>Installed Apps</h1>
 

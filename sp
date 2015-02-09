@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from scipaas import macaron, config
 from scipaas import apps as appmod
 from scipaas.model import *
@@ -72,12 +71,13 @@ def initdb():
     macaron.execute(SQL_T_WALL)
 
     # create a default user/pass as guest/guest
-    user = "guest"
     pw = "guest"
     hashpw = hashlib.sha256(pw).hexdigest()
-
-    u = Users.create(user=user, passwd=hashpw)
+    u = Users.create(user="guest", passwd=hashpw)
     # following two users are reserved for beaker sessions
+    pw = "admin"
+    hashpw = hashlib.sha256(pw).hexdigest()
+    u = Users.create(user="admin", passwd=hashpw)
     u = Users.create(user="container_file")
     u = Users.create(user="container_file_lock")
     a = Apps.create(name="dna",description="Compute reverse complement, GC content, and codon analysis of given DNA string.",
