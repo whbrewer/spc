@@ -215,12 +215,27 @@ def get_aws():
 
 @post('/aws/creds')
 def post_aws_creds():
+    if not authorized(): redirect('/login')
+    check_user_var()
     global user
     a = request.forms.account_id
     s = request.forms.secret
     k = request.forms.key
     uid = users(user=user).id
     db.aws_creds.insert(account_id=a,secret=s,key=k,uid=uid)
+    db.commit()
+    redirect('/aws')
+
+@post('/aws/instance')
+def post_instance():
+    if not authorized(): redirect('/login')
+    check_user_var()
+    global user
+    i = request.forms.instance
+    t = request.forms.itype
+    r = request.forms.region
+    uid = users(user=user).id
+    db.aws_instances.insert(instance=i,itype=t,region=r,uid=uid)
     db.commit()
     redirect('/aws')
 
@@ -976,3 +991,4 @@ def authorized():
 if __name__ == "__main__":
     load_apps()
     run(server=config.server, app=app, host='0.0.0.0', port=8081, debug=True)
+    #run(app=app, host='0.0.0.0', port=8081, debug=True)

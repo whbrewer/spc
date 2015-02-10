@@ -2,14 +2,15 @@
 %include('navbar')
 
 <script>
-function verifyInstance(type) {
+function verifyInstance(itype) {
     re = /i-\d{8}/
-    if (type.search(re) < 0) {
+    if (itype.search(re) < 0) {
         alert("Wrong instance type. Format should be like: i-01234567")
     }
 }
 </script>
-%include('tablesorter')
+<!-- following include causes form buttons not to work since they are within the table -->
+<!-- %include('tablesorter') -->
 
 <h1>Amazon Web Services (AWS)</h1>
 
@@ -43,9 +44,9 @@ function verifyInstance(type) {
          <td><input type="text" name="secret" size=40></td> 
          <td><input type="text" name="key" size=20></td> 
          <td><input type="submit" value="Add"></td></tr>
+    </form>
 %end
 </table>
-</form>
 </fieldset>
 
 <br>
@@ -58,7 +59,7 @@ function verifyInstance(type) {
     %for i in instances:
         <tr>
             <td>{{i['instance']}}</td> 
-            <td>{{i['type']}}</td> 
+            <td>{{i['itype']}}</td> 
             <td>{{i['region']}}</td> 
             <td>
                 <a href="/aws/status/{{i['id']}}">status</a> 
@@ -68,10 +69,10 @@ function verifyInstance(type) {
         </tr>
     %end
 
-<form method="POST" action="/aws/register/instance">
+<form method="POST" action="/aws/instance">
 <td><input type="text" size=10 placeholder="add..." name="instance" onchange="verifyInstance(this.value)"></td>
 <td>
-<select name="type">
+<select name="itype">
 <option disabled role=separator>General purpose:
 <option value="t1.micro">t1.micro
 <option value="t2.micro">t2.micro

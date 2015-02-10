@@ -57,6 +57,7 @@ aws_creds = db.define_table('aws_creds', Field('id','integer'),
 aws_instances = db.define_table('aws_instances', Field('id','integer'),
                                                  Field('region','string'),
                                                  Field('instance','string'),
-                                                 Field('type','string'),
+                                                 Field('itype','string'),
                                                  Field('rate','double'),
                                                  Field('uid','integer'))
+
