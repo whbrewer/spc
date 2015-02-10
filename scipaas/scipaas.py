@@ -198,11 +198,12 @@ def get_aws():
     global user
     cid = request.query.cid
     app = request.query.app
-    creds = db().select(db.aws_creds.ALL)
+    uid = db(users.user==user).select(users.id).first()
+    #creds = db().select(db.aws_creds.ALL)
+    creds = db(aws_creds.uid==uid).select()
     # look for aws instances registered by the current user
     # which means first need to get the uid
-    uid = db(users.user==user).select(users.id).first()
-    instances = db(aws_instances.ownerid==uid).select()
+    instances = db(aws_instances.uid==uid).select()
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -213,7 +214,7 @@ def get_aws():
     return template('aws',params,creds=creds,instances=instances)
 
 @post('/aws/creds')
-def aws_creds():
+def post_aws_creds():
     global user
     a = request.forms.account_id
     s = request.forms.secret

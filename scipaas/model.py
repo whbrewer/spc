@@ -27,12 +27,14 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('state','string'),
                                Field('time_submit','string'),
                                Field('description','string'))
+
 plots = db.define_table('plots', Field('id','integer'),
                                  Field('appid',db.apps),
                                  Field('ptype','string'),
                                  Field('title','string'),
                                  Field('options','string'),
                                  Field('datadef','string'))
+
 datasource = db.define_table('datasource', Field('id','integer'),
                                            Field('label','string'),
                                            Field('ptype','string'),
@@ -41,17 +43,20 @@ datasource = db.define_table('datasource', Field('id','integer'),
                                            Field('filename','string'),
                                            Field('cols','string'),
                                            Field('line_range','string'))
+
 wall = db.define_table('wall', Field('id','integer'),
                                Field('jid',db.jobs),
                                Field('comment','string'))
+
 aws_creds = db.define_table('aws_creds', Field('id','integer'),
                                          Field('key','string'),
                                          Field('secret','string'),
                                          Field('account_id','string'),
-                                         Field('uid','string'))
+                                         Field('uid','integer'))
+
 aws_instances = db.define_table('aws_instances', Field('id','integer'),
                                                  Field('region','string'),
                                                  Field('instance','string'),
                                                  Field('type','string'),
                                                  Field('rate','double'),
-                                                 Field('ownerid','integer'))
+                                                 Field('uid','integer'))

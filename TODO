@@ -1,8 +1,7 @@
+- start working on parallel computing infrastructure
 - on delete case from myjobs, cascade delete wall comments
-- send email on registration
 - make egg package
 - clickable rows
-- start working on parallel computing infrastructure
 - parse json... need do parse the string and wrap quotes around each key
 
 - implement worker queues
@@ -90,6 +89,7 @@ Refactoring
   apps.py and scipaas.py
 
 Completed
+- send email on registration
 - improve register app function
 - fix username/email 
 - plotting:

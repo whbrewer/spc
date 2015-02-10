@@ -12,7 +12,43 @@ function verifyInstance(type) {
 %include('tablesorter')
 
 <h1>Amazon Web Services (AWS)</h1>
-<br><br>
+
+<br>
+<fieldset>
+<legend>AWS credentials</legend>
+<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<thead>
+<tr>
+   <th>account_id</th>
+   <th>secret</th>
+   <th>key</th>
+   <th>action</th>
+</tr>
+</thead>
+%if creds:
+    %for c in creds:
+    <tr>
+    <td>{{c['account_id']}}</td>
+    <td>{{c['secret']}}</td>
+    <td>{{c['key']}}</td>
+    <td><form method="POST" action="/aws/cred/delete">
+        <input type="hidden" name="id" value="{{c['id']}}">
+        <input type="submit" value="Delete"</a>
+        </form></td>
+    </tr>
+    %end
+%else:
+    <form method="POST" action="/aws/creds">
+    <tr> <td><input type="text" name="account_id" size=12></td> 
+         <td><input type="text" name="secret" size=40></td> 
+         <td><input type="text" name="key" size=20></td> 
+         <td><input type="submit" value="Add"></td></tr>
+%end
+</table>
+</form>
+</fieldset>
+
+<br>
 
 <fieldset>
 <legend>EC2 instances</legend>
@@ -96,40 +132,5 @@ function verifyInstance(type) {
 </form>
 </fieldset>
 
-<br><br>
-<fieldset>
-<legend>AWS credentials</legend>
-<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
-<thead>
-<tr>
-   <th>account_id</th>
-   <th>secret</th>
-   <th>key</th>
-   <th>action</th>
-</tr>
-</thead>
-%if creds:
-    %for c in creds:
-    <tr>
-    <td>{{c['account_id']}}</td>
-    <td>{{c['secret']}}</td>
-    <td>{{c['key']}}</td>
-    <td><form method="POST" action="/aws/cred/delete">
-        <input type="hidden" name="id" value="{{c['id']}}">
-        <input type="submit" value="Delete"</a>
-        </form></td>
-    </tr>
-    %end
-%else:
-    <form method="POST" action="/aws/creds">
-    <tr> <td><input type="text" name="account_id" size=12></td> 
-         <td><input type="text" name="secret" size=40></td> 
-         <td><input type="text" name="key" size=20></td> 
-         <td><input type="submit" value="Add"></td></tr>
-%end
-</table>
-</form>
-
-</fieldset>
 
 %include('footer')
