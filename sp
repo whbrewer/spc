@@ -52,7 +52,8 @@ def initdb():
 
     SQL_T_JOBS = """CREATE TABLE IF NOT EXISTS jobs(
         id integer primary key autoincrement, user text, app text,
-        cid text, state char(1), time_submit text, description text)"""
+        cid text, state char(1), time_submit text, description text,
+        np integer)"""
 
     SQL_T_PLOTS = """CREATE TABLE IF NOT EXISTS plots(
         id integer primary key autoincrement, 

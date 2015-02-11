@@ -26,7 +26,8 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('cid','string'),
                                Field('state','string'),
                                Field('time_submit','string'),
-                               Field('description','string'))
+                               Field('description','string'),
+                               Field('np','integer'))
 
 plots = db.define_table('plots', Field('id','integer'),
                                  Field('appid',db.apps),

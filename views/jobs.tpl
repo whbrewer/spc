@@ -13,6 +13,7 @@
   <th>app</th> 
   <th>cid</th> 
   <th>state</th> 
+  <th>np</th> 
   <th>time_submit</th> 
   <th>actions</th>
 </tr>
@@ -24,6 +25,7 @@
   <td>{{row['app']}}</td>
   <td>{{row['cid']}}</td>
   <td>{{row['state']}}</td>
+  <td>{{row['np']}}</td>
   <td>{{row['time_submit']}}</td>
   <td><a href="/jobs/delete/{{row['id']}}?cid={{row['cid']}}&app={{row['app']}}" onclick="if(confirm('confirm')) return true; return false">delete</a> ::
       <a href="/monitor?cid={{row['cid']}}&app={{row['app']}}">monitor</a> :: 

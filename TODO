@@ -1,4 +1,7 @@
 - start working on parallel computing infrastructure
+   * need a way to specify NP
+   * also need to specify paths for mpirun and /bin/sh somewhere
+     possibly in config.py
 - on delete case from myjobs, cascade delete wall comments
 - make egg package
 - clickable rows

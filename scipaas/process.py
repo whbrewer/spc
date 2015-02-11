@@ -15,6 +15,11 @@ def preprocess(params,fn):
         for key, value in (params.iteritems()):
             str += key + ' ' + value + '\n'
         return str
+    elif fn == 'pbs.script':
+        str  = "#!/bin/sh\n"
+        str += "cd $PBS_O_WORKDIR"
+        str += "/usr/local/bin/mpirun -np 2 ./mendel"
+        return str
 
 def postprocess(path,line1,line2):
     """return data as an array...

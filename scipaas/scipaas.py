@@ -35,9 +35,10 @@ sched = scheduler.scheduler()
 
 pbuffer = ''
 
-@post('/<app>/confirm')
-def confirm_form(app):
+@post('/confirm')
+def confirm_form():
     global user
+    app = request.forms.app
     cid = str(uuid.uuid4())[:6]
     # pass the case_id to be used by the program input parameters,
     # if case_id is defined in the input deck it will be used
@@ -45,44 +46,53 @@ def confirm_form(app):
     request.forms['case_id'] = cid 
     myapps[app].write_params(request.forms,user)
     # read the file 
-    run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
+    run_dir = myapps[app].user_dir + os.sep + user + os.sep +  \
+              myapps[app].appname  + os.sep + cid
     fn = run_dir + os.sep + myapps[app].simfn
     inputs = slurp_file(fn)
     # convert html tags to entities (e.g. < to &lt;)
     inputs = cgi.escape(inputs)
-    params = { 'cid': cid, 'inputs': inputs, 'app': app, 'user': user, 'apps': myapps.keys() }
+    params = { 'cid': cid, 'inputs': inputs, 'app': app, 
+               'user': user, 'apps': myapps.keys(), 'np': config.np }
     try:
         return template('confirm', params)
     except:
         return 'ERROR: failed to write parameters to file'
 
-@post('/<app>/<cid>/execute')
-def execute(app,cid):
+@post('/execute')
+def execute():
     global user
+    app = request.forms.app
+    cid = request.forms.cid
+    np = request.forms.np
     params = {}
+    base_dir = myapps[app].user_dir+os.sep+user+os.sep+ \
+               app+os.sep+cid
 
+    # if preprocess is set run the preprocessor
     try:
         if myapps[app].preprocess:
             run_params,_,_ = myapps[app].read_params(user,cid) 
-            processed_inputs = process.preprocess(run_params,myapps[app].preprocess)
-            sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep+myapps[app].preprocess
+            processed_inputs = process.preprocess(run_params,
+                                       myapps[app].preprocess)
+            sim_dir = base_dir + os.sep + myapps[app].preprocess
             f = open(sim_dir,'w') 
             f.write(processed_inputs)
             f.close()
     except:
-        pass
+        return template('error',err="There was an error with the preprocessor")
 
+    # start the job
     try:
         params['cid'] = cid
         params['app'] = app
         params['user'] = user
-        sched.qsub(app,cid,user)
-        #redirect("/jobs?app="+app+"&cid="+cid)
+        sched.qsub(app,cid,user,np)
         redirect("/monitor?app="+app+"&cid="+cid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
-        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e, 
-                   'apps': myapps.keys() }
+        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 
+                   'err': e, 'apps': myapps.keys() }
         return template('error',params)
 
 @get('/more')
@@ -93,8 +103,8 @@ def more():
     cid = request.query.cid
     filepath = request.query.filepath
     contents = slurp_file(filepath)
-    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 'fn': filepath,
-               'apps': myapps.keys() }
+    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 
+               'fn': filepath, 'apps': myapps.keys() }
     return template('more', params)
 
 @get('/output')
@@ -258,6 +268,7 @@ def aws_conn(id):
     instance = instances['instance']
     region = instances['region']
     rate = instances['rate']
+    if not rate: rate = 0.0
     return awsmod.ec2(key,secret,account_id,instance,region,rate)
 
 @get('/aws/status/<aid>')
@@ -273,10 +284,13 @@ def aws_status(aid):
     params['user'] = user
     params['apps'] = myapps.keys()
     a = aws_conn(aid)
-    astatus = a.status()
-    astatus['uptime'] = a.uptime(astatus['launch_time'])
-    astatus['charge since last boot'] = a.charge(astatus['uptime'])
-    return template('aws_status',params,astatus=astatus)
+    try:
+        astatus = a.status()
+        astatus['uptime'] = a.uptime(astatus['launch_time'])
+        astatus['charge since last boot'] = a.charge(astatus['uptime'])
+        return template('aws_status',params,astatus=astatus)
+    except:
+        return template('error',err="There was a problem connecting to the AWS machine. Check the credentials and make sure the machine is running.")
 
 @get('/aws/start/<aid>')
 def aws_start(aid):

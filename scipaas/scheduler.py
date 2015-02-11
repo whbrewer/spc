@@ -21,7 +21,8 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('cid','string'),
                                Field('state','string'),
                                Field('time_submit','string'),
-                               Field('description','string'))
+                               Field('description','string'),
+                               Field('np','integer'))
 
 class scheduler(object):
 
@@ -40,9 +41,10 @@ class scheduler(object):
                 self.start(j)            
             time.sleep(1) 
 
-    def qsub(self,app,cid,user):
+    def qsub(self,app,cid,user,np):
         state = 'Q'
-        jobs.insert(user=user,app=app,cid=cid,state=state,time_submit=time.asctime())
+        jobs.insert(user=user, app=app, cid=cid, state=state, 
+                    time_submit=time.asctime(), np=np)
         db.commit()
 
     def qfront(self):
@@ -65,10 +67,15 @@ class scheduler(object):
         db.jobs[jid] = dict(state='R')
         db.commit()
 
-        user = db.jobs(jid).user
-        app = db.jobs(jid).app
-        cid = db.jobs(jid).cid
-        command = db(apps.name==app).select()[0]['command']
+        user = jobs(jid).user
+        app = jobs(jid).app
+        cid = jobs(jid).cid
+        np = jobs(jid).np
+        if np > 1:
+            command = apps(name=app).command
+            command = config.mpirun + " -np " + str(np) + " " + command
+        else: # dont use mpi
+            command = apps(name=app).command
 
         #rel_path=(os.pardir+os.sep)*4
         exe = config.apps_dir + os.sep + app + os.sep + app 
