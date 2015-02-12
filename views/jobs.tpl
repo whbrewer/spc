@@ -27,7 +27,7 @@
   <td>{{row['state']}}</td>
   <td>{{row['np']}}</td>
   <td>{{row['time_submit']}}</td>
-  <td><a href="/jobs/delete/{{row['id']}}?cid={{row['cid']}}&app={{row['app']}}" onclick="if(confirm('confirm')) return true; return false">delete</a> ::
+  <td>
       <a href="/monitor?cid={{row['cid']}}&app={{row['app']}}">monitor</a> :: 
       <a href="/jobs/stop/{{row['app']}}">stop</a> ::
       <a href="/inputs?cid={{row['cid']}}&app={{row['app']}}">inputs</a> ::
@@ -35,8 +35,8 @@
       <a href="/plot/0?cid={{row['cid']}}&app={{row['app']}}">plot</a> ::
       <a href="/files?cid={{row['cid']}}&app={{row['app']}}">files</a> ::
       <a href="/zipcase?cid={{row['cid']}}&app={{row['app']}}">zip</a> ::
-      <a href="/start?cid={{row['cid']}}&app={{row['app']}}">start</a> 
-      <!--<a style="cursor: pointer" onclick="set_cid('{{row['cid']}}','{{row['app']}}')"><u>set</u></a><br><br>-->
+      <a href="/start?cid={{row['cid']}}&app={{row['app']}}">start</a> ::
+      <a href="/jobs/delete/{{row['id']}}?cid={{row['cid']}}&app={{row['app']}}" onclick="if(confirm('confirm')) return true; return false">delete</a> 
       <br><br>
       <form method="post" action="/wall">
       <input type="hidden" name="app" value="{{app}}">

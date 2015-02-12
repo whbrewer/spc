@@ -517,16 +517,39 @@ def post_register():
     else:
         return template('register')
 
+@get('/admin/show_users')
+def admin_show_users():
+    global user
+    if not authorized(): redirect('/login')
+    if not user == "admin": 
+        return template("error",err="must be admin to delete")
+    query = (apps.id==plots.appid) & (apps.name==app)
+    result = db().select(users.ALL)
+    params = {'user': user}
+    return template('admin/users',params,rows=result)
+
+@post('/admin/delete_user')
+def admin_delete_user():
+    global user
+    if not authorized(): redirect('/login')
+    if not user == "admin": 
+        return template("error",err="must be admin to delete")
+    uid = request.forms.uid
+    print "uid is:",uid
+    if int(uid) == 0:
+        return template("error",err="can't delete admin user")
+    del db.users[uid]
+    db.commit()
+    redirect("/admin/show_users")
+
 @post('/check_user')
 def check_user():
     user = request.forms.user
-    """This is the server-side AJAX function to check if a username exists in the DB."""
+    """This is the server-side AJAX function to check if a username 
+       exists in the DB."""
     # return booleans as strings here b/c they get parsed by JavaScript
-    try:
-        this = db(users.user==user).select(users.id).first()
-        return 'true'
-    except:
-        return 'false'
+    if users(user=user): return 'true'
+    else: return 'false' 
 
 def check_user_var():
     # this check is because user is global var when restarting scipaas

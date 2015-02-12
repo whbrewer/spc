@@ -42,4 +42,3 @@ function checkCase() {
     </font>
 </div>
 %end
-

@@ -1,7 +1,7 @@
-- start working on parallel computing infrastructure
-   * need a way to specify NP
-   * also need to specify paths for mpirun and /bin/sh somewhere
-     possibly in config.py
+- develop admin section
+- be able to attach input variables to be used by simulation 
+   e.g. use num_tribes parameter to set np
+        use scipaas_case_id parameter within simulation
 - on delete case from myjobs, cascade delete wall comments
 - make egg package
 - clickable rows
@@ -92,6 +92,10 @@ Refactoring
   apps.py and scipaas.py
 
 Completed
+- start working on parallel computing infrastructure
+   * need a way to specify NP
+   * also need to specify paths for mpirun and /bin/sh somewhere
+     possibly in config.py
 - send email on registration
 - improve register app function
 - fix username/email 

@@ -63,7 +63,7 @@ def initdb():
 
     SQL_T_WALL = """CREATE TABLE wall(
         id integer primary key autoincrement, jid integer, comment varchar(80), 
-        foreign key (jid) references jobs)"""
+        foreign key (jid) references jobs on delete cascade);"""
 
     macaron.execute(SQL_T_USERS)
     macaron.execute(SQL_T_JOBS)
