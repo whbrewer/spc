@@ -38,6 +38,7 @@ pbuffer = ''
 @post('/confirm')
 def confirm_form():
     global user
+    check_user_var()
     app = request.forms.app
     cid = str(uuid.uuid4())[:6]
     # pass the case_id to be used by the program input parameters,
@@ -239,8 +240,8 @@ def post_aws_creds():
 @post('/aws/instance')
 def post_instance():
     if not authorized(): redirect('/login')
-    check_user_var()
     global user
+    check_user_var()
     i = request.forms.instance
     t = request.forms.itype
     r = request.forms.region
@@ -259,6 +260,7 @@ def aws_cred_del():
 def aws_conn(id):
     """create a connection to the EC2 machine and return the handle"""
     global user
+    check_user_var()
     uid = users(user=user).id
     creds = db(db.aws_creds.uid==uid).select().first()
     account_id = creds['account_id']
@@ -275,6 +277,7 @@ def aws_conn(id):
 def aws_status(aid):
     if not authorized(): redirect('/login')
     global user
+    check_user_var()
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -296,6 +299,7 @@ def aws_status(aid):
 def aws_start(aid):
     if not authorized(): redirect('/login')
     global user
+    check_user_var()
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -314,6 +318,7 @@ def aws_start(aid):
 def aws_stop(aid):
     if not authorized(): redirect('/login')
     global user
+    check_user_var()
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -331,8 +336,8 @@ def aws_stop(aid):
 def get_account():
     if not authorized(): redirect('/login')
     global user
-    app = request.query.app
     check_user_var()
+    app = request.query.app
     params = {}
     params['app'] = app
     params['user'] = user
@@ -359,6 +364,7 @@ def get_wall():
 @post('/wall')
 def post_wall():
     if not authorized(): redirect('/login')
+    check_user_var()
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
@@ -376,6 +382,8 @@ def post_wall():
 
 @get('/wall/delete/<wid>')
 def delete_wall_item(wid):
+    if not authorized(): redirect('/login')
+    check_user_var()
     app = request.query.app
     cid = request.query.cid
     del db.wall[wid]
@@ -384,10 +392,13 @@ def delete_wall_item(wid):
 
 @get('/jobs/delete/<jid>')
 def delete_job(jid):
+    if not authorized(): redirect('/login')
+    check_user_var()
     app = request.query.app
     cid = request.query.cid
     path = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
-    shutil.rmtree(path)
+    if os.path.isdir(path):
+        shutil.rmtree(path)
     sched.qdel(jid)
     redirect("/jobs")
 
@@ -400,6 +411,7 @@ def stop_job(app):
 @get('/<app>')
 def show_app(app):
     if not authorized(): redirect('/login')
+    check_user_var()
     global user, myapps
     # set a session variable to keep track of the current app
     s = request.environ.get('beaker.session')

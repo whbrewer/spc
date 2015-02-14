@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from scipaas import config
 from scipaas import apps as appmod
-from scipaas.model import *
+#from scipaas.model import *
 import sys, os, shutil, urllib2
 import xml.etree.ElementTree as ET
 import hashlib, re
@@ -26,21 +26,18 @@ if (len(sys.argv) == 1):
     sys.exit()
 
 db = config.db
-# make a backup copy if file exists
-if(sys.argv[1] == "init"):
-    if os.path.isfile(db): 
-        shutil.copyfile(db, db+".bak")
 
 def initdb():
     """Initializes database file"""
     from scipaas import model2
+    # make a backup copy of db file if it exists
+    #    if os.path.isfile(db): 
+    #        shutil.copyfile(db, db+".bak")
     # get rid of old .table files
     for f in os.listdir(config.dbdir):
         if re.search("\.table", f):
             print "removing file:", f
             os.remove(os.path.join(config.dbdir, f))
-    #dbfile = "x.db"
-    #uri = "sqlite://"+dbfile
     # delete previous .db file should back first (future)
     dbpath = os.path.join(config.dbdir, config.db)
     if os.path.isfile(dbpath): os.remove(dbpath)
