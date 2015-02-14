@@ -1,3 +1,7 @@
+- refactor: replace sim_dir + + + with os.path.join(config.dbdir, dbfile)
+- work on scheduler
+- fix databases add foreign key references
+    * rewrite sp to use DAL to create the tables
 - develop admin section
 - be able to attach input variables to be used by simulation 
    e.g. use num_tribes parameter to set np
@@ -6,6 +10,7 @@
 - make egg package
 - clickable rows
 - parse json... need do parse the string and wrap quotes around each key
+    * outsource this to StackOverflow
 
 - implement worker queues
     * add stop button to jobs page.  problem is need to have another thread

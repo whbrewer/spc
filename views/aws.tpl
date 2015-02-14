@@ -55,7 +55,7 @@ function verifyInstance(itype) {
 <legend>EC2 instances</legend>
 
 <table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
-    <thead><tr><th>Intance</th><th>Type</th><th>Region</th><th>Actions</th></thead>
+    <thead><tr><th>Intance id</th><th>Type</th><th>Region</th><th>Actions</th></thead>
     %for i in instances:
         <tr>
             <td>{{i['instance']}}</td> 
@@ -70,7 +70,7 @@ function verifyInstance(itype) {
     %end
 
 <form method="POST" action="/aws/instance">
-<td><input type="text" size=10 placeholder="add..." name="instance" onchange="verifyInstance(this.value)"></td>
+<td><input type="text" size=10 name="instance" onchange="verifyInstance(this.value)"></td>
 <td>
 <select name="itype">
 <option disabled role=separator>General purpose:
