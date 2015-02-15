@@ -21,7 +21,7 @@ class uploader(object):
         fh.close()
 
     def verify(self,save_path_dir,appname):
-        exe_file = save_path_dir + os.sep + appname 
+        exe_file = os.path.join(save_path_dir,appname)
         in_file  = exe_file + '.in'
         msg = 'File uploaded OK\n'
         # verify that .in file exists

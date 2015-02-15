@@ -83,20 +83,20 @@ class namelist(app):
     def __init__(self,appname,appid=0):
         self.appname = appname
         self.appid = appid
-        self.appdir = apps_dir + os.sep + appname
+        self.appdir = os.path.join(apps_dir,appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.in'
         self.user_dir = user_dir
         self.preprocess = 0
         self.postprocess = 0
         self.params, self.blockmap, self.blockorder = self.read_params()
-        self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
+        self.exe = os.path.join(apps_dir,self.appname,self.appname)
 
     def write_params(self,form_params,user):
         '''write the input file needed for the simulation'''
 
         cid = form_params['case_id']
-        sim_dir=self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid+os.sep
+        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
         #form_params['data_file_path'] = sim_dir
         # following line is temporary hack just for mendel app
         form_params['data_file_path'] = "'./'"
@@ -104,7 +104,7 @@ class namelist(app):
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
 
-        fn = sim_dir + self.simfn
+        fn = os.path.join(sim_dir,self.simfn)
 
         ## output parameters to output log
         #for i, fp in enumerate(form_params):
@@ -148,7 +148,7 @@ class namelist(app):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid
+            fn = os.path.join(self.user_dir,user,self.appname,cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
         params = dict()
@@ -180,12 +180,12 @@ class ini(app):
     def __init__(self,appname,appid=0,preprocess=0,postprocess=0):
         self.appname = appname
         self.appid = appid
-        self.appdir = apps_dir + os.sep + appname
+        self.appdir = os.path.join(apps_dir,appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.ini'
         self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
-        self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
+        self.exe = os.path.join(apps_dir,self.appname,self.appname)
         self.preprocess = preprocess
         self.postprocess = postprocess
 
@@ -194,7 +194,7 @@ class ini(app):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid
+            fn = os.path.join(self.user_dir,user,self.appname,cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
         #print 'fn:',fn
@@ -223,10 +223,10 @@ class ini(app):
     def write_params(self,form_params,user):
         Config = ConfigParser.ConfigParser()
         cid = form_params['case_id']
-        sim_dir=self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid+os.sep
+        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
-        fn = sim_dir + self.simfn
+        fn = os.path.join(sim_dir,self.simfn)
 
         # write out parameters to screen
         #for (i,fp) in enumerate(form_params):
@@ -252,21 +252,21 @@ class xml(app):
     def __init__(self,appname,appid=0):
         self.appname = appname
         self.appid = appid
-        self.appdir = apps_dir + os.sep + appname
+        self.appdir = os.path.join(apps_dir,appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.xml'
         self.preprocess = 0
         self.postprocess = 0
         self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
-        self.exe = apps_dir + os.sep + self.appname + os.sep + self.appname
+        self.exe = os.path.join(apps_dir,self.appname,self.appname)
 
     def read_params(self,user=None,cid=None):
         '''read the namelist file and return as a dictionary'''
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid
+            fn = os.path.join(self.user_dir,user,self.appname,cid)
 
         # append name of input file to end of string
         fn += os.sep + self.simfn
@@ -307,10 +307,10 @@ class xml(app):
     def write_params(self,form_params,user):
         """Write parameters to file."""
         cid = form_params['case_id']
-        sim_dir=self.user_dir+os.sep+user+os.sep+self.appname+os.sep+cid+os.sep
+        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
-        fn = sim_dir + self.simfn
+        fn = os.path.join(sim_dir,self.simfn)
 
         f = open(fn, 'w')
         f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
