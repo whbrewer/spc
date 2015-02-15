@@ -6,7 +6,8 @@ from gluon import DAL, Field
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
 
-db = DAL(config.uri, auto_import=True, migrate=False)
+#db = DAL(config.uri, auto_import=True, migrate=False)
+db = DAL(config.uri, auto_import=False, migrate=False, folder=config.dbdir)
 
 apps = db.define_table('apps', Field('id','integer'),
                                Field('name','string'),
@@ -78,30 +79,34 @@ class scheduler(object):
             command = apps(name=app).command
 
         #rel_path=(os.pardir+os.sep)*4
-        exe = config.apps_dir + os.sep + app + os.sep + app 
+        exe = os.path.join(config.apps_dir,app,app)
         outfn = app + ".out"
         cmd = command + ' >& ' + outfn
 
-        run_dir = config.user_dir + os.sep + user + os.sep + app + os.sep + cid
+        run_dir = os.path.join(config.user_dir,user,app,cid)
         # this one blocks
-        thread = threading.Thread(target = self.start_job(run_dir,cmd))
+        sem = threading.BoundedSemaphore(config.np) 
+        thread = threading.Thread(target = self.start_job(run_dir,cmd,app,jid,sem))
         # this one doesn't block
-        #thread = threading.Thread(target=self.start_job,args=(run_dir,cmd))
+        #thread = threading.Thread(target=self.start_job,
+        #                          args=(run_dir,cmd,app,jid,sem))
         # this is not causing the thread to run in the background
         #thread.daemon = True 
         thread.start()
 
-        # let user know job has ended
-        f = open(run_dir+os.sep+outfn,"a")
-        f.write("FINISHED EXECUTION")
-        f.close()
-
-        db.jobs[jid] = dict(state='C')
-        db.commit()
-
-    def start_job(self,run_dir,cmd):
+    def start_job(self,run_dir,cmd,app,jid,sem):
         print 'starting thread to run job:',run_dir, cmd
         os.system("cd " + run_dir + ";" + cmd )
+        # let user know job has ended
+        outfn = app + ".out"
+        with open(os.path.join(run_dir,outfn),"a") as f:
+            f.write("FINISHED EXECUTION")
+        # update state to completed
+        sem = threading.BoundedSemaphore(config.np) 
+        sem.acquire()
+        db.jobs[jid] = dict(state='C')
+        db.commit()
+        sem.release()
 
     def stop(self,app):
         os.system("killall " + app)

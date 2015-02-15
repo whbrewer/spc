@@ -53,4 +53,4 @@ function edit(id) {
 </table>
 <a href="/apps/add"><img src="/static/images/plus.png" align=left valign=bottom>Add an app</a>
 
-%include footer
+%include('footer')

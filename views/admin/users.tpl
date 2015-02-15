@@ -27,4 +27,4 @@
 </tbody>
 </table>
 
-%include footer
+%include('footer')

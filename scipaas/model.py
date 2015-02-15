@@ -1,7 +1,8 @@
 from gluon import DAL, Field
 import config
 
-db = DAL(config.uri, auto_import=True, migrate=False)
+#db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+db = DAL(config.uri, migrate=False, folder=config.dbdir)
 
 users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),

@@ -47,4 +47,4 @@
 %end
 </table>
 
-%include footer
+%include('footer')

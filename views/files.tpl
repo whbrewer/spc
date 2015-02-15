@@ -1,7 +1,7 @@
-%include header title='Menu'
+%include('header', title='Menu')
 
 <body onload="init()">
-%include navbar
+%include('navbar')
 
 <h1>{{cid}}</h1>
 {{!cases}}
@@ -10,4 +10,4 @@
 {{!content}}
 <hr>
 
-%include footer
+%include('footer')

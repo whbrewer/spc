@@ -29,4 +29,4 @@ Category:
 
 </form>
 
-%include footer
+%include('footer')
