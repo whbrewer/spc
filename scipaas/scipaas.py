@@ -12,7 +12,7 @@ import apps as appmod
 import plots as plotmod
 import aws as awsmod
 # data access layer
-from gluon import DAL, Field
+from gluino import DAL, Field
 from model import *
 
 ### session management configuration ###
@@ -951,6 +951,7 @@ def matplotlib(pltid):
 @get('/monitor')
 def monitor():
     global user
+    check_user_var()
     cid = request.query.cid
     app = request.query.app
     params = { 'cid': cid, 'app': app, 'user': user, 'apps': myapps.keys() }

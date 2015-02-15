@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import threading, time, os
 import config
-from gluon import DAL, Field
+from gluino import DAL, Field
 
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/

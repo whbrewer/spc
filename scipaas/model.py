@@ -1,4 +1,4 @@
-from gluon import DAL, Field
+from gluino import DAL, Field
 import config
 
 #db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
