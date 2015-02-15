@@ -47,9 +47,8 @@ def confirm_form():
     request.forms['case_id'] = cid 
     myapps[app].write_params(request.forms,user)
     # read the file 
-    run_dir = myapps[app].user_dir + os.sep + user + os.sep +  \
-              myapps[app].appname  + os.sep + cid
-    fn = run_dir + os.sep + myapps[app].simfn
+    run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
+    fn = os.path.join(run_dir,myapps[app].simfn)
     inputs = slurp_file(fn)
     # convert html tags to entities (e.g. < to &lt;)
     inputs = cgi.escape(inputs)
@@ -67,8 +66,7 @@ def execute():
     cid = request.forms.cid
     np = request.forms.np
     params = {}
-    base_dir = myapps[app].user_dir+os.sep+user+os.sep+ \
-               app+os.sep+cid
+    base_dir = os.path.join(myapps[app].user_dir,user,app,cid)
 
     # if preprocess is set run the preprocessor
     try:
@@ -76,7 +74,7 @@ def execute():
             run_params,_,_ = myapps[app].read_params(user,cid) 
             processed_inputs = process.preprocess(run_params,
                                        myapps[app].preprocess)
-            sim_dir = base_dir + os.sep + myapps[app].preprocess
+            sim_dir = os.path.join(base_dir,myapps[app].preprocess)
             f = open(sim_dir,'w') 
             f.write(processed_inputs)
             f.close()
@@ -120,8 +118,8 @@ def output():
         else:
             u = user
             c = cid
-        run_dir = myapps[app].user_dir+os.sep+u+os.sep+myapps[app].appname+os.sep+c
-        fn = run_dir + os.sep + myapps[app].outfn
+        run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
+        fn = os.path.join(run_dir,myapps[app].outfn)
         output = slurp_file(fn)
         params = { 'cid': cid, 'contents': output, 'app': app, 'user': u, 'fn': fn,
                    'apps': myapps.keys() }
@@ -142,8 +140,8 @@ def inputs():
         else:
             u = user
             c = cid
-        run_dir = myapps[app].user_dir+os.sep+u+os.sep+myapps[app].appname+os.sep+c
-        fn = run_dir + os.sep + myapps[app].simfn
+        run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
+        fn = os.path.join(run_dir,myapps[app].simfn)
         inputs = slurp_file(fn)
         params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u, 'fn': fn,
                    'apps': myapps.keys() }
@@ -167,8 +165,8 @@ def tail(app,cid):
     global user
     check_user_var()
     num_lines = 30
-    run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
-    ofn = run_dir + os.sep + myapps[app].outfn
+    run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
+    ofn = os.path.join(run_dir,myapps[app].outfn)
     if os.path.exists(ofn):
         f = open(ofn,'r')
         output = f.readlines()
@@ -396,7 +394,7 @@ def delete_job(jid):
     check_user_var()
     app = request.query.app
     cid = request.query.cid
-    path = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
+    path = os.path.join(myapps[app].user_dir,user,app,cid)
     if os.path.isdir(path):
         shutil.rmtree(path)
     sched.qdel(jid)
@@ -422,7 +420,7 @@ def show_app(app):
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps
-    return template(config.apps_dir+os.sep+app, params)
+    return template(os.path.join(config.apps_dir,app), params)
 
 @get('/login')
 @get('/login/<referrer>')
@@ -681,15 +679,15 @@ def list_files():
     else:
         u = user
     if not path:
-        path = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+cid
+        path = os.path.join(myapps[app].user_dir,u,app,cid)
 
-    case_path = myapps[app].user_dir+os.sep+u+os.sep+app
+    case_path = os.path.join(myapps[app].user_dir,u,app)
         
     binary_extensions = ['.bz2','.gz','.xz','.zip']
     image_extensions = ['.png','.gif','.jpg']
     str = '<table>'
     for fn in os.listdir(path):
-        this_path = path + os.sep + fn
+        this_path = os.path.join(path,fn)
         _, ext = os.path.splitext(this_path)
         str += '<tr>'
         #str += '<td><form action="/'+app+'/delete/'+fn+'">'
@@ -702,7 +700,8 @@ def list_files():
         elif ext in image_extensions:
             str += '<a href="'+this_path+'"><img src="'+this_path+'" width=100><br>'+fn+'</a>'
         else:
-            str += '<a href="/more?app='+app+'&cid='+cid+'&filepath='+path+os.sep+fn+'">'+fn+'</a>'
+            str += '<a href="/more?app='+app+'&cid='+cid+\
+                       '&filepath='+os.path.join(path,fn)+'">'+fn+'</a>'
         str += '</td></tr>\n'
     str += '</table>'
     params = { 'content': str }
@@ -793,7 +792,7 @@ def plot_interface(pltid):
         u = user
         c = cid
 
-    sim_dir = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+c+os.sep
+    sim_dir = os.path.join(myapps[app].user_dir,u,app,c)
 
     # use pltid of 0 to trigger finding the first pltid for the current app
     if int(pltid) == 0:
@@ -847,7 +846,7 @@ def plot_interface(pltid):
         cols = r['cols']
         line_range = r['line_range']
         plotfn = re.sub(r"<cid>", c, plotfn)
-        plotpath = sim_dir + plotfn
+        plotpath = os.path.join(sim_dir,plotfn)
         (col1str,col2str) = cols.split(":")
         col1 = int(col1str); col2 = int(col2str)
         # do some postprocessing
@@ -916,8 +915,8 @@ def matplotlib(pltid):
             line2 = int(line2str)
 
     plotfn = re.sub(r"<cid>", cid, plotfn)
-    sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
-    plotpath = sim_dir + plotfn
+    sim_dir = os.path.join(myapps[app].user_dir,user,app,cid)
+    plotpath = os.path.join(sim_dir,plotfn)
     xx = p.get_column_of_data(plotpath,col1)
     yy = p.get_column_of_data(plotpath,col2)
 
@@ -937,7 +936,7 @@ def matplotlib(pltid):
         os.makedirs(config.tmp_dir)
     fn = title+'.png'
     fig.set_size_inches(7,4)
-    img_path = sim_dir + fn
+    img_path = os.path.join(sim_dir,fn)
     fig.savefig(img_path)
 
     # get list of all plots for this app
@@ -964,12 +963,12 @@ def zipcase():
     import zipfile
     app = request.query.app
     cid = request.query.cid
-    base_dir = myapps[app].user_dir+os.sep+user+os.sep+app
-    path = base_dir+os.sep+cid+".zip"
+    base_dir = os.path.join(myapps[app].user_dir,user,app)
+    path = os.path.join(base_dir,cid+".zip")
     zf = zipfile.ZipFile(path, mode='w')
-    sim_dir = base_dir+os.sep+cid
+    sim_dir = os.path.join(base_dir,cid)
     for fn in os.listdir(sim_dir):
-        zf.write(sim_dir+os.sep+fn)
+        zf.write(os.path.join(sim_dir,fn))
     zf.close()
     redirect("/aws?status="+path)
 
@@ -978,8 +977,8 @@ def zipget():
     """get zipfile from another machine, save to current machine"""
     zipkey = request.query.zipkey
     netloc = request.query.netloc
-    #url = netloc + os.sep + config.tmp_dir + os.sep + zipkey + ".zip"
-    url = netloc+os.sep+zipkey
+    #url = os.path.join(netloc,config.tmp_dir,zipkey+".zip")
+    url = os.path.join(netloc,zipkey)
     try:
         f = urllib2.urlopen(url)
         print "downloading " + url
@@ -1005,7 +1004,7 @@ def do_upload():
     if ext not in ('.zip','.txt'):
         return 'ERROR: File extension not allowed.'
     try:
-        save_path_dir = appmod.apps_dir + os.sep + name
+        save_path_dir = os.path.join(appmod.apps_dir,name)
         save_path = save_path_dir + ext
         if os.path.isfile(save_path):
             return 'ERROR: zip file exists already. Please remove first.'
