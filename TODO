@@ -1,5 +1,6 @@
 - work on scheduler
-    * get multithreading working
+    x get multithreading working
+    * take into account num of processors users has requested when starting jobs
     * add shutdown feature
 - consolidate app, cid vars when passing on almost every click
 - fix databases add foreign key references

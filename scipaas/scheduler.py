@@ -67,7 +67,7 @@ class scheduler(object):
         app = db.jobs(jid).app
         cid = db.jobs(jid).cid
         np = db.jobs(jid).np
-        if np > 1:
+        if np > 1: # use mpi
             command = db.apps(name=app).command
             command = config.mpirun + " -np " + str(np) + " " + command
         else: # dont use mpi
@@ -80,14 +80,17 @@ class scheduler(object):
         run_dir = os.path.join(config.user_dir,user,app,cid)
 
         # if number procs available fork new process with command
-        self.sem.acquire()
-        p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,))
+        for i in range(np):
+            self.sem.acquire()
+        p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,))
         p.start()
-        self.sem.release()
+        for i in range(np):
+            self.sem.release()
 
-    def start_job(self,run_dir,cmd,app,jid):
+    def start_job(self,run_dir,cmd,app,jid,np):
         """this is what the separate job process runs"""
-        self.sem.acquire()
+        for i in range(np):
+            self.sem.acquire()
         # update state to 'R' for run
         self.mutex.acquire()
         db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
@@ -111,7 +114,8 @@ class scheduler(object):
         db.commit()
         db.close()
         self.mutex.release()
-        self.sem.release()
+        for i in range(np):
+            self.sem.release()
 
     def stop(self,app):
         p.shutdown
