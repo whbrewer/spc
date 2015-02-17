@@ -7,7 +7,8 @@ import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib
 # other SciPaaS modules
-import config, uploads, scheduler, process
+import config, uploads, process
+import scheduler, scheduler2
 import apps as appmod
 import plots as plotmod
 import aws as awsmod
@@ -31,7 +32,8 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # create instance of scheduler
-sched = scheduler.scheduler()
+#sched = scheduler.scheduler()
+sched = scheduler2.scheduler()
 
 pbuffer = ''
 

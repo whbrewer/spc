@@ -30,14 +30,18 @@ db = config.db
 def initdb():
     """Initializes database file"""
     from scipaas import model2
+    # somehow the following doesn't work properly
+
     # create db directory if it doesn't exist
-    if not os.path.exists(config.dbdir):
-        os.makedirs(config.dbdir) 
+    #if not os.path.exists(config.dbdir):
+    #    os.makedirs(config.dbdir) 
     # make a backup copy of db file if it exists
-    if os.path.isfile(db): 
-        print "ERROR: a database file already exists, please rename it and rerun"
-        sys.exit()
+
+    #if os.path.isfile(db): 
+    #    print "ERROR: a database file already exists, please rename it and rerun"
+    #    sys.exit()
     #    shutil.copyfile(db, db+".bak")
+
     # get rid of old .table files
     for f in os.listdir(config.dbdir):
         if re.search("\.table", f):
