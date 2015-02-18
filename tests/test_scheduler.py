@@ -1,6 +1,3 @@
-#import unittest
-#import sys
-#sys.path.insert(0, '../')
 import unittest
 import sys, os
 # prepend parent directory to path
@@ -17,11 +14,9 @@ class TestScheduler(unittest.TestCase):
         pass
 
     def test_qsub(self):
-        # qsub test
-        #sched.qsub('test')
-        app = "test"
-        cid = "aaaaaa"
-        user = "guest"
+        app = "mendel"
+        cid = "cbb0af"
+        user = "wes"
         np = 1
         jid = self.sched.qsub(app,cid,user,np)
         self.assertTrue(jid > 0)
@@ -47,5 +42,3 @@ class TestScheduler(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-

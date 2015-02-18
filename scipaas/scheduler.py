@@ -6,7 +6,6 @@ from gluino import DAL, Field
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
 
-#db = DAL(config.uri, auto_import=True, migrate=False)
 db = DAL(config.uri, auto_import=False, migrate=False, folder=config.dbdir)
 
 apps = db.define_table('apps', Field('id','integer'),
@@ -28,7 +27,7 @@ jobs = db.define_table('jobs', Field('id','integer'),
 class scheduler(object):
     """simple single process scheduler"""
 
-    def __init__(self):
+    def poll(self):
         # start polling thread
         t = threading.Thread(target = self.assignTask)
         t.daemon = True

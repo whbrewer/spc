@@ -8,8 +8,8 @@ from gluino import DAL, Field
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
 
 STATE_RUN = 'R'
-STATE_COMPLETED = 'C'
 STATE_QUEUED = 'Q'
+STATE_COMPLETED = 'C'
 
 class scheduler(object):
     """multi-process scheduler"""
@@ -17,7 +17,9 @@ class scheduler(object):
     def __init__(self):
         self.sem = BoundedSemaphore(config.np) 
         self.mutex = Lock()
-        # start polling thread which checks queue status every second
+
+    def poll(self):
+        """start polling thread which checks queue status every second"""
         t = threading.Thread(target = self.assignTask)
         t.start()
 
@@ -97,7 +99,6 @@ class scheduler(object):
             self.sem.acquire()
         # update state to 'R' for run
         self._set_state(jid,STATE_RUN)
-        print 'start_job:',run_dir, cmd
         mycwd = os.getcwd()
         os.chdir(run_dir) # change to case directory
         os.system(cmd)
@@ -126,7 +127,3 @@ class scheduler(object):
 
     def test_qfront(self):
         print self.qfront()
-
-if __name__ == "__main__":
-    sched = scheduler()
-    sched.test_qfront()

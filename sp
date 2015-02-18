@@ -18,6 +18,7 @@ def usage():
     buf += "create   create a view template for appname (e.g. sp create myapp)\n"
     buf += "search   search for available apps\n"
     buf += "list     list installed or available apps (e.g. sp list [available|installed]) \n"
+    buf += "test     run tests\n"
     buf += "install  install an app\n"
     return buf
 
@@ -120,6 +121,9 @@ if __name__ == "__main__":
         os.system("python scipaas/scipaas.py")
     elif (sys.argv[1] == "search"):
         print notyet
+    elif (sys.argv[1] == "test"):
+        os.chdir('tests')  
+        os.system("python testall.py")
     elif (sys.argv[1] == "install"):
         install_usage = "usage: sp install appname"
         if len(sys.argv) == 3:

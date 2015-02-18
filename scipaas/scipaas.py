@@ -32,8 +32,8 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # create instance of scheduler
-sched = scheduler.scheduler()
-#sched = scheduler_smp.scheduler()
+#sched = scheduler.scheduler()
+sched = scheduler_smp.scheduler()
 
 pbuffer = ''
 
@@ -1048,5 +1048,10 @@ def authorized():
 
 if __name__ == "__main__":
     load_apps()
-    run(server=config.server, app=app, host='0.0.0.0', port=8081, debug=True)
+    # start a polling thread to continuously check for queued jobs
+    sched.poll() 
+    try:
+        run(server=config.server, app=app, host='0.0.0.0', port=8081, debug=True)
+    except:
+        run(app=app, host='0.0.0.0', port=8081, debug=True)
     #run(app=app, host='0.0.0.0', port=8081, debug=True)
