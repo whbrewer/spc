@@ -80,6 +80,7 @@ input.cid {
 .output { left: 600px; top: 0px; background: #a62300; color: white }
 .files  { left: 700px; top: 0px; background: #0a0a0a; color: white }
 .clear  { left: 200px; top: -5px; position: fixed; }
+.stop   { left: 0px; top: 50px; background: #ff0000; width: 60px; }
 
 .apps {
     background-color: rgb(100,100,100);

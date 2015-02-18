@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import threading, time, os
 import config
-from multiprocessing import Process, BoundedSemaphore, Lock
 from gluino import DAL, Field
 
 #inspired from:
@@ -46,9 +45,10 @@ class scheduler(object):
 
     def qsub(self,app,cid,user,np):
         state = 'Q'
-        jobs.insert(user=user, app=app, cid=cid, state=state, 
-                    time_submit=time.asctime(), np=np)
+        jid = jobs.insert(user=user, app=app, cid=cid, state=state, 
+                        time_submit=time.asctime(), np=np)
         db.commit()
+        return str(jid)
 
     def qfront(self):
         # this is giving a recursive cursor error, but it still works
@@ -80,23 +80,15 @@ class scheduler(object):
         else: # dont use mpi
             command = apps(name=app).command
 
-        #rel_path=(os.pardir+os.sep)*4
         exe = os.path.join(config.apps_dir,app,app)
         outfn = app + ".out"
         cmd = command + ' >& ' + outfn
 
         run_dir = os.path.join(config.user_dir,user,app,cid)
-        # this one blocks
-        sem = threading.BoundedSemaphore(config.np) 
-        thread = threading.Thread(target = self.start_job(run_dir,cmd,app,jid,sem))
-        # this one doesn't block
-        #thread = threading.Thread(target=self.start_job,
-        #                          args=(run_dir,cmd,app,jid,sem))
-        # this is not causing the thread to run in the background
-        #thread.daemon = True 
+        thread = threading.Thread(target = self.start_job(run_dir,cmd,app,jid))
         thread.start()
 
-    def start_job(self,run_dir,cmd,app,jid,sem):
+    def start_job(self,run_dir,cmd,app,jid):
         print 'starting thread to run job:',run_dir, cmd
         os.system("cd " + run_dir + ";" + cmd )
         # let user know job has ended
@@ -104,11 +96,8 @@ class scheduler(object):
         with open(os.path.join(run_dir,outfn),"a") as f:
             f.write("FINISHED EXECUTION")
         # update state to completed
-        sem = threading.BoundedSemaphore(config.np) 
-        sem.acquire()
         db.jobs[jid] = dict(state='C')
         db.commit()
-        sem.release()
 
     def stop(self,app):
         os.system("killall " + app)

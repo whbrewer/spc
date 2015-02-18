@@ -7,6 +7,10 @@ from gluino import DAL, Field
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
 
+STATE_RUN = 'R'
+STATE_COMPLETED = 'C'
+STATE_QUEUED = 'Q'
+
 class scheduler(object):
     """multi-process scheduler"""
 
@@ -28,17 +32,17 @@ class scheduler(object):
 
     def qsub(self,app,cid,user,np):
         """queue job ... really just set state to 'Q'."""
-        state = 'Q'
         db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
-        db.jobs.insert(user=user, app=app, cid=cid, state=state, 
-                       time_submit=time.asctime(), np=np)
+        jid = db.jobs.insert(user=user, app=app, cid=cid, state=STATE_QUEUED, 
+                             time_submit=time.asctime(), np=np)
         db.commit()
         db.close()
+        return str(jid)
 
     def qfront(self):
         """pop the top job off of the queue that is in a queued 'Q' state"""
         db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
-        jid = db.jobs(db.jobs.state=='Q')
+        jid = db.jobs(db.jobs.state==STATE_QUEUED)
         db.close()
         if jid: return jid.id
         else: return None
@@ -53,12 +57,11 @@ class scheduler(object):
             return True
         except:
             return False
-       
 
     def qstat(self):
         """return the number of jobs in a queued 'Q' state"""
         db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
-        return db(db.jobs.state=='Q').count()
+        return db(db.jobs.state==STATE_QUEUED).count()
         db.close()
 
     def start(self,jid):
@@ -93,12 +96,7 @@ class scheduler(object):
         for i in range(np):
             self.sem.acquire()
         # update state to 'R' for run
-        self.mutex.acquire()
-        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
-        db.jobs[jid] = dict(state='R')
-        db.commit()
-        db.close()
-        self.mutex.release()
+        self._set_state(jid,STATE_RUN)
         print 'start_job:',run_dir, cmd
         mycwd = os.getcwd()
         os.chdir(run_dir) # change to case directory
@@ -109,15 +107,26 @@ class scheduler(object):
             f.write("FINISHED EXECUTION")
         # update state to 'C' for completed
         os.chdir(mycwd) # return to SciPaaS root directory
+        self._set_state(jid,STATE_COMPLETED)
+        for i in range(np):
+            self.sem.release()
+
+    def _set_state(self,jid,state):
+        """update state of job"""
         self.mutex.acquire()
         db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
-        db.jobs[jid] = dict(state='C')
+        db.jobs[jid] = dict(state=state)
         db.commit()
         db.close()
         self.mutex.release()
-        for i in range(np):
-            self.sem.release()
 
     def stop(self,app):
         p.shutdown
         #os.system("killall " + app)
+
+    def test_qfront(self):
+        print self.qfront()
+
+if __name__ == "__main__":
+    sched = scheduler()
+    sched.test_qfront()

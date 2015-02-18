@@ -8,7 +8,7 @@ import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib
 # other SciPaaS modules
 import config, uploads, process
-import scheduler, scheduler2
+import scheduler, scheduler_smp
 import apps as appmod
 import plots as plotmod
 import aws as awsmod
@@ -32,8 +32,8 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # create instance of scheduler
-#sched = scheduler.scheduler()
-sched = scheduler2.scheduler()
+sched = scheduler.scheduler()
+#sched = scheduler_smp.scheduler()
 
 pbuffer = ''
 
@@ -64,6 +64,7 @@ def confirm_form():
 @post('/execute')
 def execute():
     global user
+    check_user_var()
     app = request.forms.app
     cid = request.forms.cid
     np = request.forms.np
@@ -88,8 +89,8 @@ def execute():
         params['cid'] = cid
         params['app'] = app
         params['user'] = user
-        sched.qsub(app,cid,user,np)
-        redirect("/monitor?app="+app+"&cid="+cid)
+        jid = sched.qsub(app,cid,user,np)
+        redirect("/monitor?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 
@@ -160,7 +161,7 @@ def slurp_file(path):
         f.close()
         return data
     except IOError:
-        return("ERROR: the file cannot be opened or does not exist.\nSelect a case id first.")
+        return("ERROR: the file cannot be opened or does not exist.\nPerhaps the job did not start?")
 
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
@@ -402,11 +403,15 @@ def delete_job(jid):
     sched.qdel(jid)
     redirect("/jobs")
 
-# this doesnt work.. needs to be run as a separate thread
-@get('/jobs/stop/<app>')
-def stop_job(app):
-    os.system("killall " + app)
-    redirect("/jobs")
+@post('/proc/stop')
+def stop_job():
+    if not authorized(): redirect('/login')
+    check_user_var()
+    app = request.query.app
+    cid = request.query.cid
+    jid = request.forms.jid
+    sched.stop(jid)
+    redirect("/monitor?app="+app+"&cid="+cid+"&jid="+jid)
 
 @get('/<app>')
 def show_app(app):
@@ -956,7 +961,9 @@ def monitor():
     check_user_var()
     cid = request.query.cid
     app = request.query.app
-    params = { 'cid': cid, 'app': app, 'user': user, 'apps': myapps.keys() }
+    jid = request.query.jid
+    params = { 'cid': cid, 'app': app, 'jid': jid, 'user': user, 
+               'apps': myapps.keys() }
     return template('monitor', params)
 
 @get('/zipcase')

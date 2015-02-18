@@ -1,3 +1,6 @@
+- give apps an owner... either owner or admin can modify
+- need to write pid to db on start of job, then pull it out and
+  run os.kill when need to stop job
 - work on scheduler
     x get multithreading working
     * take into account num of processors users has requested when starting jobs
