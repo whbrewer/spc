@@ -2,7 +2,6 @@ import unittest
 import sys, os
 # prepend parent directory to path
 sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
-
 from scipaas import scheduler_smp
 
 class TestScheduler(unittest.TestCase):
@@ -15,7 +14,7 @@ class TestScheduler(unittest.TestCase):
 
     def test_qsub(self):
         app = "mendel"
-        cid = "cbb0af"
+        cid = "TEST00"
         user = "wes"
         np = 1
         jid = self.sched.qsub(app,cid,user,np)

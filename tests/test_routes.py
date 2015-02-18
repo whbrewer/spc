@@ -15,16 +15,24 @@ class TestRoutes(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_registration(self):
+    # test valid name 
+    def test_registration_valid(self):
         url = URL+'/login'
         values = { 'user': 'xyz123', 'password1': 'abcd1234', 
                    'password2': 'abcd1234', 'email': 'test@scipaas.com' }
-        self.post(url,values)
+        return self.post(url,values)
+
+    # test already existing name 
+    def test_registration_invalid(self):
+        url = URL+'/login'
+        values = { 'user': 'admin', 'password1': 'admin', 
+                   'password2': 'admin', 'email': 'admin@scipaas.com' }
+        return self.post(url,values)
         
     def test_login(self):
         url = URL+'/login'
-        values = { 'user': 'wes', 'passwd': 'john316' }
-        self.post(url,values)
+        values = { 'user': 'guest', 'passwd': 'guest' }
+        return self.post(url,values)
 
     def post(self,url,values):
         data = urllib.urlencode(values)
@@ -32,10 +40,9 @@ class TestRoutes(unittest.TestCase):
         response = urllib2.urlopen(req)
         html = response.read()
         #print html
-        #print response.getcode()
+        print response.getcode()
         return self.assertEqual(response.getcode(),httplib.OK)
 
 if __name__ == '__main__':
     unittest.main()
-
 
