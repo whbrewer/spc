@@ -75,6 +75,7 @@ input.cid {
 .jobs   { left: 100px; top: 0px; background: #280671; color: white }
 .wall   { left: 200px; top: 0px; background: #bf4e30; color: white }
 .start  { left: 300px; top: 0px; background: #759d00; color: white }
+.add    { left: 0px;   top: 0px; background: #759d00; color: white }
 .plot   { left: 400px; top: 0px; background: #4112AE; color: white }
 .inputs { left: 500px; top: 0px; background: #bf4e30; color: white }
 .output { left: 600px; top: 0px; background: #a62300; color: white }

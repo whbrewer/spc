@@ -93,32 +93,11 @@ def dlfile(url):
 
 # process command line options
 if __name__ == "__main__":
-    if(sys.argv[1] == "create"):
-        if (len(sys.argv) == 3): 
-            i = Apps.select("name=?",[ sys.argv[2] ])
-            input_format = i[0].input_format
-            print 'input format is:',input_format
-            if sys.argv[2]: 
-                if input_format == 'namelist':
-                    myapp = appmod.namelist(sys.argv[2])
-                elif input_format == 'ini':
-                    myapp = appmod.ini(sys.argv[2])
-                elif input_format == 'xml':
-                    myapp = appmod.xml(sys.argv[2])
-                elif input_format == 'json':
-                    myapp = appmod.json(sys.argv[2])
-                else:
-                    print "ERROR: input format type not supported:", input_format
-            params,_,_ = myapp.read_params()
-            if myapp.write_html_template():
-                print "successfully output template"
-        else:
-            print "usage: sp create appname"
-    elif (sys.argv[1] == "init"):
+    if (sys.argv[1] == "init"):
         print "creating database " + config.db
         initdb()
     elif (sys.argv[1] == "go"):
-        os.system("python scipaas/scipaas.py")
+        os.system("python scipaas/main.py")
     elif (sys.argv[1] == "search"):
         print notyet
     elif (sys.argv[1] == "test"):

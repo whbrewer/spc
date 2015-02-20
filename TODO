@@ -1,3 +1,15 @@
+- generate config.py file on "sp init"
+- add tags to add app
+- tried to separate routes into separate files, but this is a problem
+  because of global vars such as myapps or user
+- when unzip file make sure to change to filename that user set as appname
+- what to use for T/F values? must standardize on sth
+  depends on what is in the input file... 
+  must ask how app represents Boolean values
+
+- refactor: capitalize all class names to be consistent with Python naming
+  conventions
+- refactor: rename all routes with consistent naming scheme
 - give apps an owner... either owner or admin can modify
 - need to write pid to db on start of job, then pull it out and
   run os.kill when need to stop job
@@ -47,8 +59,6 @@
 Next:
 - add billing ability
 - add search button to myjobs
-- add "list files" button, probably in myjobs
-- use dal.py to create initdb in sp
 - create reader for generic input file
 - for namelist.input files ignore comments !
 - ignore lines option for plotting files
@@ -57,7 +67,6 @@ Next:
 - get scipaas working under gae
 - for errors especially in try/except structures, try to show some error message
   that is consistent with why it actually crashed.
-- remove macaron/sqlite references from sp
 - improve add app interface, use ajax to check if app exists
 - if there is only one plot, show it on clicking the plot button
 - about app template

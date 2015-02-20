@@ -15,22 +15,16 @@
 
 %if defined('user'):
     user:{{user}} 
-%else:
-    user:none
+    &bull; 
 %end
-&bull; 
 
 %if defined('app'):
     app:{{app}} 
-%else:
-    app:none
+    &bull; 
 %end
-&bull; 
 
 %if defined('cid'):
     cid:{{cid}}
-%else:
-    cid:none
 %end
 
 </div>

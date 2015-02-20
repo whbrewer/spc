@@ -146,22 +146,23 @@ def inputs():
         run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
         fn = os.path.join(run_dir,myapps[app].simfn)
         inputs = slurp_file(fn)
-        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u, 'fn': fn,
-                   'apps': myapps.keys() }
+        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u, 
+                   'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
         params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
 def slurp_file(path):
-    """read file given by path and return the contents of the file"""
+    """read file given by path and return the contents of the file
+       as a single string datatype"""
     try:
         f = open(path,'r')
         data = f.read()
         f.close()
         return data
     except IOError:
-        return("ERROR: the file cannot be opened or does not exist.\nPerhaps the job did not start?")
+        return("ERROR: the file cannot be opened or does not exist")
 
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
@@ -568,6 +569,14 @@ def check_user():
     if users(user=user): return 'true'
     else: return 'false' 
 
+@post('/app_exists/<appname>')
+def app_exists(appname):
+    """This is the server-side AJAX function to check if an app
+       exists in the DB."""
+    # return booleans as strings here b/c they get parsed by JavaScript
+    if apps(name=appname): return 'true'
+    else: return 'false' 
+
 def check_user_var():
     # this check is because user is global var when restarting scipaas
     # user does not exist so return... need to implement better solution
@@ -584,6 +593,10 @@ def showapps():
     return template('apps', params, rows=result)
 
 @get('/apps/load')
+def get_load_apps():
+    load_apps()
+    redirect('/apps')
+
 def load_apps():
     global myapps, default_app
     # Connect to DB 
@@ -596,55 +609,31 @@ def load_apps():
         postprocess = row['postprocess']
         input_format = row['input_format']
         print 'loading: %s (id: %s)' % (name,appid)
-        if(input_format=='namelist'):
-            myapp = appmod.namelist(name,appid)
-        elif(input_format=='ini'):
-            myapp = appmod.ini(name,appid,preprocess,postprocess)
-        elif(input_format=='xml'):
-            myapp = appmod.xml(name,appid)
-        elif(input_format=='json'):
-            myapp = appmod.json(name,appid)
-        else:
-            return 'ERROR: input_format ',input_format,' not supported'
-        myapps[name] = myapp
+        myapps[name] = app_instance(input_format,name,preprocess,postprocess)
     default_app = name # simple soln - use last app read from DB
-    return 0
+    return True
 
-@get('/apps/add')
-def create_app_form():
-    if not authorized(): redirect('/login')
-    return static_file('addapp.html', root='static')
-
-@post('/apps/add')
-def addapp():
-    # get data from form
-    appname = request.forms.get('appname')
-    description = request.forms.get('description')
-    category = request.forms.get('category')
-    language = request.forms.get('language')  
-    input_format = request.forms.get('input_format')
-    command = request.forms.get('command')
-    preprocess = request.forms.get('preprocess')
-    postprocess = request.forms.get('postprocess')
-    # put in db
-    a = appmod.app()
-    a.create(appname,description,category,language,input_format,command,preprocess,postprocess)
-    redirect("/apps")
-
-@post('/apps/create_view')
-def create_view():
-    appname = request.forms.get('appname')
-    params,_,_ = myapp.read_params()
-    if myapp.write_html_template():
-        return "SUCCESS: successfully output template"
-    else:
-        return "ERROR: there was a problem when creating view"
-
-# this is dangerous... needs to be POST not GET
-@get('/apps/delete/<appid>')
+# allow only admin or user to delete apps
+@post('/apps/delete/<appid>')
 def delete_app(appid):
-    a = appmod.app()
-    a.delete(appid)
+    global user
+    check_user_var()
+    appname = request.forms.appname
+    # get the user name given user id
+    #user = users(user
+    uid = apps(appid).uid
+    owner = users(id=uid).user
+    #print "appid:", appid, "uid:", uid , "user:", user
+    if user == owner or user == 'admin':
+        # delete entry in DB
+        a = appmod.app()
+        a.delete(appid)
+    else:
+        return template("error", err="wrong user. must be owner or admin")
+    # delete files
+    path = os.path.join(config.apps_dir,appname)
+    if os.path.isdir(path):
+        shutil.rmtree(path)
     redirect("/apps")
 
 @get('/apps/edit/<appid>')
@@ -692,31 +681,35 @@ def list_files():
         
     binary_extensions = ['.bz2','.gz','.xz','.zip']
     image_extensions = ['.png','.gif','.jpg']
-    str = '<table>'
+    buf = '<table>'
     for fn in os.listdir(path):
         this_path = os.path.join(path,fn)
         _, ext = os.path.splitext(this_path)
-        str += '<tr>'
-        #str += '<td><form action="/'+app+'/delete/'+fn+'">'
-        #str += '<input type="image" src="/static/images/trash_can.gif"></form></td>\n'
-        str += '<td>'
+        buf += '<tr>'
+        #buf += '<td><form action="/'+app+'/delete/'+fn+'">'
+        #buf += '<input type="image" src="/static/images/trash_can.gif">'
+        #buf += '</form></td>\n'
+        buf += '<td>'
         if os.path.isdir(this_path): 
-            str += '<a href="/files?app='+app+'&cid='+cid+'&path='+this_path+'">'+fn+'/</a>'
+            buf += '<a href="/files?app='+app+'&cid='+cid+'&path=' \
+                                         +this_path+'">'+fn+'/</a>'
         elif ext in binary_extensions:
-            str += '<a href="'+this_path+'">'+fn+'</a>'
+            buf += '<a href="'+this_path+'">'+fn+'</a>'
         elif ext in image_extensions:
-            str += '<a href="'+this_path+'"><img src="'+this_path+'" width=100><br>'+fn+'</a>'
+            buf += '<a href="'+this_path+'"><img src="'+\
+                   this_path+'" width=100><br>'+fn+'</a>'
         else:
-            str += '<a href="/more?app='+app+'&cid='+cid+\
+            buf += '<a href="/more?app='+app+'&cid='+cid+\
                        '&filepath='+os.path.join(path,fn)+'">'+fn+'</a>'
-        str += '</td></tr>\n'
-    str += '</table>'
-    params = { 'content': str }
+        buf += '</td></tr>\n'
+    buf += '</table>'
+    params = { 'content': buf }
     params['cid'] = cid
     params['app'] = app
     params['user'] = u
     params['apps'] = myapps.keys()
-    params['cases'] = '<a href="/files?app='+app+'&cid='+cid+'&path='+case_path+'">cases</a>'
+    params['cases'] = '<a href="/files?app='+app+'&cid='+cid+'&path='+\
+                      case_path+'">cases</a>'
     return template('files', params)
 
 @get('/plots/edit')
@@ -1003,37 +996,135 @@ def zipget():
     status = "file downloaded"
     redirect("/aws?status="+status)
 
-@post('/apps/upload')
-def do_upload():
-    #appname    = request.forms.get('appname')
-    upload     = request.files.get('upload')
-    name, ext = os.path.splitext(upload.filename)
-    # we're not inputting appname yet so hold off on this check
-    #if not name == appname:
-    #    return 'ERROR: appname does not equal upload filename... try again'
-    if ext not in ('.zip','.txt'):
-        return 'ERROR: File extension not allowed.'
-    try:
-        save_path_dir = os.path.join(appmod.apps_dir,name)
-        save_path = save_path_dir + ext
-        if os.path.isfile(save_path):
-            return 'ERROR: zip file exists already. Please remove first.'
-        upload.save(save_path)
-        # before unzip file check if directory exists
-        if os.path.isdir(save_path_dir):
-            msg = 'ERROR: app already exists. Please change name.'
+@get('/addapp')
+@post('/addapp/<step>')
+def addapp(step="step0"):
+    global user
+    check_user_var()
+    appname = request.forms.appname
+    # ask for app name
+    if step == "step0": 
+        return template('addapp/step0')
+    # ask user to configure app
+    elif step == "step1": 
+        if len(appname) < 3:
+            return template('error',err="name must be at least 3 character")
+        elif app_exists(appname) == 'true':
+            return template('error',err="app already exists")
         else:
-            u = uploads.uploader()
-            u.unzip(save_path)
-            msg = u.verify(save_path_dir,name)
-        # remove zip file
-        os.remove(save_path)
-        return msg
-    except IOError:
-        return "IOerror:", IOError
-        raise
+            params = {'appname': appname, 'user': user }
+            return template('addapp/step1',params)
+    # write app configuration to db
+    elif step == "step2": 
+        category = request.forms.category
+        language = request.forms.language
+        description = request.forms.description
+        input_format = request.forms.input_format
+        command = request.forms.command
+        preprocess = request.forms.preprocess
+        postprocess = request.forms.postprocess
+        # put in db
+        a = appmod.app()
+        #print "user:",user
+        uid = users(user=user).id
+        a.create(appname, description, category, language, 
+                 input_format, command, preprocess, postprocess, uid)
+        params = {'appname': appname, 'input_format': input_format }
+        return template('addapp/step2',params)
+    # upload zip file and return a text copy of the input file
+    elif step == "step3":
+        appname    = request.forms.appname
+        upload     = request.files.upload
+        if not upload:
+            return template('addapp/error',
+                   err="no file selected. press back button and try again")
+        name, ext = os.path.splitext(upload.filename)
+        if ext not in ('.zip','.txt'):
+            return 'ERROR: File extension not allowed.'
+        try:
+            save_path_dir = os.path.join(appmod.apps_dir,name)
+            save_path = save_path_dir + ext
+            if os.path.isfile(save_path):
+                msg = 'zip file exists already. Please remove first.'
+                return template('addapp/error', err=msg)
+            upload.save(save_path)
+            # before unzip file check if directory exists
+            if os.path.isdir(save_path_dir):
+                msg =  'app folder already exists in apps dir.<br>'
+                msg += 'click "apps" delete the app and retry'
+                os.remove(save_path)
+                return template('addapp/error', err=msg)
+            else:
+                u = uploads.uploader()
+                u.unzip(save_path)
+                msg = u.verify(save_path_dir,name)
+            # remove zip file
+            os.remove(save_path)
+            # return the contents of the input file
+            # this is just for namelist.input format, but
+            # we need to create this dynamically based on input_format
+            fn = appname + ".in"
+            path = os.path.join(config.apps_dir,appname,fn)
+            params = {'fn': fn, 'contents': slurp_file(path), 
+                      'appname': appname }
+            return template('addapp/step3', params)
+        except IOError:
+            return "IOerror:", IOError
+            raise
+        else:
+            return "ERROR: must be already a file"
+    # show parameters with options how to tag and describe each parameter
+    elif step == "step4":
+        input_format = request.forms.input_format
+        appname = request.forms.appname
+        myapp = app_instance(input_format,appname)
+        inputs,_,_ = myapp.read_params()
+        params = { "appname": appname }
+        return template('addapp/step4', params, inputs=inputs, 
+                                        input_format=input_format)
+    # create a template in the views/apps folder 
+    elif step == "step5":
+        appname = request.forms.get('appname')
+        html_tags = request.forms.getlist('html_tags')
+        data_type = request.forms.getlist('data_type')
+        descriptions = request.forms.getlist('descriptions')
+        bool_rep = request.forms.bool_rep
+        keys = request.forms.getlist('keys')
+        key_tag = dict(zip(keys,html_tags))
+        key_desc = dict(zip(keys,descriptions))
+        input_format = request.forms.input_format
+        myapp = app_instance(input_format,appname)
+        params,_,_ = myapp.read_params()
+        if myapp.write_html_template(html_tags=key_tag,bool_rep=bool_rep,
+                                     desc=key_desc):
+            load_apps()
+            params = { "appname": appname }
+            return template('addapp/step5', params)
+        else:
+            return "ERROR: there was a problem when creating view"
     else:
-        return "ERROR: must be already a file"
+        return template('error', err="step not supported")
+
+# this shows a listing of all files and allows the user to pick
+# which one to use
+#@get('/upload_contents/<appname>/<fn>')
+#def select_input_file(appname,fn):
+#    path = os.path.join(config.apps_dir,appname,fn)
+#    params = {'fn': fn, 'contents': slurp_file(path), 'appname': appname }
+#    return template('addapp/step3', params)
+
+def app_instance(input_format,appname,preprocess="",postprocess=""):
+    if(input_format=='namelist'):
+        myapp = appmod.namelist(appname)
+    elif(input_format=='ini'):
+        myapp = appmod.ini(appname,preprocess,postprocess)
+    elif(input_format=='xml'):
+        myapp = appmod.xml(appname)
+    elif(input_format=='json'):
+        myapp = appmod.json(appname)
+    else:
+        return 'ERROR: input_format ',input_format,' not supported'
+    return myapp
 
 def authorized():
     '''Return True if user is already logged in, False otherwise'''
@@ -1051,7 +1142,8 @@ if __name__ == "__main__":
     # start a polling thread to continuously check for queued jobs
     sched.poll() 
     try:
-        run(server=config.server, app=app, host='0.0.0.0', port=8081, debug=True)
+        run(server=config.server, app=app, host='0.0.0.0',\
+            port=8081, debug=False)
     except:
         run(app=app, host='0.0.0.0', port=8081, debug=True)
-    #run(app=app, host='0.0.0.0', port=8081, debug=True)
+

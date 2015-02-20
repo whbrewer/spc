@@ -34,7 +34,8 @@ class scheduler(object):
 
     def qsub(self,app,cid,user,np):
         """queue job ... really just set state to 'Q'."""
-        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, 
+                 folder=config.dbdir)
         jid = db.jobs.insert(user=user, app=app, cid=cid, state=STATE_QUEUED, 
                              time_submit=time.asctime(), np=np)
         db.commit()
@@ -43,7 +44,8 @@ class scheduler(object):
 
     def qfront(self):
         """pop the top job off of the queue that is in a queued 'Q' state"""
-        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, 
+                 folder=config.dbdir)
         jid = db.jobs(db.jobs.state==STATE_QUEUED)
         db.close()
         if jid: return jid.id
@@ -52,7 +54,8 @@ class scheduler(object):
     def qdel(self,jid):
         """delete job jid from the queue"""
         try:
-            db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+            db = DAL(config.uri, auto_import=True, migrate=False, 
+                     folder=config.dbdir)
             del db.jobs[jid]
             db.commit()
             db.close()
@@ -62,13 +65,15 @@ class scheduler(object):
 
     def qstat(self):
         """return the number of jobs in a queued 'Q' state"""
-        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, 
+                 folder=config.dbdir)
         return db(db.jobs.state==STATE_QUEUED).count()
         db.close()
 
     def start(self,jid):
         """start running a job by creating a new process"""
-        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, 
+                 folder=config.dbdir)
         user = db.jobs(jid).user
         app = db.jobs(jid).app
         cid = db.jobs(jid).cid
@@ -115,7 +120,8 @@ class scheduler(object):
     def _set_state(self,jid,state):
         """update state of job"""
         self.mutex.acquire()
-        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, 
+                 folder=config.dbdir)
         db.jobs[jid] = dict(state=state)
         db.commit()
         db.close()

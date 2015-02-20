@@ -9,7 +9,7 @@ html {
 }
 
 body {
-    background-color: rgb(246,246,246);
+    /* background-color: rgb(246,246,246); */
     margin: 0 auto;
     padding: 3em;
     width: 85%;
@@ -35,4 +35,8 @@ a { color: rgb(74,74,74);}
 
 a.plain { text-decoration: none }
 
-input:focus { background: yellow; color: black; }
+input:focus { background: #FFFF99; color: black; }
+
+input, textarea {
+  background-color : #dfdfdf;
+}
