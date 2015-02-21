@@ -1,3 +1,4 @@
+- test
 - generate config.py file on "sp init"
 - add tags to add app
 - tried to separate routes into separate files, but this is a problem
