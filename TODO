@@ -1,4 +1,8 @@
-- test
+- need upload feature to upload datafile to scipaas
+- be able to read and parse and output textfile to display nicely in a table
+- Using Assertions Effectively https://wiki.python.org/moin/UsingAssertionsEffectively
+- add column to jobs table which assigns each job as a 
+  C = case, D = data, T = template
 - generate config.py file on "sp init"
 - add tags to add app
 - tried to separate routes into separate files, but this is a problem

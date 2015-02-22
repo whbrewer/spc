@@ -71,6 +71,13 @@ def initdb():
     dal.db.datasource.insert(filename="din.out",cols="1:2",pltid=1)
     dal.db.datasource.insert(filename="nucs.out",cols="1:2",pltid=2)
     dal.db.datasource.insert(filename="codons.out",cols="1:2",pltid=3)
+    #dal.db.disciplines.insert(name="Computational Linguistics")
+    #dal.db.disciplines.insert(name="Computational Finance")
+    #dal.db.disciplines.insert(name="Computational Biology")
+    #dal.db.disciplines.insert(name="Computational Fluid Dynamics")
+    #dal.db.disciplines.insert(name="Computational Physics")
+    #dal.db.disciplines.insert(name="Numerical Weather Prediction")
+    #dal.db.disciplines.insert(name="Molecular Dynamics")
     # write changes to db
     dal.db.commit()
 

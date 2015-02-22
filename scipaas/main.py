@@ -162,7 +162,7 @@ def slurp_file(path):
         f.close()
         return data
     except IOError:
-        return("ERROR: the file cannot be opened or does not exist")
+        return("ERROR: the file cannot be opened or does not exist " + path)
 
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
@@ -1002,6 +1002,7 @@ def addapp(step="step0"):
     global user
     check_user_var()
     appname = request.forms.appname
+    input_format = request.forms.input_format
     # ask for app name
     if step == "step0": 
         return template('addapp/step0')
@@ -1019,7 +1020,6 @@ def addapp(step="step0"):
         category = request.forms.category
         language = request.forms.language
         description = request.forms.description
-        input_format = request.forms.input_format
         command = request.forms.command
         preprocess = request.forms.preprocess
         postprocess = request.forms.postprocess
@@ -1063,10 +1063,18 @@ def addapp(step="step0"):
             # return the contents of the input file
             # this is just for namelist.input format, but
             # we need to create this dynamically based on input_format
-            fn = appname + ".in"
+            if input_format == "namelist":
+                fn = appname + ".in"
+            elif input_format == "ini":
+                fn = appname + ".ini"
+            elif input_format == "xml":
+                fn = appname + ".xml"
+            else:
+                return "ERROR: input_format not valid: ", input_format
+
             path = os.path.join(config.apps_dir,appname,fn)
             params = {'fn': fn, 'contents': slurp_file(path), 
-                      'appname': appname }
+                      'appname': appname, 'input_format': input_format }
             return template('addapp/step3', params)
         except IOError:
             return "IOerror:", IOError
@@ -1079,6 +1087,7 @@ def addapp(step="step0"):
         appname = request.forms.appname
         myapp = app_instance(input_format,appname)
         inputs,_,_ = myapp.read_params()
+        print "inputs:", inputs
         params = { "appname": appname }
         return template('addapp/step4', params, inputs=inputs, 
                                         input_format=input_format)
@@ -1113,7 +1122,27 @@ def addapp(step="step0"):
 #    params = {'fn': fn, 'contents': slurp_file(path), 'appname': appname }
 #    return template('addapp/step3', params)
 
-def app_instance(input_format,appname,preprocess="",postprocess=""):
+@post('/upload')
+def upload_data():
+    global user
+    if not authorized(): redirect('/login')
+    upload = request.files.upload
+    if not upload:
+        return template('error', err="no file selected.")
+    #name, ext = os.path.splitext(upload.filename)
+    #if ext not in ('.zip','.txt'):
+    #    return template('error', err="file extension not allowed")
+    #try:
+    save_path_dir = os.path.join(config.user_dir,user,config.upload_dir)
+    save_path = os.path.join(save_path_dir,upload.filename)
+    if os.path.isfile(save_path):
+        return template('error', err="file exists")
+    upload.save(save_path)
+    return "SUCCESS"
+    #except:
+    #    return "FAILED"
+
+def app_instance(input_format,appname,preprocess=0,postprocess=0):
     if(input_format=='namelist'):
         myapp = appmod.namelist(appname)
     elif(input_format=='ini'):

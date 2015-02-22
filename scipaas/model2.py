@@ -63,3 +63,4 @@ class dal(object):
                                                         Field('rate','double'),
                                                         Field('uid','integer'))
 
+        self.disciplines = self.db.define_table('disciplines', Field('name'))

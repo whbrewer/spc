@@ -59,10 +59,11 @@ class app(object):
             f.write("<h2 class=\"tab\">" + block + "</h2>\n")
             f.write("<table><tbody>\n")
             for param in self.blockmap[block]:
-                if desc:
-                    buf = "<tr><td>" + desc[param] + ":</td>\n"
-                else:
-                    buf = "<tr><td>" + param + ":</td>\n"
+                if not html_tags[param] == "hidden":
+                    if desc: # description
+                        buf = "<tr><td>" + desc[param] + ":</td>\n"
+                    else:
+                        buf = "<tr><td>" + param + ":</td>\n"
                 if html_tags[param] == "checkbox":
                     buf += "\t<td><input type=\"checkbox\" name=\"" \
                                     + param + "\" value=\"true\"\n"
@@ -71,8 +72,8 @@ class app(object):
                     buf += "%end\n"
                     buf += "\t\t/>\n"
                 elif html_tags[param] == "hidden":
-                    buf += "\t<td><input type=\"hidden\" name=\"" \
-                                    + param + "\" value=\"{{" + param + "}}\"/>"
+                    buf = "\t<input type=\"hidden\" name=\"" \
+                              + param + "\" value=\"{{" + param + "}}\"/>"
                 elif html_tags[param] == "select":
                     buf += "\t<td><select name=\""+param+"\">\n"  \
                            "\t\t\t<option value=\"{{"+param+"}}\">"+ \
@@ -81,7 +82,8 @@ class app(object):
                 else: 
                     buf += "\t<td><input type=\"text\" name=\"" \
                                     + param + "\" value=\"{{" + param + "}}\"/>"
-                buf += "</td></tr>\n"
+                if not html_tags[param] == "hidden":
+                    buf += "</td></tr>\n"
                 f.write(buf)
             f.write("</tbody></table>\n")
             f.write("</div>\n\n")
@@ -214,12 +216,16 @@ class ini(app):
             fn = os.path.join(self.user_dir,user,self.appname,cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
-        #print 'fn:',fn
+
         Config = ConfigParser.ConfigParser()
         out = Config.read(fn)
         params = {}
         blockmap = {}
         blockorder = []
+
+        if not os.path.isfile(fn):
+            print "ERROR: input file does not exist: " + fn
+
         for section in Config.sections():
             options = Config.options(section)
             blockorder += [ section ]
