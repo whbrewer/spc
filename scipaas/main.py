@@ -7,12 +7,13 @@ import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib
 # other SciPaaS modules
-import config, uploads, scheduler, process
+import config, uploads, process
+import scheduler, scheduler_smp
 import apps as appmod
 import plots as plotmod
 import aws as awsmod
 # data access layer
-from gluon import DAL, Field
+from gluino import DAL, Field
 from model import *
 
 ### session management configuration ###
@@ -31,13 +32,15 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # create instance of scheduler
-sched = scheduler.scheduler()
+#sched = scheduler.scheduler()
+sched = scheduler_smp.scheduler()
 
 pbuffer = ''
 
 @post('/confirm')
 def confirm_form():
     global user
+    check_user_var()
     app = request.forms.app
     cid = str(uuid.uuid4())[:6]
     # pass the case_id to be used by the program input parameters,
@@ -46,9 +49,8 @@ def confirm_form():
     request.forms['case_id'] = cid 
     myapps[app].write_params(request.forms,user)
     # read the file 
-    run_dir = myapps[app].user_dir + os.sep + user + os.sep +  \
-              myapps[app].appname  + os.sep + cid
-    fn = run_dir + os.sep + myapps[app].simfn
+    run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
+    fn = os.path.join(run_dir,myapps[app].simfn)
     inputs = slurp_file(fn)
     # convert html tags to entities (e.g. < to &lt;)
     inputs = cgi.escape(inputs)
@@ -62,12 +64,12 @@ def confirm_form():
 @post('/execute')
 def execute():
     global user
+    check_user_var()
     app = request.forms.app
     cid = request.forms.cid
     np = request.forms.np
     params = {}
-    base_dir = myapps[app].user_dir+os.sep+user+os.sep+ \
-               app+os.sep+cid
+    base_dir = os.path.join(myapps[app].user_dir,user,app,cid)
 
     # if preprocess is set run the preprocessor
     try:
@@ -75,7 +77,7 @@ def execute():
             run_params,_,_ = myapps[app].read_params(user,cid) 
             processed_inputs = process.preprocess(run_params,
                                        myapps[app].preprocess)
-            sim_dir = base_dir + os.sep + myapps[app].preprocess
+            sim_dir = os.path.join(base_dir,myapps[app].preprocess)
             f = open(sim_dir,'w') 
             f.write(processed_inputs)
             f.close()
@@ -87,8 +89,8 @@ def execute():
         params['cid'] = cid
         params['app'] = app
         params['user'] = user
-        sched.qsub(app,cid,user,np)
-        redirect("/monitor?app="+app+"&cid="+cid)
+        jid = sched.qsub(app,cid,user,np)
+        redirect("/monitor?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 
@@ -119,8 +121,8 @@ def output():
         else:
             u = user
             c = cid
-        run_dir = myapps[app].user_dir+os.sep+u+os.sep+myapps[app].appname+os.sep+c
-        fn = run_dir + os.sep + myapps[app].outfn
+        run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
+        fn = os.path.join(run_dir,myapps[app].outfn)
         output = slurp_file(fn)
         params = { 'cid': cid, 'contents': output, 'app': app, 'user': u, 'fn': fn,
                    'apps': myapps.keys() }
@@ -141,33 +143,34 @@ def inputs():
         else:
             u = user
             c = cid
-        run_dir = myapps[app].user_dir+os.sep+u+os.sep+myapps[app].appname+os.sep+c
-        fn = run_dir + os.sep + myapps[app].simfn
+        run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
+        fn = os.path.join(run_dir,myapps[app].simfn)
         inputs = slurp_file(fn)
-        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u, 'fn': fn,
-                   'apps': myapps.keys() }
+        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u, 
+                   'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
         params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
 def slurp_file(path):
-    """read file given by path and return the contents of the file"""
+    """read file given by path and return the contents of the file
+       as a single string datatype"""
     try:
         f = open(path,'r')
         data = f.read()
         f.close()
         return data
     except IOError:
-        return("ERROR: the file cannot be opened or does not exist.\nSelect a case id first.")
+        return("ERROR: the file cannot be opened or does not exist " + path)
 
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
     global user
     check_user_var()
     num_lines = 30
-    run_dir = myapps[app].user_dir+os.sep+user+os.sep+myapps[app].appname+os.sep+cid
-    ofn = run_dir + os.sep + myapps[app].outfn
+    run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
+    ofn = os.path.join(run_dir,myapps[app].outfn)
     if os.path.exists(ofn):
         f = open(ofn,'r')
         output = f.readlines()
@@ -239,8 +242,8 @@ def post_aws_creds():
 @post('/aws/instance')
 def post_instance():
     if not authorized(): redirect('/login')
-    check_user_var()
     global user
+    check_user_var()
     i = request.forms.instance
     t = request.forms.itype
     r = request.forms.region
@@ -259,6 +262,7 @@ def aws_cred_del():
 def aws_conn(id):
     """create a connection to the EC2 machine and return the handle"""
     global user
+    check_user_var()
     uid = users(user=user).id
     creds = db(db.aws_creds.uid==uid).select().first()
     account_id = creds['account_id']
@@ -275,6 +279,7 @@ def aws_conn(id):
 def aws_status(aid):
     if not authorized(): redirect('/login')
     global user
+    check_user_var()
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -296,6 +301,7 @@ def aws_status(aid):
 def aws_start(aid):
     if not authorized(): redirect('/login')
     global user
+    check_user_var()
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -314,6 +320,7 @@ def aws_start(aid):
 def aws_stop(aid):
     if not authorized(): redirect('/login')
     global user
+    check_user_var()
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -331,8 +338,8 @@ def aws_stop(aid):
 def get_account():
     if not authorized(): redirect('/login')
     global user
-    app = request.query.app
     check_user_var()
+    app = request.query.app
     params = {}
     params['app'] = app
     params['user'] = user
@@ -359,6 +366,7 @@ def get_wall():
 @post('/wall')
 def post_wall():
     if not authorized(): redirect('/login')
+    check_user_var()
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
@@ -376,6 +384,8 @@ def post_wall():
 
 @get('/wall/delete/<wid>')
 def delete_wall_item(wid):
+    if not authorized(): redirect('/login')
+    check_user_var()
     app = request.query.app
     cid = request.query.cid
     del db.wall[wid]
@@ -384,22 +394,30 @@ def delete_wall_item(wid):
 
 @get('/jobs/delete/<jid>')
 def delete_job(jid):
+    if not authorized(): redirect('/login')
+    check_user_var()
     app = request.query.app
     cid = request.query.cid
-    path = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
-    shutil.rmtree(path)
+    path = os.path.join(myapps[app].user_dir,user,app,cid)
+    if os.path.isdir(path):
+        shutil.rmtree(path)
     sched.qdel(jid)
     redirect("/jobs")
 
-# this doesnt work.. needs to be run as a separate thread
-@get('/jobs/stop/<app>')
-def stop_job(app):
-    os.system("killall " + app)
-    redirect("/jobs")
+@post('/proc/stop')
+def stop_job():
+    if not authorized(): redirect('/login')
+    check_user_var()
+    app = request.query.app
+    cid = request.query.cid
+    jid = request.forms.jid
+    sched.stop(jid)
+    redirect("/monitor?app="+app+"&cid="+cid+"&jid="+jid)
 
 @get('/<app>')
 def show_app(app):
     if not authorized(): redirect('/login')
+    check_user_var()
     global user, myapps
     # set a session variable to keep track of the current app
     s = request.environ.get('beaker.session')
@@ -410,7 +428,7 @@ def show_app(app):
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps
-    return template(config.apps_dir+os.sep+app, params)
+    return template(os.path.join(config.apps_dir,app), params)
 
 @get('/login')
 @get('/login/<referrer>')
@@ -551,6 +569,14 @@ def check_user():
     if users(user=user): return 'true'
     else: return 'false' 
 
+@post('/app_exists/<appname>')
+def app_exists(appname):
+    """This is the server-side AJAX function to check if an app
+       exists in the DB."""
+    # return booleans as strings here b/c they get parsed by JavaScript
+    if apps(name=appname): return 'true'
+    else: return 'false' 
+
 def check_user_var():
     # this check is because user is global var when restarting scipaas
     # user does not exist so return... need to implement better solution
@@ -567,6 +593,10 @@ def showapps():
     return template('apps', params, rows=result)
 
 @get('/apps/load')
+def get_load_apps():
+    load_apps()
+    redirect('/apps')
+
 def load_apps():
     global myapps, default_app
     # Connect to DB 
@@ -579,55 +609,31 @@ def load_apps():
         postprocess = row['postprocess']
         input_format = row['input_format']
         print 'loading: %s (id: %s)' % (name,appid)
-        if(input_format=='namelist'):
-            myapp = appmod.namelist(name,appid)
-        elif(input_format=='ini'):
-            myapp = appmod.ini(name,appid,preprocess,postprocess)
-        elif(input_format=='xml'):
-            myapp = appmod.xml(name,appid)
-        elif(input_format=='json'):
-            myapp = appmod.json(name,appid)
-        else:
-            return 'ERROR: input_format ',input_format,' not supported'
-        myapps[name] = myapp
+        myapps[name] = app_instance(input_format,name,preprocess,postprocess)
     default_app = name # simple soln - use last app read from DB
-    return 0
+    return True
 
-@get('/apps/add')
-def create_app_form():
-    if not authorized(): redirect('/login')
-    return static_file('addapp.html', root='static')
-
-@post('/apps/add')
-def addapp():
-    # get data from form
-    appname = request.forms.get('appname')
-    description = request.forms.get('description')
-    category = request.forms.get('category')
-    language = request.forms.get('language')  
-    input_format = request.forms.get('input_format')
-    command = request.forms.get('command')
-    preprocess = request.forms.get('preprocess')
-    postprocess = request.forms.get('postprocess')
-    # put in db
-    a = appmod.app()
-    a.create(appname,description,category,language,input_format,command,preprocess,postprocess)
-    redirect("/apps")
-
-@post('/apps/create_view')
-def create_view():
-    appname = request.forms.get('appname')
-    params,_,_ = myapp.read_params()
-    if myapp.write_html_template():
-        return "SUCCESS: successfully output template"
-    else:
-        return "ERROR: there was a problem when creating view"
-
-# this is dangerous... needs to be POST not GET
-@get('/apps/delete/<appid>')
+# allow only admin or user to delete apps
+@post('/apps/delete/<appid>')
 def delete_app(appid):
-    a = appmod.app()
-    a.delete(appid)
+    global user
+    check_user_var()
+    appname = request.forms.appname
+    # get the user name given user id
+    #user = users(user
+    uid = apps(appid).uid
+    owner = users(id=uid).user
+    #print "appid:", appid, "uid:", uid , "user:", user
+    if user == owner or user == 'admin':
+        # delete entry in DB
+        a = appmod.app()
+        a.delete(appid)
+    else:
+        return template("error", err="wrong user. must be owner or admin")
+    # delete files
+    path = os.path.join(config.apps_dir,appname)
+    if os.path.isdir(path):
+        shutil.rmtree(path)
     redirect("/apps")
 
 @get('/apps/edit/<appid>')
@@ -669,36 +675,41 @@ def list_files():
     else:
         u = user
     if not path:
-        path = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+cid
+        path = os.path.join(myapps[app].user_dir,u,app,cid)
 
-    case_path = myapps[app].user_dir+os.sep+u+os.sep+app
+    case_path = os.path.join(myapps[app].user_dir,u,app)
         
     binary_extensions = ['.bz2','.gz','.xz','.zip']
     image_extensions = ['.png','.gif','.jpg']
-    str = '<table>'
+    buf = '<table>'
     for fn in os.listdir(path):
-        this_path = path + os.sep + fn
+        this_path = os.path.join(path,fn)
         _, ext = os.path.splitext(this_path)
-        str += '<tr>'
-        #str += '<td><form action="/'+app+'/delete/'+fn+'">'
-        #str += '<input type="image" src="/static/images/trash_can.gif"></form></td>\n'
-        str += '<td>'
+        buf += '<tr>'
+        #buf += '<td><form action="/'+app+'/delete/'+fn+'">'
+        #buf += '<input type="image" src="/static/images/trash_can.gif">'
+        #buf += '</form></td>\n'
+        buf += '<td>'
         if os.path.isdir(this_path): 
-            str += '<a href="/files?app='+app+'&cid='+cid+'&path='+this_path+'">'+fn+'/</a>'
+            buf += '<a href="/files?app='+app+'&cid='+cid+'&path=' \
+                                         +this_path+'">'+fn+'/</a>'
         elif ext in binary_extensions:
-            str += '<a href="'+this_path+'">'+fn+'</a>'
+            buf += '<a href="'+this_path+'">'+fn+'</a>'
         elif ext in image_extensions:
-            str += '<a href="'+this_path+'"><img src="'+this_path+'" width=100><br>'+fn+'</a>'
+            buf += '<a href="'+this_path+'"><img src="'+\
+                   this_path+'" width=100><br>'+fn+'</a>'
         else:
-            str += '<a href="/more?app='+app+'&cid='+cid+'&filepath='+path+os.sep+fn+'">'+fn+'</a>'
-        str += '</td></tr>\n'
-    str += '</table>'
-    params = { 'content': str }
+            buf += '<a href="/more?app='+app+'&cid='+cid+\
+                       '&filepath='+os.path.join(path,fn)+'">'+fn+'</a>'
+        buf += '</td></tr>\n'
+    buf += '</table>'
+    params = { 'content': buf }
     params['cid'] = cid
     params['app'] = app
     params['user'] = u
     params['apps'] = myapps.keys()
-    params['cases'] = '<a href="/files?app='+app+'&cid='+cid+'&path='+case_path+'">cases</a>'
+    params['cases'] = '<a href="/files?app='+app+'&cid='+cid+'&path='+\
+                      case_path+'">cases</a>'
     return template('files', params)
 
 @get('/plots/edit')
@@ -781,7 +792,7 @@ def plot_interface(pltid):
         u = user
         c = cid
 
-    sim_dir = myapps[app].user_dir+os.sep+u+os.sep+app+os.sep+c+os.sep
+    sim_dir = os.path.join(myapps[app].user_dir,u,app,c)
 
     # use pltid of 0 to trigger finding the first pltid for the current app
     if int(pltid) == 0:
@@ -835,7 +846,7 @@ def plot_interface(pltid):
         cols = r['cols']
         line_range = r['line_range']
         plotfn = re.sub(r"<cid>", c, plotfn)
-        plotpath = sim_dir + plotfn
+        plotpath = os.path.join(sim_dir,plotfn)
         (col1str,col2str) = cols.split(":")
         col1 = int(col1str); col2 = int(col2str)
         # do some postprocessing
@@ -904,8 +915,8 @@ def matplotlib(pltid):
             line2 = int(line2str)
 
     plotfn = re.sub(r"<cid>", cid, plotfn)
-    sim_dir = myapps[app].user_dir+os.sep+user+os.sep+app+os.sep+cid+os.sep
-    plotpath = sim_dir + plotfn
+    sim_dir = os.path.join(myapps[app].user_dir,user,app,cid)
+    plotpath = os.path.join(sim_dir,plotfn)
     xx = p.get_column_of_data(plotpath,col1)
     yy = p.get_column_of_data(plotpath,col2)
 
@@ -925,7 +936,7 @@ def matplotlib(pltid):
         os.makedirs(config.tmp_dir)
     fn = title+'.png'
     fig.set_size_inches(7,4)
-    img_path = sim_dir + fn
+    img_path = os.path.join(sim_dir,fn)
     fig.savefig(img_path)
 
     # get list of all plots for this app
@@ -940,9 +951,12 @@ def matplotlib(pltid):
 @get('/monitor')
 def monitor():
     global user
+    check_user_var()
     cid = request.query.cid
     app = request.query.app
-    params = { 'cid': cid, 'app': app, 'user': user, 'apps': myapps.keys() }
+    jid = request.query.jid
+    params = { 'cid': cid, 'app': app, 'jid': jid, 'user': user, 
+               'apps': myapps.keys() }
     return template('monitor', params)
 
 @get('/zipcase')
@@ -952,12 +966,12 @@ def zipcase():
     import zipfile
     app = request.query.app
     cid = request.query.cid
-    base_dir = myapps[app].user_dir+os.sep+user+os.sep+app
-    path = base_dir+os.sep+cid+".zip"
+    base_dir = os.path.join(myapps[app].user_dir,user,app)
+    path = os.path.join(base_dir,cid+".zip")
     zf = zipfile.ZipFile(path, mode='w')
-    sim_dir = base_dir+os.sep+cid
+    sim_dir = os.path.join(base_dir,cid)
     for fn in os.listdir(sim_dir):
-        zf.write(sim_dir+os.sep+fn)
+        zf.write(os.path.join(sim_dir,fn))
     zf.close()
     redirect("/aws?status="+path)
 
@@ -966,8 +980,8 @@ def zipget():
     """get zipfile from another machine, save to current machine"""
     zipkey = request.query.zipkey
     netloc = request.query.netloc
-    #url = netloc + os.sep + config.tmp_dir + os.sep + zipkey + ".zip"
-    url = netloc+os.sep+zipkey
+    #url = os.path.join(netloc,config.tmp_dir,zipkey+".zip")
+    url = os.path.join(netloc,zipkey)
     try:
         f = urllib2.urlopen(url)
         print "downloading " + url
@@ -982,37 +996,164 @@ def zipget():
     status = "file downloaded"
     redirect("/aws?status="+status)
 
-@post('/apps/upload')
-def do_upload():
-    #appname    = request.forms.get('appname')
-    upload     = request.files.get('upload')
-    name, ext = os.path.splitext(upload.filename)
-    # we're not inputting appname yet so hold off on this check
-    #if not name == appname:
-    #    return 'ERROR: appname does not equal upload filename... try again'
-    if ext not in ('.zip','.txt'):
-        return 'ERROR: File extension not allowed.'
-    try:
-        save_path_dir = appmod.apps_dir + os.sep + name
-        save_path = save_path_dir + ext
-        if os.path.isfile(save_path):
-            return 'ERROR: zip file exists already. Please remove first.'
-        upload.save(save_path)
-        # before unzip file check if directory exists
-        if os.path.isdir(save_path_dir):
-            msg = 'ERROR: app already exists. Please change name.'
+@get('/addapp')
+@post('/addapp/<step>')
+def addapp(step="step0"):
+    global user
+    check_user_var()
+    appname = request.forms.appname
+    input_format = request.forms.input_format
+    # ask for app name
+    if step == "step0": 
+        return template('addapp/step0')
+    # ask user to configure app
+    elif step == "step1": 
+        if len(appname) < 3:
+            return template('error',err="name must be at least 3 character")
+        elif app_exists(appname) == 'true':
+            return template('error',err="app already exists")
         else:
-            u = uploads.uploader()
-            u.unzip(save_path)
-            msg = u.verify(save_path_dir,name)
-        # remove zip file
-        os.remove(save_path)
-        return msg
-    except IOError:
-        return "IOerror:", IOError
-        raise
+            params = {'appname': appname, 'user': user }
+            return template('addapp/step1',params)
+    # write app configuration to db
+    elif step == "step2": 
+        category = request.forms.category
+        language = request.forms.language
+        description = request.forms.description
+        command = request.forms.command
+        preprocess = request.forms.preprocess
+        postprocess = request.forms.postprocess
+        # put in db
+        a = appmod.app()
+        #print "user:",user
+        uid = users(user=user).id
+        a.create(appname, description, category, language, 
+                 input_format, command, preprocess, postprocess, uid)
+        params = {'appname': appname, 'input_format': input_format }
+        return template('addapp/step2',params)
+    # upload zip file and return a text copy of the input file
+    elif step == "step3":
+        appname    = request.forms.appname
+        upload     = request.files.upload
+        if not upload:
+            return template('addapp/error',
+                   err="no file selected. press back button and try again")
+        name, ext = os.path.splitext(upload.filename)
+        if ext not in ('.zip','.txt'):
+            return 'ERROR: File extension not allowed.'
+        try:
+            save_path_dir = os.path.join(appmod.apps_dir,name)
+            save_path = save_path_dir + ext
+            if os.path.isfile(save_path):
+                msg = 'zip file exists already. Please remove first.'
+                return template('addapp/error', err=msg)
+            upload.save(save_path)
+            # before unzip file check if directory exists
+            if os.path.isdir(save_path_dir):
+                msg =  'app folder already exists in apps dir.<br>'
+                msg += 'click "apps" delete the app and retry'
+                os.remove(save_path)
+                return template('addapp/error', err=msg)
+            else:
+                u = uploads.uploader()
+                u.unzip(save_path)
+                msg = u.verify(save_path_dir,name)
+            # remove zip file
+            os.remove(save_path)
+            # return the contents of the input file
+            # this is just for namelist.input format, but
+            # we need to create this dynamically based on input_format
+            if input_format == "namelist":
+                fn = appname + ".in"
+            elif input_format == "ini":
+                fn = appname + ".ini"
+            elif input_format == "xml":
+                fn = appname + ".xml"
+            else:
+                return "ERROR: input_format not valid: ", input_format
+
+            path = os.path.join(config.apps_dir,appname,fn)
+            params = {'fn': fn, 'contents': slurp_file(path), 
+                      'appname': appname, 'input_format': input_format }
+            return template('addapp/step3', params)
+        except IOError:
+            return "IOerror:", IOError
+            raise
+        else:
+            return "ERROR: must be already a file"
+    # show parameters with options how to tag and describe each parameter
+    elif step == "step4":
+        input_format = request.forms.input_format
+        appname = request.forms.appname
+        myapp = app_instance(input_format,appname)
+        inputs,_,_ = myapp.read_params()
+        print "inputs:", inputs
+        params = { "appname": appname }
+        return template('addapp/step4', params, inputs=inputs, 
+                                        input_format=input_format)
+    # create a template in the views/apps folder 
+    elif step == "step5":
+        appname = request.forms.get('appname')
+        html_tags = request.forms.getlist('html_tags')
+        data_type = request.forms.getlist('data_type')
+        descriptions = request.forms.getlist('descriptions')
+        bool_rep = request.forms.bool_rep
+        keys = request.forms.getlist('keys')
+        key_tag = dict(zip(keys,html_tags))
+        key_desc = dict(zip(keys,descriptions))
+        input_format = request.forms.input_format
+        myapp = app_instance(input_format,appname)
+        params,_,_ = myapp.read_params()
+        if myapp.write_html_template(html_tags=key_tag,bool_rep=bool_rep,
+                                     desc=key_desc):
+            load_apps()
+            params = { "appname": appname }
+            return template('addapp/step5', params)
+        else:
+            return "ERROR: there was a problem when creating view"
     else:
-        return "ERROR: must be already a file"
+        return template('error', err="step not supported")
+
+# this shows a listing of all files and allows the user to pick
+# which one to use
+#@get('/upload_contents/<appname>/<fn>')
+#def select_input_file(appname,fn):
+#    path = os.path.join(config.apps_dir,appname,fn)
+#    params = {'fn': fn, 'contents': slurp_file(path), 'appname': appname }
+#    return template('addapp/step3', params)
+
+@post('/upload')
+def upload_data():
+    global user
+    if not authorized(): redirect('/login')
+    upload = request.files.upload
+    if not upload:
+        return template('error', err="no file selected.")
+    #name, ext = os.path.splitext(upload.filename)
+    #if ext not in ('.zip','.txt'):
+    #    return template('error', err="file extension not allowed")
+    #try:
+    save_path_dir = os.path.join(config.user_dir,user,config.upload_dir)
+    save_path = os.path.join(save_path_dir,upload.filename)
+    if os.path.isfile(save_path):
+        return template('error', err="file exists")
+    upload.save(save_path)
+    return "SUCCESS"
+    #except:
+    #    return "FAILED"
+
+def app_instance(input_format,appname,preprocess=0,postprocess=0):
+    if(input_format=='namelist'):
+        myapp = appmod.namelist(appname)
+    elif(input_format=='ini'):
+        myapp = appmod.ini(appname,preprocess,postprocess)
+    elif(input_format=='xml'):
+        myapp = appmod.xml(appname)
+    elif(input_format=='json'):
+        myapp = appmod.json(appname)
+    else:
+        return 'ERROR: input_format ',input_format,' not supported'
+    return myapp
 
 def authorized():
     '''Return True if user is already logged in, False otherwise'''
@@ -1027,5 +1168,11 @@ def authorized():
 
 if __name__ == "__main__":
     load_apps()
-    run(server=config.server, app=app, host='0.0.0.0', port=8081, debug=True)
-    #run(app=app, host='0.0.0.0', port=8081, debug=True)
+    # start a polling thread to continuously check for queued jobs
+    sched.poll() 
+    try:
+        run(server=config.server, app=app, host='0.0.0.0',\
+            port=8081, debug=False)
+    except:
+        run(app=app, host='0.0.0.0', port=8081, debug=True)
+

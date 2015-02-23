@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-from scipaas import macaron, config
+from scipaas import config
 from scipaas import apps as appmod
-from scipaas.model import *
+#from scipaas.model import *
 import sys, os, shutil, urllib2
 import xml.etree.ElementTree as ET
-
-class Plots(macaron.Model): pass
-class Users(macaron.Model): pass
-class Apps(macaron.Model): pass
+import hashlib, re
 
 sys.argv[1:]
 
@@ -21,6 +18,7 @@ def usage():
     buf += "create   create a view template for appname (e.g. sp create myapp)\n"
     buf += "search   search for available apps\n"
     buf += "list     list installed or available apps (e.g. sp list [available|installed]) \n"
+    buf += "test     run tests\n"
     buf += "install  install an app\n"
     return buf
 
@@ -29,64 +27,59 @@ if (len(sys.argv) == 1):
     sys.exit()
 
 db = config.db
-# make a backup copy if file exists
-if(sys.argv[1] == "init"):
-    if os.path.isfile(db): 
-        shutil.copyfile(db, db+".bak")
-# Initializes Macaron
-macaron.macaronage(db)
 
 def initdb():
     """Initializes database file"""
-    import hashlib
+    from scipaas import model2
+    # somehow the following doesn't work properly
 
-    # Creates tables
-    SQL_T_APPS = """CREATE TABLE IF NOT EXISTS apps(
-        id integer primary key autoincrement, 
-        name varchar(20), description varchar(80), category varchar(20), 
-        language varchar(20), input_format, command, preprocess, postprocess)"""
+    # create db directory if it doesn't exist
+    #if not os.path.exists(config.dbdir):
+    #    os.makedirs(config.dbdir) 
+    # make a backup copy of db file if it exists
 
-    SQL_T_USERS = """CREATE TABLE IF NOT EXISTS users(
-        id integer primary key autoincrement, user varchar(20) unique, 
-        passwd varchar(20), email varchar(80))"""
+    #if os.path.isfile(db): 
+    #    print "ERROR: a database file already exists, please rename it and rerun"
+    #    sys.exit()
+    #    shutil.copyfile(db, db+".bak")
 
-    SQL_T_JOBS = """CREATE TABLE IF NOT EXISTS jobs(
-        id integer primary key autoincrement, user text, app text,
-        cid text, state char(1), time_submit text, description text,
-        np integer)"""
-
-    SQL_T_PLOTS = """CREATE TABLE IF NOT EXISTS plots(
-        id integer primary key autoincrement, 
-        appid integer,  ptype varchar(80), filename varchar(80), cols varchar(20), 
-        line_range varchar(20), title varchar(80), options text, datadef text)""" 
-        # foreign key (appid) references apps(appid))
-
-    SQL_T_WALL = """CREATE TABLE wall(
-        id integer primary key autoincrement, jid integer, comment varchar(80), 
-        foreign key (jid) references jobs on delete cascade);"""
-
-    macaron.execute(SQL_T_USERS)
-    macaron.execute(SQL_T_JOBS)
-    macaron.execute(SQL_T_APPS)
-    macaron.execute(SQL_T_PLOTS)
-    macaron.execute(SQL_T_WALL)
-
-    # create a default user/pass as guest/guest
-    pw = "guest"
-    hashpw = hashlib.sha256(pw).hexdigest()
-    u = Users.create(user="guest", passwd=hashpw)
-    # following two users are reserved for beaker sessions
-    pw = "admin"
-    hashpw = hashlib.sha256(pw).hexdigest()
-    u = Users.create(user="admin", passwd=hashpw)
-    u = Users.create(user="container_file")
-    u = Users.create(user="container_file_lock")
-    a = Apps.create(name="dna",description="Compute reverse complement, GC content, and codon analysis of given DNA string.",
-        category="bioinformatics",language="python",input_format="namelist")
-    p = Plots.create(appid=1,type="flot-bar",filename="din.out",col1=1,col2=2,title="Dinucleotides")
-    p = Plots.create(appid=1,type="flot-bar",filename="nucs.out",col1=1,col2=2,title="Nucleotides")
-    p = Plots.create(appid=1,type="flot-bar",filename="codons.out",col1=1,col2=2,title="Codons")
-    macaron.bake()
+    # get rid of old .table files
+    for f in os.listdir(config.dbdir):
+        if re.search("\.table", f):
+            print "removing file:", f
+            os.remove(os.path.join(config.dbdir, f))
+    # delete previous .db file should back first (future)
+    dbpath = os.path.join(config.dbdir, config.db)
+    if os.path.isfile(dbpath): os.remove(dbpath)
+    # create db
+    dal = model2.dal(uri=config.uri,migrate=True)
+    # add guest and admin user
+    hashpw = hashlib.sha256("guest").hexdigest()
+    dal.db.users.insert(user="guest",passwd=hashpw)
+    hashpw = hashlib.sha256("admin").hexdigest()
+    dal.db.users.insert(user="admin",passwd=hashpw)
+    # add default app
+    dal.db.apps.insert(name="dna",description="Compute reverse complement," +\
+                       "GC content, and codon analysis of given DNA string.", 
+                       category="bioinformatics",
+                       language="python",  
+                       input_format="namelist", 
+                       command="../../../../apps/dna/dna")
+    dal.db.plots.insert(id=1,appid=1,ptype="flot-cat",title="Dinucleotides")
+    dal.db.plots.insert(id=2,appid=1,ptype="flot-cat",title="Nucleotides")
+    dal.db.plots.insert(id=3,appid=1,ptype="flot-cat",title="Codons")
+    dal.db.datasource.insert(filename="din.out",cols="1:2",pltid=1)
+    dal.db.datasource.insert(filename="nucs.out",cols="1:2",pltid=2)
+    dal.db.datasource.insert(filename="codons.out",cols="1:2",pltid=3)
+    #dal.db.disciplines.insert(name="Computational Linguistics")
+    #dal.db.disciplines.insert(name="Computational Finance")
+    #dal.db.disciplines.insert(name="Computational Biology")
+    #dal.db.disciplines.insert(name="Computational Fluid Dynamics")
+    #dal.db.disciplines.insert(name="Computational Physics")
+    #dal.db.disciplines.insert(name="Numerical Weather Prediction")
+    #dal.db.disciplines.insert(name="Molecular Dynamics")
+    # write changes to db
+    dal.db.commit()
 
 notyet = "this feature not yet working"
 
@@ -107,34 +100,16 @@ def dlfile(url):
 
 # process command line options
 if __name__ == "__main__":
-    if(sys.argv[1] == "create"):
-        if (len(sys.argv) == 3): 
-            i = Apps.select("name=?",[ sys.argv[2] ])
-            input_format = i[0].input_format
-            print 'input format is:',input_format
-            if sys.argv[2]: 
-                if input_format == 'namelist':
-                    myapp = appmod.namelist(sys.argv[2])
-                elif input_format == 'ini':
-                    myapp = appmod.ini(sys.argv[2])
-                elif input_format == 'xml':
-                    myapp = appmod.xml(sys.argv[2])
-                elif input_format == 'json':
-                    myapp = appmod.json(sys.argv[2])
-                else:
-                    print "ERROR: input format type not supported:", input_format
-            params,_,_ = myapp.read_params()
-            if myapp.write_html_template():
-                print "successfully output template"
-        else:
-            print "usage: sp create appname"
-    elif (sys.argv[1] == "init"):
+    if (sys.argv[1] == "init"):
         print "creating database " + config.db
         initdb()
     elif (sys.argv[1] == "go"):
-        os.system("python scipaas/scipaas.py")
+        os.system("python scipaas/main.py")
     elif (sys.argv[1] == "search"):
         print notyet
+    elif (sys.argv[1] == "test"):
+        os.chdir('tests')  
+        os.system("python testall.py")
     elif (sys.argv[1] == "install"):
         install_usage = "usage: sp install appname"
         if len(sys.argv) == 3:

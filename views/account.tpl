@@ -16,4 +16,14 @@
 </form>
 </fieldset>
 
+<fieldset>
+<legend>Upload data to account</legend>
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <!-- Category: <input type="text" name="category" /> -->
+  <font size="+1">Select a file:</font>
+  <input type="file" name="upload" />
+  <input type="submit" value="Upload" class="btn"/>
+</form>
+</fieldset>
+
 %include('footer')

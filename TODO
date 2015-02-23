@@ -1,3 +1,30 @@
+- need upload feature to upload datafile to scipaas
+- be able to read and parse and output textfile to display nicely in a table
+- Using Assertions Effectively https://wiki.python.org/moin/UsingAssertionsEffectively
+- add column to jobs table which assigns each job as a 
+  C = case, D = data, T = template
+- generate config.py file on "sp init"
+- add tags to add app
+- tried to separate routes into separate files, but this is a problem
+  because of global vars such as myapps or user
+- when unzip file make sure to change to filename that user set as appname
+- what to use for T/F values? must standardize on sth
+  depends on what is in the input file... 
+  must ask how app represents Boolean values
+
+- refactor: capitalize all class names to be consistent with Python naming
+  conventions
+- refactor: rename all routes with consistent naming scheme
+- give apps an owner... either owner or admin can modify
+- need to write pid to db on start of job, then pull it out and
+  run os.kill when need to stop job
+- work on scheduler
+    x get multithreading working
+    * take into account num of processors users has requested when starting jobs
+    * add shutdown feature
+- consolidate app, cid vars when passing on almost every click
+- fix databases add foreign key references
+    * rewrite sp to use DAL to create the tables
 - develop admin section
 - be able to attach input variables to be used by simulation 
    e.g. use num_tribes parameter to set np
@@ -6,6 +33,7 @@
 - make egg package
 - clickable rows
 - parse json... need do parse the string and wrap quotes around each key
+    * outsource this to StackOverflow
 
 - implement worker queues
     * add stop button to jobs page.  problem is need to have another thread
@@ -36,8 +64,6 @@
 Next:
 - add billing ability
 - add search button to myjobs
-- add "list files" button, probably in myjobs
-- use dal.py to create initdb in sp
 - create reader for generic input file
 - for namelist.input files ignore comments !
 - ignore lines option for plotting files
@@ -46,7 +72,6 @@ Next:
 - get scipaas working under gae
 - for errors especially in try/except structures, try to show some error message
   that is consistent with why it actually crashed.
-- remove macaron/sqlite references from sp
 - improve add app interface, use ajax to check if app exists
 - if there is only one plot, show it on clicking the plot button
 - about app template
@@ -90,67 +115,3 @@ Refactoring
 - group common params that get passed to navbar in object?
 - cleanup long pathnames such as sim_dir, run_dir, and fn in 
   apps.py and scipaas.py
-
-Completed
-- start working on parallel computing infrastructure
-   * need a way to specify NP
-   * also need to specify paths for mpirun and /bin/sh somewhere
-     possibly in config.py
-- send email on registration
-- improve register app function
-- fix username/email 
-- plotting:
-  o specify x-legend, y-legend
-  o specify x-min, x-max, y-min, y-max
-- use matplotlib for plotting
-- add ability to tail file for plotting i.e. -100:0 means last 100 lines
-- for jmendel to work correctly, need to get rid of categories
-- add pre-processing and post-processing (cleaning data) step
-- show list of apps in dropdown box
-- work on FPG
-- plot two datasets on single chart
-- store JS of plot options in sqlite
-- add action bar
-- plotting subsystem
-  o plotting system using matplotlib
-- edit plots feature: when you click plot, you get the first plot
-  if you want to edit the plots, you need to click edit app or something
-- aggregate plots onto single page
-- add Data button to plots
-- add ability to get data from line1 to line2
-- integration with matplotlib
-- implement data abstraction layer, dal.py, so that SP can use GAE
-    * due to namespace conflicts, need to create the dal model as a separate class, 
-      i.e. plots table accessed by myclass.plots
-- Fix security vulnerability: check_user after user submits. make sure new user is not created if username
-  already in DB.  
-- implement ConfigParser -- possibly move to supporting INI files
-- generic xml or ini reader
-- be able to click jobs, click start, use appname and jid to bring up correct start page
-- job scheduler/queuing system
-- implement ConfigParser to read-in nemo input file
-- starting from an old case doesnt bring up old case params, but rather defaults
-- add better ability to handle html select option, etc.
-- find a way to populate select/option form fields using template
-    # http://stackoverflow.com/questions/20444285/how-do-i-populate-a-select-tag-with-flask
-- fix bar plotting
-- add ability to reload parameters from old case
-- when click confirm show input file
-- add UID 
-- add bar plot ability
-- continuous updating of screen output: Ajax or built-in alternative
-  + data monitoring system: ajax and python-based
-- add footer
-- add jobs button
-- job scheduler/queuing system
-- case management
-- app management: update, delete, and finish add section
-  o move 
-  o upload
-    > verify that upload contains the necessary files (e.g. .in & binary)
-    > hook into scipaas... dynamic importing 
-  o app deployment (egg format/zip file)
-  o rename app
-  o put different app categories into database
-- add ability to handle multiple plots
-- real-time data monitor

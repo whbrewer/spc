@@ -26,4 +26,4 @@
 {{!inputs}}
 </pre>
 
-%include footer
+%include('footer')

@@ -28,7 +28,7 @@
   <td>{{row['np']}}</td>
   <td>{{row['time_submit']}}</td>
   <td>
-      <a href="/monitor?cid={{row['cid']}}&app={{row['app']}}">monitor</a> :: 
+      <a href="/monitor?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}">monitor</a> :: 
       <a href="/jobs/stop/{{row['app']}}">stop</a> ::
       <a href="/inputs?cid={{row['cid']}}&app={{row['app']}}">inputs</a> ::
       <a href="/output?cid={{row['cid']}}&app={{row['app']}}">output</a> ::
@@ -47,4 +47,4 @@
 %end
 </table>
 
-%include footer
+%include('footer')

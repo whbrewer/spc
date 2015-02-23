@@ -23,15 +23,21 @@ function edit(id) {
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53
 
+<form method="get" action="/addapp">
+   <input type="submit" class="submit add" value="add">
+   <input type="submit" formaction="/apps/load" class="submit start" value="load">
+</form>
+
 <table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
 <thead>
 <tr> 
 <th>Name</th> 
-<th>Category</th>
+<th>Tags</th>
 <th>Description</th> 
-<th>Input format</th> 
-<th>Language</th> 
-<th>Command Line Options</th>
+<!-- <th>Input format</th> -->
+<!-- <th>Language</th> -->
+<th>Command Line</th>
+<th>Actions</th>
 </tr>
 </thead>
 
@@ -40,17 +46,16 @@ function edit(id) {
   <td><a href="/{{row['name']}}">{{row['name']}}</a></td>
   <td>{{row['category']}}</td>
   <td>{{row['description']}}</td>
-  <td>{{row['input_format']}}</td>
-  <td>{{row['language']}}</td>
+  <!-- <td>{{row['input_format']}}</td> -->
+  <!-- <td>{{row['language']}}</td> -->
   <td>{{row['command']}}</td>
-<!--
-  <form method="post" action="/apps/delete/{row[0]}}">
-     <td><input type="button" value="delete"></td> 
+  <form method="post" action="/apps/delete/{{row['id']}}">
+     <input type="hidden" name="appname" value="{{row['name']}}">
+     <td><input type="submit" value="delete" 
+          onclick="if(confirm('are you sure you want to delete?')) return true; return false"></td> 
   </form>
--->
 </tr> 
 %end
 </table>
-<a href="/apps/add"><img src="/static/images/plus.png" align=left valign=bottom>Add an app</a>
 
-%include footer
+%include('footer')

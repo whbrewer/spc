@@ -1,7 +1,8 @@
-from gluon import DAL, Field
+from gluino import DAL, Field
 import config
 
-db = DAL(config.uri, auto_import=True, migrate=False)
+#db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+db = DAL(config.uri, migrate=False, folder=config.dbdir)
 
 users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),
@@ -17,7 +18,8 @@ apps = db.define_table('apps', Field('id','integer'),
                                Field('input_format','string'),
                                Field('command','string'),
                                Field('preprocess','string'),
-                               Field('postprocess','string'))
+                               Field('postprocess','string'),
+                               Field('uid','integer'))
 # this is also defined in scheduler.py
 # need to fix in the future
 jobs = db.define_table('jobs', Field('id','integer'),
