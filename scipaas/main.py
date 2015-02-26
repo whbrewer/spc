@@ -398,9 +398,13 @@ def delete_job(jid):
     check_user_var()
     app = request.query.app
     cid = request.query.cid
-    path = os.path.join(myapps[app].user_dir,user,app,cid)
-    if os.path.isdir(path):
-        shutil.rmtree(path)
+    try:
+        # this will fail if the app has been removed from scipaas
+        path = os.path.join(myapps[app].user_dir,user,app,cid)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+    except:
+        pass
     sched.qdel(jid)
     redirect("/jobs")
 
@@ -573,6 +577,7 @@ def check_user():
 def app_exists(appname):
     """This is the server-side AJAX function to check if an app
        exists in the DB."""
+    appname = request.forms.appname
     # return booleans as strings here b/c they get parsed by JavaScript
     if apps(name=appname): return 'true'
     else: return 'false' 
@@ -742,8 +747,8 @@ def get_datasource(pltid):
     if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
     result = db(datasource.pltid==pltid).select()
-    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result,
-               'apps': myapps.keys() } 
+    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 
+               'rows': result, 'apps': myapps.keys() } 
     return template('plots/datasource', params, rows=result)
 
 @post('/plots/datasource_add')
@@ -752,8 +757,9 @@ def add_datasource():
     cid = request.forms.get('cid')
     pltid = request.forms.get('pltid')
     r = request.forms
-    datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'], line_range=r['line_range'],
-                      label=r['label'], ptype=r['ptype'], color=r['color'])
+    datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'], 
+                      line_range=r['line_range'], label=r['label'], 
+                      ptype=r['ptype'], color=r['color'])
     db.commit()
     redirect ('/plots/datasource/'+pltid+'?app='+app+'&cid='+cid)
 
@@ -772,7 +778,9 @@ def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
-    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],title=r.forms['title'],options=r.forms['options'],datadef=r.forms['datadef'])
+    plots.insert(appid=myapps[app].appid, ptype=r.forms['ptype'], 
+                 title=r.forms['title'], options=r.forms['options'],
+                 datadef=r.forms['datadef'])
     db.commit()
     redirect ('/plots/edit?app='+app+'&cid='+cid)
 
@@ -1078,7 +1086,6 @@ def addapp(step="step0"):
             return template('addapp/step3', params)
         except IOError:
             return "IOerror:", IOError
-            raise
         else:
             return "ERROR: must be already a file"
     # show parameters with options how to tag and describe each parameter

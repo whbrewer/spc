@@ -1,4 +1,4 @@
-import unittest
+import unittest, misc
 from bottle import response
 import urllib, urllib2, httplib
 import sys, os
@@ -20,14 +20,13 @@ class TestRoutes(unittest.TestCase):
     #    values = { 'str': 'test', 'app': 'helloworld' }
     #    self.post(url,values)
 
-    def post(self,url,values):
-        data = urllib.urlencode(values)
-        req = urllib2.Request(url, data)
-        response = urllib2.urlopen(req)
-        html = response.read()
-        #print html
-        #print response.getcode()
-        return self.assertEqual(response.getcode(),httplib.OK)
+    #@get('/<app>/<cid>/tail')
+    #@get('/<app>')
+    #@post('/app_exists/<appname>')
+    #@get('/apps')
+    #@get('/apps/load')
+    #@post('/apps/delete/<appid>')
+    #@get('/apps/edit/<appid>')
 
 if __name__ == '__main__':
     unittest.main()
