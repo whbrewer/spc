@@ -31,24 +31,22 @@ db = config.db
 def create_config_file():
     """Create a config.py file in the SciPaaS directory"""
     fn="scipaas/config.py"
-    if os.path.exists(fn):
-        print "config.py file already exists... exiting"
-        sys.exit()
-    with open(fn, "w") as f:
-        f.write("db = 'scipaas.db'\n")
-        f.write("dbdir = 'db'\n")
-        f.write("uri = 'sqlite://'+db\n")
-        f.write("apps_dir = 'apps'\n")
-        f.write("user_dir = 'user_data'\n")
-        f.write("upload_dir = '_uploads'\n")
-        f.write("tmp_dir = 'static/tmp'\n")
-        f.write("mpirun = '/usr/local/bin/mpirun'\n")
-        f.write("# number of processors available to use on this machine\n")
-        f.write("np = 2\n")
-        f.write("# don't define server if you want to use built-in server\n")
-        f.write("# other obtions are: cherrypy, bjoern, tornado, gae, etc.\n")
-        f.write("# cherrypy is a decent multi-threaded server\n")
-        f.write("#server = 'cherrypy'\n")
+    if not os.path.exists(fn):
+        with open(fn, "w") as f:
+            f.write("db = 'scipaas.db'\n")
+            f.write("dbdir = 'db'\n")
+            f.write("uri = 'sqlite://'+db\n")
+            f.write("apps_dir = 'apps'\n")
+            f.write("user_dir = 'user_data'\n")
+            f.write("upload_dir = '_uploads'\n")
+            f.write("tmp_dir = 'static/tmp'\n")
+            f.write("mpirun = '/usr/local/bin/mpirun'\n")
+            f.write("# number of processors available to use on this machine\n")
+            f.write("np = 2\n")
+            f.write("# don't define server if you want to use built-in\n")
+            f.write("# other options: cherrypy, bjoern, tornado, gae, etc.\n")
+            f.write("# cherrypy is a decent multi-threaded server\n")
+            f.write("#server = 'cherrypy'\n")
 
 def initdb():
     """Initializes database file"""
