@@ -100,6 +100,7 @@ class scheduler(object):
 
     def start_job(self,run_dir,cmd,app,jid,np):
         """this is what the separate job process runs"""
+        #print '*** pid:', os.getpid()
         for i in range(np):
             self.sem.acquire()
         # update state to 'R' for run

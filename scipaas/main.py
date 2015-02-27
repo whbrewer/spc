@@ -99,7 +99,8 @@ def execute():
 
 @get('/more')
 def more():
-    """given a form with the attribute plotpath, output the file to the browser"""
+    """given a form with the attribute plotpath, 
+       output the file to the browser"""
     global user
     app = request.query.app
     cid = request.query.cid
@@ -124,11 +125,12 @@ def output():
         run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
         fn = os.path.join(run_dir,myapps[app].outfn)
         output = slurp_file(fn)
-        params = { 'cid': cid, 'contents': output, 'app': app, 'user': u, 'fn': fn,
-                   'apps': myapps.keys() }
+        params = { 'cid': cid, 'contents': output, 'app': app, 
+                   'user': u, 'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
-        params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
+        params = { 'app': app, 
+                   'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
 @get('/inputs')
@@ -150,7 +152,8 @@ def inputs():
                    'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
-        params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
+        params = { 'app': app, 
+                   'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
 def slurp_file(path):
@@ -179,8 +182,8 @@ def tail(app,cid):
         f.close()
     else:
         xoutput = 'waiting to start...'
-    params = { 'cid': cid, 'contents': xoutput, 'app': app, 'user': user, 'fn': ofn,
-               'apps': myapps.keys() }
+    params = { 'cid': cid, 'contents': xoutput, 'app': app, 
+               'user': user, 'fn': ofn, 'apps': myapps.keys() }
     return template('more', params)
 
 @get('/')
