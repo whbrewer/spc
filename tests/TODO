@@ -6,7 +6,6 @@ Basic functionality tests:
 * plot
 * show output
 * show inputs
---
 
 # app functions
 # add/create app
@@ -37,7 +36,7 @@ Basic functionality tests:
 # verify throws error with no exe file
 # test if writing parameters correctly especially test booleans, integers, strings, etc.
 
-SciPaaS functions:
+SciPaaS functions to unit test:
 
 apps.py:#    def __init__(self,data_type):
 apps.py:    def __init__(self):

@@ -15,10 +15,11 @@ class TestScheduler(unittest.TestCase):
     def test_qsub(self):
         app = "mendel"
         cid = "TEST00"
-        user = "wes"
+        user = "guest"
         np = 1
         jid = self.sched.qsub(app,cid,user,np)
         self.assertTrue(jid > 0)
+        # test that the job was written to the db
 
     def test_qdel(self): pass
     def test_poll(self): pass
@@ -29,7 +30,7 @@ class TestScheduler(unittest.TestCase):
     def test_start(self): pass
     def test_start_job(self): pass
     def test_set_state(self): pass
-    def stop(self): pass
+    def test_stop(self): pass
 
 if __name__ == '__main__':
     unittest.main()

@@ -110,8 +110,34 @@ def more():
                'fn': filepath, 'apps': myapps.keys() }
     return template('more', params)
 
+@get('/case')
+def case():
+    if not authorized(): redirect('/login')
+    global user
+    app = request.query.app
+    cid = request.query.cid
+    jid = request.query.jid
+    check_user_var()
+    try:
+        if re.search("/",cid):
+            (u,c) = cid.split("/") 
+        else:
+            u = user
+            c = cid
+        run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
+        fn = os.path.join(run_dir,myapps[app].outfn)
+        output = slurp_file(fn)
+        params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid, 
+                   'user': u, 'fn': fn, 'apps': myapps.keys() }
+        return template('case', params)
+    except:
+        params = { 'app': app, 
+                   'err': "Couldn't read input file. Check casename." } 
+        return template('error', params)
+
 @get('/output')
 def output():
+    if not authorized(): redirect('/login')
     global user
     app = request.query.app
     cid = request.query.cid
@@ -135,6 +161,7 @@ def output():
 
 @get('/inputs')
 def inputs():
+    if not authorized(): redirect('/login')
     global user
     app = request.query.app
     cid = request.query.cid
@@ -199,7 +226,7 @@ def show_jobs():
     cid = request.query.cid
     app = request.query.app
     check_user_var()
-    result = db(jobs.user==user).select()
+    result = db(jobs.user==user).select(orderby=~jobs.id)
     params = {}
     params['cid'] = cid
     params['app'] = app
