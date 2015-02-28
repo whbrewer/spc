@@ -90,7 +90,7 @@ def execute():
         params['app'] = app
         params['user'] = user
         jid = sched.qsub(app,cid,user,np)
-        redirect("/monitor?app="+app+"&cid="+cid+"&jid="+jid)
+        redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 
@@ -131,7 +131,7 @@ def case():
                    'user': u, 'fn': fn, 'apps': myapps.keys() }
         return template('case', params)
     except:
-        params = { 'app': app, 
+        params = { 'app': app, 'apps': myapps.keys(),
                    'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
@@ -155,7 +155,7 @@ def output():
                    'user': u, 'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
-        params = { 'app': app, 
+        params = { 'app': app, 'apps': myapps.keys(),
                    'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
@@ -179,7 +179,7 @@ def inputs():
                    'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
-        params = { 'app': app, 
+        params = { 'app': app, 'apps': myapps.keys(),
                    'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
@@ -198,7 +198,7 @@ def slurp_file(path):
 def tail(app,cid):
     global user
     check_user_var()
-    num_lines = 30
+    num_lines = 20
     run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
     ofn = os.path.join(run_dir,myapps[app].outfn)
     if os.path.exists(ofn):

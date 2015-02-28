@@ -1,0 +1,27 @@
+table#clickable {
+    /*border-collapse: collapse; */
+    /*font-family:arial;*/
+    font-family:Courier New;
+    background-color: #CDCDCD;
+    margin:10px 0pt 15px;
+    font-size: 12pt;
+    width: 100%;
+    text-align: left;
+}
+#clickable tr {
+    background-color: #eee;
+    border-top: 1px solid #fff;
+}
+#clickable tr:hover {
+    background-color: #ccc;
+}
+#clickable th {
+    background-color: #fff;
+}
+#clickable th, #clickable td {
+    padding: 3px 5px;
+}
+#clickable td:hover {
+    cursor: pointer;
+}
+
