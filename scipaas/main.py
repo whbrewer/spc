@@ -677,7 +677,6 @@ def view_app(app):
     global user
     cid = request.query.cid
     result = db(apps.name==app).select().first()
-    print result
     params = {}
     params['app'] = app
     params['cid'] = ''

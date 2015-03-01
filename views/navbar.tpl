@@ -1,14 +1,3 @@
-<script>
-function checkCase() { 
-    if(!document.getElementByID('cid').value) { 
-       alert('case id missing'); 
-       return False;
-    } else {
-       return True;
-    }
-}
-</script>
-
 <div class="navbar">
 
 <form id="plotform" action="/start" method="get">

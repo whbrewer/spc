@@ -183,8 +183,10 @@ class namelist(app):
                 section = m.group(1)  
                 blockorder += [ m.group(1) ]
             elif n:
-                # Delete apostrophes and commas
-                val = re.sub(r"[',]", "", n.group(2))
+                # Delete apostrophes
+                val = re.sub(r"'", "", n.group(2))
+                # Delete commas only when they are at the end of the line
+                val = re.sub(r",\s*$", "", n.group(2))
                 # Delete Fortran comments and whitespace
                 params[n.group(1)] = re.sub(r'\!.*$', "", val).strip()
                 # Append to blocks e.g. {'basic': ['case_id', 'mutn_rate']}
