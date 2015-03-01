@@ -1,12 +1,14 @@
 %include('header')
+<link type="text/css" rel="StyleSheet" href="/static/css/clickable_rows.css"/>
 
 <body onload="init()">
 %include('navbar')
 %include('tablesorter')
 
-<h1 align=center>Wall</h1>
+<h1 align=center>Shared cases</h1>
 
-<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<!--<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">-->
+<table id="clickable">
 <thead>
 <tr> 
    <th>job id</th> 
@@ -14,7 +16,6 @@
    <th>app</th> 
    <th>cid</th> 
    <th>comment</th> 
-   <th>actions</th>
 </tr>
 </thead>
 
@@ -24,15 +25,23 @@
      <td>{{row['jobs']['user']}}</td>
      <td>{{row['jobs']['app']}}</td>
      <td>{{row['jobs']['cid']}}</td>
-     <td>{{row['wall']['comment']}}</td>
-     <td>
-        <a href="/start?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">start</a> - 
-        <a href="/plot/0?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">plot</a> - 
-        <a href="/files?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}">files</a> - 
-        <a href="/wall/delete/{{row['wall']['id']}}?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}" onclick="if('{{user}}'=='{{row['jobs']['user']}}' or '{{user}}'=='admin') return true; alert('ERROR: wrong user'); return false">delete</a>
+     <td>{{row['wall']['comment']}}
+         <a href="/inputs?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}&jid={{row['wall']['jid']}}"></a>
      </td>
   </tr> 
 %end
 </table>
+
+<script>
+$(document).ready(function() {
+    $('#clickable tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+        }
+    });
+
+});
+</script>
 
 %include('footer')

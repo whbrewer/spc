@@ -178,7 +178,7 @@ class namelist(app):
 
         for line in open(fn, 'rU'):
             m = re.search(r'&(\w+)',line) # section title
-            n = re.search(r'(\w+)\s?=\s?(.*$)',line) # parameter
+            n = re.search(r'(\w+)\s*=\s*(.*$)',line) # parameter
             if m:
                 section = m.group(1)  
                 blockorder += [ m.group(1) ]

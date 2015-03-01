@@ -15,7 +15,7 @@ function checkCase() {
 
 <!-- <input type="submit" formaction="/apps" class="submit apps" value="apps"/> -->
 <input type="submit" formaction="/jobs" class="submit jobs" value="myjobs"/>
-<input type="submit" formaction="/wall" class="submit wall" value="wall"/>
+<input type="submit" formaction="/wall" class="submit wall" value="shared"/>
 
 %if defined('app'):
 <input type="submit" formaction="/start" class="submit start" value="start"/>

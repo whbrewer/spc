@@ -575,7 +575,6 @@ def admin_show_users():
     if not authorized(): redirect('/login')
     if not user == "admin": 
         return template("error",err="must be admin to delete")
-    query = (apps.id==plots.appid) & (apps.name==app)
     result = db().select(users.ALL)
     params = {'user': user}
     return template('admin/users',params,rows=result)
@@ -671,9 +670,20 @@ def delete_app(appid):
         shutil.rmtree(path)
     redirect("/apps")
 
-@get('/apps/edit/<appid>')
-def edit_app(appid):
-    return 'SORRY - this function has not yet been implemented'
+@get('/app/<app>')
+def view_app(app):
+    if not authorized(): redirect('/login')
+    check_user_var()
+    global user
+    cid = request.query.cid
+    result = db(apps.name==app).select().first()
+    print result
+    params = {}
+    params['app'] = app
+    params['cid'] = ''
+    params['user'] = user
+    params['apps'] = myapps.keys()
+    return template('app', params, rows=result)
 
 @get('/start')
 def getstart():

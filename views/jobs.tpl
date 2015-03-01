@@ -9,25 +9,6 @@
 
 <!--<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">-->
 
-<script>
- function showMenu(){
-   document.getElementById("actions").style.display="block";
- }
- function hideMenu(){
-   document.getElementById("actions").style.display="none";
- }
-</script>
-
-<div id="actions" style="display:none">
-<a href="">monitor</a> ::
-<a href="">stop</a> ::
-<a href="">files</a> ::
-<a href="">zipcase</a> ::
-<a href="">start</a> ::
-<a href="">delete</a> ::
-<a href="">post</a> ::
-</div>
-
 <table id="clickable">
 <thead>
 <tr>

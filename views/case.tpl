@@ -10,7 +10,7 @@
 <a href="/files?cid={{cid}}&app={{app}}">files</a> :: 
 <a href="/zipcase?cid={{cid}}&app={{app}}">zipcase</a> :: 
 <a href="/start?cid={{cid}}&app={{app}}">start</a> :: 
-<a href="/jobs/delete/{{id}}?cid={{cid}}&app={{app}}"
+<a href="/jobs/delete/{{jid}}?cid={{cid}}&app={{app}}"
    onclick="if(confirm('are you sure?')) return true; return false">delete</a> 
 <br><br>
 <form method="post" action="/wall">
@@ -22,6 +22,7 @@
 </form>
 </fieldset>
 
+<!--
 <form>
 <select id="selector" onchange="show(this.value)">
 <option value="Show output every...">
@@ -34,6 +35,7 @@
 <option value="10000000000">&infin;
 </select>
 </form>
+-->
 
 <div id="output" style="width:648px;height:200px;"></div>
 
@@ -44,7 +46,7 @@ function show(update_interval) {
           setTimeout(showOutput, update_interval);
        })
     }
-    $("#selector").hide()
+    //$("#selector").hide()
     showOutput();
 }
 show(1000);
