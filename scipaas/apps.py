@@ -66,7 +66,7 @@ class app(object):
                         buf = "<tr><td>" + param + ":</td>\n"
                 if html_tags[param] == "checkbox":
                     buf += "\t<td><input type=\"checkbox\" name=\"" \
-                                    + param + "\" value=\"true\"\n"
+                                    + param + "\" value=\""+ bool_rep + "\"\n"
                     buf += "%if " + param + "== '" + bool_rep + "':\n"
                     buf += "checked\n"
                     buf += "%end\n"
@@ -139,7 +139,10 @@ class namelist(app):
                 # they also don't show up in the dictionary.
                 if key not in form_params:
                     #print "key not found - inserting:", key
-                    form_params[key] = "F"
+                    if self.appname == "terra":
+                            form_params[key] = "0"
+                    else:
+                            form_params[key] = "F"
 
                 # replace checked checkboxes with T value
                 #print 'key/value', key, form_params[key]
@@ -155,7 +158,7 @@ class namelist(app):
                     if not re.search('[0-9].*[0-9]',m.group()):
                         form_params[key] = "'" + form_params[key] + "'"
 
-                f.write(key + ' = ' + form_params[key] + "\n")
+                f.write(key + ' = ' + form_params[key] + ",\n")
             f.write("/\n\n")
         f.close
         return 1
@@ -186,7 +189,7 @@ class namelist(app):
                 # Delete apostrophes
                 val = re.sub(r"'", "", n.group(2))
                 # Delete commas only when they are at the end of the line
-                val = re.sub(r",\s*$", "", n.group(2))
+                val = re.sub(r",\s*$", "", val)
                 # Delete Fortran comments and whitespace
                 params[n.group(1)] = re.sub(r'\!.*$', "", val).strip()
                 # Append to blocks e.g. {'basic': ['case_id', 'mutn_rate']}

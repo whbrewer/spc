@@ -32,8 +32,10 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # create instance of scheduler
-#sched = scheduler.scheduler()
-sched = scheduler_smp.scheduler()
+if config.sched = "smp":
+    sched = scheduler_smp.scheduler()
+else:
+    sched = scheduler.scheduler()
 
 pbuffer = ''
 

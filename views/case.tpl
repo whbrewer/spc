@@ -18,7 +18,7 @@
       <input type="hidden" name="cid" value="{{cid}}">
       <input type="hidden" name="jid" value="{{jid}}">
       <input type="text" name="comment">
-      <input type="submit" value="Post to wall">
+      <input type="submit" value="Share">
 </form>
 </fieldset>
 

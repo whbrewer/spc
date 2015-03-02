@@ -1,8 +1,8 @@
 table#clickable {
     /*border-collapse: collapse; */
     /*font-family:arial;*/
-    font-family:Courier New;
-    background-color: #CDCDCD;
+    /*font-family:Courier New;*/
+    /*background-color: #CDCDCD;*/
     margin:10px 0pt 15px;
     font-size: 10pt;
     width: 100%;
@@ -16,7 +16,10 @@ table#clickable {
     background-color: #ccc;
 }
 #clickable th {
-    background-color: #fff;
+    /*background-color: #fff;*/
+    font-family: arial;
+    color: #280671;
+    background-color: #bbadda;
 }
 #clickable th, #clickable td {
     padding: 3px 5px;
