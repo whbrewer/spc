@@ -17,7 +17,7 @@
   <th>cid</th> 
   <th>state</th> 
   <th>np</th> 
-  <th>time_submit</th> 
+  <th>date/time submitted</th> 
 </tr>
 </thead>
 
