@@ -78,11 +78,7 @@ def execute():
         if myapps[app].preprocess:
             run_params,_,_ = myapps[app].read_params(user,cid) 
             processed_inputs = process.preprocess(run_params,
-                                       myapps[app].preprocess)
-            sim_dir = os.path.join(base_dir,myapps[app].preprocess)
-            f = open(sim_dir,'w') 
-            f.write(processed_inputs)
-            f.close()
+                                       myapps[app].preprocess,base_dir)
     except:
         return template('error',err="There was an error with the preprocessor")
 
@@ -434,12 +430,12 @@ def delete_shared_item():
     db.commit()
     redirect ('/shared?app='+app+'&cid='+cid)
 
-@get('/jobs/delete/<jid>')
+@post('/jobs/delete/<jid>')
 def delete_job(jid):
     if not authorized(): redirect('/login')
     check_user_var()
-    app = request.query.app
-    cid = request.query.cid
+    app = request.forms.app
+    cid = request.forms.cid
     try:
         # this will fail if the app has been removed from scipaas
         path = os.path.join(myapps[app].user_dir,user,app,cid)
@@ -447,7 +443,6 @@ def delete_job(jid):
             shutil.rmtree(path)
     except:
         pass
-    sched.qdel(jid)
     redirect("/jobs")
 
 @post('/proc/stop')
@@ -655,6 +650,7 @@ def load_apps():
         postprocess = row['postprocess']
         input_format = row['input_format']
         print 'loading: %s (id: %s)' % (name,appid)
+        #print "preprocess:", preprocess, "postprocess:", postprocess
         myapps[name] = app_instance(input_format,name,preprocess,postprocess)
     default_app = name # simple soln - use last app read from DB
     return True
@@ -1206,13 +1202,13 @@ def upload_data():
 
 def app_instance(input_format,appname,preprocess=0,postprocess=0):
     if(input_format=='namelist'):
-        myapp = appmod.namelist(appname)
+        myapp = appmod.namelist(appname,preprocess,postprocess)
     elif(input_format=='ini'):
         myapp = appmod.ini(appname,preprocess,postprocess)
     elif(input_format=='xml'):
-        myapp = appmod.xml(appname)
+        myapp = appmod.xml(appname,preprocess,postprocess)
     elif(input_format=='json'):
-        myapp = appmod.json(appname)
+        myapp = appmod.json(appname,preprocess,postprocess)
     else:
         return 'ERROR: input_format ',input_format,' not supported'
     return myapp

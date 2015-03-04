@@ -98,14 +98,14 @@ class app(object):
 class namelist(app):
     '''Class for reading/writing Fortran namelist.input style files.'''
     
-    def __init__(self,appname):
+    def __init__(self,appname,preprocess=0,postprocess=0):
         self.appname = appname
         self.appdir = os.path.join(apps_dir,appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.in'
         self.user_dir = user_dir
-        self.preprocess = 0
-        self.postprocess = 0
+        self.preprocess = preprocess
+        self.postprocess = postprocess
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = os.path.join(apps_dir,self.appname,self.appname)
 
@@ -277,13 +277,13 @@ class ini(app):
 
 class xml(app):
     '''Class for reading/writing XML files.'''
-    def __init__(self,appname):
+    def __init__(self,appname,preprocess=0,postprocess=0):
         self.appname = appname
         self.appdir = os.path.join(apps_dir,appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.xml'
-        self.preprocess = 0
-        self.postprocess = 0
+        self.preprocess = preprocess
+        self.postprocess = postprocess
         self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = os.path.join(apps_dir,self.appname,self.appname)

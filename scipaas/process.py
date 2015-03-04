@@ -1,7 +1,8 @@
 #!/usr/bin/python
+import os
 
-def preprocess(params,fn):
-    str = ''
+def preprocess(params,fn,base_dir=""):
+    buf = ''
     if fn == 'fpg.in':  
         """convert input key/value params to command-line style args"""
         for key, value in (params.iteritems()):
@@ -9,17 +10,33 @@ def preprocess(params,fn):
                if value=='true': value = ''
                else: continue # don't output anything when this param is false
             option = '-' + key.split('_')[0] # extract first letter
-            str += option + value + ' ' 
-        return str
+            buf += option + value + ' ' 
+        sim_dir = os.path.join(base_dir,fn)
+        return _write_file(buf,sim_dir)
     elif fn == 'Nemo2.ini':
         for key, value in (params.iteritems()):
-            str += key + ' ' + value + '\n'
-        return str
+            buf += key + ' ' + value + '\n'
+        sim_dir = os.path.join(base_dir,fn)
+        return _write_file(buf,sim_dir)
+    elif fn == 'terra.in':
+        # this doesn't work because already redirecting output to terra.out
+        # only way it might work is if we don't redirect output to terra.out
+        src = os.path.join(base_dir, "out"+params['casenum']+".00")
+        dst = os.path.join(base_dir, "terra.out")
+        #os.symlink(src, dst)
     elif fn == 'pbs.script':
-        str  = "#!/bin/sh\n"
-        str += "cd $PBS_O_WORKDIR"
-        str += "/usr/local/bin/mpirun -np 2 ./mendel"
-        return str
+        buf  = "#!/bin/sh\n"
+        buf += "cd $PBS_O_WORKDIR"
+        buf += "/usr/local/bin/mpirun -np 2 ./mendel"
+        return buf
+
+def _write_file(data, path):
+    try:
+        #with open(path,'w') as f: f.write(data)
+        open(path,'w').write(data)
+        return True
+    except IOError:
+        return "IOError:", IOError
 
 def postprocess(path,line1,line2):
     """return data as an array...
@@ -42,3 +59,4 @@ def postprocess(path,line1,line2):
         a = [ int(x), float(y) ]
         data += [ a ]
     return data
+

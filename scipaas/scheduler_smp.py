@@ -53,15 +53,15 @@ class scheduler(object):
 
     def qdel(self,jid):
         """delete job jid from the queue"""
-        try:
-            db = DAL(config.uri, auto_import=True, migrate=False, 
-                     folder=config.dbdir)
-            del db.jobs[jid]
-            db.commit()
-            db.close()
-            return True
-        except:
-            return False
+        #try:
+        db = DAL(config.uri, auto_import=True, migrate=False, 
+                 folder=config.dbdir)
+        del db.jobs[jid]
+        db.commit()
+        db.close()
+        #return True
+        #except:
+        #    return False
 
     def qstat(self):
         """return the number of jobs in a queued 'Q' state"""

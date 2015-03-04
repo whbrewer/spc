@@ -64,3 +64,7 @@ class dal(object):
                                                         Field('uid','integer'))
 
         self.disciplines = self.db.define_table('disciplines', Field('name'))
+
+    def commit(self):
+        return self.db.commit()
+
