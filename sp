@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-from scipaas import config
-from scipaas import apps as appmod
-#from scipaas.model import *
 import sys, os, shutil, urllib2
+if os.path.exists("scipaas/config.py"):
+    from scipaas import config
+    from scipaas import apps as appmod
+    #from scipaas.model import *
 import xml.etree.ElementTree as ET
 import hashlib, re
 
