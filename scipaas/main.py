@@ -79,6 +79,9 @@ def execute():
             run_params,_,_ = myapps[app].read_params(user,cid) 
             processed_inputs = process.preprocess(run_params,
                                        myapps[app].preprocess,base_dir)
+        if myapps[app].preprocess == "terra.in":
+            myapps[app].outfn = \
+                os.path.join(base_dir, "out"+params['casenum']+".00")
     except:
         return template('error',err="There was an error with the preprocessor")
 
@@ -116,8 +119,7 @@ def case():
     cid = request.query.cid
     jid = request.query.jid
     check_user_var()
-    #try:
-    if True:
+    try:
         if re.search("/",cid):
             (u,c) = cid.split("/") 
             sid = request.query.sid # id of item in shared
@@ -136,10 +138,10 @@ def case():
             params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid, 
                        'user': u, 'fn': fn, 'apps': myapps.keys() }
             return template('case', params)
-    #except:
-    #    params = { 'app': app, 'apps': myapps.keys(),
-    #               'err': "There was a problem... Sorry!" } 
-    #    return template('error', params)
+    except:
+        params = { 'app': app, 'apps': myapps.keys(),
+                   'err': "There was a problem... Sorry!" } 
+        return template('error', params)
 
 @get('/output')
 def output():
@@ -655,8 +657,29 @@ def load_apps():
     default_app = name # simple soln - use last app read from DB
     return True
 
+@post('/app/edit/<appid>')
+def app_edit(appid):
+    cid = request.forms.cid
+    app = request.forms.app
+    result = db(apps.name==app).select().first()
+    params = {'app': app, 'cid': cid, 'apps': myapps.keys()}
+    return template('app_edit', params, rows=result)
+
+@post('/app/save/<appid>')
+def app_save(appid):
+    app = request.forms.app
+    cmd = request.forms.command
+    lang = request.forms.language
+    info = request.forms.input_format
+    desc = request.forms.description
+    row = db(db.apps.id==appid).select().first()
+    row.update_record(language=lang, description=desc, input_format=info,
+                      command=cmd)
+    db.commit()
+    redirect("/apps")
+
 # allow only admin or user to delete apps
-@post('/apps/delete/<appid>')
+@post('/app/delete/<appid>')
 def delete_app(appid):
     global user
     check_user_var()
@@ -687,9 +710,9 @@ def view_app(app):
     result = db(apps.name==app).select().first()
     params = {}
     params['app'] = app
-    params['cid'] = ''
     params['user'] = user
     params['apps'] = myapps.keys()
+    params['cid'] = cid
     #if request.query.edit:
     #    return template('appedit', params, rows=result)
     #else:

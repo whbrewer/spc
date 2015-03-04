@@ -17,7 +17,7 @@
   </tr>
   <tr>
       <td>Description:</th>
-      <td>{{rows['description']}}</td>
+      <td contentEditable="true">{{rows['description']}}</td>
   </tr>
   <tr>
       <td>Input format:</td>
@@ -33,16 +33,20 @@
   </tr>
 </table>
 
-<form method="post" action="/apps/edit/{{rows['id']}}">
-    <input type="hidden" name="appname" value="{{rows['name']}}">
-    <input type="hidden" name="edit" value="True">
-    <input type="submit" value="edit {{app}}">
-</form>
-
-<form method="post" action="/apps/delete/{{rows['id']}}">
-    <input type="hidden" name="appname" value="{{rows['name']}}">
-    <input type="submit" value="delete {{app}}" 
-    onclick="if(confirm('are you sure?')) return true; return false">
-</form>
+<table>
+<tr> <td>
+    <form method="post" action="/app/edit/{{rows['id']}}">
+        <input type="hidden" name="app" value="{{rows['name']}}">
+        <input type="hidden" name="edit" value="True">
+        <input type="submit" value="edit {{app}}">
+    </form>
+</td><td>
+    <form method="post" action="/app/delete/{{rows['id']}}">
+        <input type="hidden" name="appname" value="{{rows['name']}}">
+        <input type="submit" value="delete {{app}}" 
+        onclick="if(confirm('are you sure?')) return true; return false">
+    </form>
+</td></tr>
+</table>
 
 %include('footer')

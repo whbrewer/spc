@@ -41,7 +41,7 @@ function edit(id) {
 
 %for row in rows:
   <tr>
-  <td><a href="/app/{{row['name']}}?edit=False"></a>{{row['name']}}</td>
+  <td><a href="/app/{{row['name']}}"></a>{{row['name']}}</td>
   <td>{{row['category']}}</td>
   <td>{{row['description']}}</td>
 </tr> 
