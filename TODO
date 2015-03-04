@@ -1,3 +1,10 @@
+- remove spaces in usernames and appnames
+- in jobs, dropdown box to choose R, C, or Q jobs
+- delete button on myjobs must be post not get
+- question for SO: os.kill doesnt work?
+- how to use a separate DB for testing bottle applications
+
+- user manager for admin
 - need upload feature to upload datafile to scipaas
 - be able to read and parse and output textfile to display nicely in a table
 - Using Assertions Effectively https://wiki.python.org/moin/UsingAssertionsEffectively

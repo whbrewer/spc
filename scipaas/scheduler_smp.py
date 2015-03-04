@@ -53,15 +53,15 @@ class scheduler(object):
 
     def qdel(self,jid):
         """delete job jid from the queue"""
-        try:
-            db = DAL(config.uri, auto_import=True, migrate=False, 
-                     folder=config.dbdir)
-            del db.jobs[jid]
-            db.commit()
-            db.close()
-            return True
-        except:
-            return False
+        #try:
+        db = DAL(config.uri, auto_import=True, migrate=False, 
+                 folder=config.dbdir)
+        del db.jobs[jid]
+        db.commit()
+        db.close()
+        #return True
+        #except:
+        #    return False
 
     def qstat(self):
         """return the number of jobs in a queued 'Q' state"""
@@ -100,6 +100,7 @@ class scheduler(object):
 
     def start_job(self,run_dir,cmd,app,jid,np):
         """this is what the separate job process runs"""
+        #print '*** pid:', os.getpid()
         for i in range(np):
             self.sem.acquire()
         # update state to 'R' for run

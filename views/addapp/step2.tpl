@@ -15,7 +15,7 @@
 <h2>Upload zip file</h2>
 
 <font size="+1">
-<p>Upload a Zip file name <b><tt>{{appname}}.zip</tt></b>,
+<p>Upload a Zip file named <b><tt>{{appname}}.zip</tt></b>,
 which contains the following files:</p>
 <ol>
 %if input_format == "namelist":

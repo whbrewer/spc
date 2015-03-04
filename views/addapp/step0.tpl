@@ -9,7 +9,7 @@
 function checkApp(appname) {
    jQuery.ajax({
       type: "POST",
-      url:  "/app_exists/"+appname, 
+      url:  "/app_exists/"+appname,
       data: { appname: appname },
       complete: function(xhr){
          var response = eval(xhr.responseText);
@@ -37,7 +37,7 @@ function checkApp(appname) {
         <h2>Enter name of app:</h2>
         <input type="text" id="appname" name="appname" 
                onchange="checkApp(this.value)"><br>
-        <input type="submit" value="Next >>" class="btn"><br><br>
+        <input type="submit" id="submit" value="Next >>" class="btn"><br><br>
     </form>
 
 <p>Note: after finishing all steps must restart SciPaaS to load app</p>

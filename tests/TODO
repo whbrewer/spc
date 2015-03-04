@@ -6,7 +6,6 @@ Basic functionality tests:
 * plot
 * show output
 * show inputs
---
 
 # app functions
 # add/create app
@@ -36,3 +35,151 @@ Basic functionality tests:
 # verify throws error with no .in file
 # verify throws error with no exe file
 # test if writing parameters correctly especially test booleans, integers, strings, etc.
+
+SciPaaS functions to unit test:
+
+apps.py:#    def __init__(self,data_type):
+apps.py:    def __init__(self):
+apps.py:    def create(self, name, desc, cat, lang, info, cmd, pre, post, uid):
+apps.py:    def update(self):
+apps.py:    def delete(self,appid):
+apps.py:    def deploy(self):
+apps.py:    def write_html_template(self,html_tags=None,bool_rep="T",desc=None):
+apps.py:        f.write("%if defined('cid'):\n")
+apps.py:    def __init__(self,appname):
+apps.py:    def write_params(self,form_params,user):
+apps.py:    def read_params(self,user=None,cid=None):
+apps.py:        params = dict()   # a dictionary of parameter keys and default values
+apps.py:                blockmap.setdefault(section,[]).append(n.group(1))
+apps.py:    def __init__(self,appname,preprocess=0,postprocess=0):
+apps.py:    def read_params(self,user=None,cid=None):
+apps.py:                    blockmap.setdefault(section,[]).append(option)
+apps.py:    def write_params(self,form_params,user):
+apps.py:    def __init__(self,appname):
+apps.py:    def read_params(self,user=None,cid=None):
+apps.py:                    blockmap.setdefault(section.tag,[]).append(child.tag)
+apps.py:    def write_params(self,form_params,user):
+aws.py:    def __init__(self, key, secret, account_id, instance, region, rate):
+aws.py:    def start(self):
+aws.py:    def stop(self):
+aws.py:    def status(self):
+aws.py:    def uptime(self,launch_time):
+aws.py:    def charge(self,uptime):
+config.py:# don't define server if you want to use built-in server
+main.py:def confirm_form():
+main.py:    # if case_id is defined in the input deck it will be used
+main.py:def execute():
+main.py:def more():
+main.py:def output():
+main.py:def inputs():
+main.py:def slurp_file(path):
+main.py:def tail(app,cid):
+main.py:def root():
+main.py:def show_jobs():
+main.py:def get_aws():
+main.py:def post_aws_creds():
+main.py:def post_instance():
+main.py:def aws_cred_del():
+main.py:def aws_conn(id):
+main.py:def aws_status(aid):
+main.py:def aws_start(aid):
+main.py:def aws_stop(aid):
+main.py:def get_account():
+main.py:def get_shared():
+main.py:def post_shared():
+main.py:def delete_shared_item(wid):
+main.py:def delete_job(jid):
+main.py:def stop_job():
+main.py:def show_app(app):
+main.py:def get_login(referrer=''):
+main.py:def logout():
+main.py:def server_static(filepath):
+main.py:def server_static(filepath):
+main.py:def get_favicon():
+main.py:def post_login():
+main.py:def change_password():
+main.py:def _check_user_passwd(user,passwd):
+main.py:def _hash_pass(pw):
+main.py:def get_register():
+main.py:def post_register():
+main.py:def admin_show_users():
+main.py:def admin_delete_user():
+main.py:def check_user():
+main.py:def app_exists(appname):
+main.py:def check_user_var():
+main.py:def showapps():
+main.py:def get_load_apps():
+main.py:def load_apps():
+main.py:    global myapps, default_app
+main.py:    default_app = name # simple soln - use last app read from DB
+main.py:def delete_app(appid):
+main.py:def edit_app(appid):
+main.py:def getstart():
+main.py:    # if no valid casename read default parameters
+main.py:def list_files():
+main.py:def editplot():
+main.py:def delete_plot(pltid):
+main.py:def get_datasource(pltid):
+main.py:def add_datasource():
+main.py:def delete_plot():
+main.py:def create_plot():
+main.py:                 datadef=r.forms['datadef'])
+main.py:def plot_interface(pltid):
+main.py:        datadef = result['datadef']
+main.py:        #x = json.loads(datadef)
+main.py:               'rows': list_of_plots, 'options': options, 'datadef': datadef,
+main.py:def matplotlib(pltid):
+main.py:def monitor():
+main.py:def zipcase():
+main.py:def zipget():
+main.py:def addapp(step="step0"):
+main.py:#def select_input_file(appname,fn):
+main.py:def upload_data():
+main.py:def app_instance(input_format,appname,preprocess=0,postprocess=0):
+main.py:def authorized():
+misc.py:def run_once(function):
+misc.py:    def wrapper(*args):
+misc.py:def signal_handler():
+model.py:users = db.define_table('users', Field('id','integer'),
+model.py:# this is also defined in scheduler.py
+model.py:apps = db.define_table('apps', Field('id','integer'),
+model.py:# this is also defined in scheduler.py
+model.py:jobs = db.define_table('jobs', Field('id','integer'),
+model.py:plots = db.define_table('plots', Field('id','integer'),
+model.py:                                 Field('datadef','string'))
+model.py:datasource = db.define_table('datasource', Field('id','integer'),
+model.py:shared = db.define_table('shared', Field('id','integer'),
+model.py:aws_creds = db.define_table('aws_creds', Field('id','integer'),
+model.py:aws_instances = db.define_table('aws_instances', Field('id','integer'),
+plots.py:    def get_data(self,fn,col1,col2,line1=1,line2=1e6):
+plots.py:    def get_raw_data(self,fn,line1=1,line2=1e6):
+plots.py:    def get_column_of_data(self,fn,col,line1=1,line2=1e6):
+plots.py:    def get_ticks(self,fn,col1,col2):
+process.py:def preprocess(params,fn):
+process.py:def postprocess(path,line1,line2):
+scheduler.py:apps = db.define_table('apps', Field('id','integer'),
+scheduler.py:jobs = db.define_table('jobs', Field('id','integer'),
+scheduler.py:    def poll(self):
+scheduler.py:    def assignTask(self):
+scheduler.py:    def qsub(self,app,cid,user,np):
+scheduler.py:    def qfront(self):
+scheduler.py:    def qdel(self,jid):
+scheduler.py:    def qstat(self):
+scheduler.py:    def start(self,jid):
+scheduler.py:    def start_job(self,run_dir,cmd,app,jid):
+scheduler.py:    def stop(self,app):
+scheduler_smp.py:    def __init__(self):
+scheduler_smp.py:    def poll(self):
+scheduler_smp.py:    def assignTask(self):
+scheduler_smp.py:    def qsub(self,app,cid,user,np):
+scheduler_smp.py:    def qfront(self):
+scheduler_smp.py:    def qdel(self,jid):
+scheduler_smp.py:    def qstat(self):
+scheduler_smp.py:    def start(self,jid):
+scheduler_smp.py:    def start_job(self,run_dir,cmd,app,jid,np):
+scheduler_smp.py:    def _set_state(self,jid,state):
+scheduler_smp.py:    def stop(self,app):
+scheduler_smp.py:    def test_qfront(self):
+uploads.py:    def zip(self,save_path):
+uploads.py:    def unzip(self,save_path):
+uploads.py:    def verify(self,save_path_dir,appname):

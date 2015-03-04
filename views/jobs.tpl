@@ -1,4 +1,5 @@
 %include('header')
+<link type="text/css" rel="StyleSheet" href="/static/css/clickable_rows.css"/>
 
 <body onload="init()">
 %include('navbar')
@@ -6,7 +7,9 @@
 %include('tablesorter')
 <h1 align=center>{{user}}'s jobs</h1>
 
-<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<!--<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">-->
+
+<table id="clickable">
 <thead>
 <tr>
   <th>jid</th> 
@@ -14,37 +17,38 @@
   <th>cid</th> 
   <th>state</th> 
   <th>np</th> 
-  <th>time_submit</th> 
-  <th>actions</th>
+  <th>date/time submitted</th> 
 </tr>
 </thead>
 
+<tbody>
 %for row in rows:
+  <form>
   <tr>
   <td>{{row['id']}}</td>
   <td>{{row['app']}}</td>
   <td>{{row['cid']}}</td>
   <td>{{row['state']}}</td>
   <td>{{row['np']}}</td>
-  <td>{{row['time_submit']}}</td>
-  <td>
-      <a href="/monitor?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}">monitor</a> :: 
-      <a href="/jobs/stop/{{row['app']}}">stop</a> ::
-      <a href="/inputs?cid={{row['cid']}}&app={{row['app']}}">inputs</a> ::
-      <a href="/output?cid={{row['cid']}}&app={{row['app']}}">output</a> ::
-      <a href="/plot/0?cid={{row['cid']}}&app={{row['app']}}">plot</a> ::
-      <a href="/files?cid={{row['cid']}}&app={{row['app']}}">files</a> ::
-      <a href="/zipcase?cid={{row['cid']}}&app={{row['app']}}">zip</a> ::
-      <a href="/start?cid={{row['cid']}}&app={{row['app']}}">start</a> ::
-      <a href="/jobs/delete/{{row['id']}}?cid={{row['cid']}}&app={{row['app']}}" onclick="if(confirm('confirm')) return true; return false">delete</a> 
-      <br><br>
-      <form method="post" action="/wall">
-      <input type="hidden" name="app" value="{{app}}">
-      <input type="hidden" name="jid" value="{{row['id']}}">
-      <input type="text" name="comment">
-      <input type="submit" value="Post to wall"></a></form></td>
+  <td>{{row['time_submit']}}
+      <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}">
+      </a>
+  </td>
+      <!--<a href="" onclick="showMenu()"></a>-->
 </tr> 
 %end
+</tbody>
 </table>
 
+<script>
+$(document).ready(function() {
+    $('#clickable tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+        }
+    });
+
+});
+</script>
 %include('footer')

@@ -45,9 +45,9 @@ class dal(object):
                                                    Field('cols','string'),
                                                    Field('line_range','string'))
 
-        self.wall = self.db.define_table('wall', Field('id','integer'),
-                                       Field('jid',self.db.jobs),
-                                       Field('comment','string'))
+        self.shared = self.db.define_table('shared', Field('id','integer'),
+                                                     Field('jid',self.db.jobs),
+                                                     Field('comment','string'))
 
         self.aws_creds = self.db.define_table('aws_creds', Field('id','integer'),
                                                  Field('key','string'),
@@ -64,3 +64,7 @@ class dal(object):
                                                         Field('uid','integer'))
 
         self.disciplines = self.db.define_table('disciplines', Field('name'))
+
+    def commit(self):
+        return self.db.commit()
+

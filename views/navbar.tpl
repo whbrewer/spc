@@ -1,21 +1,10 @@
-<script>
-function checkCase() { 
-    if(!document.getElementByID('cid').value) { 
-       alert('case id missing'); 
-       return False;
-    } else {
-       return True;
-    }
-}
-</script>
-
 <div class="navbar">
 
 <form id="plotform" action="/start" method="get">
 
 <!-- <input type="submit" formaction="/apps" class="submit apps" value="apps"/> -->
-<input type="submit" formaction="/jobs" class="submit jobs" value="myjobs"/>
-<input type="submit" formaction="/wall" class="submit wall" value="wall"/>
+<input type="submit" formaction="/jobs" class="submit jobs" value="my jobs"/>
+<input type="submit" formaction="/shared" class="submit shared" value="shared"/>
 
 %if defined('app'):
 <input type="submit" formaction="/start" class="submit start" value="start"/>
@@ -38,7 +27,7 @@ function checkCase() {
 %if defined('status'):
 <div align="center">
     <font color="red">
-        STATUS: {{status}}
+        STATUS: {{!status}}
     </font>
 </div>
 %end

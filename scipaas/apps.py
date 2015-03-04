@@ -66,7 +66,7 @@ class app(object):
                         buf = "<tr><td>" + param + ":</td>\n"
                 if html_tags[param] == "checkbox":
                     buf += "\t<td><input type=\"checkbox\" name=\"" \
-                                    + param + "\" value=\"true\"\n"
+                                    + param + "\" value=\""+ bool_rep + "\"\n"
                     buf += "%if " + param + "== '" + bool_rep + "':\n"
                     buf += "checked\n"
                     buf += "%end\n"
@@ -98,14 +98,14 @@ class app(object):
 class namelist(app):
     '''Class for reading/writing Fortran namelist.input style files.'''
     
-    def __init__(self,appname):
+    def __init__(self,appname,preprocess=0,postprocess=0):
         self.appname = appname
         self.appdir = os.path.join(apps_dir,appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.in'
         self.user_dir = user_dir
-        self.preprocess = 0
-        self.postprocess = 0
+        self.preprocess = preprocess
+        self.postprocess = postprocess
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = os.path.join(apps_dir,self.appname,self.appname)
 
@@ -139,7 +139,10 @@ class namelist(app):
                 # they also don't show up in the dictionary.
                 if key not in form_params:
                     #print "key not found - inserting:", key
-                    form_params[key] = "F"
+                    if self.appname == "terra":
+                            form_params[key] = "0"
+                    else:
+                            form_params[key] = "F"
 
                 # replace checked checkboxes with T value
                 #print 'key/value', key, form_params[key]
@@ -155,7 +158,7 @@ class namelist(app):
                     if not re.search('[0-9].*[0-9]',m.group()):
                         form_params[key] = "'" + form_params[key] + "'"
 
-                f.write(key + ' = ' + form_params[key] + "\n")
+                f.write(key + ' = ' + form_params[key] + ",\n")
             f.write("/\n\n")
         f.close
         return 1
@@ -178,13 +181,15 @@ class namelist(app):
 
         for line in open(fn, 'rU'):
             m = re.search(r'&(\w+)',line) # section title
-            n = re.search(r'(\w+)\s?=\s?(.*$)',line) # parameter
+            n = re.search(r'(\w+)\s*=\s*(.*$)',line) # parameter
             if m:
                 section = m.group(1)  
                 blockorder += [ m.group(1) ]
             elif n:
-                # Delete apostrophes and commas
-                val = re.sub(r"[',]", "", n.group(2))
+                # Delete apostrophes
+                val = re.sub(r"'", "", n.group(2))
+                # Delete commas only when they are at the end of the line
+                val = re.sub(r",\s*$", "", val)
                 # Delete Fortran comments and whitespace
                 params[n.group(1)] = re.sub(r'\!.*$', "", val).strip()
                 # Append to blocks e.g. {'basic': ['case_id', 'mutn_rate']}
@@ -272,13 +277,13 @@ class ini(app):
 
 class xml(app):
     '''Class for reading/writing XML files.'''
-    def __init__(self,appname):
+    def __init__(self,appname,preprocess=0,postprocess=0):
         self.appname = appname
         self.appdir = os.path.join(apps_dir,appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.xml'
-        self.preprocess = 0
-        self.postprocess = 0
+        self.preprocess = preprocess
+        self.postprocess = postprocess
         self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = os.path.join(apps_dir,self.appname,self.appname)

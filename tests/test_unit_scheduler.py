@@ -15,29 +15,22 @@ class TestScheduler(unittest.TestCase):
     def test_qsub(self):
         app = "mendel"
         cid = "TEST00"
-        user = "wes"
+        user = "guest"
         np = 1
         jid = self.sched.qsub(app,cid,user,np)
         self.assertTrue(jid > 0)
+        # test that the job was written to the db
 
-# qfront test
-
-# qdel test
-#print 'rowid:', sched.qpop()
-
-
-#assertEqual(a, b)   a == b   
-#assertNotEqual(a, b)    a != b   
-#assertTrue(x)   bool(x) is True  
-#assertFalse(x)  bool(x) is False     
-#assertIs(a, b)  a is b  2.7
-#assertIsNot(a, b)   a is not b  2.7
-#assertIsNone(x) x is None   2.7
-#assertIsNotNone(x)  x is not None   2.7
-#assertIn(a, b)  a in b  2.7
-#assertNotIn(a, b)   a not in b  2.7
-#assertIsInstance(a, b)  isinstance(a, b)    2.7
-#assertNotIsInstance(a, b)   not isinstance(a, b)    2.7
+    def test_qdel(self): pass
+    def test_poll(self): pass
+    def test_assignTask(self): pass
+    def test_qfront(self): pass
+    def test_qdel(self): pass
+    def test_qstat(self): pass
+    def test_start(self): pass
+    def test_start_job(self): pass
+    def test_set_state(self): pass
+    def test_stop(self): pass
 
 if __name__ == '__main__':
     unittest.main()

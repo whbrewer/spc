@@ -32,8 +32,10 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # create instance of scheduler
-#sched = scheduler.scheduler()
-sched = scheduler_smp.scheduler()
+if config.sched == "smp":
+    sched = scheduler_smp.scheduler()
+else:
+    sched = scheduler.scheduler()
 
 pbuffer = ''
 
@@ -76,11 +78,10 @@ def execute():
         if myapps[app].preprocess:
             run_params,_,_ = myapps[app].read_params(user,cid) 
             processed_inputs = process.preprocess(run_params,
-                                       myapps[app].preprocess)
-            sim_dir = os.path.join(base_dir,myapps[app].preprocess)
-            f = open(sim_dir,'w') 
-            f.write(processed_inputs)
-            f.close()
+                                       myapps[app].preprocess,base_dir)
+        if myapps[app].preprocess == "terra.in":
+            myapps[app].outfn = \
+                os.path.join(base_dir, "out"+params['casenum']+".00")
     except:
         return template('error',err="There was an error with the preprocessor")
 
@@ -90,7 +91,7 @@ def execute():
         params['app'] = app
         params['user'] = user
         jid = sched.qsub(app,cid,user,np)
-        redirect("/monitor?app="+app+"&cid="+cid+"&jid="+jid)
+        redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 
@@ -99,7 +100,8 @@ def execute():
 
 @get('/more')
 def more():
-    """given a form with the attribute plotpath, output the file to the browser"""
+    """given a form with the attribute plotpath, 
+       output the file to the browser"""
     global user
     app = request.query.app
     cid = request.query.cid
@@ -109,8 +111,41 @@ def more():
                'fn': filepath, 'apps': myapps.keys() }
     return template('more', params)
 
+@get('/case')
+def case():
+    if not authorized(): redirect('/login')
+    global user
+    app = request.query.app
+    cid = request.query.cid
+    jid = request.query.jid
+    check_user_var()
+    try:
+        if re.search("/",cid):
+            (u,c) = cid.split("/") 
+            sid = request.query.sid # id of item in shared
+            run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
+            fn = os.path.join(run_dir,myapps[app].outfn)
+            output = slurp_file(fn)
+            params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid,
+                       'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys() }
+            return template('case_public', params)
+        else:
+            u = user
+            c = cid
+            run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
+            fn = os.path.join(run_dir,myapps[app].outfn)
+            output = slurp_file(fn)
+            params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid, 
+                       'user': u, 'fn': fn, 'apps': myapps.keys() }
+            return template('case', params)
+    except:
+        params = { 'app': app, 'apps': myapps.keys(),
+                   'err': "There was a problem... Sorry!" } 
+        return template('error', params)
+
 @get('/output')
 def output():
+    if not authorized(): redirect('/login')
     global user
     app = request.query.app
     cid = request.query.cid
@@ -124,15 +159,17 @@ def output():
         run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
         fn = os.path.join(run_dir,myapps[app].outfn)
         output = slurp_file(fn)
-        params = { 'cid': cid, 'contents': output, 'app': app, 'user': u, 'fn': fn,
-                   'apps': myapps.keys() }
+        params = { 'cid': cid, 'contents': output, 'app': app, 
+                   'user': u, 'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
-        params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
+        params = { 'app': app, 'apps': myapps.keys(),
+                   'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
 @get('/inputs')
 def inputs():
+    if not authorized(): redirect('/login')
     global user
     app = request.query.app
     cid = request.query.cid
@@ -150,7 +187,8 @@ def inputs():
                    'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
-        params = { 'app': app, 'err': "Couldn't read input file. Check casename." } 
+        params = { 'app': app, 'apps': myapps.keys(),
+                   'err': "Couldn't read input file. Check casename." } 
         return template('error', params)
 
 def slurp_file(path):
@@ -168,7 +206,7 @@ def slurp_file(path):
 def tail(app,cid):
     global user
     check_user_var()
-    num_lines = 30
+    num_lines = 20
     run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
     ofn = os.path.join(run_dir,myapps[app].outfn)
     if os.path.exists(ofn):
@@ -179,8 +217,8 @@ def tail(app,cid):
         f.close()
     else:
         xoutput = 'waiting to start...'
-    params = { 'cid': cid, 'contents': xoutput, 'app': app, 'user': user, 'fn': ofn,
-               'apps': myapps.keys() }
+    params = { 'cid': cid, 'contents': xoutput, 'app': app, 
+               'user': user, 'fn': ofn, 'apps': myapps.keys() }
     return template('more', params)
 
 @get('/')
@@ -196,7 +234,7 @@ def show_jobs():
     cid = request.query.cid
     app = request.query.app
     check_user_var()
-    result = db(jobs.user==user).select()
+    result = db(jobs.user==user).select(orderby=~jobs.id)
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -347,24 +385,24 @@ def get_account():
     uid = users(user=user).id
     return template('account',params)
 
-@get('/wall')
-def get_wall():
-    """Return the records from the wall table."""
+@get('/shared')
+def get_shared():
+    """Return the records from the shared table."""
     if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
     app = request.query.app
     # note: =~ means sort by descending order
-    result = db(jobs.id==wall.jid).select(orderby=~wall.id)
+    result = db(jobs.id==shared.jid).select(orderby=~shared.id)
     params = {}
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    return template('wall', params, rows=result)
+    return template('shared', params, rows=result)
 
-@post('/wall')
-def post_wall():
+@post('/shared')
+def post_shared():
     if not authorized(): redirect('/login')
     check_user_var()
     app = request.forms.app
@@ -372,36 +410,41 @@ def post_wall():
     jid = request.forms.jid
     comment = request.forms.comment
     # save comment to db
-    wall.insert(jid=jid, comment=comment)
+    shared.insert(jid=jid, comment=comment)
     db.commit()
-    # get all wall comments
-    result = db().select(wall.ALL)
+    # get all shared comments
+    result = db().select(shared.ALL)
     params = {}
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    redirect('/wall')
+    redirect('/shared')
 
-@get('/wall/delete/<wid>')
-def delete_wall_item(wid):
+@post('/shared/delete')
+def delete_shared_item():
     if not authorized(): redirect('/login')
     check_user_var()
-    app = request.query.app
-    cid = request.query.cid
-    del db.wall[wid]
+    app = request.forms.app
+    cid = request.forms.cid
+    sid = request.forms.sid
+    print "sid is:", sid
+    del db.shared[sid]
     db.commit()
-    redirect ('/wall?app='+app+'&cid='+cid)
+    redirect ('/shared?app='+app+'&cid='+cid)
 
-@get('/jobs/delete/<jid>')
+@post('/jobs/delete/<jid>')
 def delete_job(jid):
     if not authorized(): redirect('/login')
     check_user_var()
-    app = request.query.app
-    cid = request.query.cid
-    path = os.path.join(myapps[app].user_dir,user,app,cid)
-    if os.path.isdir(path):
-        shutil.rmtree(path)
-    sched.qdel(jid)
+    app = request.forms.app
+    cid = request.forms.cid
+    try:
+        # this will fail if the app has been removed from scipaas
+        path = os.path.join(myapps[app].user_dir,user,app,cid)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+    except:
+        pass
     redirect("/jobs")
 
 @post('/proc/stop')
@@ -541,7 +584,6 @@ def admin_show_users():
     if not authorized(): redirect('/login')
     if not user == "admin": 
         return template("error",err="must be admin to delete")
-    query = (apps.id==plots.appid) & (apps.name==app)
     result = db().select(users.ALL)
     params = {'user': user}
     return template('admin/users',params,rows=result)
@@ -573,6 +615,7 @@ def check_user():
 def app_exists(appname):
     """This is the server-side AJAX function to check if an app
        exists in the DB."""
+    appname = request.forms.appname
     # return booleans as strings here b/c they get parsed by JavaScript
     if apps(name=appname): return 'true'
     else: return 'false' 
@@ -609,12 +652,34 @@ def load_apps():
         postprocess = row['postprocess']
         input_format = row['input_format']
         print 'loading: %s (id: %s)' % (name,appid)
+        #print "preprocess:", preprocess, "postprocess:", postprocess
         myapps[name] = app_instance(input_format,name,preprocess,postprocess)
     default_app = name # simple soln - use last app read from DB
     return True
 
+@post('/app/edit/<appid>')
+def app_edit(appid):
+    cid = request.forms.cid
+    app = request.forms.app
+    result = db(apps.name==app).select().first()
+    params = {'app': app, 'cid': cid, 'apps': myapps.keys()}
+    return template('app_edit', params, rows=result)
+
+@post('/app/save/<appid>')
+def app_save(appid):
+    app = request.forms.app
+    cmd = request.forms.command
+    lang = request.forms.language
+    info = request.forms.input_format
+    desc = request.forms.description
+    row = db(db.apps.id==appid).select().first()
+    row.update_record(language=lang, description=desc, input_format=info,
+                      command=cmd)
+    db.commit()
+    redirect("/apps")
+
 # allow only admin or user to delete apps
-@post('/apps/delete/<appid>')
+@post('/app/delete/<appid>')
 def delete_app(appid):
     global user
     check_user_var()
@@ -636,9 +701,22 @@ def delete_app(appid):
         shutil.rmtree(path)
     redirect("/apps")
 
-@get('/apps/edit/<appid>')
-def edit_app(appid):
-    return 'SORRY - this function has not yet been implemented'
+@get('/app/<app>')
+def view_app(app):
+    if not authorized(): redirect('/login')
+    check_user_var()
+    global user
+    cid = request.query.cid
+    result = db(apps.name==app).select().first()
+    params = {}
+    params['app'] = app
+    params['user'] = user
+    params['apps'] = myapps.keys()
+    params['cid'] = cid
+    #if request.query.edit:
+    #    return template('appedit', params, rows=result)
+    #else:
+    return template('app', params, rows=result)
 
 @get('/start')
 def getstart():
@@ -742,8 +820,8 @@ def get_datasource(pltid):
     if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
     result = db(datasource.pltid==pltid).select()
-    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result,
-               'apps': myapps.keys() } 
+    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 
+               'rows': result, 'apps': myapps.keys() } 
     return template('plots/datasource', params, rows=result)
 
 @post('/plots/datasource_add')
@@ -752,8 +830,9 @@ def add_datasource():
     cid = request.forms.get('cid')
     pltid = request.forms.get('pltid')
     r = request.forms
-    datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'], line_range=r['line_range'],
-                      label=r['label'], ptype=r['ptype'], color=r['color'])
+    datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'], 
+                      line_range=r['line_range'], label=r['label'], 
+                      ptype=r['ptype'], color=r['color'])
     db.commit()
     redirect ('/plots/datasource/'+pltid+'?app='+app+'&cid='+cid)
 
@@ -772,7 +851,9 @@ def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
-    plots.insert(appid=myapps[app].appid,ptype=r.forms['ptype'],title=r.forms['title'],options=r.forms['options'],datadef=r.forms['datadef'])
+    plots.insert(appid=myapps[app].appid, ptype=r.forms['ptype'], 
+                 title=r.forms['title'], options=r.forms['options'],
+                 datadef=r.forms['datadef'])
     db.commit()
     redirect ('/plots/edit?app='+app+'&cid='+cid)
 
@@ -973,7 +1054,8 @@ def zipcase():
     for fn in os.listdir(sim_dir):
         zf.write(os.path.join(sim_dir,fn))
     zf.close()
-    redirect("/aws?status="+path)
+    status="<a href=\""+path+"\">"+path+"</a>"
+    redirect("/aws?status="+status)
 
 @get('/zipget')
 def zipget():
@@ -1078,7 +1160,6 @@ def addapp(step="step0"):
             return template('addapp/step3', params)
         except IOError:
             return "IOerror:", IOError
-            raise
         else:
             return "ERROR: must be already a file"
     # show parameters with options how to tag and describe each parameter
@@ -1144,13 +1225,13 @@ def upload_data():
 
 def app_instance(input_format,appname,preprocess=0,postprocess=0):
     if(input_format=='namelist'):
-        myapp = appmod.namelist(appname)
+        myapp = appmod.namelist(appname,preprocess,postprocess)
     elif(input_format=='ini'):
         myapp = appmod.ini(appname,preprocess,postprocess)
     elif(input_format=='xml'):
-        myapp = appmod.xml(appname)
+        myapp = appmod.xml(appname,preprocess,postprocess)
     elif(input_format=='json'):
-        myapp = appmod.json(appname)
+        myapp = appmod.json(appname,preprocess,postprocess)
     else:
         return 'ERROR: input_format ',input_format,' not supported'
     return myapp
