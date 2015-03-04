@@ -7,12 +7,35 @@
 %if defined('status'):
     Status: {{status}}
 %end
-<a href="/files?cid={{cid}}&app={{app}}">files</a> :: 
-<a href="/zipcase?cid={{cid}}&app={{app}}">zipcase</a> :: 
-<a href="/start?cid={{cid}}&app={{app}}">start</a> :: 
-<a href="/jobs/delete/{{jid}}?cid={{cid}}&app={{app}}"
-   onclick="if(confirm('are you sure?')) return true; return false">delete</a> 
-<br><br>
+
+<table>
+<tr>
+<td>
+<form method="get" action="/start?cid={{cid}}&app={{app}}">
+    <input type="hidden" name="cid" value="{{cid}}">
+    <input type="hidden" name="app" value="{{app}}">
+    <input type="submit" value="start">
+</form>
+</td> <td>
+<form method="get" action="/files?cid={{cid}}&app={{app}}">
+    <input type="hidden" name="cid" value="{{cid}}">
+    <input type="hidden" name="app" value="{{app}}">
+    <input type="submit" value="files">
+</form>
+</td> <td>
+<form method="get" action="/zipcase?cid={{cid}}&app={{app}}">
+    <input type="hidden" name="cid" value="{{cid}}">
+    <input type="hidden" name="app" value="{{app}}">
+    <input type="submit" value="zip case">
+</form>
+</td> <td>
+<form method="post" action="/jobs/delete/{{jid}}">
+    <input type="hidden" name="cid" value="{{cid}}">
+    <input type="hidden" name="app" value="{{app}}">
+    <input type="submit" value="delete" 
+           onclick="if(confirm('are you sure?')) return true; return false">
+</form>
+</td><td>
 <form method="post" action="/shared">
       <input type="hidden" name="app" value="{{app}}">
       <input type="hidden" name="cid" value="{{cid}}">
@@ -20,6 +43,8 @@
       <input type="text" name="comment">
       <input type="submit" value="Share">
 </form>
+</td></tr>
+</table>
 </fieldset>
 
 <!--

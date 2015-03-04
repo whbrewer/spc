@@ -26,7 +26,7 @@
      <td>{{row['jobs']['app']}}</td>
      <td>{{row['jobs']['cid']}}</td>
      <td>{{row['shared']['comment']}}
-         <a href="/inputs?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}&jid={{row['shared']['jid']}}"></a>
+         <a href="/case?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}&sid={{row['shared']['id']}}&jid={{row['shared']['jid']}}"></a>
      </td>
   </tr> 
 %end

@@ -120,22 +120,30 @@ def case():
     cid = request.query.cid
     jid = request.query.jid
     check_user_var()
-    try:
+    #try:
+    if True:
         if re.search("/",cid):
             (u,c) = cid.split("/") 
+            sid = request.query.sid # id of item in shared
+            run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
+            fn = os.path.join(run_dir,myapps[app].outfn)
+            output = slurp_file(fn)
+            params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid,
+                       'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys() }
+            return template('case_public', params)
         else:
             u = user
             c = cid
-        run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
-        fn = os.path.join(run_dir,myapps[app].outfn)
-        output = slurp_file(fn)
-        params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid, 
-                   'user': u, 'fn': fn, 'apps': myapps.keys() }
-        return template('case', params)
-    except:
-        params = { 'app': app, 'apps': myapps.keys(),
-                   'err': "Couldn't read input file. Check casename." } 
-        return template('error', params)
+            run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
+            fn = os.path.join(run_dir,myapps[app].outfn)
+            output = slurp_file(fn)
+            params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid, 
+                       'user': u, 'fn': fn, 'apps': myapps.keys() }
+            return template('case', params)
+    #except:
+    #    params = { 'app': app, 'apps': myapps.keys(),
+    #               'err': "There was a problem... Sorry!" } 
+    #    return template('error', params)
 
 @get('/output')
 def output():
@@ -414,13 +422,15 @@ def post_shared():
     params['user'] = user
     redirect('/shared')
 
-@get('/shared/delete/<wid>')
-def delete_shared_item(wid):
+@post('/shared/delete')
+def delete_shared_item():
     if not authorized(): redirect('/login')
     check_user_var()
-    app = request.query.app
-    cid = request.query.cid
-    del db.shared[wid]
+    app = request.forms.app
+    cid = request.forms.cid
+    sid = request.forms.sid
+    print "sid is:", sid
+    del db.shared[sid]
     db.commit()
     redirect ('/shared?app='+app+'&cid='+cid)
 
@@ -1025,7 +1035,8 @@ def zipcase():
     for fn in os.listdir(sim_dir):
         zf.write(os.path.join(sim_dir,fn))
     zf.close()
-    redirect("/aws?status="+path)
+    status="<a href=\""+path+"\">"+path+"</a>"
+    redirect("/aws?status="+status)
 
 @get('/zipget')
 def zipget():

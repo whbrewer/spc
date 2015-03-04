@@ -27,7 +27,7 @@
 %if defined('status'):
 <div align="center">
     <font color="red">
-        STATUS: {{status}}
+        STATUS: {{!status}}
     </font>
 </div>
 %end
