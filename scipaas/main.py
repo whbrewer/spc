@@ -32,7 +32,7 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # create instance of scheduler
-if config.sched = "smp":
+if config.sched == "smp":
     sched = scheduler_smp.scheduler()
 else:
     sched = scheduler.scheduler()
@@ -379,24 +379,24 @@ def get_account():
     uid = users(user=user).id
     return template('account',params)
 
-@get('/wall')
-def get_wall():
-    """Return the records from the wall table."""
+@get('/shared')
+def get_shared():
+    """Return the records from the shared table."""
     if not authorized(): redirect('/login')
     global user
     cid = request.query.cid
     app = request.query.app
     # note: =~ means sort by descending order
-    result = db(jobs.id==wall.jid).select(orderby=~wall.id)
+    result = db(jobs.id==shared.jid).select(orderby=~shared.id)
     params = {}
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    return template('wall', params, rows=result)
+    return template('shared', params, rows=result)
 
-@post('/wall')
-def post_wall():
+@post('/shared')
+def post_shared():
     if not authorized(): redirect('/login')
     check_user_var()
     app = request.forms.app
@@ -404,25 +404,25 @@ def post_wall():
     jid = request.forms.jid
     comment = request.forms.comment
     # save comment to db
-    wall.insert(jid=jid, comment=comment)
+    shared.insert(jid=jid, comment=comment)
     db.commit()
-    # get all wall comments
-    result = db().select(wall.ALL)
+    # get all shared comments
+    result = db().select(shared.ALL)
     params = {}
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    redirect('/wall')
+    redirect('/shared')
 
-@get('/wall/delete/<wid>')
-def delete_wall_item(wid):
+@get('/shared/delete/<wid>')
+def delete_shared_item(wid):
     if not authorized(): redirect('/login')
     check_user_var()
     app = request.query.app
     cid = request.query.cid
-    del db.wall[wid]
+    del db.shared[wid]
     db.commit()
-    redirect ('/wall?app='+app+'&cid='+cid)
+    redirect ('/shared?app='+app+'&cid='+cid)
 
 @get('/jobs/delete/<jid>')
 def delete_job(jid):
@@ -684,6 +684,9 @@ def view_app(app):
     params['cid'] = ''
     params['user'] = user
     params['apps'] = myapps.keys()
+    #if request.query.edit:
+    #    return template('appedit', params, rows=result)
+    #else:
     return template('app', params, rows=result)
 
 @get('/start')

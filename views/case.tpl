@@ -13,7 +13,7 @@
 <a href="/jobs/delete/{{jid}}?cid={{cid}}&app={{app}}"
    onclick="if(confirm('are you sure?')) return true; return false">delete</a> 
 <br><br>
-<form method="post" action="/wall">
+<form method="post" action="/shared">
       <input type="hidden" name="app" value="{{app}}">
       <input type="hidden" name="cid" value="{{cid}}">
       <input type="hidden" name="jid" value="{{jid}}">

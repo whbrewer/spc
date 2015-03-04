@@ -21,12 +21,12 @@
 
 %for row in rows:
   <tr>
-     <td>{{row['wall']['jid']}}</td>
+     <td>{{row['shared']['jid']}}</td>
      <td>{{row['jobs']['user']}}</td>
      <td>{{row['jobs']['app']}}</td>
      <td>{{row['jobs']['cid']}}</td>
-     <td>{{row['wall']['comment']}}
-         <a href="/inputs?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}&jid={{row['wall']['jid']}}"></a>
+     <td>{{row['shared']['comment']}}
+         <a href="/inputs?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}&jid={{row['shared']['jid']}}"></a>
      </td>
   </tr> 
 %end

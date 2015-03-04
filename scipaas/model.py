@@ -47,9 +47,9 @@ datasource = db.define_table('datasource', Field('id','integer'),
                                            Field('cols','string'),
                                            Field('line_range','string'))
 
-wall = db.define_table('wall', Field('id','integer'),
-                               Field('jid',db.jobs),
-                               Field('comment','string'))
+shared = db.define_table('shared', Field('id','integer'),
+                                   Field('jid',db.jobs),
+                                   Field('comment','string'))
 
 aws_creds = db.define_table('aws_creds', Field('id','integer'),
                                          Field('key','string'),

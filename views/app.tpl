@@ -33,6 +33,12 @@
   </tr>
 </table>
 
+<form method="post" action="/apps/edit/{{rows['id']}}">
+    <input type="hidden" name="appname" value="{{rows['name']}}">
+    <input type="hidden" name="edit" value="True">
+    <input type="submit" value="edit {{app}}">
+</form>
+
 <form method="post" action="/apps/delete/{{rows['id']}}">
     <input type="hidden" name="appname" value="{{rows['name']}}">
     <input type="submit" value="delete {{app}}" 

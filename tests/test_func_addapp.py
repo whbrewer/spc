@@ -80,6 +80,7 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(code,httplib.OK)
         self.assertIn("configure app",html)
 
+    #@unittest.skip("skipping test...")
     def test_step1(self):
         """enter config options about app"""
         url = misc.URL+'/addapp/step2'
@@ -88,8 +89,10 @@ class TestRoutes(unittest.TestCase):
         category = 'bioinformatics'
         command = '../../../../apps/'+appname+os.sep+appname
         user = 'tester'
+        input_format = 'namelist'
         values = { 'appname': appname, 'description': description,
-                   'category': category, 'command': command, 'user': user } 
+                   'input_format': input_format, 'category': category, 
+                   'command': command, 'user': user } 
         (code, html) = misc.post(url,values)
         self.assertEqual(code,httplib.OK)
         self.assertIn("Upload zip file",html)

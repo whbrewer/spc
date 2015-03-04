@@ -85,9 +85,9 @@ main.py:def aws_status(aid):
 main.py:def aws_start(aid):
 main.py:def aws_stop(aid):
 main.py:def get_account():
-main.py:def get_wall():
-main.py:def post_wall():
-main.py:def delete_wall_item(wid):
+main.py:def get_shared():
+main.py:def post_shared():
+main.py:def delete_shared_item(wid):
 main.py:def delete_job(jid):
 main.py:def stop_job():
 main.py:def show_app(app):
@@ -148,7 +148,7 @@ model.py:jobs = db.define_table('jobs', Field('id','integer'),
 model.py:plots = db.define_table('plots', Field('id','integer'),
 model.py:                                 Field('datadef','string'))
 model.py:datasource = db.define_table('datasource', Field('id','integer'),
-model.py:wall = db.define_table('wall', Field('id','integer'),
+model.py:shared = db.define_table('shared', Field('id','integer'),
 model.py:aws_creds = db.define_table('aws_creds', Field('id','integer'),
 model.py:aws_instances = db.define_table('aws_instances', Field('id','integer'),
 plots.py:    def get_data(self,fn,col1,col2,line1=1,line2=1e6):
