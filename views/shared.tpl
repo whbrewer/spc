@@ -21,12 +21,12 @@
 
 %for row in rows:
   <tr>
-     <td>{{row['shared']['jid']}}</td>
-     <td>{{row['jobs']['user']}}</td>
-     <td>{{row['jobs']['app']}}</td>
-     <td>{{row['jobs']['cid']}}</td>
-     <td>{{row['shared']['comment']}}
-         <a href="/case?cid={{row['jobs']['user']}}/{{row['jobs']['cid']}}&app={{row['jobs']['app']}}&sid={{row['shared']['id']}}&jid={{row['shared']['jid']}}"></a>
+     <td>{{row['id']}}</td>
+     <td>{{row['user']}}</td>
+     <td>{{row['app']}}</td>
+     <td>{{row['cid']}}</td>
+     <td>{{row['description']}}
+         <a href="/case?cid={{row['user']}}/{{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a>
      </td>
   </tr> 
 %end

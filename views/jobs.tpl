@@ -17,7 +17,9 @@
   <th>cid</th> 
   <th>state</th> 
   <th>np</th> 
+  <th>description</th>
   <th>date/time submitted</th> 
+  <th>shared</th>
 </tr>
 </thead>
 
@@ -30,11 +32,13 @@
   <td>{{row['cid']}}</td>
   <td>{{row['state']}}</td>
   <td>{{row['np']}}</td>
+  <td>{{row['description']}}</td>
   <td>{{row['time_submit']}}
-      <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}">
-      </a>
+  <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a>
   </td>
-      <!--<a href="" onclick="showMenu()"></a>-->
+  %if row['shared']=="True":
+      <td>shared</td>
+  %end
 </tr> 
 %end
 </tbody>

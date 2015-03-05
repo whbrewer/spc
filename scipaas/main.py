@@ -114,10 +114,10 @@ def more():
 def case():
     if not authorized(): redirect('/login')
     global user
+    check_user_var()
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid
-    check_user_var()
     try:
         if re.search("/",cid):
             (u,c) = cid.split("/") 
@@ -134,8 +134,12 @@ def case():
             run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
             fn = os.path.join(run_dir,myapps[app].outfn)
             output = slurp_file(fn)
+            result = db(jobs.id==jid).select().first()
+            desc = result['description']
+            shared = result['shared']
             params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid, 
-                       'user': u, 'fn': fn, 'apps': myapps.keys() }
+                       'user': u, 'fn': fn, 'apps': myapps.keys(), 
+                       'description': desc, 'shared': shared }
             return template('case', params)
     except:
         params = { 'app': app, 'apps': myapps.keys(),
@@ -392,13 +396,26 @@ def get_shared():
     cid = request.query.cid
     app = request.query.app
     # note: =~ means sort by descending order
-    result = db(jobs.id==shared.jid).select(orderby=~shared.id)
+    #result = db(jobs.id==shared.jid).select(orderby=~shared.id)
+    result = db(jobs.shared=="True").select(orderby=~jobs.id)
     params = {}
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
     return template('shared', params, rows=result)
+
+@post('/jobs/annotate')
+def annotate_job():
+    if not authorized(): redirect('/login')
+    check_user_var()
+    app = request.forms.app
+    cid = request.forms.cid
+    jid = request.forms.jid
+    desc = request.forms.description
+    jobs(id=jid).update_record(description=desc)
+    db.commit()
+    redirect('/jobs')
 
 @post('/shared')
 def post_shared():
@@ -407,27 +424,18 @@ def post_shared():
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
-    comment = request.forms.comment
-    # save comment to db
-    shared.insert(jid=jid, comment=comment)
+    jobs(id=jid).update_record(shared="True")
     db.commit()
-    # get all shared comments
-    result = db().select(shared.ALL)
-    params = {}
-    params['cid'] = cid
-    params['app'] = app
-    params['user'] = user
     redirect('/shared')
 
-@post('/shared/delete')
-def delete_shared_item():
+@post('/shared/unshare')
+def unshare_shared_item():
     if not authorized(): redirect('/login')
     check_user_var()
     app = request.forms.app
     cid = request.forms.cid
-    sid = request.forms.sid
-    print "sid is:", sid
-    del db.shared[sid]
+    jid = request.forms.jid
+    jobs(id=jid).update_record(shared="False")
     db.commit()
     redirect ('/shared?app='+app+'&cid='+cid)
 

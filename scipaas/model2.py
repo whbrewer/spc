@@ -27,7 +27,8 @@ class dal(object):
                                        Field('state','string'),
                                        Field('time_submit','string'),
                                        Field('description','string'),
-                                       Field('np','integer'))
+                                       Field('np','integer'),
+                                       Field('shared','True'))
 
         self.plots = self.db.define_table('plots', Field('id','integer'),
                                          Field('appid',self.db.apps),
@@ -44,10 +45,6 @@ class dal(object):
                                                    Field('filename','string'),
                                                    Field('cols','string'),
                                                    Field('line_range','string'))
-
-        self.shared = self.db.define_table('shared', Field('id','integer'),
-                                                     Field('jid',self.db.jobs),
-                                                     Field('comment','string'))
 
         self.aws_creds = self.db.define_table('aws_creds', Field('id','integer'),
                                                  Field('key','string'),

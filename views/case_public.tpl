@@ -24,14 +24,6 @@
     <input type="hidden" name="app" value="{{app}}">
     <input type="submit" value="files">
 </form>
-</td> <td>
-<form method="post" action="/shared/delete">
-    <input type="hidden" name="cid" value="{{cid}}">
-    <input type="hidden" name="app" value="{{app}}">
-    <input type="hidden" name="sid" value="{{sid}}">
-    <input type="submit" value="delete comment" 
-           onclick="if(confirm('are you sure?')) return true; return false">
-</form>
 </td>
 </tr>
 </table>
