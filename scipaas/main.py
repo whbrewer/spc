@@ -80,8 +80,7 @@ def execute():
             processed_inputs = process.preprocess(run_params,
                                        myapps[app].preprocess,base_dir)
         if myapps[app].preprocess == "terra.in":
-            myapps[app].outfn = \
-                os.path.join(base_dir, "out"+params['casenum']+".00")
+            myapps[app].outfn = "out"+run_params['casenum']+".00"
     except:
         return template('error',err="There was an error with the preprocessor")
 
