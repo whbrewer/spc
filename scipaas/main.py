@@ -70,6 +70,7 @@ def execute():
     app = request.forms.app
     cid = request.forms.cid
     np = request.forms.np
+    #priority = request.forms.priority
     params = {}
     base_dir = os.path.join(myapps[app].user_dir,user,app,cid)
 
@@ -89,7 +90,8 @@ def execute():
         params['cid'] = cid
         params['app'] = app
         params['user'] = user
-        jid = sched.qsub(app,cid,user,np)
+        priority = db(users.user==user).select(users.priority).first().priority
+        jid = sched.qsub(app,cid,user,np,priority)
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -437,7 +439,7 @@ def unshare_shared_item():
     jid = request.forms.jid
     jobs(id=jid).update_record(shared="False")
     db.commit()
-    redirect ('/shared?app='+app+'&cid='+cid)
+    redirect ('/jobs')
 
 @post('/jobs/delete/<jid>')
 def delete_job(jid):
@@ -570,7 +572,8 @@ def post_register():
     email = request.forms.email
     if pw1 == pw2:
         hashpw = _hash_pass(pw1)
-        users.insert(user=user, passwd=hashpw, email=email)
+        users.insert(user=user, passwd=hashpw, email=email, 
+                     priority=config.default_priority)
         db.commit()
         # email admin user
         try:

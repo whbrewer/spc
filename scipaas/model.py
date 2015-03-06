@@ -7,7 +7,8 @@ db = DAL(config.uri, migrate=False, folder=config.dbdir)
 users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),
                                  Field('passwd','string'),
-                                 Field('email','string'))
+                                 Field('email','string'),
+                                 Field('priority','integer'))
 # this is also defined in scheduler.py
 # need to fix in the future
 apps = db.define_table('apps', Field('id','integer'),
@@ -30,6 +31,7 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('time_submit','string'),
                                Field('description','string'),
                                Field('np','integer'),
+                               Field('priority','integer'),
                                Field('shared','string'))
 
 plots = db.define_table('plots', Field('id','integer'),

@@ -42,10 +42,10 @@ class scheduler(object):
                 self.start(j)            
             time.sleep(1) 
 
-    def qsub(self,app,cid,user,np):
+    def qsub(self,app,cid,user,np,pry):
         state = 'Q'
         jid = jobs.insert(user=user, app=app, cid=cid, state=state, 
-                        time_submit=time.asctime(), np=np)
+                          time_submit=time.asctime(), np=np, priority=pry)
         db.commit()
         return str(jid)
 
@@ -53,8 +53,8 @@ class scheduler(object):
         # this is giving a recursive cursor error, but it still works
         # it is explained here... fix is to create a thread lock
         # http://stackoverflow.com/questions/26629080/python-and-sqlite3-programmingerror-recursive-use-of-cursors-not-allowed
-        jid = db.jobs(db.jobs.state=='Q')
-        if jid: return jid.id
+        row = db.jobs(db.jobs.state=='Q')
+        if row: return row.id
         else: return None
 
     def qdel(self,jid):

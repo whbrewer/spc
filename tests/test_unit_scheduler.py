@@ -17,7 +17,8 @@ class TestScheduler(unittest.TestCase):
         cid = "TEST00"
         user = "guest"
         np = 1
-        jid = self.sched.qsub(app,cid,user,np)
+        priority = 1
+        jid = self.sched.qsub(app,cid,user,np,priority)
         self.assertTrue(jid > 0)
         # test that the job was written to the db
 

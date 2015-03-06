@@ -32,12 +32,12 @@ class scheduler(object):
                 self.start(j)            
             time.sleep(1) 
 
-    def qsub(self,app,cid,user,np):
+    def qsub(self,app,cid,user,np,pry):
         """queue job ... really just set state to 'Q'."""
         db = DAL(config.uri, auto_import=True, migrate=False, 
                  folder=config.dbdir)
         jid = db.jobs.insert(user=user, app=app, cid=cid, state=STATE_QUEUED, 
-                             time_submit=time.asctime(), np=np)
+                             time_submit=time.asctime(), np=np, priority=pry)
         db.commit()
         db.close()
         return str(jid)
@@ -46,9 +46,11 @@ class scheduler(object):
         """pop the top job off of the queue that is in a queued 'Q' state"""
         db = DAL(config.uri, auto_import=True, migrate=False, 
                  folder=config.dbdir)
-        jid = db.jobs(db.jobs.state==STATE_QUEUED)
+        myorder = db.jobs.priority 
+        #myorder = db.jobs.priority | db.jobs.id
+        row = db(db.jobs.state==STATE_QUEUED).select(orderby=myorder).first()
         db.close()
-        if jid: return jid.id
+        if row: return row.id
         else: return None
 
     def qdel(self,jid):
