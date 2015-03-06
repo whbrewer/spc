@@ -35,6 +35,12 @@ QUICKSTART
       docker run -d -P willscott/scipaas
 
 ----------
+DEPENDENCIES
+----------
+
+* pycrypto
+
+----------
 QUESTIONS
 ----------
 

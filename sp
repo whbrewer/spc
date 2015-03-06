@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-from scipaas import config
-from scipaas import apps as appmod
-#from scipaas.model import *
 import sys, os, shutil, urllib2
+if os.path.exists("scipaas/config.py"):
+    from scipaas import config
+    from scipaas import apps as appmod
+    #from scipaas.model import *
 import xml.etree.ElementTree as ET
 import hashlib, re
 
@@ -26,7 +27,7 @@ if (len(sys.argv) == 1):
     print usage()
     sys.exit()
 
-db = config.db
+#db = config.db
 
 def create_config_file():
     """Create a config.py file in the SciPaaS directory"""
@@ -53,14 +54,16 @@ def create_config_file():
             f.write("# cherrypy is a decent multi-threaded server\n")
             f.write("#server = 'cherrypy'\n")
 
+
 def initdb():
     """Initializes database file"""
+    from scipaas import config
     from scipaas import model2
     # somehow the following doesn't work properly
 
     # create db directory if it doesn't exist
-    #if not os.path.exists(config.dbdir):
-    #    os.makedirs(config.dbdir) 
+    if not os.path.exists(config.dbdir):
+        os.makedirs(config.dbdir)
     # make a backup copy of db file if it exists
 
     #if os.path.isfile(db): 
@@ -126,8 +129,8 @@ def dlfile(url):
 # process command line options
 if __name__ == "__main__":
     if (sys.argv[1] == "init"):
-        print "creating database " + config.db
         create_config_file()
+        print "creating database."
         initdb()
     elif (sys.argv[1] == "go"):
         os.system("python scipaas/main.py")

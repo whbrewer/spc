@@ -8,8 +8,8 @@ MAINTAINER Will Scott <willscott@gmail.com>
 ADD . /scipaas/
 WORKDIR /scipaas
 
-RUN python scipaas-admin.py init
+RUN python sp init
 
 EXPOSE 8081
 
-ENTRYPOINT ["python", "scipaas.py"]
+ENTRYPOINT ["python", "sp", "go"]
