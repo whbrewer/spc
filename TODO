@@ -1,4 +1,5 @@
-- implement priority queues
+- implement sp pack/unpack for installing apps that have already been ported
+  to scipaas
 - look into using snakemake for workflow management
 - in addapp>>create template, fix select option
 - remove shared table... add shared flag to cases... add comments to cases

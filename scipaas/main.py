@@ -11,7 +11,10 @@ import config, uploads, process
 import scheduler, scheduler_smp
 import apps as appmod
 import plots as plotmod
-import aws as awsmod
+try:
+    import aws as awsmod
+except ImportError:
+    pass 
 # data access layer
 from gluino import DAL, Field
 from model import *
@@ -331,7 +334,10 @@ def aws_status(aid):
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    a = aws_conn(aid)
+    if awsmod:
+        a = aws_conn(aid)
+    else:
+        return template('error',err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
     try:
         astatus = a.status()
         astatus['uptime'] = a.uptime(astatus['launch_time'])
@@ -353,7 +359,10 @@ def aws_start(aid):
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    a = aws_conn(aid)
+    if awsmod:
+        a = aws_conn(aid)
+    else:
+        return template('error',err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
     a.start()
     time.sleep(5) # takes a few seconds for the status to change on the Amazon end
     astatus = a.status()
