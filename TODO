@@ -1,3 +1,4 @@
+- add Skip step after step 2 in add app, to skip uploading zip file
 - implement sp pack/unpack for installing apps that have already been ported
   to scipaas
 - look into using snakemake for workflow management

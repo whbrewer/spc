@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 import sys, os, shutil, urllib2
 if os.path.exists("scipaas/config.py"):
-    from scipaas import config
+    from scipaas import config, uploads
     from scipaas import apps as appmod
-    #from scipaas.model import *
 import xml.etree.ElementTree as ET
 import hashlib, re
 
@@ -13,14 +12,13 @@ url = 'https://s3-us-west-1.amazonaws.com/scihub'
 
 def usage():
     buf =  "SciPaaS usage: sp <command> [options]\n\n"
-    buf += "commonly used commands:\n"
-    buf += "init     initialize a database for scipaas\n"
+    buf += "available commands:\n"
     buf += "go       start the server\n"
-    buf += "create   create a view template for appname (e.g. sp create myapp)\n"
-    buf += "search   search for available apps\n"
-    buf += "list     list installed or available apps (e.g. sp list [available|installed]) \n"
-    buf += "test     run unit tests\n"
+    buf += "init     initialize a database for scipaas\n"
     buf += "install  install an app\n"
+    buf += "list     list installed or available apps\n"
+    buf += "search   search for available apps\n"
+    buf += "test     run unit tests\n"
     return buf
 
 if (len(sys.argv) == 1):
@@ -99,13 +97,15 @@ def initdb():
     dal.db.datasource.insert(filename="din.out",cols="1:2",pltid=1)
     dal.db.datasource.insert(filename="nucs.out",cols="1:2",pltid=2)
     dal.db.datasource.insert(filename="codons.out",cols="1:2",pltid=3)
-    #dal.db.disciplines.insert(name="Computational Linguistics")
-    #dal.db.disciplines.insert(name="Computational Finance")
-    #dal.db.disciplines.insert(name="Computational Biology")
-    #dal.db.disciplines.insert(name="Computational Fluid Dynamics")
-    #dal.db.disciplines.insert(name="Computational Physics")
-    #dal.db.disciplines.insert(name="Numerical Weather Prediction")
+    #dal.db.disciplines.insert(name="Chemistry")
+    #dal.db.disciplines.insert(name="Linguistics")
+    #dal.db.disciplines.insert(name="Finance")
+    #dal.db.disciplines.insert(name="Biology")
+    #dal.db.disciplines.insert(name="Physics")
+    #dal.db.disciplines.insert(name="Fluid Dynamics")
+    #dal.db.disciplines.insert(name="Geodynamics")
     #dal.db.disciplines.insert(name="Molecular Dynamics")
+    #dal.db.disciplines.insert(name="Weather Prediction")
     # write changes to db
     dal.db.commit()
 
@@ -140,11 +140,73 @@ if __name__ == "__main__":
         os.chdir('tests')  
         os.system("python test_unit.py")
     elif (sys.argv[1] == "install"):
-        install_usage = "usage: sp install appname"
-        if len(sys.argv) == 3:
-            durl = url+'/'+sys.argv[2]+'.zip' 
-            print 'durl is:',durl
-            dlfile(durl)
+        install_usage = "usage: sp install appname [--local]"
+                
+            #shutil.copy(path,"apps" + os.sep + 
+        #if len(sys.argv) == 3:
+        if 3 <= len(sys.argv) <= 4:
+
+            os.chdir(config.apps_dir)
+
+            # to install local zip file sitting in apps dir
+            # sp install xyz --local
+            if len(sys.argv) < 4:
+                # download zip file into apps folder
+                durl = url+'/'+sys.argv[2]+'.zip' 
+                print 'durl is:',durl
+                dlfile(durl)
+
+            save_path = sys.argv[2]
+            print "save_path:", save_path
+            if os.path.isfile(save_path):
+                print 'ERROR: zip file exists already. Please remove first.'
+                sys.exit()
+
+            import zipfile
+            # unzip file
+            fh = open(save_path+".zip", 'rb')
+            z = zipfile.ZipFile(fh)
+            z.extractall()
+            fh.close()
+
+            # read the json app config file and insert info into db
+            import json
+            from scipaas import model2
+            # future here: unzip file
+            app = sys.argv[2]
+            path = app + os.sep + app + ".json"
+            print path
+            with open(path,'r') as f: 
+                data = f.read()
+            print data
+            parsed = json.loads(data)
+            print parsed
+            
+            # copy tpl file to views/apps folder
+            src = app + os.sep + app + '.tpl'
+            dst = os.pardir + os.sep + 'views' + os.sep + 'apps'
+            shutil.copy(src,dst)
+            # copy input file--don't need b/c file is already in apps folder
+            #if parsed['input_format'] == "namelist":
+            #    path = app + os.sep + app + ".in"
+            #else if parsed['input_format'] == "ini":
+            #    path = app + os.sep + app + ".ini"
+            #else if parsed['input_format'] == "xml":
+            #    path = app + os.sep + app + ".xml"
+            #else:
+            #    print "ERROR: input format not supported"
+            #    sys.exit()
+
+            # add app to database
+            os.chdir(os.pardir)
+            dal = model2.dal(uri=config.uri,migrate=True)
+            dal.db.apps.insert(name=parsed['name'],
+                               description=parsed['description'],
+                               category=parsed['category'],
+                               language=parsed['language'],
+                               input_format=parsed['input_format'],
+                               command=parsed['command'])
+            dal.db.commit()
         else:
             print install_usage
 

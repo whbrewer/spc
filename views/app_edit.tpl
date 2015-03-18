@@ -50,5 +50,8 @@
 <input type="hidden" name="appname" value="{{rows['name']}}">
 <input type="submit" value="save changes">
 </form>
+<form action="/app/{{app}}">
+<input type="submit" value="cancel">
+</form>
 
 %include('footer')
