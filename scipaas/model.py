@@ -63,3 +63,9 @@ aws_instances = db.define_table('aws_instances', Field('id','integer'),
                                                  Field('rate','double'),
                                                  Field('uid','integer'))
 
+
+containers = db.define_table('containers', Field('id','integer'),
+                                           Field('containerid','string'),
+                                           Field('image','string'),
+                                           Field('command','string'),
+                                           Field('uid','integer'))

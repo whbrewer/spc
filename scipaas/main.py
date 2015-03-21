@@ -14,7 +14,11 @@ import plots as plotmod
 try:
     import aws as awsmod
 except ImportError:
-    pass 
+    pass
+try:
+    import container as dockermod
+except ImportError:
+    pass
 # data access layer
 from gluino import DAL, Field
 from model import *
@@ -51,15 +55,15 @@ def confirm_form():
     # pass the case_id to be used by the program input parameters,
     # if case_id is defined in the input deck it will be used
     # otherwise it is ignored
-    request.forms['case_id'] = cid 
+    request.forms['case_id'] = cid
     myapps[app].write_params(request.forms,user)
-    # read the file 
+    # read the file
     run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
     fn = os.path.join(run_dir,myapps[app].simfn)
     inputs = slurp_file(fn)
     # convert html tags to entities (e.g. < to &lt;)
     inputs = cgi.escape(inputs)
-    params = { 'cid': cid, 'inputs': inputs, 'app': app, 
+    params = { 'cid': cid, 'inputs': inputs, 'app': app,
                'user': user, 'apps': myapps.keys(), 'np': config.np }
     try:
         return template('confirm', params)
@@ -80,7 +84,7 @@ def execute():
     # if preprocess is set run the preprocessor
     try:
         if myapps[app].preprocess:
-            run_params,_,_ = myapps[app].read_params(user,cid) 
+            run_params,_,_ = myapps[app].read_params(user,cid)
             processed_inputs = process.preprocess(run_params,
                                        myapps[app].preprocess,base_dir)
         if myapps[app].preprocess == "terra.in":
@@ -98,20 +102,20 @@ def execute():
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
-        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 
+        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
                    'err': e, 'apps': myapps.keys() }
         return template('error',params)
 
 @get('/more')
 def more():
-    """given a form with the attribute plotpath, 
+    """given a form with the attribute plotpath,
        output the file to the browser"""
     global user
     app = request.query.app
     cid = request.query.cid
     filepath = request.query.filepath
     contents = slurp_file(filepath)
-    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 
+    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user,
                'fn': filepath, 'apps': myapps.keys() }
     return template('more', params)
 
@@ -125,7 +129,7 @@ def case():
     jid = request.query.jid
     try:
         if re.search("/",cid):
-            (u,c) = cid.split("/") 
+            (u,c) = cid.split("/")
             sid = request.query.sid # id of item in shared
             run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
             fn = os.path.join(run_dir,myapps[app].outfn)
@@ -142,13 +146,13 @@ def case():
             result = db(jobs.id==jid).select().first()
             desc = result['description']
             shared = result['shared']
-            params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid, 
-                       'user': u, 'fn': fn, 'apps': myapps.keys(), 
+            params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid,
+                       'user': u, 'fn': fn, 'apps': myapps.keys(),
                        'description': desc, 'shared': shared }
             return template('case', params)
     except:
         params = { 'app': app, 'apps': myapps.keys(),
-                   'err': "There was a problem... Sorry!" } 
+                   'err': "There was a problem... Sorry!" }
         return template('error', params)
 
 @get('/output')
@@ -160,19 +164,19 @@ def output():
     check_user_var()
     try:
         if re.search("/",cid):
-            (u,c) = cid.split("/") 
+            (u,c) = cid.split("/")
         else:
             u = user
             c = cid
         run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
         fn = os.path.join(run_dir,myapps[app].outfn)
         output = slurp_file(fn)
-        params = { 'cid': cid, 'contents': output, 'app': app, 
+        params = { 'cid': cid, 'contents': output, 'app': app,
                    'user': u, 'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
         params = { 'app': app, 'apps': myapps.keys(),
-                   'err': "Couldn't read input file. Check casename." } 
+                   'err': "Couldn't read input file. Check casename." }
         return template('error', params)
 
 @get('/inputs')
@@ -184,26 +188,26 @@ def inputs():
     check_user_var()
     try:
         if re.search("/",cid):
-            (u,c) = cid.split("/") 
+            (u,c) = cid.split("/")
         else:
             u = user
             c = cid
         run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
         fn = os.path.join(run_dir,myapps[app].simfn)
         inputs = slurp_file(fn)
-        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u, 
+        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u,
                    'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
     except:
         params = { 'app': app, 'apps': myapps.keys(),
-                   'err': "Couldn't read input file. Check casename." } 
+                   'err': "Couldn't read input file. Check casename." }
         return template('error', params)
 
 def slurp_file(path):
     """read file given by path and return the contents of the file
        as a single string datatype"""
     try:
-        with open(path,'r') as f: 
+        with open(path,'r') as f:
             data = f.read()
         return data
     except IOError:
@@ -224,7 +228,7 @@ def tail(app,cid):
         f.close()
     else:
         xoutput = 'waiting to start...'
-    params = { 'cid': cid, 'contents': xoutput, 'app': app, 
+    params = { 'cid': cid, 'contents': xoutput, 'app': app,
                'user': user, 'fn': ofn, 'apps': myapps.keys() }
     return template('more', params)
 
@@ -484,7 +488,7 @@ def show_app(app):
     s[APP_SESSION_KEY] = app
     # parameters for return template
     params = myapps[app].params
-    params['cid'] = '' 
+    params['cid'] = ''
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps
@@ -544,7 +548,7 @@ def change_password():
     opasswd = request.forms.opasswd
     pw1 = request.forms.npasswd1
     pw2 = request.forms.npasswd2
-    # check old passwd 
+    # check old passwd
     #user = request.forms.user
     if _check_user_passwd(user,opasswd) and pw1 == pw2 and len(pw1) > 0:
         u = users(user=user)
@@ -566,7 +570,7 @@ def _check_user_passwd(user,passwd):
         return False
 
 def _hash_pass(pw):
-    return hashlib.sha256(pw).hexdigest() 
+    return hashlib.sha256(pw).hexdigest()
 
 @get('/register')
 def get_register():
@@ -580,7 +584,7 @@ def post_register():
     email = request.forms.email
     if pw1 == pw2:
         hashpw = _hash_pass(pw1)
-        users.insert(user=user, passwd=hashpw, email=email, 
+        users.insert(user=user, passwd=hashpw, email=email,
                      priority=config.default_priority)
         db.commit()
         # email admin user
@@ -600,7 +604,7 @@ def post_register():
 def admin_show_users():
     global user
     if not authorized(): redirect('/login')
-    if not user == "admin": 
+    if not user == "admin":
         return template("error",err="must be admin to delete")
     result = db().select(users.ALL)
     params = {'user': user}
@@ -610,7 +614,7 @@ def admin_show_users():
 def admin_delete_user():
     global user
     if not authorized(): redirect('/login')
-    if not user == "admin": 
+    if not user == "admin":
         return template("error",err="must be admin to delete")
     uid = request.forms.uid
     print "uid is:",uid
@@ -623,11 +627,11 @@ def admin_delete_user():
 @post('/check_user')
 def check_user():
     user = request.forms.user
-    """This is the server-side AJAX function to check if a username 
+    """This is the server-side AJAX function to check if a username
        exists in the DB."""
     # return booleans as strings here b/c they get parsed by JavaScript
     if users(user=user): return 'true'
-    else: return 'false' 
+    else: return 'false'
 
 @post('/app_exists/<appname>')
 def app_exists(appname):
@@ -636,7 +640,7 @@ def app_exists(appname):
     appname = request.forms.appname
     # return booleans as strings here b/c they get parsed by JavaScript
     if apps(name=appname): return 'true'
-    else: return 'false' 
+    else: return 'false'
 
 def check_user_var():
     # this check is because user is global var when restarting scipaas
@@ -660,10 +664,10 @@ def get_load_apps():
 
 def load_apps():
     global myapps, default_app
-    # Connect to DB 
+    # Connect to DB
     result = db().select(apps.ALL)
     myapps = {}
-    for row in result:   
+    for row in result:
         name = row['name']
         appid = row['id']
         preprocess = row['preprocess']
@@ -744,7 +748,7 @@ def getstart():
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
     if re.search("/",cid):
-        (u,cid) = cid.split("/") 
+        (u,cid) = cid.split("/")
     else:
         u = user
     params = myapps[app].params
@@ -767,14 +771,14 @@ def list_files():
     path = request.query.path
     check_user_var()
     if re.search("/",cid):
-        (u,cid) = cid.split("/") 
+        (u,cid) = cid.split("/")
     else:
         u = user
     if not path:
         path = os.path.join(myapps[app].user_dir,u,app,cid)
 
     case_path = os.path.join(myapps[app].user_dir,u,app)
-        
+
     binary_extensions = ['.bz2','.gz','.xz','.zip']
     image_extensions = ['.png','.gif','.jpg']
     buf = '<table>'
@@ -786,7 +790,7 @@ def list_files():
         #buf += '<input type="image" src="/static/images/trash_can.gif">'
         #buf += '</form></td>\n'
         buf += '<td>'
-        if os.path.isdir(this_path): 
+        if os.path.isdir(this_path):
             buf += '<a href="/files?app='+app+'&cid='+cid+'&path=' \
                                          +this_path+'">'+fn+'/</a>'
         elif ext in binary_extensions:
@@ -818,7 +822,7 @@ def editplot():
     if app not in myapps: redirect('/apps')
     query = (apps.id==plots.appid) & (apps.name==app)
     result = db(query).select()
-    params = { 'app': app, 'cid': cid, 'user': user, 'apps': myapps.keys() } 
+    params = { 'app': app, 'cid': cid, 'user': user, 'apps': myapps.keys() }
     return template('plots/edit', params, rows=result)
 
 @get('/plots/delete/<pltid>')
@@ -838,8 +842,8 @@ def get_datasource(pltid):
     if myapps[app].appname not in myapps: redirect('/apps')
     if not authorized(): redirect('/login')
     result = db(datasource.pltid==pltid).select()
-    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 
-               'rows': result, 'apps': myapps.keys() } 
+    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid,
+               'rows': result, 'apps': myapps.keys() }
     return template('plots/datasource', params, rows=result)
 
 @post('/plots/datasource_add')
@@ -848,8 +852,8 @@ def add_datasource():
     cid = request.forms.get('cid')
     pltid = request.forms.get('pltid')
     r = request.forms
-    datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'], 
-                      line_range=r['line_range'], label=r['label'], 
+    datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'],
+                      line_range=r['line_range'], label=r['label'],
                       ptype=r['ptype'], color=r['color'])
     db.commit()
     redirect ('/plots/datasource/'+pltid+'?app='+app+'&cid='+cid)
@@ -869,7 +873,7 @@ def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
-    plots.insert(appid=myapps[app].appid, ptype=r.forms['ptype'], 
+    plots.insert(appid=myapps[app].appid, ptype=r.forms['ptype'],
                  title=r.forms['title'], options=r.forms['options'],
                  datadef=r.forms['datadef'])
     db.commit()
@@ -886,7 +890,7 @@ def plot_interface(pltid):
         return template('error', params)
 
     if re.search("/",cid):
-        (u,c) = cid.split("/") 
+        (u,c) = cid.split("/")
     else:
         u = user
         c = cid
@@ -919,16 +923,16 @@ def plot_interface(pltid):
         return template('error', params)
 
     # determine which view template to use
-    if plottype == 'flot-bar': 
+    if plottype == 'flot-bar':
         tfn = 'plots/flot-bar'
-    elif plottype == 'flot-cat': 
+    elif plottype == 'flot-cat':
         tfn = 'plots/flot-cat'
     elif plottype == 'flot-line':
-        tfn = 'plots/flot-line' 
+        tfn = 'plots/flot-line'
     elif plottype == 'mpl-line' or plottype == 'mpl-bar':
         redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
     else:
-        tfn = 'plots/plot-line' 
+        tfn = 'plots/plot-line'
 
     # get list of all plots for this app
     query = (apps.id==plots.appid) & (apps.name==app)
@@ -955,8 +959,8 @@ def plot_interface(pltid):
             if myapps[app].postprocess > 0:
                 dat = process.postprocess(plotpath,line1,line2)
             else:
-                dat = p.get_data(plotpath,col1,col2,line1,line2) 
-        else: 
+                dat = p.get_data(plotpath,col1,col2,line1,line2)
+        else:
             dat = p.get_data(plotpath,col1,col2)
         # clean data
         #dat = [d.replace('?', '0') for d in dat]
@@ -967,17 +971,17 @@ def plot_interface(pltid):
     if not result:
         return template("error",err="need to specify at least one datasource")
 
-    params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u, 
-               'ticks': ticks, 'title': title, 'plotpath': plotpath, 
+    params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u,
+               'ticks': ticks, 'title': title, 'plotpath': plotpath,
                'rows': list_of_plots, 'options': options, 'datadef': datadef,
-               'apps': myapps.keys() } 
+               'apps': myapps.keys() }
     return template(tfn, params)
 
 @get('/mpl/<pltid>')
 def matplotlib(pltid):
     """Generate a random image using Matplotlib and display it"""
-    # in the future create a private function __import__ to import third-party 
-    # libraries, so that it can respond gracefully.  See for example the 
+    # in the future create a private function __import__ to import third-party
+    # libraries, so that it can respond gracefully.  See for example the
     # Examples section at https://docs.python.org/2/library/imp.html
     from pylab import savefig
     import numpy as np
@@ -991,7 +995,7 @@ def matplotlib(pltid):
     fig = Figure()
     ax = fig.add_subplot(111)
 
-    # get info about plot 
+    # get info about plot
     p = plotmod.plot()
     result = db(plots.id==pltid).select().first()
     plottype = result['ptype']
@@ -1042,9 +1046,9 @@ def matplotlib(pltid):
     query = (apps.id==plots.appid) & (apps.name==app)
     list_of_plots = db(query).select()
 
-    params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid, 
-              'plotpath': plotpath, 'img_path': img_path, 'title': title, 
-              'rows': list_of_plots, 'apps': myapps.keys() } 
+    params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid,
+              'plotpath': plotpath, 'img_path': img_path, 'title': title,
+              'rows': list_of_plots, 'apps': myapps.keys() }
     return template('plots/matplotlib', params)
 
 @get('/monitor')
@@ -1054,7 +1058,7 @@ def monitor():
     cid = request.query.cid
     app = request.query.app
     jid = request.query.jid
-    params = { 'cid': cid, 'app': app, 'jid': jid, 'user': user, 
+    params = { 'cid': cid, 'app': app, 'jid': jid, 'user': user,
                'apps': myapps.keys() }
     return template('monitor', params)
 
@@ -1104,10 +1108,10 @@ def addapp(step="step0"):
     appname = request.forms.appname
     input_format = request.forms.input_format
     # ask for app name
-    if step == "step0": 
+    if step == "step0":
         return template('addapp/step0')
     # ask user to configure app
-    elif step == "step1": 
+    elif step == "step1":
         if len(appname) < 3:
             return template('error',err="name must be at least 3 character")
         elif app_exists(appname) == 'true':
@@ -1116,7 +1120,7 @@ def addapp(step="step0"):
             params = {'appname': appname, 'user': user }
             return template('addapp/step1',params)
     # write app configuration to db
-    elif step == "step2": 
+    elif step == "step2":
         category = request.forms.category
         language = request.forms.language
         description = request.forms.description
@@ -1127,7 +1131,7 @@ def addapp(step="step0"):
         a = appmod.app()
         #print "user:",user
         uid = users(user=user).id
-        a.create(appname, description, category, language, 
+        a.create(appname, description, category, language,
                  input_format, command, preprocess, postprocess, uid)
         params = {'appname': appname, 'input_format': input_format }
         return template('addapp/step2',params)
@@ -1173,7 +1177,7 @@ def addapp(step="step0"):
                 return "ERROR: input_format not valid: ", input_format
 
             path = os.path.join(config.apps_dir,appname,fn)
-            params = {'fn': fn, 'contents': slurp_file(path), 
+            params = {'fn': fn, 'contents': slurp_file(path),
                       'appname': appname, 'input_format': input_format }
             return template('addapp/step3', params)
         except IOError:
@@ -1188,9 +1192,9 @@ def addapp(step="step0"):
         inputs,_,_ = myapp.read_params()
         print "inputs:", inputs
         params = { "appname": appname }
-        return template('addapp/step4', params, inputs=inputs, 
+        return template('addapp/step4', params, inputs=inputs,
                                         input_format=input_format)
-    # create a template in the views/apps folder 
+    # create a template in the views/apps folder
     elif step == "step5":
         appname = request.forms.get('appname')
         html_tags = request.forms.getlist('html_tags')
@@ -1259,19 +1263,30 @@ def authorized():
     global user
     s = request.environ.get('beaker.session')
     s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY,False)
-    if not s[USER_ID_SESSION_KEY]: 
+    if not s[USER_ID_SESSION_KEY]:
         return False
-    else: 
+    else:
         user = s[USER_ID_SESSION_KEY]
         return True
+
+def getuser():
+    '''Return the current user, if logged in'''
+    global user
+    return user
 
 if __name__ == "__main__":
     load_apps()
     # start a polling thread to continuously check for queued jobs
-    sched.poll() 
+    sched.poll()
+    # attempt to mix in docker functionality.
+    try:
+        dockermod.bind(globals())
+        app.app.merge(dockermod.dockerMod)
+    except Exception,e:
+        pass
+    # run the app.
     try:
         run(server=config.server, app=app, host='0.0.0.0',\
             port=8081, debug=False)
     except:
         run(app=app, host='0.0.0.0', port=8081, debug=True)
-

@@ -54,7 +54,7 @@ class dal(object):
                                                  Field('account_id','string'),
                                                  Field('uid','integer'))
 
-        self.aws_instances = self.db.define_table('aws_instances', 
+        self.aws_instances = self.db.define_table('aws_instances',
                                                         Field('id','integer'),
                                                         Field('region','string'),
                                                         Field('instance','string'),
@@ -62,8 +62,14 @@ class dal(object):
                                                         Field('rate','double'),
                                                         Field('uid','integer'))
 
+        self.containers = self.db.define_table('containers',
+                                           Field('id','integer'),
+                                           Field('containerid','string'),
+                                           Field('image','string'),
+                                           Field('command','string'),
+                                           Field('uid','integer'))
+
         self.disciplines = self.db.define_table('disciplines', Field('name'))
 
     def commit(self):
         return self.db.commit()
-
