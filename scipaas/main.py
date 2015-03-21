@@ -11,7 +11,10 @@ import config, uploads, process
 import scheduler, scheduler_smp
 import apps as appmod
 import plots as plotmod
-import aws as awsmod
+try:
+    import aws as awsmod
+except ImportError:
+    pass 
 # data access layer
 from gluino import DAL, Field
 from model import *
@@ -70,6 +73,7 @@ def execute():
     app = request.forms.app
     cid = request.forms.cid
     np = request.forms.np
+    #priority = request.forms.priority
     params = {}
     base_dir = os.path.join(myapps[app].user_dir,user,app,cid)
 
@@ -80,8 +84,7 @@ def execute():
             processed_inputs = process.preprocess(run_params,
                                        myapps[app].preprocess,base_dir)
         if myapps[app].preprocess == "terra.in":
-            myapps[app].outfn = \
-                os.path.join(base_dir, "out"+params['casenum']+".00")
+            myapps[app].outfn = "out"+run_params['casenum']+".00"
     except:
         return template('error',err="There was an error with the preprocessor")
 
@@ -90,7 +93,8 @@ def execute():
         params['cid'] = cid
         params['app'] = app
         params['user'] = user
-        jid = sched.qsub(app,cid,user,np)
+        priority = db(users.user==user).select(users.priority).first().priority
+        jid = sched.qsub(app,cid,user,np,priority)
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -115,10 +119,10 @@ def more():
 def case():
     if not authorized(): redirect('/login')
     global user
+    check_user_var()
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid
-    check_user_var()
     try:
         if re.search("/",cid):
             (u,c) = cid.split("/") 
@@ -135,8 +139,12 @@ def case():
             run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
             fn = os.path.join(run_dir,myapps[app].outfn)
             output = slurp_file(fn)
+            result = db(jobs.id==jid).select().first()
+            desc = result['description']
+            shared = result['shared']
             params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid, 
-                       'user': u, 'fn': fn, 'apps': myapps.keys() }
+                       'user': u, 'fn': fn, 'apps': myapps.keys(), 
+                       'description': desc, 'shared': shared }
             return template('case', params)
     except:
         params = { 'app': app, 'apps': myapps.keys(),
@@ -195,9 +203,8 @@ def slurp_file(path):
     """read file given by path and return the contents of the file
        as a single string datatype"""
     try:
-        f = open(path,'r')
-        data = f.read()
-        f.close()
+        with open(path,'r') as f: 
+            data = f.read()
         return data
     except IOError:
         return("ERROR: the file cannot be opened or does not exist " + path)
@@ -326,7 +333,10 @@ def aws_status(aid):
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    a = aws_conn(aid)
+    if awsmod:
+        a = aws_conn(aid)
+    else:
+        return template('error',err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
     try:
         astatus = a.status()
         astatus['uptime'] = a.uptime(astatus['launch_time'])
@@ -348,7 +358,10 @@ def aws_start(aid):
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    a = aws_conn(aid)
+    if awsmod:
+        a = aws_conn(aid)
+    else:
+        return template('error',err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
     a.start()
     time.sleep(5) # takes a few seconds for the status to change on the Amazon end
     astatus = a.status()
@@ -393,13 +406,26 @@ def get_shared():
     cid = request.query.cid
     app = request.query.app
     # note: =~ means sort by descending order
-    result = db(jobs.id==shared.jid).select(orderby=~shared.id)
+    #result = db(jobs.id==shared.jid).select(orderby=~shared.id)
+    result = db(jobs.shared=="True").select(orderby=~jobs.id)
     params = {}
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
     return template('shared', params, rows=result)
+
+@post('/jobs/annotate')
+def annotate_job():
+    if not authorized(): redirect('/login')
+    check_user_var()
+    app = request.forms.app
+    cid = request.forms.cid
+    jid = request.forms.jid
+    desc = request.forms.description
+    jobs(id=jid).update_record(description=desc)
+    db.commit()
+    redirect('/jobs')
 
 @post('/shared')
 def post_shared():
@@ -408,29 +434,20 @@ def post_shared():
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
-    comment = request.forms.comment
-    # save comment to db
-    shared.insert(jid=jid, comment=comment)
+    jobs(id=jid).update_record(shared="True")
     db.commit()
-    # get all shared comments
-    result = db().select(shared.ALL)
-    params = {}
-    params['cid'] = cid
-    params['app'] = app
-    params['user'] = user
     redirect('/shared')
 
-@post('/shared/delete')
-def delete_shared_item():
+@post('/shared/unshare')
+def unshare_shared_item():
     if not authorized(): redirect('/login')
     check_user_var()
     app = request.forms.app
     cid = request.forms.cid
-    sid = request.forms.sid
-    print "sid is:", sid
-    del db.shared[sid]
+    jid = request.forms.jid
+    jobs(id=jid).update_record(shared="False")
     db.commit()
-    redirect ('/shared?app='+app+'&cid='+cid)
+    redirect ('/jobs')
 
 @post('/jobs/delete/<jid>')
 def delete_job(jid):
@@ -563,7 +580,8 @@ def post_register():
     email = request.forms.email
     if pw1 == pw2:
         hashpw = _hash_pass(pw1)
-        users.insert(user=user, passwd=hashpw, email=email)
+        users.insert(user=user, passwd=hashpw, email=email, 
+                     priority=config.default_priority)
         db.commit()
         # email admin user
         try:

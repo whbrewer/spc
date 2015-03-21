@@ -17,7 +17,7 @@
   </tr>
   <tr>
       <td>Description:</th>
-      <td contentEditable="true">{{rows['description']}}</td>
+      <td>{{rows['description']}}</td>
   </tr>
   <tr>
       <td>Input format:</td>

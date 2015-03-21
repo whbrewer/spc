@@ -36,12 +36,29 @@
            onclick="if(confirm('are you sure?')) return true; return false">
 </form>
 </td><td>
+%if shared=="False":
 <form method="post" action="/shared">
       <input type="hidden" name="app" value="{{app}}">
       <input type="hidden" name="cid" value="{{cid}}">
       <input type="hidden" name="jid" value="{{jid}}">
-      <input type="text" name="comment">
-      <input type="submit" value="Share">
+      <input type="submit" value="share">
+</form>
+%else:
+<form method="post" action="/shared/unshare">
+      <input type="hidden" name="app" value="{{app}}">
+      <input type="hidden" name="cid" value="{{cid}}">
+      <input type="hidden" name="jid" value="{{jid}}">
+      <input type="submit" value="unshare">
+</form>
+%end
+<td valign="top"> &nbsp; Description:</td>
+<td>
+<form method="post" action="/jobs/annotate">
+      <input type="hidden" name="app" value="{{app}}">
+      <input type="hidden" name="cid" value="{{cid}}">
+      <input type="hidden" name="jid" value="{{jid}}">
+      <input type="text" name="description" value="{{description}}">
+      <input type="submit" value="annotate">
 </form>
 </td></tr>
 </table>

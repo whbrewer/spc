@@ -9,7 +9,8 @@ class dal(object):
         self.users = self.db.define_table('users', Field('id','integer'),
                                          Field('user', 'string'),
                                          Field('passwd','string'),
-                                         Field('email','string'))
+                                         Field('email','string'),
+                                         Field('priority','integer'))
         self.apps = self.db.define_table('apps', Field('id','integer'),
                                        Field('name','string'),
                                        Field('description','string'),
@@ -27,7 +28,9 @@ class dal(object):
                                        Field('state','string'),
                                        Field('time_submit','string'),
                                        Field('description','string'),
-                                       Field('np','integer'))
+                                       Field('np','integer'),
+                                       Field('priority','integer'),
+                                       Field('shared','string'))
 
         self.plots = self.db.define_table('plots', Field('id','integer'),
                                          Field('appid',self.db.apps),
@@ -44,10 +47,6 @@ class dal(object):
                                                    Field('filename','string'),
                                                    Field('cols','string'),
                                                    Field('line_range','string'))
-
-        self.shared = self.db.define_table('shared', Field('id','integer'),
-                                                     Field('jid',self.db.jobs),
-                                                     Field('comment','string'))
 
         self.aws_creds = self.db.define_table('aws_creds', Field('id','integer'),
                                                  Field('key','string'),

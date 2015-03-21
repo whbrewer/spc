@@ -9,12 +9,23 @@
 
 <form action="/execute" method="post">
 <!-- onclick="showImage()"> -->
-    Number of processors to use:
+    <p>Number of processors to use:
     <select name="np">
         %for i in range(1,np+1):
             <option value="{{i}}">{{i}}
         %end
+    </select></p>
+    
+    <!-- use this for testing priority levels
+    <p>Priority level:
+    <select name="priority">
+        <option value="0">0
+        <option value="1">1
+        <option value="2">2
     </select>
+    </p>
+    -->
+
     <input class="submit start" type="submit" value="execute"/>
     <input type="hidden" name="app" value="{{app}}">
     <input type="hidden" name="cid" value="{{cid}}">

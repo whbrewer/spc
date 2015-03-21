@@ -7,7 +7,8 @@ db = DAL(config.uri, migrate=False, folder=config.dbdir)
 users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),
                                  Field('passwd','string'),
-                                 Field('email','string'))
+                                 Field('email','string'),
+                                 Field('priority','integer'))
 # this is also defined in scheduler.py
 # need to fix in the future
 apps = db.define_table('apps', Field('id','integer'),
@@ -29,7 +30,9 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('state','string'),
                                Field('time_submit','string'),
                                Field('description','string'),
-                               Field('np','integer'))
+                               Field('np','integer'),
+                               Field('priority','integer'),
+                               Field('shared','string'))
 
 plots = db.define_table('plots', Field('id','integer'),
                                  Field('appid',db.apps),
@@ -46,10 +49,6 @@ datasource = db.define_table('datasource', Field('id','integer'),
                                            Field('filename','string'),
                                            Field('cols','string'),
                                            Field('line_range','string'))
-
-shared = db.define_table('shared', Field('id','integer'),
-                                   Field('jid',db.jobs),
-                                   Field('comment','string'))
 
 aws_creds = db.define_table('aws_creds', Field('id','integer'),
                                          Field('key','string'),

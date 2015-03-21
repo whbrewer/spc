@@ -1,3 +1,10 @@
+- add Skip step after step 2 in add app, to skip uploading zip file
+- implement sp pack/unpack for installing apps that have already been ported
+  to scipaas
+- look into using snakemake for workflow management
+- in addapp>>create template, fix select option
+- remove shared table... add shared flag to cases... add comments to cases
+    possible tags: (T)emplate, (S)tarred
 - remove spaces in usernames and appnames
 - in jobs, dropdown box to choose R, C, or Q jobs
 - delete button on myjobs must be post not get

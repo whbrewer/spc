@@ -39,6 +39,8 @@ DEPENDENCIES
 ----------
 
 * pycrypto
+* matplotlib (optional-used to support matplotlib plotting)
+* boto (optional-used to support AWS features)
 
 ----------
 QUESTIONS
