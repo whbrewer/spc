@@ -142,8 +142,6 @@ if __name__ == "__main__":
     elif (sys.argv[1] == "install"):
         install_usage = "usage: sp install appname [--local]"
                 
-            #shutil.copy(path,"apps" + os.sep + 
-        #if len(sys.argv) == 3:
         if 3 <= len(sys.argv) <= 4:
 
             os.chdir(config.apps_dir)
