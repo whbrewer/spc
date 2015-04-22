@@ -367,7 +367,8 @@ def aws_start(aid):
     else:
         return template('error',err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
     a.start()
-    time.sleep(5) # takes a few seconds for the status to change on the Amazon end
+    # takes a few seconds for the status to change on the Amazon end
+    time.sleep(5) 
     astatus = a.status()
     return template('aws_status',params,astatus=astatus)
 
@@ -386,7 +387,8 @@ def aws_stop(aid):
     params['apps'] = myapps.keys()
     a = aws_conn(aid)
     a.stop()
-    time.sleep(5) # takes a few seconds for the status to change on the Amazon end
+    # takes a few seconds for the status to change on the Amazon end
+    time.sleep(5) 
     return template('aws_status',params,astatus=a.status())
 
 @get('/account')
@@ -409,8 +411,7 @@ def get_shared():
     global user
     cid = request.query.cid
     app = request.query.app
-    # note: =~ means sort by descending order
-    #result = db(jobs.id==shared.jid).select(orderby=~shared.id)
+    # sort by descending order of jobs.id
     result = db(jobs.shared=="True").select(orderby=~jobs.id)
     params = {}
     params['cid'] = cid
@@ -627,16 +628,14 @@ def admin_delete_user():
 @post('/check_user')
 def check_user():
     user = request.forms.user
-    """This is the server-side AJAX function to check if a username
-       exists in the DB."""
+    """Server-side AJAX function to check if a username exists in the DB."""
     # return booleans as strings here b/c they get parsed by JavaScript
     if users(user=user): return 'true'
     else: return 'false'
 
 @post('/app_exists/<appname>')
 def app_exists(appname):
-    """This is the server-side AJAX function to check if an app
-       exists in the DB."""
+    """Server-side AJAX function to check if an app exists in the DB."""
     appname = request.forms.appname
     # return booleans as strings here b/c they get parsed by JavaScript
     if apps(name=appname): return 'true'
@@ -674,7 +673,6 @@ def load_apps():
         postprocess = row['postprocess']
         input_format = row['input_format']
         print 'loading: %s (id: %s)' % (name,appid)
-        #print "preprocess:", preprocess, "postprocess:", postprocess
         myapps[name] = app_instance(input_format,name,preprocess,postprocess)
     default_app = name # simple soln - use last app read from DB
     return True
@@ -706,11 +704,8 @@ def delete_app(appid):
     global user
     check_user_var()
     appname = request.forms.appname
-    # get the user name given user id
-    #user = users(user
     uid = apps(appid).uid
     owner = users(id=uid).user
-    #print "appid:", appid, "uid:", uid , "user:", user
     if user == owner or user == 'admin':
         # delete entry in DB
         a = appmod.app()

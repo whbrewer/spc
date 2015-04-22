@@ -502,7 +502,7 @@ function fxn_tribes(max_tribes) {
 }
 
 function fxn_clone() {
-   if (dmi.clonal_reproduction.checked) {
+   if (dmi.recombination_model.selectedIndex == 2) {
       dmi.fraction_self_fertilization.readOnly = true;
       dmi.num_contrasting_alleles.readOnly = true;
       dmi.max_total_fitness_increase.readOnly = true;

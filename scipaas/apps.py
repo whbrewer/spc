@@ -133,7 +133,8 @@ class namelist(app):
             f.write("&%s\n" % section)
             for key in self.blockmap[section]:
                 # if the keys are not in the params, it means that
-                # the checkboxes were not checked, so add the keys
+                # the checkboxes were not checked, or that the input
+                # has been disabled.  So, add the keys
                 # to the form_params here and set the values to False.
                 # Also, found that when textboxes get disabled e.g. via JS 
                 # they also don't show up in the dictionary.

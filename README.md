@@ -39,6 +39,7 @@ DEPENDENCIES
 ----------
 
 * pycrypto
+* docker-py (optional-used to support containers)
 * matplotlib (optional-used to support matplotlib plotting)
 * boto (optional-used to support AWS features)
 
@@ -46,5 +47,5 @@ DEPENDENCIES
 QUESTIONS
 ----------
 
-  send email to: wbrewer@alum.mit.edu
+  send email to: wes@fluidphysics.com
 
