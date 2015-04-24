@@ -26,6 +26,7 @@
 \usepackage{mathptmx}
 \usepackage{graphicx}
 \usepackage{epsfig}
+\usepackage{url}
 
 \begin{document}
 
@@ -33,19 +34,19 @@
 \setlength{\pdfpageheight}{\paperheight}
 \setlength{\pdfpagewidth}{\paperwidth}
 
-\conferenceinfo{Submission to SoCC '15}{August, 2015, Waikoloa, HI, USA} 
-\copyrightyear{2015} 
-\copyrightdata{978-1-nnnn-nnnn-n/yy/mm} 
+\conferenceinfo{Submission to SoCC '15}{August, 2015, Waikoloa, HI, USA}
+\copyrightyear{2015}
+\copyrightdata{978-1-nnnn-nnnn-n/yy/mm}
 \doi{nnnnnnn.nnnnnnn}
 
-% Uncomment one of the following two, if you are not going for the 
+% Uncomment one of the following two, if you are not going for the
 % traditional copyright transfer agreement.
 
-%\exclusivelicense                % ACM gets exclusive license to publish, 
+%\exclusivelicense                % ACM gets exclusive license to publish,
                                   % you retain copyright
 
 %\permissiontopublish             % ACM gets nonexclusive license to publish
-                                  % (paid open-access papers, 
+                                  % (paid open-access papers,
                                   % short abstracts)
 
 %\titlebanner{banner above paper title}        % These are ignored unless
@@ -74,7 +75,7 @@ SciPaaS presents a cloud framework to support the rapid design and deployment of
 
 \category{C.2.4}{Distributed Systems}{Distributed Applications}
 
-% general terms are not compulsory anymore, 
+% general terms are not compulsory anymore,
 % you may leave them out
 \terms
 Science, Cloud, Simulation
@@ -84,14 +85,16 @@ Platform-as-a-Service (PaaS), rapid application development (RAD), population ge
 
 \section{Introduction}
 
-Scientific programmers very often invest enormous amounts of time and resources developing sophisticated computer programs for specific technical applications. Many of these programs are both brilliant and elegant, and are potentially of interest to a significant number of users beyond just the developers. Most of these programs do not have a broad enough potential user base to justify custom development of sophisticated, easily exported, plug-in, user-friendly input/output, turnkey systems.  As a consequence, many wonderful programs are used for just a few years, by just a handful of people (the developers and their extended team), and then fall into disuse. The utilization of such programs could be greatly enhanced if only they were easily accessed, configured, and operated.
+Scientific programmers very often invest enormous amounts of time and resources developing sophisticated computer programs for specific technical applications. Many of these programs are both brilliant and elegant, and can be of interest to a significant number of users beyond the initial investigator. Most of these programs do not have a broad enough user base to justify custom development of user interface, multi-user support, or the other surrounding code to help with this transfer.  As a consequence, many wonderful programs are used for just a few years, by just a handful of people (the developers and their extended team), and then fall into disuse. The utilization of such programs could be greatly enhanced if they were more easily accessible and configurable.
 
-Unfortunately, most scientific programs have been developed in a way that is not easily distributed, nor easily installed, nor easily configured. To make matters worse, there is usually a serious learning curve in terms of using a program. Lastly, many people who might like to use a given program are not themselves programmers – they may be, for example, biologists.  For a biologist to understand how to use a program, and how to interpret the output, requires an extremely user-friendly user interface.  All these problems combine to create an enormous barrier to full utilization of scientific programs. The learning curve is too long and user pain is too great. The cost of getting started is very often too high, and the benefits are often uncertain. 
-While the cloud is a very versatile and powerful resource, most scientists have little knowledge about the cloud, and much less about how to build a Software-as-as-Service (SaaS). In general, web interface tools that require little programming skill have little capability (e.g. blog), while more powerful tools (e.g. a full stack web framework) have much capability, but require more programming skills. As illustrated in Fig. \ref{spectrum}, Karger suggests that domain tools can be developed which provide high power while requiring low complexity \cite{karger14}. In the domain of science, SciPaaS seeks to fill this void.
+Unfortunately, most scientific programs have been developed in a way that is not easily distributed, installed, or configured. To make matters worse, there is usually a serious learning curve for understanding either the code, or expected input, for these programs. Further, many people who might want to use a given program are not themselves programmers – they may be, for example, biologists.  For a biologist to understand how to use a program, and how to interpret the output, requires an extremely user-friendly user interface.  All these problems combine to create an enormous barrier to full utilization of scientific programs. The learning curve is too long and user pain is too great. The cost of getting started is very often too high, and the benefits are often uncertain.
+While shared infrastructure is a very versatile and powerful resource, few scientists have adopted a Software-as-as-Service (SaaS) mindset.
+%%% I'm not sure the following argument is needed.
+In general, web interface tools that require little programming skill have little capability (e.g. blog), while more powerful tools (e.g. a full stack web framework) have much capability, but require more programming skills. As illustrated in Fig. \ref{spectrum}, Karger suggests that domain tools can be developed which provide high power while requiring low complexity \cite{karger14}. In the domain of science, SciPaaS seeks to fill this void.
 
-The concept of SciPaaS is that a scientist could easily create a zip archive of their code containing just the executable and a sample input file, upload it to the cloud, and SciPaaS would manage all the cloud infrastructure for them, including the input interface, job scheduling, plotting, etc.  This allows the scientists to focus on developing software to solve the problem at hand, without having to worry about the added overhead of developing the infrastructure for the execution and interface environment.
+SciPaaS is designed to allow a scientist to easily create a zip archive of their code containing just the executable and a sample input file, upload it to our shared infrastructure, and receive a usable and transferable interface. SciPaaS is meant to manage the cloud infrastructure, including an interface to create modified input descriptions, job scheduling, plotting of output data, and file management.  We take the realistic view that this is not the primary goal for scientists, and that a successful solution needs first to minimize the work required by users.
 
-We outline here a generic system for the easy packaging, uploading, configuration, and utilization of any technical program that would otherwise not find application beyond the development team. We illustrate the utility of this system using the technical program called Mendel’s Accountant – an advanced numerical simulation of the dynamics of mutation accumulation within biological populations that are undergoing natural selection \cite{sanford07}.
+In the rest of this paper, we will outline our system for packaging, uploading, configuring, and executing technical programs that would otherwise not see existence beyond their own development team. We illustrate the utility of this system through a technical program called Mendel’s Accountant – an advanced numerical simulation of the dynamics of mutation accumulation within biological populations that are undergoing natural selection \cite{sanford07}.
 
 \begin{figure}[t]
 \centering
@@ -106,16 +109,16 @@ We outline here a generic system for the easy packaging, uploading, configuratio
 
 A thorough overview of developments of web-based simulations (WBS) and tools has been well documented by Byrne et al. \cite{byrne10}.  In this review, the authors emphasize the development of web simulations in light of more recent prominence of technologies such as: Web 2.0 (including cloud computing), service-oriented architectures (SOA), and the Semantic Web.  They mention numerous different types of communications protocols such as using WSDL (web-service definition language) or Java remote method invocation (RMI).
 
- More recently, there has been a number of software packages developed over the past few years to address the need of being able to run scientific applications on a computer cluster. Wu et al. \cite{wu10} developed a scientific application framework based on OpenSocial gadgets.  Krishnan et al. \cite{krishnan10} developed Opal2, a toolkit basically which can be used to wrap scientific applications and expose them as web services.   Opal2 also provides plugin integration with EC2 and Hadoop.  Opal2 provides much of the backend infrastructure for running applications, but relies on other software such as Kepler for pre-processing, and other codes for post-processing.  
-During the last couple years, there some new architectures and design methodologies have been proposed for cloud-based simulations.  Hu et al. \cite{hu13} compare four different modern methodologies (simulation model portability [SMP], MyExperiment, NanoHub, and RunMyCode), which promote reuse among common components in cloud-based simulation.  
+ More recently, there has been a number of software packages developed over the past few years to address the need of being able to run scientific applications on a computer cluster. Wu et al. \cite{wu10} developed a scientific application framework based on OpenSocial gadgets.  Krishnan et al. \cite{krishnan10} developed Opal2, a toolkit basically which can be used to wrap scientific applications and expose them as web services.   Opal2 also provides plugin integration with EC2 and Hadoop.  Opal2 provides much of the backend infrastructure for running applications, but relies on other software such as Kepler for pre-processing, and other codes for post-processing.
+During the last couple years, there some new architectures and design methodologies have been proposed for cloud-based simulations.  Hu et al. \cite{hu13} compare four different modern methodologies (simulation model portability [SMP], MyExperiment, NanoHub, and RunMyCode), which promote reuse among common components in cloud-based simulation.
 
 The concept of NanoHub, a scientific hub for web-based simulation for nanotechnology, is based on the HUBZero open source software platform, which uses a typical LAMP-stack (in this case Linux, Apache, MySQL, PHP) approach for the website and content-management system (CMS), while using a Java-based toolkit called Rappture (Rapid Application Infrastructure) to enable legacy scientific applications to run on the web \cite{mclennan10}.
 
 Di Pierro \cite{dipierro11} developed a python-based web framework called web2py.  He uses web2py to show a sample scientific computing application in which stores DNA strings and searches for similarities.  One of the powerful features of web2py is that it uses in data access layer (DAL) such that many different types of database systems can be supported, including both relational and non-relational models.  In fact, SciPaaS uses a version of the DAL from web2py called Gluino.
 
-Liu et al. \cite{liu12} provide a detailed architecture for Cloud-based Simulation (csim), where they define three key cloud services related to simulation in the cloud: Modeling as a Service (MaaS), Execution as a Service (EaaS), and Analysis as a Service (AaaS).  
+Liu et al. \cite{liu12} provide a detailed architecture for Cloud-based Simulation (csim), where they define three key cloud services related to simulation in the cloud: Modeling as a Service (MaaS), Execution as a Service (EaaS), and Analysis as a Service (AaaS).
 
-Then they discuss more about more efficient ways of scheduling parallel and distributed applications (PADS) and then present four PADS job scheduling algorithms. 
+Then they discuss more about more efficient ways of scheduling parallel and distributed applications (PADS) and then present four PADS job scheduling algorithms.
 Although other methods exist for creating scientific hubs, they typically require much programming, knowledge and time to setup.  To the authors knowledge there are still no available frameworks or middleware solutions that are dedicated to supporting scientific applications in such a way that: (1) a user can easily upload their program to the cloud, (2) have a user-friendly interface automatically generated for them to run, and (3) provide the infrastructure for all common tasks such as job scheduling, plotting, file/case management, etc.
 
 \section{System Architecture}
@@ -137,7 +140,7 @@ The concept for SciPaaS resulted from identifying the common reusable components
 \item Management of parallel jobs
 \end{itemize}
 
-Traditionally, developers would use third-party software was used to handle each of these components.  The problem with using third-party software was that it made it very difficult to setup the environment on the machine to run the simulation.  For example, often OpenPBS (currently rebranded as “Torque”) is implemented as a job scheduler.  This one software alone can take quite some time to setup, is non-trivial to manage, and is overkill for managing software running in a single computer node.
+Traditionally, developers would use third-party software to handle each of these components.  The problem with using third-party software was that it made it very difficult to setup the environment on the machine to run the simulation.  For example, often OpenPBS (currently rebranded as “Torque”) is implemented as a job scheduler.  This one software alone can take quite some time to setup, is non-trivial to manage, and is overkill for managing software running in a single computer node.
 
 By considering a number of similar type software, the following design goals were identified.  SciPaaS should:
 
@@ -159,7 +162,7 @@ To meet these design goals, the following approach was used:
 \item Build to support standard scientific application design patterns
 \end{itemize}
 
-After considering a number of alternative languages, such as Java and Ruby, Python was chosen for three reasons: (1) it has one of the largest scientific computing communities, which includes scientific computing libraries such as SciPy (scipy.org), NumPy (numpy.org), and Matplotlib (matplotlib.org), (2) there are numerous open-source python-based web application frameworks available, and (3) because many of the cloud PaaS providers support Python-based applications (e.g. Google App Engine and Heroku). 
+After considering a number of alternative languages, such as Java and Ruby, Python was chosen for three reasons: (1) it has one of the largest scientific computing communities, which includes scientific computing libraries such as SciPy (scipy.org), NumPy (numpy.org), and Matplotlib (matplotlib.org), (2) there are numerous open-source python-based web application frameworks available, and (3) because many of the cloud PaaS providers support Python-based applications (e.g. Google App Engine and Heroku).
 
 \section{Discussion}
 
@@ -213,11 +216,11 @@ Each simulation run is assigned a universal unique identifier (UUID) using Pytho
 
 \subsection{Monitoring the Simulation}
 
-Once the simulation has been launched, SciPaaS automatically redirects to the monitor view.  The monitor view is essentially a jQuery AJAX call which repeatedly calls a method called tail, which retrieves the last 40 lines of the output file every second.  
+Once the simulation has been launched, SciPaaS automatically redirects to the monitor view.  The monitor view is essentially a jQuery AJAX call which repeatedly calls a method called tail, which retrieves the last 40 lines of the output file every second.
 
 \subsection{Job Scheduler}
 
-A multiprocessing, priority-based FCFS (first-come first-served) scheduler was developed to manage job submissions from the various apps.  The jobs in the queue have three possible states: Q for waiting in queue and R for running or C for completed.  Jobs are submitted to a jobs table in the database, which maintains state information about each job submission. 
+A multiprocessing, priority-based FCFS (first-come first-served) scheduler was developed to manage job submissions from the various apps.  The jobs in the queue have three possible states: Q for waiting in queue and R for running or C for completed.  Jobs are submitted to a jobs table in the database, which maintains state information about each job submission.
 
 Users are assigned priority levels, with 0 having the highest priority.  The admin user has a priority of 0, while regular users are given a priority of 1, and guest users are given a priority of 2. If several jobs are in the queued state, the job with the highest priority (or lowest number) is the first to be selected to run.
 
@@ -233,17 +236,17 @@ The scheduler has a separate polling thread, which repeatedly polls the database
 
 Integration with the Docker container system is included in SciPaaS in an effort to make deployment of as simple as possible. Docker is a platform and API for application deployment that is supported by most major cloud providers including Google, Microsoft, and Amazon (www.docker.com). When the application finds itself in an environment with a working Docker client, it provides an interface to deploying new workers for scheduled jobs to run on. Additional interface is shown as part of the input screen, allowing the user to choose how many new worker contexts should be used. After use, workers are automatically stopped, making the deployment process simple enough for non-technical users.
 
-\subsection{Example--Mendel's Accountant}
+\subsection{Mendel's Accountant}
 
-SciPaaS is exemplified using Mendel’s Accountant – a forward-time population genetics simulation program which models genetic change over time.  The software is part of a growing trend of many geneticists turning to computer simulation as a promising means to better understand population genetics \cite{sanford12}. Mendel’s Accountant is more complicated in two aspects: the simulation engine, and the client interface.  
+SciPaaS is exemplified using Mendel’s Accountant – a forward-time population genetics simulation program which models genetic change over time.  The software is part of a growing trend of many geneticists turning to computer simulation as a promising means to better understand population genetics \cite{sanford12}. Mendel’s Accountant is more complicated in two aspects: the simulation engine, and the client interface.
 
-The simulation engine is more complicated because (1) it has more than 60 parameter inputs to the simulation, (2) it is parallelized using the MPI (Message-Passing Interface), (3) generates many output files full of statistical data which needs to be plotted. 
+The simulation engine is more complicated because (1) it has more than 60 parameter inputs to the simulation, (2) it is parallelized using the MPI (Message-Passing Interface), (3) generates many output files full of statistical data which needs to be plotted.
 
 \textit{Pre-processing}. Even though Mendel’s Accountant is a quite complex simulation, since it already supports the standard namelist.input input deck, it can be uploaded and running in the cloud in just a matter of minutes, as shown in Fig. \ref{interface}.
 
 \textit{Processing}.  Fig. \ref{output} shows the console output of Mendel’s Accountant that is auto-updated via AJAX.
 
-\textit{Post-processing}.  Once the run has finished and the data needs to be analyzed, clicking the plot button will given a list of pre-defined plots to plot, or can let the user define new plots.  Data from multiple sources can be attached to each plot. Fig. \ref{neutral} shows bar-plot of the distribution of near-neutral deleterious effects. 
+\textit{Post-processing}.  Once the run has finished and the data needs to be analyzed, clicking the plot button will given a list of pre-defined plots to plot, or can let the user define new plots.  Data from multiple sources can be attached to each plot. Fig. \ref{neutral} shows bar-plot of the distribution of near-neutral deleterious effects.
 
 \begin{figure}[t]
 \centering
@@ -257,9 +260,15 @@ The simulation engine is more complicated because (1) it has more than 60 parame
 \caption{Sample output plot of Mendel’s Accountant showing near neutral deleterious effects.\label{neutral}}
 \end{figure}
 
+This piece of software has published its source code to the \url{sourceforge.net} website in 2007. In the intervening 8 years it has received 5,000 downloads, but
+the authors report TODO support emails, and only 4 follow-on publications not associated with the original development team.
+%% per google scholar.
+Despite the creation of a documentation page, this represents a 1000-fold fall-off in interest of potential impact of the work, and indicates a failure to allow the work to serve other scientists.
+%% can we say anything about usage of the tool on scipaas? number of runs?
+
 \subsection{Deployment}
 
-For the results for this paper, most of the testing was performed on an Amazon EC2 machine. In the AWS page in SciPaas, the user may store their Amazon instances, and it provides three functions: \textit{start}, \textit{stop}, and \textit{status}. It will also give the user the public DNS name of the machine.  In order to utilize this approach, the user must first setup the various machines they might want to use in the future, which would include installing SciPaaS on each machine.  Then, the user can startup the big machine (e.g. an r3.8xlarge instance which has 32 vCPUs and 244GB of RAM), use it for however long they need, and then download the case files to an inexpensive t1.micro instance, and then shutdown the big, expensive machine. SciPaaS provides a zip button on the my jobs view, which allows the user to compress any case for download either to their home machine, or to another SciPaaS instance.  
+For the results for this paper, most of the testing was performed on an Amazon EC2 machine. In the AWS page in SciPaas, the user may store their Amazon instances, and it provides three functions: \textit{start}, \textit{stop}, and \textit{status}. It will also give the user the public DNS name of the machine.  In order to utilize this approach, the user must first setup the various machines they might want to use in the future, which would include installing SciPaaS on each machine.  Then, the user can startup the big machine (e.g. an r3.8xlarge instance which has 32 vCPUs and 244GB of RAM), use it for however long they need, and then download the case files to an inexpensive t1.micro instance, and then shutdown the big, expensive machine. SciPaaS provides a zip button on the my jobs view, which allows the user to compress any case for download either to their home machine, or to another SciPaaS instance.
 
 \section{Conclusions}
 
@@ -269,9 +278,9 @@ By providing an automatically generated easy-to-use interface, and an easy way t
 
 An unintended benefit of this type of platform solution to web-based simulations is that it also encourages developers of scientific simulations towards using standard protocols where appropriate, such as using standardized input formats.
 
-SciPaaS has been tested with a number of scientific software packages, including finite element analysis codes, Hadoop/MapReduce codes for working with big data, in addition to a number of bioinformatics codes.  
+SciPaaS has been tested with a number of scientific software packages, including finite element analysis codes, Hadoop/MapReduce codes for working with big data, in addition to a number of bioinformatics codes.
 
-Future work should include making SciPaaS more robust by implementing a workflow management system such as Snakemake whereby it could handle more complex software simulation packages that consist of a number of modules.  For example, the Weather Research and Forecasting software (wrf-model.org) includes a number different executables for pre-processing, solving, post-processing, and visualizing large three-dimensional data.  
+Future work should include making SciPaaS more robust by implementing a workflow management system such as Snakemake whereby it could handle more complex software simulation packages that consist of a number of modules.  For example, the Weather Research and Forecasting software (wrf-model.org) includes a number different executables for pre-processing, solving, post-processing, and visualizing large three-dimensional data.
 
 %\appendix
 %\section{Appendix title}
@@ -279,7 +288,7 @@ Future work should include making SciPaaS more robust by implementing a workflow
 
 \acks
 
-The authors want to acknowledge appreciation for the support graciously provided by FMS Foundation for this project.  Also, thanks to Tichomir Tenev of VMWare for reviewing the manuscript. 
+The authors want to acknowledge appreciation for the support graciously provided by FMS Foundation for this project.  Also, thanks to Tichomir Tenev of VMWare for reviewing the manuscript.
 % We recommend abbrvnat bibliography style.
 
 \bibliographystyle{abbrvnat}
