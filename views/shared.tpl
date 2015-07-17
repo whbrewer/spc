@@ -5,7 +5,7 @@
 %include('navbar')
 %include('tablesorter')
 
-<h1 align=center>Shared cases</h1>
+<h1 align=center>Shared / Favorite cases</h1>
 
 <!--<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">-->
 <table id="clickable">

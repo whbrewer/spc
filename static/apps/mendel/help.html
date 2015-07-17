@@ -4,6 +4,10 @@
 <meta http-equiv=Content-Type content="text/html">
 <script type="text/javascript" src="js/general.js"></script>
 
+<link type="text/css" rel="StyleSheet" href="css/scroll.css" />
+<form><input type="button" class="beautify scroll1" value="|<" onclick="window.scrollTo(0,0)" style="background: #afafaf"></form>
+<form><input type="button" class="beautify scroll2" value="O" onclick="javascript:popUp('help.html#caseid',650,500)" style="background: #afafaf; top:30px; left:0px;"></form>
+
 <title>User Manual for Mendel's Accountant</title>
 
 </head>
@@ -30,6 +34,7 @@
 <li> <a href="#adv_parallel">Population Substructure</a>
 <li> <a href="#adv_comp">Computation</a>
 </ul>
+<li> <a href="#special">Special Applications</a>
 <li> <a href="#output">MENDEL Output</a>
 <li> <a href="#apps">Applications of MENDEL</a>
 <li> <a href="#glossary">MENDEL Glossary</a>
@@ -258,7 +263,9 @@ Mendel, and for training beginning students</em>. </p>
 
 <ul>
 
-<li><p name="caseid" id="caseid"> 
+<li><p name="caseid" id="caseid"> <a
+href="javascript:popUp('help.html#caseid',650,500)"><img border=0
+src="images/application_double.png"></a> 
 <b>Case ID</b>. Since MENDEL allows each run to be saved, each experiment
 needs to be identified for the purpose of data retrieval. The ID must
 be alphanumeric and must have exactly 6 characters. We recommend users
@@ -266,7 +273,7 @@ begin their case ID with their own initials.
 </p>
 
 <li><p name="nmpo" id="nmpo">
-<b>Mutation rate</b>. This is the average number of new 
+<a href="javascript:popUp('help.html#nmpo',650,500)"><img border=0 src="images/application_double.png"></a> <b>Mutation rate</b>. This is the average number of new 
 mutations per individual.  In humans,
 this number is believed to be approximately 100. The mutation rate can be
 adjusted to be proportional to the size of the <em>functional</em> genome. Thus
@@ -277,7 +284,9 @@ zero. The human default value is 10 new mutations per individual per
 generation. </p>
 
 <li><p name="fomb" id="fomb">
-<b>Ratio of beneficial versus deleterious mutations</b>. While some sources
+<a href="javascript:popUp('help.html#fomb',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Ratio of beneficial versus 
+deleterious mutations</b>. While some sources
 suggest this number might be as high as 1:1000, most sources suggest
 it is more realistically about 1:1,000,000. The default setting is
 1:10,000. For studying the accumulation of only deleterious
@@ -285,7 +294,8 @@ or only beneficial mutations, the number of beneficials can
 be set to zero or one. </p>
 
 <li><p name="opf" name="opf" id="opf">
-<b>Reproduction rate</b>.  
+<a href="javascript:popUp('help.html#opf',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Reproduction rate</b>.  
 This is the number of offspring per reproducing individual. Since population
 size in Mendel is usually constant, this variable defines the maximum
 amount of selection. There must be an average of at least one
@@ -296,8 +306,9 @@ the entire surplus population is removed based upon phenotypic
 selection. The default value for humans is two offspring per
 selected individual (or four offspring per reproducing female). </p>
 
-<li><p name="popsize" id="popsize"> 
-<b>Population size</b>.
+<li><p name="popsize" id="popsize"> <a
+href="javascript:popUp('help.html#popsize',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Population size</b>.
 This is the number of reproducing adults, after selection.  
 For parallel runs, this is the population size of each sub-population.
 This number is normally kept constant, except where
@@ -309,8 +320,9 @@ population sizes smaller than this can be strongly affected by
 inbreeding and drift. We find increasing population size beyond 1000
 results in rapidly diminishing selective benefit.</p>
 
-<li><p name="ngen" id="ngen"> 
-<b>Number of generations</b>.
+<li><p name="ngen" id="ngen"> <a
+href="javascript:popUp('help.html#ngen',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Number of generations</b>.
 The number of generations the program should run.  The default is 500
 generations. If there are too many generations specified, smaller
 computers will run out of memory because of the accumulation of large
@@ -331,7 +343,8 @@ population size shrinks to just one individual. </p>
 <h2 id="advanced"><em><u>Advanced Parameters</u>: </em></h2>
 
 <p name="adv" id="adv">
-<em>Advanced Parameters: The
+<a href="javascript:popUp('help.html#adv',650,500)"><img border=0
+src="images/application_double.png"></a> <em>Advanced Parameters: The
 advanced parameter settings are for knowledgeable researchers and more
 advanced students, and should be set to apply to a specific species or
 circumstance. The advanced parameters are distributed among the
@@ -343,6 +356,7 @@ Population Sub-structure, and Computation. </em></p>
 <ul>
 
 <li><p name="psddme" id="psddme">
+<a href="javascript:popUp('help.html#psddme',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Parameters shaping the distribution of deleterious
 mutations</b>. &nbsp;Deleterious mutations in the natural world
 typically range from a few rare lethals to a large number of
@@ -368,32 +382,8 @@ mutation effects.</p>
 
 <ul>
 
-<!--
-<li><p name="fmun" id="fmun">
-<b>Fraction of mutations
-which are utterly neutral</b> &mdash; It is not clear that any mutations are
-perfectly neutral, but in the past it has often been claimed that most
-of the human genome is non-function &ldquo;junk DNA&rdquo;, 
-and that mutations in
-these regions are truly neutral. For the human default, we allow (but
-do not believe) that 90% of the genome is junk DNA, and so 90% of all
-human mutations have absolutely no biological effect.</p>
-
-<p>Because of the computational cost of tracking so many neutral mutations
-we specify zero neutrals be simulated, and discount the mutation rate
-so it only reflects non-neutral mutations (see above).  If the user
-wishes to track neutral mutations, they must:</p>
-
-<ul>
-	<li> Specify here the fraction of the mutations that
-	     are neutral (e.g. 0.9 for 90%).
-	<li> Adjust the mutation rate accordingly (e.g. increase from 10 to 100).
-	<li> Allow all mutations to be tracked (under section labeled 
-	     &ldquo;computation&rdquo;).
-</ul>
--->
-
 <li><p name="hgs" id="hgs">
+<a href="javascript:popUp('help.html#hgs',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Functional genome size</b> - If we know the genome size of a
 species, and we subtract that fraction of the genome which is
 perfectly inert, we can know the size of the "functional
@@ -420,6 +410,7 @@ size). </p>
 
 
 <li><p name="himf" id="himf">
+<a href="javascript:popUp('help.html#himf',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Fraction of mutations having “major effect”</b> - Most
 mutations have an effect on fitness that is too small to measure
 directly. However, mutations will have measurable effects in the far
@@ -434,6 +425,7 @@ ability and based on data from other organisms, the fraction of “major
 mutations”.&nbsp; The human default is 0.001. </p>
 
 <li><p name="himt" id="himt"> 
+<a href="javascript:popUp('help.html#himt',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Cut-off point for defining “major effect”</b> - A somewhat
 arbitrary level must be selected for defining what constitutes a
 “measurable”, or “major”, mutation effect. MENDEL uses a
@@ -443,6 +435,7 @@ measure a single mutation’s fitness effect when it changes fitness
 by less than 10%. </p>
 
 <li> <p name="rdbm" id="rdbm">
+<a href="javascript:popUp('help.html#rdbm',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Maximal beneficial mutation effects</b> &mdash; 
 Parameters shaping distribution of beneficial mutations.&nbsp;
 The distribution of beneficial mutations should generally be a mirror
@@ -456,7 +449,8 @@ by the functional haploid genome size. In addition, beneficials should
 have a reduced upper range. </p>
 
 <p name="mffg" id="mffg">
-</a> A realistic upper limit must
+<a href="javascript:popUp('help.html#mffg',650,500)"><img border=0
+src="images/application_double.png"></a> A realistic upper limit must
 be placed upon beneficial mutations. This is because a single
 nucleotide change can expand total biological functionality of an
 organism only to a limited degree. The larger the genome and the
@@ -482,6 +476,7 @@ as uploaded mutations.</p>
 
 <!--
 <li><p name="nifm" id="nifm">
+<a href="javascript:popUp('help.html#nifm',650,500)"><img border=0 src="images/application_double.png"></a>
 <u>Number of initial beneficial mutations</u> – This parameter lets
 the researcher begin a run with a specified number of pre-existing
 beneficial mutations already in the population. These pre-existing
@@ -492,6 +487,7 @@ mutations can cause errors in some of the output plots)</i>.</p>
 -->
 
 <li> <p name="cr" id="cr">
+<a href="javascript:popUp('help.html#cr',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Parameters involving recessive and dominant mutations.</b> It is
 widely agreed that in diploid species, most mutations are recessive,
 while a small fraction are dominant.  However, because modeling
@@ -507,12 +503,14 @@ as described below: </p>
 <ul>
 
 <li><p name="fr" id="fr">
+<a href="javascript:popUp('help.html#fr',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Fraction of mutations recessive</b> – This parameter
 simply specifies the percentage of mutations that are recessive. The default 
 is 0.0%. If set to 80%, then 80% of mutations are recessive, so the
 remaining 20% will automatically be made dominant.</p>
 
 <li><p name="rhe" id="rhe">
+<a href="javascript:popUp('help.html#rhe',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Recessive expression in heterozygotes</b> – It is widely
 believed that recessive mutations are not completely silent in the
 heterozygous condition, but are still expressed at some low level.
@@ -520,6 +518,7 @@ Although the co-dominance default is 0.5 expression, a reasonable
 setting would be 0.05. </p>
 
 <li><p name="dhe" id="dhe">
+<a href="javascript:popUp('help.html#dhe',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Dominant expression in heterozygotes</b> - It is widely believed
 that dominant mutations are not completely dominant in the
 heterozygous condition, but are only expressed only at some very high
@@ -531,6 +530,7 @@ would be 0.95.</p>
 </li>
 
 <li> <p name="cmenam" id="cmenam"> 
+<a href="javascript:popUp('help.html#cmenam',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Combining mutational effects non-additively</b> &mdash; When
 there are two or more mutations within an individual, the effects of
 these multiple mutations must be combined. The most straightforward
@@ -554,6 +554,7 @@ third way to combine mutational effects is to use a synergistic
 epistasis model (see #6 below).</p>
 
 <li> <p name="se" id="se">
+<a href="javascript:popUp('help.html#se',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Special case: synergistic epistasis
 (SE)</b> <p name="fslp" id="fslp"> In modeling synergistic
 epistasis (SE) in Mendel, we distinguish between SE contributions from
@@ -695,6 +696,7 @@ situations.</p>
 </p>
 
 <li> <p name="upload" id="upload">
+<a href="javascript:popUp('help.html#upload',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Uploading Specific sets of mutations</b> &mdash; A specific set
 of mutations can be uploaded into the population before a run begins.
 When this option is selected a template is shown which can be used to
@@ -702,6 +704,7 @@ identify mutations for uploading, or a set of mutations can be pasted
 into a template.</p>
 
 <li> <p name="abm" id="abm">
+<a href="javascript:popUp('help.html#abm',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Allow back-mutations</b> &mdash; In a large genome, the rate of back
 mutations (mutations that arise at nucleoside sides that have already
 mutated), is vanishingly small and of no consequence, but in small
@@ -715,6 +718,7 @@ become mutated, such that this parameter becomes useful.</p>
 <ul>
 
 <li><p name="frd" id="frd">
+<a href="javascript:popUp('help.html#frd',650,500)"><img border=0 src="images/application_double.png"></a>
  <b>Rate of “Random Death”.</b> &nbsp;A certain fraction of any
 population fails to reproduce, independent of phenotype. This can be
 expressed as the percentage of the population subject to random
@@ -723,6 +727,7 @@ can be obtained by proportionately decreasing the number of
 offspring/female, so the default is zero.</p>
 
 <li><p name="h" id="h">
+<a href="javascript:popUp('help.html#h',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Heritability.</b> &nbsp; Because a large part of phenotypic
 performance is affected by an individual’s circumstances
 (the “environment”), selection in nature is less effective than
@@ -737,6 +742,7 @@ heritability value.  In most field contexts, it is in fact usually
 lower than this, typically being below the limit of detection.</p>
 
 <li><p name="nsn" id="nsn">
+<a href="javascript:popUp('help.html#nsn',650,500)"><img border=0 src="images/application_double.png"></a>
  <b>Non-scaling noise.</b> &nbsp; If a population’s fitness is
 increasing or declining, heritability (as calculated in the normal
 way), tends to scale with fitness, and so the implied
@@ -758,6 +764,7 @@ selection (in the .hst file), so effective (“realized”)
 heritability can be calculated if the user so desires.</p>
 
 <li><p name="fdf" id="fdf">
+<a href="javascript:popUp('help.html#fdf',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Fertility declines as fitness declines.</b> &nbsp; It is widely
 recognized that when fitness declines, fertility also declines. This
 in turn affects population surplus, which affects selection
@@ -770,6 +777,7 @@ value is “Yes”, which means that fertility declines with
 fitness, especially as fitness approaches zero.</p>
 
 <li><p name="ss" id="ss">
+<a href="javascript:popUp('help.html#ss',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Type of selection.</b> &nbsp; MENDEL’s default mode for type of
 selection is probability selection, wherein the probability of
 reproduction is proportional to an individual’s fitness ranking
@@ -804,6 +812,7 @@ and probability selection.</p>
 <ul>
 
 <li><p name="clonal" id="clonal">
+<a href="javascript:popUp('help.html#clonal',650,500)"><img border=0 src="images/application_double.png"></a>
  <b>Reproductive mode</b>   Normal sexual reproduction is the
 default setting, but clonal reproduction can be specified. If clonal
 reproduction is selected, there is no recombination (overriding #4
@@ -813,11 +822,13 @@ from female to offspring, with each offspring then being assigned its
 own set of new mutations. </p>
 
 <li><p name="ch" id="ch">
+<a href="javascript:popUp('help.html#ch',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Ploidy Level.</b> Diploidy is the default setting, but haploidy can
 be specified.  In this special case, selection occurs during the
 haploid phase of the reproductive cycle, which means all mutations are fully expressed (no recessive mutations).</p>
 
 <li><p name="fsf" id="fsf">
+<a href="javascript:popUp('help.html#fsf',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Fraction self-fertilization.</b> Certain plants and lower animals
 can self-fertilize. The percentage of self-fertilization (as opposed
 to out-crossing) can be set to range from the default value 0%) up to
@@ -826,81 +837,7 @@ inbreeding and in the rate of mutation fixation.&nbsp; Consequently,
 recessive loci have a much stronger effect on overall fitness than
 normal.</p>
 
-<!--
-<li><p name="iha" id="iha">
-<b>Initial heterozygous alleles</b> <i>This function is experimental
-and largely untested.</i> Under certain conditions it is desirable to
-start a run with a set of initial heterozygous alleles (all
-individuals heterozygous at those specified loci).  To do this one
-must specify the number of alleles, and their maximal combined
-impact.</p>
-
-<ul type="a">
-
-    <li><p name="nca" id="nca"> 
-    <i>Number of initial contrasting alleles:</i> This input lets
-    the researcher begin a run with a specified number of initial
-    contrasting alleles (heterozygous alleles), with a positive and
-    negative allele at each contrasting locus in each individual.
-    This gives an initial frequency of 50% for each allele, where each
-    allele is co-dominant.  This situation is analogous to an
-    F<sub>1</sub> population derived from crossing two pure lines or
-    two relatively uniform breeding lines of animals, and is very
-    roughly analogous to natural crossing of two isolated populations
-    in nature.  This input allows investigation of the effect of
-    factors such as environmental variability, type of selection, and
-    percent selfing on the retention of beneficial alleles during
-    segregation after a cross.  Initial heterozygous alleles are
-    not to be confused with initial beneficial mutations, which are
-    represented as only a single copy in the initial population. Each
-    contrasting locus is on a separate linkage block, such that the
-    maximum number of initial contrasting loci is the number of
-    linkage blocks.  The contrasting alleles are assigned to
-    linkage blocks equally spaced along the genome.  With dynamic
-    linkage (see input parameters), if the number of alleles specified
-    is much less than the number of linkage blocks, the alleles will
-    segregate completely independently of one another.  If the
-    number of loci specified is large relative to the number of
-    linkage blocks (~ &gt; 3 * number of chromosomes), segregation of
-    these alleles will involve some degree of linkage.  With static
-    linkage, each allele will always separate independently.</p>
-
-    <li><p name="mtfi" id="mtfi"> 
-    <i>Maximum total fitness increase</i>: The maximum total fitness
-    increase is the amount the fitness which would be increased if all
-    the positive alleles became fixed (homozygous in every
-    individual). Realistically, this value would always be
-    considerably less than 1.  A value of 1 would potentially
-    double the mean fitness (“yield” in plant breeding
-    situations).  Such a large potential increase would be larger
-    than most situations encountered in nature or in plant or animal
-    breeding.  The actual fitness increase in the population will
-    actually always be less than the maximum total fitness increase
-    (unless selection moved all the positive alleles to fixation). 
-    If the number of initial contrasting alleles is no more than 10,
-    each positive allele is assigned an equal fitness value
-    representing the maximum total fitness increase divided by the
-    number of initial contrasting loci.  If the number of alleles
-    is greater than 10, then each positive allele is assigned a random
-    value from a distribution of values whose mean is the maximum
-    total fitness increase divided by the number of initial
-    contrasting loci.</p>
-
-    <p>Outputs associated with initial contrasting alleles are the
-    mean fitness contribution of positive contrasting alleles, mean
-    frequency of positive contrasting alleles, and number of positive
-    contrasting fixed or lost.  The effect and frequency of
-    individual alleles is listed at the end of the output file.</p>
-
-    <p>A planned future improvement is to
-    allow a user-specified degree of dominance in the initial heterozygous
-    alleles.  This would allow more direct investigation of the role of dominance
-    in the expression of heterosis and inbreeding depression.</p>
-</ul>
--->
-
-
-<li> <p name="dl" id="dl"> 
+<li> <p name="dl" id="dl"> <a href="javascript:popUp('help.html#dl',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Dynamic linkage.</b>
 &nbsp; Linkage has a major effect on selection, and must be modeled
 as accurately as possible. MENDEL’s default mode
@@ -922,7 +859,7 @@ involving the specification of a fixed number of linkage blocks and fully
 randomized recombination between all linkage blocks each generation (no
 chromosome number is required).</p>
 
-<li> <p name="pgm" id="pgm"> 
+<li> <p name="pgm" id="pgm"> <a href="javascript:popUp('help.html#pgm',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Dynamic population growth</b> <em>(Linux/Mac OS X Only)</em>. <i>This
 function is experimental and relatively untested.</i> By default Mendel
 uses a static population size.   However, two options are
@@ -978,7 +915,7 @@ is a constant which represents the maximum reproductive rate of an individual
 times over a period of time (here about 20 years).  Presently, this constant
 may only range between <i>0.0</i> to <i>1.0</i>.</p>
 
-<li><p name="by" id="by">
+<li><p name="by" id="by"> <a href="javascript:popUp('help.html#by',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Population bottlenecks.</b>  &nbsp; Population bottlenecks can
 dramatically affect mutation accumulation and mutation fixation.&nbsp;
 MENDEL allows the modeling of population bottlenecks.&nbsp;&nbsp; The
@@ -1002,7 +939,7 @@ bottleneck).</p>
 
 <h2 id="adv_parallel">Advanced Population Substructure Parameters</h2>
 
-<p name="ip" id="ip">
+<p name="ip" id="ip"> <a href="javascript:popUp('help.html#ip',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Population sub-structure.</b> <em>(Linux Only)</em>.
 &nbsp; Perfectly random mating within a population probably
 never happens, especially in larger dispersed populations. MENDEL allows
@@ -1010,19 +947,23 @@ creation of multiple sub-populations (tribes), to account for this reality.
 
 <ul>
 
-<li> <p name="ht" id="ht">
-<b>Homogeneous sub-populations</b> &mdash; If this option is selected, all Mendel
+<li> <p name="ht"
+id="ht"><a href="javascript:popUp('help.html#ht',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Homogeneous
+sub-populations</b> &mdash; If this option is selected, all Mendel
 parameters will be applied to each single sub-population equally, so
 that all sub-populations will start out the same. If this is
 de-selected, each tribe can have its own parameters defined
 separately.</p>
 
-<li> <p name="nt" id="nt">
-<b>Number of tribes</b>
+<li> <p name="nt"
+id="nt"><a href="javascript:popUp('help.html#nt',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Number of tribes</b>
 &mdash; The number of sub-populations can be specified.</p>
 
-<li> <p name="mm" id="mm">
-<b>Migration model</b> &mdash;
+<li> <p name="mm"
+id="mm"><a href="javascript:popUp('help.html#mm',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Migration model</b> &mdash;
 One of three possible methods of migration can be selected: ring pass, 
 stepping stone, and island models. The ring pass is the simplest mode 
 of communications, and is typically used in testing parallel computing systems.
@@ -1032,14 +973,16 @@ In the stepping-stone model, the tribes are also arranged as a circle
 each tribe exchanges individuals with its neighber.  
 In the island model, every tribe exchanges individuals with every other tribe.</p>
 
-<li> <p name="mr" id="mr">
-<b>Migration rate</b> &mdash;
+<li> <p name="mr"
+id="mr"><a href="javascript:popUp('help.html#mr',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Migration rate</b> &mdash;
 The rate of migration can be specified. The rate of migration can be
 less than one (one migration event every X generations), and also can be
 zero.</p>
 
-<li> <p name="tc" id="tc">
-<b>Tribal competiton</b>
+<li> <p name="tc"
+id="tc"><a href="javascript:popUp('help.html#tc',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Tribal competiton</b>
 &mdash; Tribal competition can be specified (differential
 growth/shrinkage of tribes).  Tribal competition works by first computing 
 the global weighted average genetic fitness of all the tribes.  Then, the 
@@ -1065,8 +1008,10 @@ differential tribal growth/shrinkage.
 </ul>
 
 <!--
-<li> <p name="alt" id="alt">
-<b>Upload altruistic mutations?</b>  &mdash; This option is currently under development,
+<li> <p name="alt"
+id="alt"><a href="javascript:popUp('help.html#alt',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Upload altruistic
+mutations?</b>  &mdash; This option is currently under development,
 and is not ready for production use at this time.  This option 
 allows the user to upload a set of
 altruistic mutations in order to study the mechanism of group
@@ -1080,9 +1025,10 @@ which will increase that tribe's total fitness (reproductive
 rate).</p>
 -->
 
-<li> <p name="pad" id="pad">
-<b>Average tribal data when plotting</b> 
-&mdash; Check this box to plot global statistics instead
+<li> <p name="pad"
+id="pad"><a href="javascript:popUp('help.html#pad',650,500)"><img border=0
+src="images/application_double.png"></a> <b>Average tribal data when
+plotting</b> &mdash; Check this box to plot global statistics instead
 of tribal statistics.  Most data is averaged.  However, the allele
 frequencies are summed instead of averaged.</p>
 
@@ -1096,6 +1042,8 @@ frequencies are summed instead of averaged.</p>
 
 <li>
 <p name="malloc" id="malloc">
+<a href="javascript:popUp('help.html#malloc',650,500)">
+<img border=0 src="images/application_double.png"></a> 
 <b>Automatically allocate memory</b> &mdash; This means that the
 computer will automatically limit the amount of RAM allotted to to
 each run, so that multiple runs can done at the same time. If this
@@ -1108,14 +1056,14 @@ setting for beneficial mutations per individual.  During a simulation,
 if this number is exceed the program will shutdown with an error that this
 number has been exceeded.</p>
 
-<li><p name="tnm" id="tnm">
+<li><p name="tnm" id="tnm"><a href="javascript:popUp('help.html#tnm',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Track all mutations</b> &mdash; Checking this box will set
 tracking threshold to zero, in which case all mutations will be
 tracked, including neutral mutations.  This button must 
 be checked if allele statistics are needed, or if neutral
 mutations are to be simulated.</p>
 
-<p name="tt" id="tt">
+<p name="tt" id="tt"><a href="javascript:popUp('help.html#tt',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Tracking threshold</b> &mdash; MENDEL can track every individual
 mutation. However, this may not be the best choice, especially with
 large populations and/or large numbers of generations.  Hundreds of
@@ -1147,17 +1095,22 @@ resource. The disadvantage is that the information normally found in
 figures 2, 3, and 5 will be lost and all mutations are made
 co-dominant by default.</p>
 
-<li><p name="et" id="et">
+<li><p name="et" id="et"><a href="javascript:popUp('help.html#et',650,500)"><img border=0 
+src="images/application_double.png"></a>
 <b>Extinction threshold.</b> Extinction can either be realized when fitness reaches the specified extinction threshold value -or- by population size dropping to a value of one. The default for fitness extinction threshold is 0.0.</p>
 
-<li><p name="rns" id="rns">
+<li><p name="rns" id="rns"><a href="javascript:popUp('help.html#rns',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Random number seed.</b> At several stages within the MENDEL
 program, a random number generator is required. When an experiment
 needs to be independently replicated, the “random number seed”
 must be changed. If this is not done, the second experiment will be an
 exact duplicate of the earlier run.</p>
 
+<li><p name="rns" id="rns"><a href="javascript:popUp('help.html#rns',650,500)"><img border=0 src="images/application_double.png"></a>
+<b>Poisson method.</b>  There are two different implementations of the Poisson random number generator that Mendel uses.  One is based on Numerical Recipes.  The other is based on RANLIB.  The Numerical Recipes seems to be a more robust implementation.  However, it cannot handle mutation rates less than 1.e-5.
+
 <li><p name="wd" id="wd"> 
+<a href="javascript:popUp('help.html#wd',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Changing parameters over time</b>.  MENDEL allows a run to go for a
 specified number of generations, followed by data output, alteration
 of certain biological parameters, and resumption of the run. This can
@@ -1171,12 +1124,14 @@ save large amounts of data, which can rapidly fill available disk
 storage.).</p>
 
 <li><p name="restart" id="restart">
+<a href="javascript:popUp('help.html#restart',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Restart second (third, fourth) phase of run with these new parameters</b>. 
 Check this button in order to use the data from a previously run case 
 (a case that has previously been run with the &ldquo;Allow
 this run to be later re-started...&rdquo; button checked).</p>
 
 <li><p name="rq" id="rq">
+<a href="javascript:popUp('help.html#rq',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Queuing system</b>.  For
 single-user systems, this may be set to "No queue", which will only
 allow one Mendel job to run at a time.  If any new job is submitted,
@@ -1190,6 +1145,7 @@ Setting up a high-memory node would require custom configuration of
 the back-end coding such as modifying qsub.pl and memory.pl.</p>
 
 <li><p id="cv">
+<a href="javascript:popUp('help.html#cv',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Simulation engine</b> Currently, the Fortran
 version is used by default and is faster, and consumes less
 memory.  However, due to the popularity of C-based languages, we
@@ -1199,6 +1155,7 @@ since version 1.5 and is therefore no longer
 distributed with the latest Mendel releases.</p>
 
 <li><p id="pag">
+<a href="javascript:popUp('help.html#pag',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Compute allele frequencies every ... generations.</b> Input the time
 interval (number of generations) that MENDEL will perform a polymorphism 
 analysis of allele frequencies.  Polymorphisms analysis requires 
@@ -1207,10 +1164,172 @@ Reducing this number will cause MENDEL to update the Allele Frequencies
 plot more often, but will also cause MENDEL to run for a longer amount
 of time. The default is computation of allele frequencies every 100 generations.</p>
 
-</ul>
+<li><p id="verbosity">
+<a href="javascript:popUp('help.html#verbosity',650,500)"><img border=0 src="images/application_double.png"></a>
+<b>Output verbosity level.</b>  MENDEL generates a lot of output information.  However, not all of it is necessary.  This <tt>verbosity</tt> option allows the user to limit the amount of files that are written to disk in order to save hard disk space.  A verbosity level of 0 will essentially turn most diagnostics routines off, and will output just a <tt>.out</tt> output file and a <tt>.hst</tt> history file (which will allow viewing of fitness and mutation plots).  A verbosity level of 1 will write all necessary files for plotting using the default JavaScript plotting system (Flot).  A verbosity level of 2 "Output everything" is required to write ancillary files, such as <tt>.gnu</tt> Gnuplot files, <tt>.tim</tt> timing information for performance benchmarking, <tt>.pmd</tt> polymorphism frequency table, <tt>.acc</tt> table of accumulated deleterious dominant mutations, etc.
+</p>
 
+</ul>
 <hr size=2 width="100%" align=left>
 
+<h2 id="special">Special Applications</h2>
+
+<ol>
+<li><p name="iha" id="iha">
+<a href="javascript:popUp('help.html#iha',650,500)"><img border=0 src="images/application_double.png"></a> <b>Initial Heterozygous Alleles</b> &mdash; This means that the population starts with pre-existing diversity. This feature is still under development and largely untested.  The user must specify the number of initial contrasting alleles, and the total fitness increase - if all favored alleles go to fixation.</li>
+
+<ul type="a">
+    <li><p name="nca" id="nca"> <a
+    href="javascript:popUp('help.html#nca',650,500)"><img border=0
+    src="images/application_double.png"></a>
+    <i>Number of initial contrasting alleles:</i> This input lets
+    the researcher begin a run with a specified number of initial
+    contrasting alleles (heterozygous alleles), with a positive and
+    negative allele at each contrasting locus in each individual.
+    This gives an initial frequency of 50% for each allele, where each
+    allele is co-dominant.  This situation is analogous to an
+    F<sub>1</sub> population derived from crossing two pure lines or
+    two relatively uniform breeding lines of animals, and is very
+    roughly analogous to natural crossing of two isolated populations
+    in nature.  This input allows investigation of the effect of
+    factors such as environmental variability, type of selection, and
+    percent selfing on the retention of beneficial alleles during
+    segregation after a cross.  Initial heterozygous alleles are
+    not to be confused with initial beneficial mutations, which are
+    represented as only a single copy in the initial population. Each
+    contrasting locus is on a separate linkage block, such that the
+    maximum number of initial contrasting loci is the number of
+    linkage blocks.  The contrasting alleles are assigned to
+    linkage blocks equally spaced along the genome.  With dynamic
+    linkage (see input parameters), if the number of alleles specified
+    is much less than the number of linkage blocks, the alleles will
+    segregate completely independently of one another.  If the
+    number of loci specified is large relative to the number of
+    linkage blocks (~ &gt; 3 * number of chromosomes), segregation of
+    these alleles will involve some degree of linkage.  With static
+    linkage, each allele will always separate independently.</p>
+
+    <li><p name="mtfi" id="mtfi"> <a href="javascript:popUp('help.html#mtfi',650,500)"><img border=0 src="images/application_double.png"></a> 
+    <i>Maximum total fitness increase</i>: The maximum total fitness
+    increase is the amount the fitness which would be increased if all
+    the positive alleles became fixed (homozygous in every
+    individual). Realistically, this value would always be
+    considerably less than 1.  A value of 1 would potentially
+    double the mean fitness (“yield” in plant breeding
+    situations).  Such a large potential increase would be larger
+    than most situations encountered in nature or in plant or animal
+    breeding.  The actual fitness increase in the population will
+    actually always be less than the maximum total fitness increase
+    (unless selection moved all the positive alleles to fixation). 
+    If the number of initial contrasting alleles is no more than 10,
+    each positive allele is assigned an equal fitness value
+    representing the maximum total fitness increase divided by the
+    number of initial contrasting loci.  If the number of alleles
+    is greater than 10, then each positive allele is assigned a random
+    value from a distribution of values whose mean is the maximum
+    total fitness increase divided by the number of initial
+    contrasting loci.</p>
+
+    <p>Outputs associated with initial contrasting alleles are the
+    mean fitness contribution of positive contrasting alleles, mean
+    frequency of positive contrasting alleles, and number of positive
+    contrasting fixed or lost.  The effect and frequency of
+    individual alleles is listed at the end of the output file.</p>
+
+    <p>A planned future improvement is to
+    allow a user-specified degree of dominance in the initial heterozygous
+    alleles.  This would allow more direct investigation of the role of dominance
+    in the expression of heterosis and inbreeding depression.</p>
+</ul>
+
+   <li id="fraction_neutral"> <b>Include Neutral mutations in the analysis</b> &mdash; This means that a specified fraction of all new mutations will arise within the &ldquo;junk DNA&rdquo; portions of the genome, and so will be perfectly neutral. If 50% of the genome is junk, then 50% of all mutations will be neutral. If the total mutation rate is 100 per generation, then the rate of neutral mutations will be 50 per generation. The remaining non-neutral mutations will have the specified benefical-to-deleterious mutation rate. Neutral mutations will then be tracked, tallied, and plotted, just as with beneficial and deleterious mutations.</li>
+
+   <ul>
+      <li><p name="fmun" id="fmun">
+      <a href="javascript:popUp('help.html#fmun',650,500)"><img border=0
+      src="images/application_double.png"></a> <b>Fraction of mutations
+      which are utterly neutral</b> &mdash; It is not clear that any mutations are
+      perfectly neutral, but in the past it has often been claimed that most
+      of the human genome is non-function &ldquo;junk DNA&rdquo;, 
+      and that mutations in
+      these regions are truly neutral. For the human default, we allow (but
+      do not believe) that 90% of the genome is junk DNA, and so 90% of all
+      human mutations have absolutely no biological effect.</p>
+
+      <p>Because of the computational cost of tracking so many neutral mutations
+      we specify zero neutrals be simulated, and discount the mutation rate
+      so it only reflects non-neutral mutations (see above).  If the user
+      wishes to track neutral mutations, they must:</p>
+
+      <ul>
+         <li> Specify here the fraction of the mutations that
+              are neutral (e.g. 0.9 for 90%).
+         <li> Adjust the mutation rate accordingly (e.g. increase from 10 to 100).
+      <li> Allow all mutations to be tracked (under section labeled 
+           &ldquo;computation&rdquo;).
+      </ul>
+   </ul>
+   <br>
+
+   <li id="wait"> <b>Waiting Time Experiments</b> &mdash; MENDEL can determine the waiting time required to establish specific beneficial nucleotides or nucleotide strings.  The user must specify the initialization sequence (such as AAAA), and the target sequence (such as GTCT). The user must the degree of benefit (a fitness benefit of 1% is designated as 0.01). <br><br>
+
+   <b>Detailed instruction for waiting time experiments:</b><br>
+   <p>Mendel&rsquo;s Accountant version 2.5.0 (Mendel) allows us to determine the waiting for establishing a new string of nucleotides within a given biological population, at a particular location within the organism&rsquo;s genome.  At present Mendel&rsquo;s primary limitation is it has a lower limit for the designated mutation rate per string (mutation rate per string must be &#95;&#95;&#95;&#95; or higher), and this limitation has to do with limits of current random number generators.  When lower mutations are of interest, runs can be done with high mutation rates, and then fixation times corresponding to a lower mutation rate can be approximated by extrapolation.</p>
+
+   <p>When doing waiting times, Mendel starts with a specified string of nucleotides. That string undergoes mutation, and the mutating strings segregate and drift within the population from generation to generation. Whenever the target string arises, the individuals carrying it are given a specified reproductive advantage. Any target string that arises is protected from any further mutation. Mendel allows the mutation/selection process to continue until the target string reaches fixation.</p>
+
+   <p>After the target string reaches fixation, Mendel summarizes and plots the results of the experiment, and provides the following data points: number of generations to first instance, generations to final fixation, and total number of instances arising during the experiment.</p>
+
+   <u>How to do a waiting time experiment</u> &mdash; 
+
+   <ol type="A">
+      <li> Go to the Mendel control panel and select &ldquo;start&rdquo;.
+      <ol type="1">
+         <li> Go to the yellow box and enter a case ID (exactly six characters), or click on checkbox to generate a random case ID.</li>
+         <li> If desired, enter a note about the specific case.</li>
+      </ol></li>
+      <li> Fill in &ldquo;basic Parameters&rdquo;.
+      <ol type="1">
+         <li> <u>Mutation rate</u> &mdash; this is usually the mutation rate per genome, but for waiting time experiments it is the mutation rate per string (we ignore the rest of the genome). We usually use the species&rsquo; known mutation rate per nucleotide per generation, multiplied by the length of the string. If a diploid population, multiply by two. The human mutation rate for a string of 5 nucleotides would be 10<sup>-8</sup> times 5 times 2 (10<sup>-7</sup>). Because Mendel cannot handle such a low mutation rate, we use a rate 100-10,000 fold higher, and then adjust waiting times upward by that factor. This is strictly a practical consideration.</li>
+         <li> <u>Beneficial/deleterious ratio</u> &mdash; the default for this is 0.0001, but for waiting times experiments there are no deleterious mutations, and we consider all mutations neutral unless they complete the target string, so we enter 0.0 (will be auto-selected when waiting time experiment is selected). </li>
+         <li> <u>Reproductive rate</u> &mdash; we recommend keeping default setting of 2, which means there will be two offspring for each surviving individual &dash; allowing selective removal of 50% of all progeny every generation (this is very intense natural selection).</li>
+         <li> <u>Population size</u> &mdash; Choose desired population size. We have been able to go up to a population size of one million &dash; but your computer may not have enough memory for such large population sizes. </li>
+         <li> <u>Generations</u> &mdash; Generally we see that waiting times are very long, and if you do not specify enough generations, the experiment will terminate before the desired target sequence has gone to fixation. Generally at least &#95;&#95;&#95; generations should be specified. If you specify too many generations you may encounter memory allocation issues.</u>
+   </ol></li>
+   <li> Click on check box for advanced settings, then &mdash;
+   <ol type="1">
+      <li> Go to last tab (Special Applications).</li>
+      <li> Click on checkbox for &ldquo;Waiting Time Experiments&rdquo;.</li>
+      <li> Fill in initialization sequence (i.e., AAAAAA).</li>
+      <li> Fill in target sequence (i.e., TCGTCG) - must be same length as above.</li>
+      <li> Indicate the fitness benefit of the completed string (i.e., 0.001 is the same as a 0.1% increase in fitness).</li>
+    </ol></li>
+    <li> When you click on &ldquo;Waiting Time Experiments&rdquo; several variables are automatically set.
+    <ol type="1">
+       <li> Immediately above, &ldquo;Include neutrals in the analysis&rdquo; is activated, and the &ldquo;fraction genome which is non-functional junk&rdquo; is auto-set to 1.0. This means all point mutations are by themselves neutral &dash; only the completed string is going to be beneficial. </li>
+       <li> Under the Population tab, the first setting &ldquo;Recombination model&rdquo; is auto-set to &ldquo;suppressed recombination between homologous chromosomes&rdquo;. This makes it so that within the string there is no recombination.</li>
+       <li> Under the Mutation tab, the first setting (distribution type) is auto-set to &ldquo;all mutations are equal&rdquo;. This makes it so that each time the target string arises, it is assigned exactly the same fitness benefit (as designated under Special Applications tab).</li>
+    </ol></li>
+    <li> Other optional settings.
+    <ol type="1">
+       <li> Under Mutations tab, you can specify the degree of &ldquo;dominance&rdquo; for the fitness benefit of the completed target string. We routinely use full dominance (set fraction recessive to zero, set expression of recessives to zero, set expression of dominants to 1.0).</li>
+       <li> Under Selection tab, heritability can be modified and/or artificial truncation selection (or partial truncation selection) can be activated.</li>
+       <li> Under Computation tab the random number seed can be changed, allowing replication of experiments. Memory allocation can also be modified.</li>
+       <li> Mendel has many special features, many of which cannot operate in unison. We have not tested the compatibility of the Waiting Time function with the various other special functions such as bottlenecks or dynamic population size. </li>
+    </ol></li>
+    <li> When all the inputs have been chosen, click the green button labeled &ldquo;submit&rdquo; (next to yellow button on top), review the settings as needed, and go back to the green button and click &ldquo;execute&rdquo;. The run will take a few moments before it starts to produce output.</li>
+    <li> Output and results. 
+    <ol type="1">
+       <li> By clicking &ldquo;plot&rdquo; within the control panel, one can see: a) mutation count history, b) fitness history, c) current allele count, and d) allele frequencies.</li>
+       <li> By clicking &ldquo;output&rdquo; within the control panel, one can see regular updates of the unfolding experiment. Output includes mutation counts, current fitness, samples of the currently circulating strings in the population, number of target instances that have arisen, and the current frequency of the target string in the population.</li>
+       <li> Final output (written in red) shows generations to first instance, the ID of the effective instance, generations to final fixation, and total number of instances during the experiment. </li>
+       <li> If the desired mutation rate was too low for Mendel (or was too low for a timely experiment), and so an enhanced mutation rate was used, the user must increase the number of generations observed (by the same proportion that mutation rate was enhanced). </li>
+       <li> The actual waiting time in years must be calculated by multiplying the number of generations required times the amount of time per generation (i.e., the human generation time is 20-30 years). </li>
+       <li> The user is given the ID of the effective instance (the instance that eventually went to fixation), and this allows the user to examine the table of all instances, find the instance that was fixed, and then find the generation in which it arose. This allows calculation of the duration of the amplification phase of the experiment (the generations from effective instance to fixation). This amplification phase is independent of mutation rate and should not be adjusted for any possible enhancement of mutation rate.</li>
+    </ol></li>
+</ol>
+
+<hr size=2 width="100%" align=left>
 
 <h2 id="output">MENDEL Output</h2>
 
@@ -1228,21 +1347,21 @@ other data. These summary statistics are reported for generations 1,
 marked box within each output figure.</p>
 
 <p name="plot1" id="plot1">
-<b>Figure 1</b> plots the number of both deleterious and beneficial mutations per
-individual over time. If neutrals are enabled, these also will be plotted. 
-The scale for deleterious mutations is on the left and the
+<a href="javascript:popUp('help.html#plot1',650,500)"><img border=0 src="images/application_double.png"></a>
+<b>Figure 1</b> : This figure plots the number of both deleterious and beneficial mutations per individual over time. If neutrals are enabled, these also will be plotted.  The scale for deleterious mutations is on the left and the
 scale for the beneficial mutations is on the right. If neutrals are simulated,
 they share the scale on the left.</p>
 
 <p name="plot2" id="plot2">
-<b>Figure 2</b> shows average individual
+<a href="javascript:popUp('help.html#plot2',650,500)"><img border=0 src="images/application_double.png"></a>
+<b>Figure 2</b> : This figure shows average individual
 fitness (left scale) and the population size (right scale), 
 plotted over time. The initial fitness is always
 assumed to be 1.0. For both Figures 1 and 2, the y-axis is self-scaling,
 since mutation counts and fitness can change dramatically over
 time. The fitness standard deviation is shown in gray. </p>
 
-<p name="plot3" id="plot3"> 
+<p name="plot3" id="plot3"> <a href="javascript:popUp('help.html#plot3',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Figure 3</b> : This figure is designed to reveal how selection is
 altering the distribution of mutation effects in the
 population. Typically it shows that the frequencies in the population
@@ -1272,7 +1391,7 @@ reliable plots when there is little random fluctuation in bar heights
 and the transition from selectable to near-neutral becomes smooth and
 unambiguous. </p>
 
-<p name="plot4" id="plot4">
+<p name="plot4" id="plot4"> <a href="javascript:popUp('help.html#plot4',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Figure 4</b>: This figure plots the selection threshold for
 dominant alleles as a function of the generation count, beginning with
 generation 200.  The selection threshold, described more completely in
@@ -1287,7 +1406,7 @@ generation, one can readily estimate the selection threshold visually
 using Figure 3, by observing the fitness value on the horizontal scale
 corresponding to a bar height of 0.5.</p>
 
-<p name="plot5" id="plot5"> 
+<p name="plot5" id="plot5"> <a href="javascript:popUp('help.html#plot5',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Figure 5</b>: This figure, like figure 3, is also designed to
 reveal how selection is altering the distribution of mutation effects
 in the population.  By using a linear (but truncated) scale for the
@@ -1305,7 +1424,7 @@ Like figure 3, the plotting of accumulated mutations is only reliable
 when enough mutations are present, evident when the distribution
 visually transitions from jagged to smooth. </p>
 
-<p name="plot6" id="plot6">
+<p name="plot6" id="plot6"> <a href="javascript:popUp('help.html#plot6',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Figure 6</b>: This figure displays the frequency distribution of
 the fitnesses of the accumulating haplotypes versus their composite
 fitness effect.  Those haplotypes with a net deleterious effect are
@@ -1314,7 +1433,7 @@ in green (right of zero). This figure shows the distribution of net
 linkage blocks fitness effects (as opposed to individual mutation
 effects). Linkage blocks with zero mutations are ignored.</p>
 
-<p name="plot7" id="plot7">
+<p name="plot7" id="plot7"> <a href="javascript:popUp('help.html#plot7',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Figure 7</b>: This figure superimposes the distribution of
 phenotypic fitness values of the individuals in the population before
 (red), and after (green), selection. A histogram format is used. The
@@ -1325,7 +1444,7 @@ the right).  The portion of the red distribution not covered by the
 green represents those offspring that are selected away (those
 offspring that will not reproduce to create the next generation).</p>
 
-<p name="plot8" id="plot8">
+<p name="plot8" id="plot8"> <a href="javascript:popUp('help.html#plot8',650,500)"><img border=0 src="images/application_double.png"></a>
 <b>Figure 8</b>: This figure is only fully accurate when all mutations are tracked.
 It displays the frequencies of all tracked
 individual mutant alleles in the population. It is plotted at

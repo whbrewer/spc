@@ -22,10 +22,15 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('state','string'),
                                Field('time_submit','string'),
                                Field('description','string'),
+                               Field('priority','integer'),
                                Field('np','integer'))
 
 class scheduler(object):
     """simple single process scheduler"""
+    def __init__(self):
+        myset = db(db.jobs.state == 'R')
+        myset.update(state='X')
+        db.commit()
 
     def poll(self):
         # start polling thread

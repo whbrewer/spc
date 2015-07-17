@@ -33,6 +33,7 @@
   </tr>
 </table>
 
+<!--
 <table>
 <tr> <td>
     <form method="post" action="/app/edit/{{rows['id']}}">
@@ -47,6 +48,7 @@
         onclick="if(confirm('are you sure?')) return true; return false">
     </form>
 </td></tr>
+-->
 </table>
 
 %include('footer')

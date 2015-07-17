@@ -140,10 +140,11 @@ class namelist(app):
                 # they also don't show up in the dictionary.
                 if key not in form_params:
                     #print "key not found - inserting:", key
-                    if self.appname == "terra":
-                            form_params[key] = "0"
-                    else:
-                            form_params[key] = "F"
+                    form_params[key] = "F"
+                    #if self.appname == "terra":
+                    #        form_params[key] = "0"
+                    #else:
+                    #        form_params[key] = "F"
 
                 # replace checked checkboxes with T value
                 #print 'key/value', key, form_params[key]

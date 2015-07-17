@@ -40,10 +40,10 @@ class dal(object):
                                          Field('datadef','string'))
 
         self.datasource = self.db.define_table('datasource', Field('id','integer'),
+                                                   Field('pltid','integer'),
                                                    Field('label','string'),
                                                    Field('ptype','string'),
                                                    Field('color','string'),
-                                                   Field('pltid','integer'),
                                                    Field('filename','string'),
                                                    Field('cols','string'),
                                                    Field('line_range','string'))

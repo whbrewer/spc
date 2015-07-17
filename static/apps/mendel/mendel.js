@@ -255,9 +255,9 @@ function fxn_polygenic_beneficials(init) {
    fraction_fav_mutn = dmi.frac_fav_mutn.value
    plot_allele_gens = dmi.plot_allele_gens.value
    if(dmi.polygenic_beneficials.checked) {
-      dmi.polygenic_init.disabled = false
-      dmi.polygenic_target.disabled = false
-      dmi.polygenic_effect.disabled = false
+      //dmi.polygenic_init.disabled = false
+      //dmi.polygenic_target.disabled = false
+      //dmi.polygenic_effect.disabled = false
       dmi.track_neutrals.checked = true
       fxn_track_neutrals()
       dmi.fraction_neutral.value = 1.0
@@ -275,9 +275,9 @@ function fxn_polygenic_beneficials(init) {
       compute_u();
       status("setting on track_neutrals, setting fraction_neutral = 1.0, turning off dynamic linkage, setting num_linkage_subunits to length of target string, suppressing recombination, setting all mutations to equal effect")
    } else {
-      dmi.polygenic_init.disabled = true
-      dmi.polygenic_target.disabled = true
-      dmi.polygenic_effect.disabled = true
+      //dmi.polygenic_init.disabled = true
+      //dmi.polygenic_target.disabled = true
+      //dmi.polygenic_effect.disabled = true
       dmi.frac_fav_mutn.disabled = false
       dmi.fraction_neutral.value = fraction_neutral
       dmi.frac_fav_mutn.value = fraction_fav_mutn

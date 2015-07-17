@@ -460,13 +460,19 @@ def delete_job(jid):
     check_user_var()
     app = request.forms.app
     cid = request.forms.cid
-    try:
+    #try:
+    if True:
         # this will fail if the app has been removed from scipaas
         path = os.path.join(myapps[app].user_dir,user,app,cid)
         if os.path.isdir(path):
             shutil.rmtree(path)
-    except:
-        pass
+        # now delete record from database
+        #jobs(id==jid).delete()
+        sched.qdel(jid)
+        #del db.jobs[jid]
+        #db.commit()
+    #except:
+    #    return "there was an error!"
     redirect("/jobs")
 
 @post('/proc/stop')
@@ -879,6 +885,7 @@ def plot_interface(pltid):
     app = request.query.app
     cid = request.query.cid
     check_user_var()
+    params = dict()
 
     if not cid:
         params['err']="No case id specified. First select a case id from the list of jobs."
@@ -938,6 +945,7 @@ def plot_interface(pltid):
     ticks = []
     plotpath = ''
     result = db(datasource.pltid==pltid).select()
+    print pltid
 
     for r in result:
         plotfn = r['filename']
@@ -948,23 +956,23 @@ def plot_interface(pltid):
         (col1str,col2str) = cols.split(":")
         col1 = int(col1str); col2 = int(col2str)
         # do some postprocessing
-        if line_range is not None:
-            (line1str,line2str) = line_range.split(":")
-            line1 = int(line1str); line2 = int(line2str)
-            if myapps[app].postprocess > 0:
-                dat = process.postprocess(plotpath,line1,line2)
-            else:
-                dat = p.get_data(plotpath,col1,col2,line1,line2)
-        else:
-            dat = p.get_data(plotpath,col1,col2)
+        #if line_range is not None:
+        #    (line1str,line2str) = line_range.split(":")
+        #    line1 = int(line1str); line2 = int(line2str)
+        #    if myapps[app].postprocess > 0:
+        #        dat = process.postprocess(plotpath,line1,line2)
+        #    else:
+        #        dat = p.get_data(plotpath,col1,col2,line1,line2)
+        #else:
+        dat = p.get_data(plotpath,col1,col2)
         # clean data
         #dat = [d.replace('?', '0') for d in dat]
         data.append(dat)
         #data.append(p.get_data(plotpath,col1,col2))
         if plottype == 'flot-cat':
             ticks = p.get_ticks(plotpath,col1,col2)
-    if not result:
-        return template("error",err="need to specify at least one datasource")
+    #if not result:
+    #    return template("error",err="need to specify at least one datasource")
 
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u,
                'ticks': ticks, 'title': title, 'plotpath': plotpath,
@@ -1284,4 +1292,4 @@ if __name__ == "__main__":
         run(server=config.server, app=app, host='0.0.0.0',\
             port=8081, debug=False)
     except:
-        run(app=app, host='0.0.0.0', port=8081, debug=True)
+        run(app=app, host='0.0.0.0', port=8580, debug=False)

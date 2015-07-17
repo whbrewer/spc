@@ -1,4 +1,7 @@
 - BUG: apps.py write_parameters() doesn't work when input boxes are disabled by JS
+  *** need to add types for each parameter so that we can test the types 
+      in apps.py before we insert "F" values for checkboxes that are empty 
+      (unchecked) ***
 - FEATURE: add Skip step after step 2 in add app, to skip uploading zip file
 - FEATURE: implement sp pack/unpack for installing apps that have already been ported to scipaas
 - FEATURE: use snakemake for workflow management

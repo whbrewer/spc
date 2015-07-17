@@ -32,7 +32,7 @@
 <form method="post" action="/jobs/delete/{{jid}}">
     <input type="hidden" name="cid" value="{{cid}}">
     <input type="hidden" name="app" value="{{app}}">
-    <input type="submit" value="delete" 
+    <input type="submit" value="delete"
            onclick="if(confirm('are you sure?')) return true; return false">
 </form>
 </td><td>
