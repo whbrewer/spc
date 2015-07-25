@@ -38,7 +38,6 @@ QUICKSTART
 DEPENDENCIES
 ----------
 
-* pycrypto
 * docker-py (optional-used to support containers)
 * matplotlib (optional-used to support matplotlib plotting)
 * boto (optional-used to support AWS features)
