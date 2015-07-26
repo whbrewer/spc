@@ -1290,6 +1290,6 @@ if __name__ == "__main__":
     # run the app.
     try:
         run(server=config.server, app=app, host='0.0.0.0',\
-            port=8081, debug=False)
+            port=8580, debug=False)
     except:
         run(app=app, host='0.0.0.0', port=8580, debug=False)
