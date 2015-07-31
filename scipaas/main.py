@@ -230,12 +230,13 @@ def tail(app,cid):
         xoutput = 'waiting to start...'
     params = { 'cid': cid, 'contents': xoutput, 'app': app,
                'user': user, 'fn': ofn, 'apps': myapps.keys() }
-    return template('more', params)
+    return template('more_contents', params)
 
 @get('/')
 def root():
     if not authorized(): redirect('/login')
-    return template('overview')
+    #return template('overview')
+    redirect('/apps')
 
 @get('/jobs')
 def show_jobs():
@@ -680,6 +681,7 @@ def load_apps():
         input_format = row['input_format']
         print 'loading: %s (id: %s)' % (name,appid)
         myapps[name] = app_instance(input_format,name,preprocess,postprocess)
+        myapps[name].appid = appid
     default_app = name # simple soln - use last app read from DB
     return True
 
@@ -746,6 +748,7 @@ def getstart():
     global user
     check_user_var()
     app = request.query.app
+    if not authorized(): redirect('/login')
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
     if re.search("/",cid):
@@ -800,8 +803,10 @@ def list_files():
             buf += '<a href="'+this_path+'"><img src="'+\
                    this_path+'" width=100><br>'+fn+'</a>'
         else:
+            #buf += '<a href="/more?app='+app+'&cid='+cid+\
+            #           '&filepath='+os.path.join(path,fn)+'">'+fn+'</a>'
             buf += '<a href="/more?app='+app+'&cid='+cid+\
-                       '&filepath='+os.path.join(path,fn)+'">'+fn+'</a>'
+                       '&filepath='+os.path.join(path,fn)+' "data-toggle="modal" data-target="#myModal">'+fn+'</a>'
         buf += '</td></tr>\n'
     buf += '</table>'
     params = { 'content': buf }
@@ -874,6 +879,8 @@ def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
+    print "app:", app, "cid:", cid
+    print myapps
     plots.insert(appid=myapps[app].appid, ptype=r.forms['ptype'],
                  title=r.forms['title'], options=r.forms['options'],
                  datadef=r.forms['datadef'])
@@ -1116,7 +1123,7 @@ def addapp(step="step0"):
     # ask user to configure app
     elif step == "step1":
         if len(appname) < 3:
-            return template('error',err="name must be at least 3 character")
+            return template('error',err="name must be at least 3 characters")
         elif app_exists(appname) == 'true':
             return template('error',err="app already exists")
         else:

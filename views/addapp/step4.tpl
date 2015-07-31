@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link type="text/css" rel="Stylesheet" href="/static/css/login.css"   />
-<link type="text/css" rel="StyleSheet" href="/static/css/navbar.css"  />
-<link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
+<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
 </head>
 
 <body>
 
-%include('addapp/navbar')
-
-<div class="main left">
+<div class="container-fluid">
 <h1>Step 4</h1>
 
 <h2>parsed inputs &ndash; assign html input types</h2>
 
 <form method="post" action="/addapp/step5">
-<input type="submit" class="btn" value="Next >>">
+<input type="submit" class="btn btn-primary" value="Next >>">
 <hr>
 How to represent a true Boolean value (e.g. T, True, true, 1)?
 <input type="text" size=5 name="bool_rep">

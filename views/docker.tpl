@@ -1,9 +1,6 @@
 %include('header')
 %include('navbar')
 
-<!-- following include causes form buttons not to work since they are within the table -->
-<!-- %include('tablesorter') -->
-
 <h1>Docker Containers</h1>
 
 <br>
@@ -21,7 +18,7 @@
 <fieldset>
 <legend>Docker containers</legend>
 
-<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<table class="table table-striped">
     <thead><tr><th>Container id</th><th>Image</th><th>Status</th><th>Actions</th></thead>
     %for i in instances:
         <tr>

@@ -7,6 +7,11 @@
 <p>wrote parameters file needed for simulation</p>
 <p>click "execute" to start the simulation</p>
 
+<hr>
+<pre>
+{{!inputs}}
+</pre>
+
 <form action="/execute" method="post">
 <!-- onclick="showImage()"> -->
     <p>Number of processors to use:
@@ -26,15 +31,21 @@
     </p>
     -->
 
-    <input class="submit start" type="submit" value="execute"/>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-block btn-success">
+                    Execute Simulation <em class="glyphicon glyphicon-play"></em>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!--<input class="submit start" type="submit" value="execute"/>-->
     <input type="hidden" name="app" value="{{app}}">
     <input type="hidden" name="cid" value="{{cid}}">
 </form>
 
 <!-- <img id="loadingImage" src="/static/ajax_loader.gif" style="visibility:hidden"/> -->
-<hr>
-<pre>
-{{!inputs}}
-</pre>
 
 %include('footer')

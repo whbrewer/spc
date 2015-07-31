@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link type="text/css" rel="Stylesheet" href="/static/css/login.css"   />
-<link type="text/css" rel="StyleSheet" href="/static/css/navbar.css"  />
-<link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
+<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
 </head>
 
 <body>
 
-%include('addapp/navbar')
-
-<div class="left main">
+<div class="container-fluid">
 <h1>Step 1</h1>
 <h2>configure app</h2>
 <form action="/addapp/step2" method="post">
@@ -85,7 +81,7 @@
 -->
 
 </table>
-<br><input type="submit" class="btn">
+<br><input type="submit" class="btn btn-primary">
 </form>
 </div>
 

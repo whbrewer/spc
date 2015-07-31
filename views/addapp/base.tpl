@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="Stylesheet" type="text/css" href="/static/css/login.css" />
-<link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
-<link type="text/css" rel="StyleSheet" href="/static/css/navbar.css" />
+<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
 </head>
 
 {{!base}}

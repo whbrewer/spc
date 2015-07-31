@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link type="text/css" rel="Stylesheet" href="/static/css/login.css"   />
-<link type="text/css" rel="StyleSheet" href="/static/css/navbar.css"  />
-<link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
+<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
 </head>
 <body>
 
-%include('addapp/navbar')
-
-<div class="main left">
+<div class="container-fluid">
 <h1>Step 3</h1>
 <h2>parse input file</h2>
 <p>choose how to parse this file:</p>
@@ -30,7 +26,7 @@
         <option value="xml">xml file-->
     </select>
     <input type="hidden" name="appname" value="{{appname}}">
-    <input type="submit" class="btn" value="Parse">
+    <input type="submit" class="btn btn-primary" value="Parse">
 </form>
 
 <hr>

@@ -1,14 +1,11 @@
 %include('header')
-<link type="text/css" rel="StyleSheet" href="/static/css/clickable_rows.css"/>
 
 <body onload="init()">
 %include('navbar')
-%include('tablesorter')
 
-<h1 align=center>Shared / Favorite cases</h1>
+<h1 align=center>Favorites</h1>
 
-<!--<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">-->
-<table id="clickable">
+<table id="clickable" class="table table-striped">
 <thead>
 <tr> 
    <th>job id</th> 

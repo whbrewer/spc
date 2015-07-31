@@ -1,32 +1,38 @@
-/* http://www.electrictoolbox.com/jquey-make-entire-table-row-clickable/ */
+.navbar {
+    margin-bottom: 10;
+}
 
-table#clickable {
-    /*border-collapse: collapse; */
-    /*font-family:arial;*/
-    /*font-family:Courier New;*/
-    /*background-color: #CDCDCD;*/
+textarea {
+  background-color : #d1d1d1;
+}
+
+table {
     margin:10px 0pt 15px;
     font-size: 10pt;
     width: 100%;
     text-align: left;
 }
-#clickable tr {
+
+tr {
     background-color: #eee;
     border-top: 1px solid #fff;
 }
-#clickable tr:hover {
+
+tr:hover {
     background-color: #ccc;
 }
-#clickable th {
+
+th {
     /*background-color: #fff;*/
     font-family: arial;
     color: #280671;
     background-color: #bbadda;
 }
-#clickable th, #clickable td {
+
+th, td {
     padding: 3px 5px;
 }
-#clickable td:hover {
+
+td:hover {
     cursor: pointer;
 }
-

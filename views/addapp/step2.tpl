@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link type="text/css" rel="Stylesheet" href="/static/css/login.css"   />
-<link type="text/css" rel="StyleSheet" href="/static/css/navbar.css"  />
-<link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
+<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
 </head>
 <body>
 
 %include('addapp/navbar')
 
-<div class="main left">
+<div class="container-fluid">
 <h1>Step 2</h1>
 
 <h2>Upload zip file</h2>
@@ -37,7 +35,7 @@ the input parameters.</p>
   <input type="file" name="upload" />
   <input type="hidden" name="appname" value="{{appname}}">
   <input type="hidden" name="input_format" value="{{input_format}}">
-  <input type="submit" value="Next >>" class="btn"/>
+  <input type="submit" value="Next >>" class="btn btn-primary"/>
 </form>
 </div>
 

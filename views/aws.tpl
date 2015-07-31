@@ -9,15 +9,13 @@ function verifyInstance(itype) {
     }
 }
 </script>
-<!-- following include causes form buttons not to work since they are within the table -->
-<!-- %include('tablesorter') -->
 
 <h1>Amazon Web Services (AWS)</h1>
 
 <br>
 <fieldset>
 <legend>AWS credentials</legend>
-<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<table class="table table-striped">
 <thead>
 <tr>
    <th>account_id</th>
@@ -43,7 +41,7 @@ function verifyInstance(itype) {
     <tr> <td><input type="text" name="account_id" size=12></td> 
          <td><input type="text" name="secret" size=40></td> 
          <td><input type="text" name="key" size=20></td> 
-         <td><input type="submit" value="Add"></td></tr>
+         <td><input type="submit" class="btn btn-default" value="Add"></td></tr>
     </form>
 %end
 </table>
@@ -54,7 +52,7 @@ function verifyInstance(itype) {
 <fieldset>
 <legend>EC2 instances</legend>
 
-<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<table class="table table-striped">
     <thead><tr><th>Intance id</th><th>Type</th><th>Region</th><th>Actions</th></thead>
     %for i in instances:
         <tr>
@@ -128,7 +126,7 @@ function verifyInstance(itype) {
 </select>
 </td>
 
-<td> <input type="submit" value="Add"> </td>
+<td> <input type="submit" class="btn btn-default" value="Add"> </td>
 </table>
 </form>
 </fieldset>

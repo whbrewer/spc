@@ -1,11 +1,14 @@
 %include('header')
-%include('navbar')
-%include('navactions')
 
-<h1>{{fn}}</h1>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title" id="myModalLabel">Filename is: {{fn}}</h4>       
+</div>
 
-<pre>
-{{!contents}}
-</pre>
+%include('more_contents')
+
+<div class="modal-footer">
+   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
 
 %include('footer')

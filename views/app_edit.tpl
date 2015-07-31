@@ -1,13 +1,10 @@
 %include('header')
-<link type="text/css" rel="StyleSheet" href="/static/css/clickable_rows.css"/>
-
 %include('navbar')
-%include('navactions')
 
 <h1>{{app}} app</h1>
 
 <form method="post" action="/app/save/{{rows['id']}}">
-<table id="clickable" border=0>
+<table class="table table-striped" border=0>
   <tr>
       <td>Name:</td> 
       <td><a href="/app/{{rows['name']}}"></a>{{rows['name']}}</td></tr>
@@ -47,11 +44,15 @@
                  value="{{rows['command']}}"></td> 
   </tr>
 </table>
-<input type="hidden" name="appname" value="{{rows['name']}}">
-<input type="submit" value="save changes">
-</form>
-<form action="/app/{{app}}">
-<input type="submit" value="cancel">
+<div class="row">
+    <div class="col-md-12 col-md-offset-2">
+        <input type="hidden" name="appname" value="{{rows['name']}}">
+        <input type="submit" class="btn btn-success" value="save changes">
+        <a href="/app/{{app}}">
+            <input type="button" class="btn btn-default" value="cancel">
+        </a>
+    </div>
+</div>
 </form>
 
 %include('footer')

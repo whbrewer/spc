@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link type="text/css" rel="Stylesheet" href="/static/css/login.css"   />
-<link type="text/css" rel="StyleSheet" href="/static/css/navbar.css"  />
-<link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
+<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
 </head>
 
 <body>
 
-%include('addapp/navbar')
-
-<div class="main left">
+<div class="container-fluid">
 <h1>Finished!</h1>
 
 <p><font size="+1">Template file successfully written.</p>
 You may test the app here:</p>
 
-<a href="http://localhost:8081/{{appname}}">localhost:8081/{{appname}}</a>
+<a href="http://localhost:8580/{{appname}}">localhost:8580/{{appname}}</a>
 
 </font>
 

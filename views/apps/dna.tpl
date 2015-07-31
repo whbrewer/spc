@@ -5,16 +5,22 @@
 <form action="/confirm" method="post">
 <input type="hidden" name="app" value="{{app}}">
 <input type="hidden" name="cid" value="{{cid}}">
-<input class="submit start" type="submit" value="confirm" />
-<div class="tab-pane" id="tab-pane-1">
-<div class="tab-page">
-<h2 class="tab">basic</h2>
-Enter string of DNA to be analyzed:<br>
-<textarea name="dna" rows="4" cols="100">
+
+<h2>Enter string of DNA to be analyzed:</h2>
+<textarea name="dna" rows="4" cols="80">
 {{dna}}
 </textarea>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary btn-default">
+                Continue <em class="glyphicon glyphicon-forward"></em> 
+            </button>
+        </div>
+    </div>
 </div>
-</div>
+
 </form>
 %include('apps/footer')
 %include('footer')

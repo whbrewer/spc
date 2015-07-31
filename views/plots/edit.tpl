@@ -14,7 +14,7 @@ td {text-align: center}
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53
 
-<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<table class="table table-striped">
 <thead>
 <tr>
    <th>id</th>
@@ -50,24 +50,51 @@ td {text-align: center}
 %end
 </table>
 
-<h1>Add a new plot to {{app}} app</h1>
+<hr>
 
-<form method="post" action="/plots/create">
-<table padding=10>
-   <tr><td>Title:</td> <td><input type="text" name="title"></td></tr>
-   <tr><td>Type of plot:</td>
-   <td><select name="ptype">
-       <option VALUE="flot-line">flot/line</option>
-       <option VALUE="flot-cat">flot/categories</option>
-       <option VALUE="mpl-line">matplotlib/line</option>
-       <option VALUE="mpl-bar">matplotlib/bar</option>
-   </select></td></tr>
-   <tr><td>options:</td> <td><textarea name="options"></textarea></td></tr>
-   <tr><td>data definition:</td> <td><textarea name="datadef"></textarea></td></tr>
-   <tr><td></td><td><input type="submit"></td></tr>
-   <input type="hidden" name="app" value="{{app}}">
-   <input type="hidden" name="cid" value="{{cid}}">
-</table>
+<div class="container-fluid">
+
+<button type="button" class="btn btn-default" data-toggle="collapse" 
+        data-target="#addplot">Add Plot</button>
+
+<div id="addplot" class="collapse">
+<form class="form-horizontal" method="post" action="/plots/create">
+    <div class="form-group">
+        <label for="title" class="control-label col-md-3">Title:</label>
+        <div class="col-md-6"><input type="text" name="title"></div>
+    </div>
+
+    <div class="form-group">
+        <label for="ptype" class="control-label col-md-3">Type of plot:</label>
+        <div class="col-md-6">
+            <select name="ptype">
+                <option VALUE="flot-line">flot/line</option>
+                <option VALUE="flot-cat">flot/categories</option>
+                <option VALUE="mpl-line">matplotlib/line</option>
+                <option VALUE="mpl-bar">matplotlib/bar</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="options" class="control-label col-md-3">Options:</label>
+        <div class="col-md-6">
+            <textarea name="options"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="datadef" class="control-label col-md-3">Data definition:</label>
+        <div class="col-md-6">
+            <textarea name="datadef"></textarea>
+        </div>
+    </div>
+
+    <input type="submit" class="btn btn-primary" value="Submit">
+    <input type="hidden" name="app" value="{{app}}">
+    <input type="hidden" name="cid" value="{{cid}}">
 </form>
+</div>
+</div>
 
 %include('footer')

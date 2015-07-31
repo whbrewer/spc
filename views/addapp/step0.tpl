@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link type="text/css" rel="Stylesheet" href="/static/css/login.css"   />
-<link type="text/css" rel="StyleSheet" href="/static/css/navbar.css"  />
-<link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
+<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
 <script src="/static/js/flot/jquery.js"></script>
 <script>
 function checkApp(appname) {
@@ -29,18 +27,14 @@ function checkApp(appname) {
 </head>
 <body>
 
-%include('addapp/navbar')
-
-<div class="main left">
+<div class="container-fluid">
     <h1>Add new app to SciPaaS</h1>
     <form action="/addapp/step1" method="post">
         <h2>Enter name of app:</h2>
         <input type="text" id="appname" name="appname" 
                onchange="checkApp(this.value)"><br>
-        <input type="submit" id="submit" value="Next >>" class="btn"><br><br>
+        <input type="submit" class="btn btn-primary" id="submit" value="Next >>"><br><br>
     </form>
-
-<p>Note: after finishing all steps must restart SciPaaS to load app</p>
 </div>
 
 %include('footer')

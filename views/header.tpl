@@ -1,20 +1,21 @@
 <html>
 <head>
-    <script type="text/javascript" src="/static/js/main.js" charset="utf-8"></script>
-    <script type="text/javascript" src="/static/js/tabpane.js"></script>
+    <script src="/static/js/main.js" charset="utf-8"></script>
+    <script src="/static/js/tabpane.js"></script>
 
-    <script type="text/javascript" src="/static/js/tablesorter/jquery-latest.js"></script>
-    <script type="text/javascript" src="/static/js/tablesorter/jquery.tablesorter.js"></script>
+    <script src="/static/jquery-2.1.4.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="/static/css/jq.css" type="text/css" media="print, projection, screen" />
-    <link rel="stylesheet" href="/static/js/tablesorter/style.css" type="text/css" media="print, projection, screen" />
-
-    <link type="text/css" rel="StyleSheet" href="/static/css/default.css" />
     <link type="text/css" rel="StyleSheet" href="/static/css/navbar.css" />
     <link type="text/css" rel="StyleSheet" href="/static/css/tab.webfx.css"/>
+
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="/static/bootstrap/css/style.css" rel="stylesheet">
 
     <title>SciPaaS</title>
     <script type="text/javascript">
     setupAllTabs();
     </script>
 </head>
+<div class="container-fluid">

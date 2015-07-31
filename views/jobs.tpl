@@ -1,15 +1,11 @@
 %include('header')
-<link type="text/css" rel="StyleSheet" href="/static/css/clickable_rows.css"/>
 
 <body onload="init()">
 %include('navbar')
 <!--<meta http-equiv="refresh" content="5">-->
-%include('tablesorter')
 <h1 align=center>{{user}}'s jobs</h1>
 
-<!--<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">-->
-
-<table id="clickable">
+<table id="clickable" class="table table-striped">
 <thead>
 <tr>
   <th>jid</th> 
@@ -20,14 +16,14 @@
   <th>priority</th> 
   <th>date/time submitted</th> 
   <th>description</th>
-  <th>shared</th>
+  <th>fav</th>
 </tr>
 </thead>
 
 <tbody>
 %for row in rows:
-  <form>
   <tr>
+  <form>
   <td>{{row['id']}}</td>
   <td>{{row['app']}}</td>
   <td>{{row['cid']}}</td>
@@ -39,8 +35,11 @@
   <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a>
   </td>
   %if row['shared']=="True":
-      <td>shared</td>
+      <td><span class="glyphicon glyphicon-star"></span></td>
+  %else:
+      <td></td>
   %end
+  </form>
 </tr> 
 %end
 </tbody>
@@ -54,7 +53,6 @@ $(document).ready(function() {
             window.location = href;
         }
     });
-
 });
 </script>
 %include('footer')

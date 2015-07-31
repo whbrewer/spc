@@ -1,68 +1,11 @@
 %include('header')
 %include('navbar')
-%include('navactions')
 
-<fieldset>
-<legend>Actions</legend>
 %if defined('status'):
     Status: {{status}}
 %end
 
-<table>
-<tr>
-<td>
-<form method="get" action="/start?cid={{cid}}&app={{app}}">
-    <input type="hidden" name="cid" value="{{cid}}">
-    <input type="hidden" name="app" value="{{app}}">
-    <input type="submit" value="start">
-</form>
-</td> <td>
-<form method="get" action="/files?cid={{cid}}&app={{app}}">
-    <input type="hidden" name="cid" value="{{cid}}">
-    <input type="hidden" name="app" value="{{app}}">
-    <input type="submit" value="files">
-</form>
-</td> <td>
-<form method="get" action="/zipcase?cid={{cid}}&app={{app}}">
-    <input type="hidden" name="cid" value="{{cid}}">
-    <input type="hidden" name="app" value="{{app}}">
-    <input type="submit" value="zip case">
-</form>
-</td> <td>
-<form method="post" action="/jobs/delete/{{jid}}">
-    <input type="hidden" name="cid" value="{{cid}}">
-    <input type="hidden" name="app" value="{{app}}">
-    <input type="submit" value="delete"
-           onclick="if(confirm('are you sure?')) return true; return false">
-</form>
-</td><td>
-%if shared=="False":
-<form method="post" action="/shared">
-      <input type="hidden" name="app" value="{{app}}">
-      <input type="hidden" name="cid" value="{{cid}}">
-      <input type="hidden" name="jid" value="{{jid}}">
-      <input type="submit" value="share">
-</form>
-%else:
-<form method="post" action="/shared/unshare">
-      <input type="hidden" name="app" value="{{app}}">
-      <input type="hidden" name="cid" value="{{cid}}">
-      <input type="hidden" name="jid" value="{{jid}}">
-      <input type="submit" value="unshare">
-</form>
-%end
-<td valign="top"> &nbsp; Description:</td>
-<td>
-<form method="post" action="/jobs/annotate">
-      <input type="hidden" name="app" value="{{app}}">
-      <input type="hidden" name="cid" value="{{cid}}">
-      <input type="hidden" name="jid" value="{{jid}}">
-      <input type="text" name="description" value="{{description}}">
-      <input type="submit" value="annotate">
-</form>
-</td></tr>
-</table>
-</fieldset>
+%include("navactions")
 
 <!--
 <form>
@@ -86,6 +29,10 @@ function show(update_interval) {
     showOutput = function() {
        jQuery('#output').load('/{{app}}/{{cid}}/tail', function(){
           setTimeout(showOutput, update_interval);
+          // slow down updates over time to relieve burden on server
+          if (update_interval < 10000) {
+              update_interval+=500;
+          }
        })
     }
     //$("#selector").hide()

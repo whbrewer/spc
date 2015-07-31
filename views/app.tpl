@@ -1,8 +1,5 @@
 %include('header')
-<link type="text/css" rel="StyleSheet" href="/static/css/clickable_rows.css"/>
-
 %include('navbar')
-%include('navactions')
 
 <h1>{{app}} app</h1>
 
@@ -33,22 +30,21 @@
   </tr>
 </table>
 
-<!--
-<table>
-<tr> <td>
-    <form method="post" action="/app/edit/{{rows['id']}}">
+<div class="btn-group">
+    <form class="btn-group" method="post" action="/app/edit/{{rows['id']}}">
+        <input type="submit" class="btn btn-default" value="edit {{app}}">
         <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="hidden" name="edit" value="True">
-        <input type="submit" value="edit {{app}}">
     </form>
-</td><td>
-    <form method="post" action="/app/delete/{{rows['id']}}">
+    <form class="btn-group" method="get" action="/plots/edit">
+        <input type="hidden" name="app" value="{{rows['name']}}">
+        <input type="submit" class="btn btn-default" value="plot configuration">
+    </form>
+    <form class="btn-group" method="post" action="/app/delete/{{rows['id']}}">
         <input type="hidden" name="appname" value="{{rows['name']}}">
-        <input type="submit" value="delete {{app}}" 
+        <input type="submit" class="btn btn-default" value="delete {{app}}" 
         onclick="if(confirm('are you sure?')) return true; return false">
     </form>
-</td></tr>
--->
-</table>
+</div>
 
 %include('footer')
