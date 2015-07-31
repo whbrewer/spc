@@ -963,15 +963,17 @@ def plot_interface(pltid):
         (col1str,col2str) = cols.split(":")
         col1 = int(col1str); col2 = int(col2str)
         # do some postprocessing
-        #if line_range is not None:
-        #    (line1str,line2str) = line_range.split(":")
-        #    line1 = int(line1str); line2 = int(line2str)
+        if line_range is not None:
+            (line1str,line2str) = line_range.split(":")
+            line1 = int(line1str); line2 = int(line2str)
+        ### there is a problem with the following statement
+        ### shows up in mendel app
         #    if myapps[app].postprocess > 0:
         #        dat = process.postprocess(plotpath,line1,line2)
         #    else:
-        #        dat = p.get_data(plotpath,col1,col2,line1,line2)
-        #else:
-        dat = p.get_data(plotpath,col1,col2)
+            dat = p.get_data(plotpath,col1,col2,line1,line2)
+        else:
+            dat = p.get_data(plotpath,col1,col2)
         # clean data
         #dat = [d.replace('?', '0') for d in dat]
         data.append(dat)
