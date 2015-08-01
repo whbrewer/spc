@@ -88,6 +88,13 @@ class app(object):
             f.write("</tbody></table>\n")
             f.write("</div>\n\n")
         f.write("</div>\n")
+        f.write("<div class=\"container-fluid\">\n")
+        f.write("\t<div class=\"row\">\n")
+        f.write("\t\t<div class=\"col-md-3\">\n")
+        f.write("\t\t\t<button type=\"submit\" class=\"btn btn-primary\">\n");
+        f.write("\t\t\t\tContinue\n")
+        f.write("\t\t\t</button>\n")
+        f.write("\t\t</div>\n\t</div>\n</div>\n\n")
         f.write("</form>\n")
         f.write("%include('apps/footer')\n")
         f.write("%include('footer')\n")

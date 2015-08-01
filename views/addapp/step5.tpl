@@ -12,7 +12,7 @@
 <p><font size="+1">Template file successfully written.</p>
 You may test the app here:</p>
 
-<a href="http://localhost:8580/{{appname}}">localhost:8580/{{appname}}</a>
+<a href="http://localhost:{{port}}/{{appname}}">localhost:{{port}}/{{appname}}</a>
 
 </font>
 

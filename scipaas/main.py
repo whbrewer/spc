@@ -121,7 +121,7 @@ def more():
 
 @get('/case')
 def case():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     global user
     check_user_var()
     app = request.query.app
@@ -157,7 +157,7 @@ def case():
 
 @get('/output')
 def output():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     global user
     app = request.query.app
     cid = request.query.cid
@@ -181,7 +181,7 @@ def output():
 
 @get('/inputs')
 def inputs():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     global user
     app = request.query.app
     cid = request.query.cid
@@ -234,13 +234,13 @@ def tail(app,cid):
 
 @get('/')
 def root():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     #return template('overview')
     redirect('/apps')
 
 @get('/jobs')
 def show_jobs():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     #if app not in myapps: redirect('/apps')
     global user
     cid = request.query.cid
@@ -256,7 +256,7 @@ def show_jobs():
 
 @get('/aws')
 def get_aws():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     #if app not in myapps: redirect('/apps')
     global user
     cid = request.query.cid
@@ -278,7 +278,7 @@ def get_aws():
 
 @post('/aws/creds')
 def post_aws_creds():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     check_user_var()
     global user
     a = request.forms.account_id
@@ -291,7 +291,7 @@ def post_aws_creds():
 
 @post('/aws/instance')
 def post_instance():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     global user
     check_user_var()
     i = request.forms.instance
@@ -327,7 +327,7 @@ def aws_conn(id):
 
 @get('/aws/status/<aid>')
 def aws_status(aid):
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     global user
     check_user_var()
     cid = request.query.cid
@@ -352,7 +352,7 @@ def aws_status(aid):
 
 @get('/aws/start/<aid>')
 def aws_start(aid):
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     global user
     check_user_var()
     cid = request.query.cid
@@ -375,7 +375,7 @@ def aws_start(aid):
 
 @get('/aws/stop/<aid>')
 def aws_stop(aid):
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     global user
     check_user_var()
     cid = request.query.cid
@@ -394,7 +394,7 @@ def aws_stop(aid):
 
 @get('/account')
 def get_account():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     global user
     check_user_var()
     app = request.query.app
@@ -408,7 +408,7 @@ def get_account():
 @get('/shared')
 def get_shared():
     """Return the records from the shared table."""
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     global user
     cid = request.query.cid
     app = request.query.app
@@ -423,7 +423,7 @@ def get_shared():
 
 @post('/jobs/annotate')
 def annotate_job():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     check_user_var()
     app = request.forms.app
     cid = request.forms.cid
@@ -435,29 +435,29 @@ def annotate_job():
 
 @post('/shared')
 def post_shared():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     check_user_var()
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
     jobs(id=jid).update_record(shared="True")
     db.commit()
-    redirect('/shared')
+    redirect('/jobs')
 
 @post('/shared/unshare')
 def unshare_shared_item():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     check_user_var()
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
     jobs(id=jid).update_record(shared="False")
     db.commit()
-    redirect ('/jobs')
+    redirect ('/shared')
 
 @post('/jobs/delete/<jid>')
 def delete_job(jid):
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     check_user_var()
     app = request.forms.app
     cid = request.forms.cid
@@ -478,7 +478,7 @@ def delete_job(jid):
 
 @post('/proc/stop')
 def stop_job():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     check_user_var()
     app = request.query.app
     cid = request.query.cid
@@ -488,7 +488,7 @@ def stop_job():
 
 @get('/<app>')
 def show_app(app):
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     check_user_var()
     global user, myapps
     # set a session variable to keep track of the current app
@@ -552,7 +552,7 @@ def change_password():
     # this is basically the same coding as the register function
     # needs to be DRY'ed out in the future
     global user
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     opasswd = request.forms.opasswd
     pw1 = request.forms.npasswd1
     pw2 = request.forms.npasswd2
@@ -611,7 +611,7 @@ def post_register():
 @get('/admin/show_users')
 def admin_show_users():
     global user
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     if not user == "admin":
         return template("error",err="must be admin to delete")
     result = db().select(users.ALL)
@@ -621,7 +621,7 @@ def admin_show_users():
 @post('/admin/delete_user')
 def admin_delete_user():
     global user
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     if not user == "admin":
         return template("error",err="must be admin to delete")
     uid = request.forms.uid
@@ -658,7 +658,7 @@ def check_user_var():
 
 @get('/apps')
 def showapps():
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     result = db().select(apps.ALL)
     params = { 'apps': myapps.keys() }
     return template('apps', params, rows=result)
@@ -728,7 +728,7 @@ def delete_app(appid):
 
 @get('/app/<app>')
 def view_app(app):
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     check_user_var()
     global user
     cid = request.query.cid
@@ -748,7 +748,7 @@ def getstart():
     global user
     check_user_var()
     app = request.query.app
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
     if re.search("/",cid):
@@ -824,7 +824,7 @@ def editplot():
     app = request.query.app
     cid = request.query.cid
     check_user_var()
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     if app not in myapps: redirect('/apps')
     query = (apps.id==plots.appid) & (apps.name==app)
     result = db(query).select()
@@ -846,7 +846,7 @@ def get_datasource(pltid):
     cid = request.query.cid
     check_user_var()
     if myapps[app].appname not in myapps: redirect('/apps')
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     result = db(datasource.pltid==pltid).select()
     params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid,
                'rows': result, 'apps': myapps.keys() }
@@ -1222,7 +1222,7 @@ def addapp(step="step0"):
         if myapp.write_html_template(html_tags=key_tag,bool_rep=bool_rep,
                                      desc=key_desc):
             load_apps()
-            params = { "appname": appname }
+            params = { "appname": appname, "port": config.port }
             return template('addapp/step5', params)
         else:
             return "ERROR: there was a problem when creating view"
@@ -1240,7 +1240,7 @@ def addapp(step="step0"):
 @post('/upload')
 def upload_data():
     global user
-    if not authorized(): redirect('/login')
+    if config.auth and not authorized(): redirect('/login')
     upload = request.files.upload
     if not upload:
         return template('error', err="no file selected.")
@@ -1287,18 +1287,23 @@ def getuser():
     return user
 
 if __name__ == "__main__":
+    # set user session if authentication is disabled
+    if not config.auth:
+        s = {USER_ID_SESSION_KEY: "guest"}
+        user = s[USER_ID_SESSION_KEY]
+    # load apps into memory
     load_apps()
     # start a polling thread to continuously check for queued jobs
     sched.poll()
-    # attempt to mix in docker functionality.
+    # attempt to mix in docker functionality
     try:
         dockermod.bind(globals())
         app.app.merge(dockermod.dockerMod)
     except Exception,e:
         pass
-    # run the app.
+    # run the app
     try:
         run(server=config.server, app=app, host='0.0.0.0',\
-            port=8580, debug=False)
+            port=config.port, debug=False)
     except:
-        run(app=app, host='0.0.0.0', port=8580, debug=False)
+        run(app=app, host='0.0.0.0', port=config.port, debug=False)

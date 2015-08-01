@@ -22,7 +22,7 @@
 %end
 </div>
 
-<h1>Edit Datasources for Plot {{pltid}}</h1>
+<h1>Datasources for Plot {{pltid}}</h1>
 
 <!--<table  class="table table-striped" border="0" cellpadding="0" cellspacing="1">-->
 <table  class="table table-striped">

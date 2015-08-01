@@ -3,7 +3,7 @@
 <body onload="init()">
 %include('navbar')
 <!--<meta http-equiv="refresh" content="5">-->
-<h1 align=center>{{user}}'s jobs</h1>
+<h1 align=center>Jobs</h1>
 
 <table id="clickable" class="table table-striped">
 <thead>

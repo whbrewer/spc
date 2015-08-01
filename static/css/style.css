@@ -1,5 +1,12 @@
 .navbar {
-    margin-bottom: 10;
+    margin-bottom: 0;
+}
+
+.abs-bottom-right {
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    z-index: 10;
 }
 
 textarea {
@@ -20,6 +27,7 @@ tr {
 
 tr:hover {
     background-color: #ccc;
+    cursor: pointer;
 }
 
 th {
@@ -33,6 +41,13 @@ th, td {
     padding: 3px 5px;
 }
 
-td:hover {
-    cursor: pointer;
+/* to fix problems in flot legends */
+
+.legend > table {
+   width: 150px;
 }
+
+td.legendcolorbox {
+   width: 10px;
+}
+

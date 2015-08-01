@@ -32,26 +32,32 @@ def create_config_file():
     fn="scipaas/config.py"
     if not os.path.exists(fn):
         with open(fn, "w") as f:
+            f.write("# USER AUTHENTICATION\n")
+            f.write("auth = False\n")
+            f.write("\n# DATABASE\n")
             f.write("db = 'scipaas.db'\n")
             f.write("dbdir = 'db'\n")
             f.write("uri = 'sqlite://'+db\n")
+            f.write("\n# DIRECTORIES\n")
             f.write("apps_dir = 'apps'\n")
             f.write("user_dir = 'user_data'\n")
             f.write("upload_dir = '_uploads'\n")
             f.write("tmp_dir = 'static/tmp'\n")
             f.write("mpirun = '/usr/local/bin/mpirun'\n")
-            f.write("# scheduler options\n")
+            f.write("\n# SCHEDULER\n")
             f.write("# uniprocessor scheduling -- for single-core machines\n")
             f.write("sched = 'uni'\n")
             f.write("# schedule more than one job at a time (multiprocessor)\n")
             f.write("#sched = 'smp'\n")
             f.write("# number of processors available to use on this machine\n")
             f.write("np = 2\n")
+            f.write("\n# WEB SERVER\n")
             f.write("# don't define server if you want to use built-in\n")
             f.write("# other options: cherrypy, bjoern, tornado, gae, etc.\n")
             f.write("# cherrypy is a decent multi-threaded server\n")
             f.write("#server = 'cherrypy'\n")
-
+            f.write("# port number to listen for connections\n")
+            f.write("port = 8580\n")
 
 def initdb():
     """Initializes database file"""

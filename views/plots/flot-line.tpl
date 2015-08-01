@@ -1,13 +1,15 @@
 % rebase('plots/flot-base.tpl')
 
-<div>
+<div align="center">
    <div id="myplot" style="width:600px;height:370px;"></div> 
+   <!--
    <img id="canvasImg" alt="Right click to save me!">
    <p align="right">
        <button type="button" onclick="showcanvas()">Show canvas</button>
        <button type="button" onclick="showimage()">Show image</button>
        <button type="button" onclick="download()">Download image</button>
    </p>
+   -->
 
    <script id="source" language="javascript" type="text/javascript"> 
       function download()  {
@@ -83,9 +85,9 @@
           var image = canvas.toDataURL();
           
           // this line causes browser to download file instead of display
-          image = image.replace("image/png","image/octet-stream");
-          document.getElementById('canvasImg').src = image;
-          document.getElementById('canvasImg').style.display = "none";
+          //image = image.replace("image/png","image/octet-stream");
+          //document.getElementById('canvasImg').src = image;
+          //document.getElementById('canvasImg').style.display = "none";
 
           // this is python code related to saving images on the server side
           //http://stackoverflow.com/questions/6930050/howto-export-jquery-flot-graphs-as-images

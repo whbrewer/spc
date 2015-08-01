@@ -25,6 +25,7 @@
                      <span class="glyphicon glyphicon-star"></span>Favs </button>
             </div>
         </div>
+%if False:
         <div class="navbar-right">
             <div class="btn-group">
                 <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
@@ -51,6 +52,7 @@
                 </ul>
             </div>
         </div>
+%end
     </div>
 </div>
 

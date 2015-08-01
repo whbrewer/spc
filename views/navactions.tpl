@@ -11,13 +11,19 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
-            <button href="/inputs?cid={{cid}}&app={{app}}" type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Inputs</button>
-            <button href="/output?cid={{cid}}&app={{app}}" type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Output</button>
+            <button href="/inputs?cid={{cid}}&app={{app}}" type="button" 
+                    class="btn btn-default" data-toggle="modal" 
+                    data-target="#myModal">Inputs</button>
+            <button href="/output?cid={{cid}}&app={{app}}" type="button" 
+                    class="btn btn-default" data-toggle="modal" 
+                    data-target="#myModal">Output</button>
+            <!--
             <form class="btn-group" action="/zipcase" method="get">
                 <button class="btn btn-default">Zip</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
+            -->
             <form class="btn-group" action="/plot/0" method="get">
                 <button class="btn btn-default">Plot</button>
                 <input type="hidden" name="cid" value="{{cid}}">
@@ -45,8 +51,9 @@
 
 %if defined('jid'):
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" 
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <form class="form-horizontal" method="post" action="/jobs/annotate">
                 <div class="modal-header">
@@ -70,7 +77,6 @@
         </div>
     </div>
 </div>
-
 %end
 
 

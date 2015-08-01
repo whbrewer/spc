@@ -5,8 +5,6 @@
 </head>
 <body>
 
-%include('addapp/navbar')
-
 <div class="container-fluid">
 <h1>Step 2</h1>
 
@@ -32,7 +30,7 @@ the input parameters.</p>
 <form action="/addapp/step3" method="post" enctype="multipart/form-data">
   <!-- Category: <input type="text" name="category" /> -->
   <font size="+1">Select a zip file:</font> 
-  <input type="file" name="upload" />
+  <input type="file" name="upload"><br>
   <input type="hidden" name="appname" value="{{appname}}">
   <input type="hidden" name="input_format" value="{{input_format}}">
   <input type="submit" value="Next >>" class="btn btn-primary"/>

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# if the server is already running then don't start it again
+if $(curl --output /dev/null --silent --head --fail http://localhost:8580)
+then
+    echo "SERVER ALREADY RUNNING"
+    open 'http://localhost:8580/mendel'
+    exit
+fi 
+
+# start the server
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+./sp go >& log &
+pid=$!
+echo "STARTING SERVER PLEASE WAIT..."
+
+# test if the server is up
+var=0
+until $(curl --output /dev/null --silent --head --fail http://localhost:8580); do
+    printf '.'
+    sleep 1
+    if ((++var >= 10)); then
+        echo
+        echo "TIMEOUT REACHED... THERE IS A PROBLEM STARTING THE SERVER" 
+        exit
+    fi 
+done
+
+# open the site in the web browser
+open 'http://localhost:8580/mendel'
+

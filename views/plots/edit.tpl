@@ -9,7 +9,7 @@ td {text-align: center}
 
 <!--<h1>{{app}}</h1>-->
 
-<h1 align=center>Available plots for {{app}} app</h1>
+<h1 align=center>Plot definitions for {{app}} app</h1>
 
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53
