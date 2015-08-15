@@ -1,25 +1,25 @@
 %include('header')
 %include('navbar')
 
-<div class="row">
-<div class="col-md-6">
-    <form method="get" action="/plots/edit">
-        <button class="btn btn-default">Edit Plots</button>
-        <input type="hidden" name="app" value="{{app}}">
-        <input type="hidden" name="cid" value="{{cid}}">
-    </form>
-</div>
-%if defined('cid'):
-%if not cid=='':
-<div class="col-md-6">
-    <form method="get" action="/plot/{{pltid}}">
-        <input type="hidden" name="app" value="{{app}}">
-        <input type="hidden" name="cid" value="{{cid}}">
-        <input type="submit" class="btn btn-default" value="Plot">
-    </form>
-</div>
-%end
-%end
+<div align="center" class="container-fluid">
+    <div class="row">
+        <div class="btn-group align-center">
+            <form class="btn-group" method="get" action="/plots/edit">
+                    <button class="btn btn-default">Edit Plots</button>
+                    <input type="hidden" name="app" value="{{app}}">
+                    <input type="hidden" name="cid" value="{{cid}}">
+                </form>
+            %if defined('cid'):
+            %if not cid=='':
+            <form class="btn-group" method="get" action="/plot/{{pltid}}">
+                <input type="hidden" name="app" value="{{app}}">
+                <input type="hidden" name="cid" value="{{cid}}">
+                <input type="submit" class="btn btn-default" value="Plot">
+            </form>
+            %end
+            %end
+        </div>
+    </div>
 </div>
 
 <h1>Datasources for Plot {{pltid}}</h1>

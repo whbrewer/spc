@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
+<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
 </head>
 <body>
 
@@ -12,7 +12,7 @@
 
 
 <form method="post" action="/addapp/step4">
-    <select name="input_format">
+    <select class="form-control" style="width:auto" name="input_format">
         %opts = {'namelist':'namelist.input','ini':'INI file','xml':'XML file'}
         %for key, value in opts.iteritems():
             %if key == input_format:
@@ -24,7 +24,8 @@
         <!--<option value="namelist">namelist.input
         <option value="ini">INI file
         <option value="xml">xml file-->
-    </select>
+    </select><br>
+    
     <input type="hidden" name="appname" value="{{appname}}">
     <input type="submit" class="btn btn-primary" value="Parse">
 </form>

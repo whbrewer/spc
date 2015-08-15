@@ -1,7 +1,6 @@
 % rebase('plots/flot-base.tpl')
 
-<div align="center">
-   <div id="myplot" style="width:600px;height:370px;"></div> 
+<div>
    <!--
    <img id="canvasImg" alt="Right click to save me!">
    <p align="right">
@@ -78,6 +77,10 @@
              var plot = $.plot(placeholder, data, options);
           });
 
+          $(window).resize(function() {
+             var plot = $.plot(placeholder, data, options);
+          });
+
           var plot = $.plot(placeholder, data, options);
 
           // convert plot to image and display
@@ -103,3 +106,4 @@
    </script>
 
 </div>
+

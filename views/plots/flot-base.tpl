@@ -5,9 +5,10 @@
 <script src="/static/js/flot/jquery.flot.axislabels.js"></script>
 <script src="/static/js/flot/jquery.flot.selection.js"></script>
 <script src="/static/js/flot/jquery.flot.fillbetween.js"></script>
+<script src="/static/js/flot/jquery.flot.resize.js"></script>
 <!--<script src="/static/js/canvas2image.js"></script>-->
 
-<body onload="init()">
+<body>
 %include('navbar')
 %include('plots/header')
 

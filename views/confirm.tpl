@@ -1,53 +1,38 @@
 %include('header')
-<body onload="init()">
+<body>
 %include('navbar')
 
-<h1>Execute simulation:</h1>
+<div class="container-fluid">
+<div class="col-xs-12" style="height:5px"></div>
 
-<p>wrote parameters file needed for simulation</p>
-<p>click "execute" to start the simulation</p>
+<div align="center" class="alert-info">
+    <em>Wrote parameters to input file. Click Execute to start simulation.</em>
+</div>
 
 <form action="/execute" method="post">
     <input type="hidden" name="np" value="1">
-<!-- onclick="showImage()"> -->
-    <!--
-    <p>Number of processors to use:
-    <select name="np">
-        %for i in range(1,np+1):
-            <option value="{{i}}">{{i}}
-        %end
-    </select></p>
-    -->
-    
-    <!-- use this for testing priority levels
-    <p>Priority level:
-    <select name="priority">
-        <option value="0">0
-        <option value="1">1
-        <option value="2">2
-    </select>
-    </p>
-    -->
 
-    <!-- <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12"> -->
-                <button type="submit" class="btn btn-success abs-bottom-right">
-                    Execute <em class="glyphicon glyphicon-play"></em>
-                </button>
-<!--             </div>
-        </div>
-    </div> -->
+    <button type="submit" class="btn btn-success"> <!-- pull-right -->
+        Execute <em class="glyphicon glyphicon-play"></em>
+    </button>
 
-    <!--<input class="submit start" type="submit" value="execute"/>-->
+    <div class="col-xs-12" style="height:5px"></div>
+
     <input type="hidden" name="app" value="{{app}}">
     <input type="hidden" name="cid" value="{{cid}}">
-</form>
+    %if defined('desc'):
+    	<input type="hidden" name="desc" value="{{desc}}">
+    %else:
+    	<input type="hidden" name="desc" value="None">
+    %end
 
 <pre>
+<!-- don't indent the following -->
 {{!inputs}}
 </pre>
 
-<!-- <img id="loadingImage" src="/static/ajax_loader.gif" style="visibility:hidden"/> -->
+</form>
+
+</div>
 
 %include('footer')

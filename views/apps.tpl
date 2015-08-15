@@ -1,21 +1,30 @@
 %include('header')
+<style>
+  .panel:hover {
+    background-color: #dfdfdf !important;
+  }
+  a {
+    text-decoration: none;
+    color: #5f5f5f;
+  }
+</style>
 
-<body onload="init()">
+<body>
 %include('navbar')
 
 <script>
-function delete(id) {
-   if(!confirm("Are you sure to delete?")) return                      
-      document.student_modify.action = "/apps/delete/id"
-      document.student_modify.submit()
-   }
-}
-function edit(id) {
-   if(!confirm("Are you sure to delete?")) return                      
-      document.student_modify.action = "/apps/delete/id"
-      document.student_modify.submit()
-   }
-}
+// function delete(id) {
+//    if(!confirm("Are you sure to delete?")) return                      
+//       document.student_modify.action = "/apps/delete/id"
+//       document.student_modify.submit()
+//    }
+// }
+// function edit(id) {
+//    if(!confirm("Are you sure to delete?")) return                      
+//       document.student_modify.action = "/apps/delete/id"
+//       document.student_modify.submit()
+//    }
+// }
 </script>
 
 <h1>Installed Apps</h1>
@@ -30,40 +39,29 @@ function edit(id) {
 </form>
 -->
 
-<table id="clickable" class="table table-striped">
-<thead>
-<tr> 
-<th>Name</th> 
-<th>Category</th>
-<th>Description</th> 
-</tr>
-</thead>
+<div class="container-fluid">
+  <div id="mypanel" class="panel-group">
+    <div class="row">
+      % for row in rows:
+        <div class="panel panel-primary">
+          <a style="text-decoration:none" href="/{{row['name']}}">
+          <div class="panel-heading"><h2>{{row['name']}}</h2></div>
+          <div class="panel-body"><h4>{{row['description']}}</h4></div>
+          <div class="panel-footer">category: {{row['category']}}</div>
+        </div>
+        <!-- <a href="/{{row['name']}}"></a> -->
+      <br>
+      %end
+    </div>
+  </div>
+</div>
 
-%for row in rows:
-  <tr>
-  <td><a href="/{{row['name']}}"></a>{{row['name']}}</td>
-  <td>{{row['category']}}</td>
-  <td>{{row['description']}}</td>
-</tr> 
-%end
-</table>
-
+%if configurable:
 <div>
    <a href="/addapp" class="btn btn-default">
    <span class="glyphicon glyphicon-plus"></span> Add
    </a>
-   <!--<input type="submit" formaction="/apps/load" class="submit start" value="load">-->
 </div>
-
-<script>
-$(document).ready(function() {
-    $('#clickable tr').click(function() {
-        var href = $(this).find("a").attr("href");
-        if(href) {
-            window.location = href;
-        }
-    });
-});
-</script>
+%end
 
 %include('footer')

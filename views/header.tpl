@@ -1,18 +1,39 @@
 <html>
 <head>
-    <script src="/static/js/main.js" charset="utf-8"></script>
-    <script src="/static/js/tabpane.js"></script>
-
     <script src="/static/jquery-2.1.4.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.highlight.js"></script>
+    <script src="/static/js/bootstrap-tagsinput.min.js"></script>
 
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
-    <link href="/static/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-tagsinput.css">
 
     <title>SciPaaS</title>
-    <script type="text/javascript">
-    setupAllTabs();
-    </script>
+
+    <style>
+
+		body { 
+		    padding-top: 65px; 
+		    /* If fixing the navactions bar use 100px */
+		    /*padding-top: 100px;*/ 
+		}
+
+    	.modal-lg{ width:850px; }
+
+		.highlight {
+		    background-color: #FFFF88;
+		}
+        
+		.navbar-default {
+    		border-bottom-color: #5FB0E4;
+		    background-color: #F8F8F8; opacity: 0.9; 
+		}
+
+    </style>
+
 </head>
+<body>
+
+
 <div class="container-fluid">

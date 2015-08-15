@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
+<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
 </head>
 
 <body>
@@ -17,12 +17,12 @@
 <tr>
 <td><font size="+1">Description:<br>
     <font size="-1">80 chars max</font></font></td>
-<td><textarea name="description" cols=40 rows=2></textarea></td>
+<td><textarea class="form-control" name="description" cols=40 rows=2></textarea></td>
 
 <tr>
 <td><font size="+1">Tags:</font><br>
     <font size="-1">e.g. Bioinformatics</font></td>
-<td><input type="text" name="category"></td>
+<td><input class="form-control" type="text" name="category"></td>
 <!--
 <td><select name="category" onchange="somefn()">
    <option SELECTED value="bioinformatics">Bioinformatics
@@ -50,7 +50,7 @@
 
 <tr>
 <td>Input format:</td>
-<td><select name="input_format">
+<td><select class="form-control" name="input_format">
    <option SELECTED value="namelist">Namelist
    <option value="ini">INI
    <option value="xml">XML
@@ -60,7 +60,7 @@
 <tr>
 <td><font size="+1">Command to run app:</font><br> 
 <font size="-1">Note: this is a relative path from the <tt>user_data/app/user</tt> directory</font></td>
-<td><input type="text" name="command" value="../../../../apps/{{appname}}/{{appname}}"></td>
+<td><input class="form-control" type="text" name="command" value="../../../../apps/{{appname}}/{{appname}}"></td>
 </tr>
 
 <!--

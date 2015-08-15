@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
+<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
 </head>
 
 {{!base}}

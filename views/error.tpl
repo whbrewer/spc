@@ -1,6 +1,6 @@
 %include('header')
 
-<body onload="init()">
+<body>
 %include('navbar')
 
 <h2> ERROR: {{err}} </h2>

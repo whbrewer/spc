@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
+<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
 </head>
 
 <body>
@@ -15,9 +15,9 @@
 <input type="submit" class="btn btn-primary" value="Next >>">
 <hr>
 How to represent a true Boolean value (e.g. T, True, true, 1)?
-<input type="text" size=5 name="bool_rep">
+<input class="form-control" type="text" style="width:100px" name="bool_rep">
 <hr>
-<table>
+<table class="table table-striped">
 <thead align=left>
     <th>parameter</th>
     <th>value</th>
@@ -29,7 +29,7 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
 %for key,value in inputs.iteritems():
     <tr>
         <td>{{key}}</td> <td>{{value}}</td> 
-        <td><select name="html_tags">
+        <td><select class="form-control" name="html_tags">
             <option value="text">text
             <option value="hidden">hidden
             <option value="select">select
@@ -43,7 +43,7 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
             <option value="boolean">Boolean
         </select></td>
         -->
-        <td><input type="text" name="descriptions" value="{{key}}"></td>
+        <td><input class="form-control" type="text" name="descriptions" value="{{key}}"></td>
     </tr>
     <input type="hidden" name="keys" value="{{key}}">
     <input type="hidden" name="appname" value="{{appname}}">

@@ -1,7 +1,7 @@
 %include('header')
 %include('navbar')
 
-<body onload="init()">
+<body>
 
 <style type="text/css">
 td {text-align: center}

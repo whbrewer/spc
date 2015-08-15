@@ -16,15 +16,3 @@ showOutput = function(){
 showOutput();
 
 </script>
-
-<!--
-%if defined('jid'):
-<form method="post" action="/proc/stop">
-   <input type="hidden" name="cid" value="{{cid}}">
-   <input type="hidden" name="app" value="{{app}}">
-   <input type="hidden" name="jid" value="{{jid}}">
-   <input type="submit" class="submit stop" value="stop">
-</form>
-%end
--->
-

@@ -2,6 +2,7 @@
 import threading, time, os
 import config
 from gluino import DAL, Field
+import subprocess, signal
 
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
@@ -28,6 +29,8 @@ jobs = db.define_table('jobs', Field('id','integer'),
 class scheduler(object):
     """simple single process scheduler"""
     def __init__(self):
+        # if any jobs marked in run state when scheduler starts 
+        # replace their state with X to mark that they have been shutdown
         myset = db(db.jobs.state == 'R')
         myset.update(state='X')
         db.commit()
@@ -47,9 +50,9 @@ class scheduler(object):
                 self.start(j)            
             time.sleep(1) 
 
-    def qsub(self,app,cid,user,np,pry):
+    def qsub(self,app,cid,user,np,pry,desc=""):
         state = 'Q'
-        jid = jobs.insert(user=user, app=app, cid=cid, state=state, 
+        jid = jobs.insert(user=user, app=app, cid=cid, state=state, description=desc,
                           time_submit=time.asctime(), np=np, priority=pry)
         db.commit()
         return str(jid)
@@ -94,14 +97,28 @@ class scheduler(object):
 
     def start_job(self,run_dir,cmd,app,jid):
         print 'starting thread to run job:',run_dir, cmd
-        os.system("cd " + run_dir + ";" + cmd )
+        global popen 
+
+        wdcmd = "cd " + run_dir + ";" + cmd
+
+        # The os.setsid() is passed in the argument preexec_fn so
+        # it's run after the fork() and before  exec() to run the shell.
+        popen = subprocess.Popen(wdcmd, stdout=subprocess.PIPE, 
+                               shell=True, preexec_fn=os.setsid) 
+
         # let user know job has ended
         outfn = app + ".out"
         with open(os.path.join(run_dir,outfn),"a") as f:
             f.write("FINISHED EXECUTION")
+
         # update state to completed
         db.jobs[jid] = dict(state='C')
         db.commit()
 
-    def stop(self,app):
-        os.system("killall " + app)
+    def stop(self):
+        # Send the signal to all the process groups
+        os.killpg(popen.pid, signal.SIGTERM)  
+
+
+
+

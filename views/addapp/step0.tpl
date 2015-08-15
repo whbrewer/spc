@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
+<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
 <script src="/static/js/flot/jquery.js"></script>
 <script>
 function checkApp(appname) {
@@ -31,7 +31,7 @@ function checkApp(appname) {
     <h1>Add new app to SciPaaS</h1>
     <form action="/addapp/step1" method="post">
         <h2>Enter name of app:</h2>
-        <input type="text" id="appname" name="appname" 
+        <input type="text" class="form-control" id="appname" name="appname" 
                onchange="checkApp(this.value)"><br>
         <input type="submit" class="btn btn-primary" id="submit" value="Next >>"><br><br>
     </form>

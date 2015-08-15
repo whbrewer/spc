@@ -1,7 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="Stylesheet" href="/static/bootstrap/css/bootstrap.min.css" />
+<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
+<style>
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+</style>
 </head>
 <body>
 
@@ -31,6 +52,12 @@ the input parameters.</p>
   <!-- Category: <input type="text" name="category" /> -->
   <font size="+1">Select a zip file:</font> 
   <input type="file" name="upload"><br>
+  <!-- see http://stackoverflow.com/questions/11235206/twitter-bootstrap-form-file-element-upload-button
+  <span type="file" class="btn btn-default btn-file" name="upload">
+  	Browse<input type="file">
+  </span>
+	-->
+  	<br>
   <input type="hidden" name="appname" value="{{appname}}">
   <input type="hidden" name="input_format" value="{{input_format}}">
   <input type="submit" value="Next >>" class="btn btn-primary"/>

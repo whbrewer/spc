@@ -22,12 +22,20 @@
 </form>
 -->
 
-<div id="output" style="width:648px;height:200px;"></div>
+<div id="output"></div>
+
+<!-- <form name="nl" role="form">
+  <div class="input-group col-xs-6" style="width:300px; padding-left:15px">
+  <span class="input-group-addon">Number of lines to display</span>
+  <input class="form-control" type="number" id="num_lines" min="10" max="100" value="24">
+</form> -->
 
 <script>
 function show(update_interval) {
     showOutput = function() {
-       jQuery('#output').load('/{{app}}/{{cid}}/tail', function(){
+       // num_lines = document.nl.num_lines.value;
+       url = '/{{app}}/{{cid}}/tail' //?num_lines='+num_lines
+       jQuery('#output').load(url, function(){
           setTimeout(showOutput, update_interval);
           // slow down updates over time to relieve burden on server
           if (update_interval < 10000) {

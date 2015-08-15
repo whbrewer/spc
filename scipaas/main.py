@@ -51,11 +51,17 @@ def confirm_form():
     global user
     check_user_var()
     app = request.forms.app
-    cid = str(uuid.uuid4())[:6]
+    # force the first string to be a letter so that the case id
+    # will be guaranteed to be a string
+    cid = random.choice(string.ascii_lowercase) + str(uuid.uuid4())[:5]
     # pass the case_id to be used by the program input parameters,
     # if case_id is defined in the input deck it will be used
     # otherwise it is ignored
     request.forms['case_id'] = cid
+    try:
+        desc = request.forms['desc']
+    except:
+        desc = "None"
     myapps[app].write_params(request.forms,user)
     # read the file
     run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
@@ -64,7 +70,8 @@ def confirm_form():
     # convert html tags to entities (e.g. < to &lt;)
     inputs = cgi.escape(inputs)
     params = { 'cid': cid, 'inputs': inputs, 'app': app,
-               'user': user, 'apps': myapps.keys(), 'np': config.np }
+               'user': user, 'apps': myapps.keys(), 'np': config.np,
+               'desc': desc }
     try:
         return template('confirm', params)
     except:
@@ -77,6 +84,7 @@ def execute():
     app = request.forms.app
     cid = request.forms.cid
     np = request.forms.np
+    desc = request.forms.desc
     #priority = request.forms.priority
     params = {}
     base_dir = os.path.join(myapps[app].user_dir,user,app,cid)
@@ -92,13 +100,13 @@ def execute():
     except:
         return template('error',err="There was an error with the preprocessor")
 
-    # start the job
+    # submit job to queue
     try:
         params['cid'] = cid
         params['app'] = app
         params['user'] = user
         priority = db(users.user==user).select(users.priority).first().priority
-        jid = sched.qsub(app,cid,user,np,priority)
+        jid = sched.qsub(app,cid,user,np,priority,desc)
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -127,6 +135,7 @@ def case():
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid
+    if not jid: jid = -1
     try:
         if re.search("/",cid):
             (u,c) = cid.split("/")
@@ -143,7 +152,8 @@ def case():
             run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
             fn = os.path.join(run_dir,myapps[app].outfn)
             output = slurp_file(fn)
-            result = db(jobs.id==jid).select().first()
+            # result = db(jobs.id==jid).select().first()
+            result = db(jobs.cid==cid).select().first()
             desc = result['description']
             shared = result['shared']
             params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid,
@@ -213,23 +223,54 @@ def slurp_file(path):
     except IOError:
         return("ERROR: the file cannot be opened or does not exist " + path)
 
+def compute_stats(path):
+    """compute statistics on output data"""
+    xoutput = ''
+    if os.path.exists(path):
+        f = open(path,'r')
+        output = f.readlines()
+        for line in output:
+            m = re.search(r'#.*$', line)
+            if m: 
+                xoutput += line
+        # this is a temporary hack for mendel
+        if path[-3:] == "hst":
+            xoutput += output[len(output)-1]
+    return xoutput
+
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
     global user
     check_user_var()
-    num_lines = 20
+    # submit num_lines as form parameter
+    # num_lines = int(request.query.num_lines)
+    # if not num_lines or num_lines < 10:
+    #     num_lines = 24
+    num_lines = config.tail_num_lines
+    progress = 0
+    complete = 0
     run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
     ofn = os.path.join(run_dir,myapps[app].outfn)
     if os.path.exists(ofn):
         f = open(ofn,'r')
         output = f.readlines()
+        # custom mendel mods for progress bar
+        for line in output:
+            m = re.search("num_generations\s=\s*(\d+)", line)
+            if m: 
+                complete = int(m.group(1))
+            if complete > 0:
+                m = re.match("generation\s=\s*(\d+)", line)
+                if m: progress = int(float(m.group(1))/float(complete)*100)
+        # end mendel mods
         myoutput = output[len(output)-num_lines:]
         xoutput = ''.join(myoutput)
         f.close()
     else:
         xoutput = 'waiting to start...'
     params = { 'cid': cid, 'contents': xoutput, 'app': app,
-               'user': user, 'fn': ofn, 'apps': myapps.keys() }
+               'user': user, 'fn': ofn, 'apps': myapps.keys(),
+               'progress': progress }
     return template('more_contents', params)
 
 @get('/')
@@ -245,13 +286,30 @@ def show_jobs():
     global user
     cid = request.query.cid
     app = request.query.app
+    n = request.query.n
+    q = request.query.q
+    starred = request.query.starred
     check_user_var()
-    result = db(jobs.user==user).select(orderby=~jobs.id)
+    if not n: 
+        n = config.jobs_num_rows
+    else:
+        n = int(n)
+    if starred:
+        result = db(jobs.user==user and jobs.shared=="True").select(orderby=~jobs.id)[:n]
+    elif q:
+        result = db(jobs.user==user and \
+            db.jobs.description.contains(q, case_sensitive=False)).select(orderby=~jobs.id)        
+    else:
+        result = db(jobs.user==user).select(orderby=~jobs.id)[:n]
     params = {}
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
+    params['sched'] = config.sched
+    params['np'] = config.np
+    params['n'] = n
+    params['num_rows'] = config.jobs_num_rows
     return template('jobs', params, rows=result)
 
 @get('/aws')
@@ -444,6 +502,20 @@ def post_shared():
     db.commit()
     redirect('/jobs')
 
+@post('/jobs/star')
+def star_case():
+    jid = request.forms.jid
+    jobs(id=jid).update_record(shared="True")
+    db.commit()
+    redirect('/jobs')
+
+@post('/jobs/unstar')
+def unstar_case():
+    jid = request.forms.jid
+    jobs(id=jid).update_record(shared="False")
+    db.commit()
+    redirect('/jobs')
+
 @post('/shared/unshare')
 def unshare_shared_item():
     if config.auth and not authorized(): redirect('/login')
@@ -476,15 +548,14 @@ def delete_job(jid):
     #    return "there was an error!"
     redirect("/jobs")
 
-@post('/proc/stop')
+@post('/jobs/stop')
 def stop_job():
     if config.auth and not authorized(): redirect('/login')
-    check_user_var()
-    app = request.query.app
-    cid = request.query.cid
+    app = request.forms.app
+    cid = request.forms.cid
     jid = request.forms.jid
-    sched.stop(jid)
-    redirect("/monitor?app="+app+"&cid="+cid+"&jid="+jid)
+    sched.stop()
+    redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
 
 @get('/<app>')
 def show_app(app):
@@ -523,7 +594,8 @@ def server_static(filepath):
 
 @get('/favicon.ico')
 def get_favicon():
-    return server_static('favicon.ico')
+    return static_file('favicon.ico', root='static')
+#    return server_static('favicon.ico')
 
 @post('/login')
 def post_login():
@@ -660,7 +732,7 @@ def check_user_var():
 def showapps():
     if config.auth and not authorized(): redirect('/login')
     result = db().select(apps.ALL)
-    params = { 'apps': myapps.keys() }
+    params = { 'apps': myapps.keys(), 'configurable': config.configurable }
     return template('apps', params, rows=result)
 
 @get('/apps/load')
@@ -803,10 +875,8 @@ def list_files():
             buf += '<a href="'+this_path+'"><img src="'+\
                    this_path+'" width=100><br>'+fn+'</a>'
         else:
-            #buf += '<a href="/more?app='+app+'&cid='+cid+\
-            #           '&filepath='+os.path.join(path,fn)+'">'+fn+'</a>'
             buf += '<a href="/more?app='+app+'&cid='+cid+\
-                       '&filepath='+os.path.join(path,fn)+' "data-toggle="modal" data-target="#myModal">'+fn+'</a>'
+                       '&filepath='+os.path.join(path,fn)+'">'+fn+'</a>'
         buf += '</td></tr>\n'
     buf += '</table>'
     params = { 'content': buf }
@@ -983,10 +1053,12 @@ def plot_interface(pltid):
     #if not result:
     #    return template("error",err="need to specify at least one datasource")
 
+    stats = compute_stats(plotpath)
+
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u,
                'ticks': ticks, 'title': title, 'plotpath': plotpath,
                'rows': list_of_plots, 'options': options, 'datadef': datadef,
-               'apps': myapps.keys() }
+               'apps': myapps.keys(), 'stats': stats }
     return template(tfn, params)
 
 @get('/mpl/<pltid>')

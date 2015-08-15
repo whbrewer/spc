@@ -23,7 +23,7 @@
                 <input type="hidden" name="app" value="{{app}}">
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="jid" value="{{jid}}">
-                <input type="submit" class="btn btn-default" value="unshare">
+                <input type="submit" class="btn btn-default" value="unstar">
             </form>
         </div>
     </div>

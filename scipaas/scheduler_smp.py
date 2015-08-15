@@ -2,6 +2,7 @@
 import threading, time, os
 import config
 from multiprocessing import Process, BoundedSemaphore, Lock
+import subprocess
 from gluino import DAL, Field
 
 #inspired from:
@@ -15,6 +16,13 @@ class scheduler(object):
     """multi-process scheduler"""
 
     def __init__(self):
+        # if any jobs marked in run state when scheduler starts 
+        # replace their state with X to mark that they have been shutdown
+        db = DAL(config.uri, auto_import=True, migrate=False, 
+                 folder=config.dbdir)
+        myset = db(db.jobs.state == 'R')
+        myset.update(state='X')
+        db.commit()
         self.sem = BoundedSemaphore(config.np) 
         self.mutex = Lock()
 
@@ -32,12 +40,12 @@ class scheduler(object):
                 self.start(j)            
             time.sleep(1) 
 
-    def qsub(self,app,cid,user,np,pry):
+    def qsub(self,app,cid,user,np,pry,desc=""):
         """queue job ... really just set state to 'Q'."""
         db = DAL(config.uri, auto_import=True, migrate=False, 
                  folder=config.dbdir)
         jid = db.jobs.insert(user=user, app=app, cid=cid, state=STATE_QUEUED, 
-                             time_submit=time.asctime(), np=np, priority=pry)
+                              description=desc, time_submit=time.asctime(), np=np, priority=pry)
         db.commit()
         db.close()
         return str(jid)
@@ -74,6 +82,8 @@ class scheduler(object):
 
     def start(self,jid):
         """start running a job by creating a new process"""
+        global p, jobs
+        myjobs = []
         db = DAL(config.uri, auto_import=True, migrate=False, 
                  folder=config.dbdir)
         user = db.jobs(jid).user
@@ -96,12 +106,15 @@ class scheduler(object):
         for i in range(np):
             self.sem.acquire()
         p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,))
+        myjobs.append(p)
+        print len(myjobs), myjobs
         p.start()
         for i in range(np):
             self.sem.release()
 
     def start_job(self,run_dir,cmd,app,jid,np):
         """this is what the separate job process runs"""
+        global popen
         #print '*** pid:', os.getpid()
         for i in range(np):
             self.sem.acquire()
@@ -109,7 +122,12 @@ class scheduler(object):
         self._set_state(jid,STATE_RUN)
         mycwd = os.getcwd()
         os.chdir(run_dir) # change to case directory
-        os.system(cmd)
+        
+        #popen = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        #subprocess.call(cmd, shell=True)
+        popen = subprocess.Popen(cmd, shell=True)
+        #os.system(cmd)
+
         # let user know job has ended
         outfn = app + ".out"
         with open(outfn,"a") as f:
@@ -131,7 +149,14 @@ class scheduler(object):
         self.mutex.release()
 
     def stop(self,app):
-        p.shutdown
+        #p.shutdown
+        #popen.terminate()
+        popen.terminate()
+        time.sleep(0.1)
+        #print p, p.is_alive()
+        #p.join()
+        #print p, p.is_alive()
+        #print '%s.exitcode = %s' % (popen.name, popen.exitcode)
         #os.system("killall " + app)
 
     def test_qfront(self):
