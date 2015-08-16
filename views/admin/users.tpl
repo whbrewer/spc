@@ -2,10 +2,9 @@
 
 <body onload="init()">
 %include('navbar')
-%include('tablesorter')
 <h1 align=center>Users</h1>
 
-<table id="tablesorter" class="tablesorter" border="0" cellpadding="0" cellspacing="1">
+<table class="table table-striped">
 <thead>
 <tr>
   <th>user</th> 
@@ -21,7 +20,7 @@
      <td> <form method="post" action="/admin/delete_user" 
                 onclick="if(confirm('confirm')) return true; return false">
           <input type="hidden" name="uid" value="{{row['id']}}">
-          <input type="submit" value="delete"></form></td>
+          <input class="btn btn-default" type="submit" value="delete"></form></td>
   </tr> 
 %end
 </tbody>

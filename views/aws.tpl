@@ -32,16 +32,16 @@ function verifyInstance(itype) {
     <td>{{c['key']}}</td>
     <td><form method="POST" action="/aws/cred/delete">
         <input type="hidden" name="id" value="{{c['id']}}">
-        <input type="submit" value="Delete"</a>
+        <input class="form-control" type="submit" value="Delete"</a>
         </form></td>
     </tr>
     %end
 %else:
     <form method="POST" action="/aws/creds">
-    <tr> <td><input type="text" name="account_id" size=12></td> 
-         <td><input type="text" name="secret" size=40></td> 
-         <td><input type="text" name="key" size=20></td> 
-         <td><input type="submit" class="btn btn-default" value="Add"></td></tr>
+    <tr> <td><input class="form-control" type="text" name="account_id" size=12></td> 
+         <td><input class="form-control" type="text" name="secret" size=40></td> 
+         <td><input class="form-control" type="text" name="key" size=20></td> 
+         <td><input class="form-control" type="submit" class="btn btn-default" value="Add"></td></tr>
     </form>
 %end
 </table>
@@ -68,9 +68,9 @@ function verifyInstance(itype) {
     %end
 
 <form method="POST" action="/aws/instance">
-<td><input type="text" size=10 name="instance" onchange="verifyInstance(this.value)"></td>
+<td><input class="form-control" type="text" size=10 name="instance" onchange="verifyInstance(this.value)"></td>
 <td>
-<select name="itype">
+<select class="form-control" name="itype">
 <option disabled role=separator>General purpose:
 <option value="t1.micro">t1.micro
 <option value="t2.micro">t2.micro
@@ -112,7 +112,7 @@ function verifyInstance(itype) {
 </td>
 
 <td>
-<select name="region">
+<select class="form-control" name="region">
 <option value="ap-northeast-1">  Asia Pacific (Tokyo)
 <option value="ap-southeast-2">  Asia Pacific (Sydney)
 <option value="ap-southeast-1">  Asia Pacific (Singapore)

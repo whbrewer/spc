@@ -148,11 +148,12 @@ class scheduler(object):
         db.close()
         self.mutex.release()
 
-    def stop(self,app):
+    def stop(self):
+        # this is currently not working
+        pass
         #p.shutdown
         #popen.terminate()
-        popen.terminate()
-        time.sleep(0.1)
+        #time.sleep(0.1)
         #print p, p.is_alive()
         #p.join()
         #print p, p.is_alive()

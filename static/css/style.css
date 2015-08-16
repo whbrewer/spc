@@ -2,6 +2,12 @@
     margin-bottom: 0;
 }
 
+.tab-content {
+    /*background-color: #dfdfdf;*/ 
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
 .abs-bottom-right {
     position: fixed;
     bottom: 5px;

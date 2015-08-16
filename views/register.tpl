@@ -1,6 +1,7 @@
-<link rel="Stylesheet" type="text/css" href="/static/css/login.css" />
-<link rel="Stylesheet" type="text/css" href="/static/css/strength.css" />
-<script src="/static/js/flot/jquery.js"></script>
+%include('header')
+
+<!-- <link rel="stylesheet" href="/static/css/login.css" /> -->
+<link rel="stylesheet" href="/static/css/strength.css" />
 <script src="/static/js/strength.js"></script>
 
 <script>
@@ -51,16 +52,16 @@ function validateForm() {
 <div class="main left">
     <h1>Register</h1>
     <form name="reg_form" action="/register" method="post" onsubmit="return validateForm()">
-        <input placeholder="username" type="text" name="user" id="user" onchange="checkUser(this.value)"><br>
-        <input placeholder="password" type="password" name="password1" id="password1"><br>
-        <input placeholder="password (again)" type="password" name="password2" id="password2"><br>
-        <input placeholder="email address" type="text" name="email" id="email" onchange="checkEmail(this.value)"><br>
-        <input type="submit" id="submit" value="Register" class="btn"><br><br>
+        <input class="form-control" placeholder="username" type="text" name="user" id="user" onchange="checkUser(this.value)" style="width:200px"><br>
+        <input class="form-control" placeholder="password" type="password" name="password1" id="password1" style="width:200px"><br><br>
+        <input class="form-control" placeholder="password (again)" type="password" name="password2" id="password2" style="width:200px"><br>
+        <input class="form-control" placeholder="email address" type="text" name="email" id="email" onchange="checkEmail(this.value)" style="width:200px"><br>
+        <input class="btn btn-primary" type="submit" id="submit" value="Register" class="btn"><br><br>
     </form>
 </div>
 
 <script>
-$(document).ready(function ($) { $('#password1').strength(); });
+  $(document).ready(function ($) { $('#password1').strength(); });
 </script>
 
 </body>

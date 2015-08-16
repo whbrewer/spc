@@ -49,7 +49,7 @@
           <div class="panel-body"><h4>{{row['description']}}</h4></div>
           <div class="panel-footer">category: {{row['category']}}</div></a>
           %if configurable:
-            <a href="/app/{{row['name']}}"><span style="font-size:150%; padding=10px" class="glyphicon glyphicon-cog"></span></a>
+            <a href="/app/{{row['name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog"></span></a>
           %end
         </div>
         <!-- <a href="/{{row['name']}}"></a> -->
@@ -65,6 +65,7 @@
    <span class="glyphicon glyphicon-plus"></span> Add
    </a>
 </div>
+<div class="col-xs-12" style="height:10px"></div>
 %end
 
 %include('footer')

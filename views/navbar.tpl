@@ -34,26 +34,20 @@
             %end
         %end
 
-        %if False:
-        <div class="navbar-right">
+        %if True:
+        <div class="navbar-right" style="margin-right: 5px;">
             <div class="btn-group">
                 <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
-                    %if defined('user'):
-                        {{user}}
-                    %else:
-                        Options
-                    %end
-                    <span class="caret"></span>
-                </a>
+                    <span class="glyphicon glyphicon-menu-hamburger"></span></a>
+
                 <ul class="dropdown-menu" role="menu">
                     <li> <a href="/account">Account</a> </li>
                     <li class="divider"> </li>
                     <li> <a href="/aws">AWS</a>
                     <li> <a href="/docker">Docker</a>
-                    <li class="disabled"> <a href="/admin">Admin</a></li>
                     %if defined('user'):
                         %if user=="admin":
-                            <li> <a href="/admin/show_users">admin</a> </li>
+                            <li> <a href="/admin/show_users">Admin</a> </li>
                         %end
                     %end
                     <li class="divider"> </li>
