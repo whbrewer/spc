@@ -14,16 +14,12 @@
       $('#'+jid).toggleClass('glyphicon-star-empty');
       $('#'+jid).toggleClass('glyphicon-star');
       $.post('/jobs/star', { 'jid': jid });
-      // window.location.reload()
-      // event.stopPropagation;
     };
 
     function unstar(jid) {
       $('#'+jid).toggleClass('glyphicon-star-empty');
       $('#'+jid).toggleClass('glyphicon-star');
       $.post('/jobs/unstar', { 'jid': jid });
-      // window.location.reload()
-      // event.stopPropagation;
     };
 </script>
 

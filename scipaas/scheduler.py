@@ -97,14 +97,12 @@ class scheduler(object):
 
     def start_job(self,run_dir,cmd,app,jid):
         print 'starting thread to run job:',run_dir, cmd
-        global popen 
-
-        wdcmd = "cd " + run_dir + ";" + cmd
-
+        global popen
         # The os.setsid() is passed in the argument preexec_fn so
         # it's run after the fork() and before  exec() to run the shell.
-        popen = subprocess.Popen(wdcmd, stdout=subprocess.PIPE, 
-                               shell=True, preexec_fn=os.setsid) 
+        popen = subprocess.Popen(cmd, cwd=run_dir, stdout=subprocess.PIPE, 
+                                 shell=True, preexec_fn=os.setsid) 
+        popen.wait()
 
         # let user know job has ended
         outfn = app + ".out"
@@ -117,7 +115,10 @@ class scheduler(object):
 
     def stop(self):
         # Send the signal to all the process groups
-        os.killpg(popen.pid, signal.SIGTERM)  
+        try: # if running
+            os.killpg(popen.pid, signal.SIGTERM) 
+        except: # if not running
+            return -1
 
 
 

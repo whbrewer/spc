@@ -52,7 +52,7 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
                 <input type="hidden" name="filepath" value="{{plotpath}}">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-list-alt"></span> Show Data</button>
+                <button class="btn btn-default"><span class="glyphicon glyphicon-list-alt"></span> Plot Data</button>
             </form>    
             %end            
             %if defined('jid'):

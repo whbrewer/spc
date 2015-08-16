@@ -1,3 +1,9 @@
+
+To start Mendel, run the start_server script
+
+--
+Information about SciPaaS
+
 SciPaaS is both a platform and framework for rapidly deploying scientific applications to the cloud.
 
 -----------

@@ -4,7 +4,7 @@
 if $(curl --output /dev/null --silent --head --fail http://localhost:8580)
 then
     echo "SERVER ALREADY RUNNING"
-    open 'http://localhost:8580/mendel'
+    open 'http://0.0.0.0:8580/mendel'
     exit
 fi 
 
@@ -16,16 +16,17 @@ echo "STARTING SERVER PLEASE WAIT..."
 
 # test if the server is up
 var=0
-until $(curl --output /dev/null --silent --head --fail http://localhost:8580); do
+until $(curl --output /dev/null --silent --head --fail http://0.0.0.0:8580); do
     printf '.'
     sleep 1
     if ((++var >= 10)); then
         echo
-        echo "TIMEOUT REACHED... THERE IS A PROBLEM STARTING THE SERVER" 
-        exit
+        echo "TIMEOUT REACHED... THERE MAY BE A PROBLEM STARTING THE SERVER" 
+        echo "but trying anyway to visit the site http://0.0.0.0:8580/mendel"
+        read option
     fi 
 done
 
 # open the site in the web browser
-open 'http://localhost:8580/mendel'
+open 'http://0.0.0.0:8580/mendel'
 

@@ -537,13 +537,9 @@ def delete_job(jid):
     if True:
         # this will fail if the app has been removed from scipaas
         path = os.path.join(myapps[app].user_dir,user,app,cid)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
-        # now delete record from database
-        #jobs(id==jid).delete()
+        if os.path.isdir(path): shutil.rmtree(path)
+        sched.stop()
         sched.qdel(jid)
-        #del db.jobs[jid]
-        #db.commit()
     #except:
     #    return "there was an error!"
     redirect("/jobs")
