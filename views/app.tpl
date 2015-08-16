@@ -3,7 +3,7 @@
 
 <h1>{{app}} app</h1>
 
-<table id="clickable" border=0>
+<table class="table table-striped">
   <tr>
       <td>Name:</td> 
       <td><a href="/app/{{rows['name']}}"></a>{{rows['name']}}</td></tr>
@@ -32,19 +32,40 @@
 
 <div class="btn-group">
     <form class="btn-group" method="post" action="/app/edit/{{rows['id']}}">
-        <input type="submit" class="btn btn-default" value="edit {{app}}">
+        <input type="submit" class="btn btn-default" value="Edit {{app}}">
         <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="hidden" name="edit" value="True">
     </form>
     <form class="btn-group" method="get" action="/plots/edit">
         <input type="hidden" name="app" value="{{rows['name']}}">
-        <input type="submit" class="btn btn-default" value="plot configuration">
+        <input type="submit" class="btn btn-default" value="Plot configuration">
     </form>
-    <form class="btn-group" method="post" action="/app/delete/{{rows['id']}}">
-        <input type="hidden" name="appname" value="{{rows['name']}}">
-        <input type="submit" class="btn btn-default" value="delete {{app}}" 
-        onclick="if(confirm('are you sure?')) return true; return false">
-    </form>
+    <button type="button" class="btn btn-default" data-toggle="modal" 
+            data-target="#dModal">
+            <span class="glyphicon glyphicon-trash"></span> Delete {{app}}</button>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="dModal" tabindex="-1" role="dialog" 
+     aria-labelledby="deleteModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form class="form-horizontal" method="post" action="/app/delete/{{rows['id']}}">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"> 
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="deleteModal">Delete App {{rows['name']}}?</h4>
+                    <input type="hidden" name="app" value="{{app}}">
+                    <input type="hidden" name="cid" value="{{cid}}">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 %include('footer')

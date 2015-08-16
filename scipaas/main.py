@@ -205,6 +205,10 @@ def inputs():
         run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
         fn = os.path.join(run_dir,myapps[app].simfn)
         inputs = slurp_file(fn)
+        # the following line will convert HTML chars like > to entities &gt;
+        # this is needed so that XML input files will show paramters labels
+        inputs = cgi.escape(inputs).encode('ascii', 'xmlcharrefreplace')
+
         params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u,
                    'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
@@ -755,6 +759,8 @@ def load_apps():
 
 @post('/app/edit/<appid>')
 def app_edit(appid):
+    global user
+    if config.auth and not authorized(): redirect('/login')
     cid = request.forms.cid
     app = request.forms.app
     result = db(apps.name==app).select().first()

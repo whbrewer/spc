@@ -3,25 +3,23 @@
 
 <h1>{{app}} app</h1>
 
-<form method="post" action="/app/save/{{rows['id']}}">
-<table class="table table-striped" border=0>
-  <tr>
-      <td>Name:</td> 
-      <td><a href="/app/{{rows['name']}}"></a>{{rows['name']}}</td></tr>
+<div class="container-fluid">
+<form role="form" class="form-horizontal" method="post" action="/app/save/{{rows['id']}}">
+
+<table>
   </tr>
   <tr>
       <td>Category:</td>
-      <td><input type="text" name="category"
+      <td><input class="form-control" type="text" name="category"
                  value="{{rows['category']}}"></td>
   </tr>
   <tr>
       <td>Description:</th>
-      <td><textarea name="description" cols="60" rows="4">{{rows['description']}}
-          </textarea></td>
+      <td><textarea class="form-control" name="description" cols="60" rows="4">{{rows['description']}}</textarea></td>
   </tr>
   <tr>
       <td>Input format:</td>
-      <td><select name="input_format">
+      <td><select class="form-control" name="input_format">
           %opts = {'namelist':'namelist.input','ini':'INI file','xml':'XML file'}
           %for key, value in opts.iteritems():
               %if key == rows['input_format']:
@@ -35,12 +33,12 @@
   </tr>
   <tr>
       <td>Language:</td>
-      <td><input type="text" name="language" 
+      <td><input class="form-control" type="text" name="language" 
                  value="{{rows['language']}}"></td> 
   </tr>
   <tr>
       <td>Command:</td> 
-      <td><input type="text" name="command" size="40"
+      <td><input class="form-control" type="text" name="command" size="40"
                  value="{{rows['command']}}"></td> 
   </tr>
 </table>
@@ -54,5 +52,6 @@
     </div>
 </div>
 </form>
+</div>
 
 %include('footer')

@@ -44,10 +44,13 @@
     <div class="row">
       % for row in rows:
         <div class="panel panel-primary">
-          <a style="text-decoration:none" href="/{{row['name']}}">
           <div class="panel-heading"><h2>{{row['name']}}</h2></div>
+          <a style="text-decoration:none" href="/{{row['name']}}">
           <div class="panel-body"><h4>{{row['description']}}</h4></div>
-          <div class="panel-footer">category: {{row['category']}}</div>
+          <div class="panel-footer">category: {{row['category']}}</div></a>
+          %if configurable:
+            <a href="/app/{{row['name']}}"><span style="font-size:150%; padding=10px" class="glyphicon glyphicon-cog"></span></a>
+          %end
         </div>
         <!-- <a href="/{{row['name']}}"></a> -->
       <br>

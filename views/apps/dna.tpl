@@ -11,10 +11,12 @@
 Continue <em class="glyphicon glyphicon-forward"></em>
 </button>
 
+<div class="container-fluid">
 <h2>Enter string of DNA to be analyzed:</h2>
-<textarea name="dna" rows="4" cols="80">
+<textarea class="form-control" name="dna" rows="4" cols="80">
 {{dna}}
 </textarea>
+</div>
 
 </form>
 %include('footer')

@@ -31,9 +31,11 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
         <td>{{key}}</td> <td>{{value}}</td> 
         <td><select class="form-control" name="html_tags">
             <option value="text">text
+            <option value="number">number
             <option value="hidden">hidden
             <option value="select">select
             <option value="checkbox">checkbox
+            <option value="textarea">textarea
         </select></td>
         <!--
         <td><select name="data_type">
