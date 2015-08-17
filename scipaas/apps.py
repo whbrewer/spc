@@ -51,6 +51,7 @@ class app(object):
         f.write("<body onload=\"init()\">\n")
         f.write("%include('navbar')\n")
         f.write("%include('apps/alert')\n")
+        f.write("<div class=\"container-fluid\">\n")
         f.write("<form class=\"form-horizontal\" action=\"/confirm\" method=\"post\" novalidate>\n")
         f.write("<input type=\"hidden\" name=\"app\" value=\"{{app}}\">\n")
         f.write("%if defined('cid'):\n")
@@ -77,10 +78,15 @@ class app(object):
         # tabs
         f.write("<ul class=\"nav nav-pills\" role=\"tablist\">\n")
         #f.write("<ul class=\"nav nav-tabs\" role=\"tablist\">\n")
+        first_tab = True
         for block in self.blockorder:
-            f.write("\t<li role=\"presentation\" class=\"active\">")
+            if first_tab: 
+                f.write("\t<li role=\"presentation\" class=\"active\">\n")
+                first_tab = False
+            else:
+                f.write("\t<li role=\"presentation\">\n")
             f.write("\t\t<a href=\"#" + block + "\" aria-controls=\"home\" role=\"tab\"")
-            f.write("\t\t   data-toggle=\"tab\">Basic</a>\n")
+            f.write(" data-toggle=\"tab\">" + block + "</a>\n")
             f.write("\t</li>\n")
         f.write("</ul>\n")
         f.write("<div class=\"tab-content\">\n")

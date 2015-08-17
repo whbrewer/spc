@@ -27,7 +27,19 @@
 // }
 </script>
 
-<h1>Installed Apps</h1>
+<div class="row">
+  <div class="col-sm-6">
+    <h1>Installed Apps</h1>
+  </div>
+  %if configurable:
+  <div class="col-sm-6" align="right">
+   <a href="/addapp" class="btn btn-primary">
+     <span class="glyphicon glyphicon-plus"></span> Add
+   </a>
+ </div>
+ <!-- <div class="col-xs-12" style="height:10px"></div> -->
+ %end
+</div>
 
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53
@@ -58,14 +70,5 @@
     </div>
   </div>
 </div>
-
-%if configurable:
-<div>
-   <a href="/addapp" class="btn btn-default">
-   <span class="glyphicon glyphicon-plus"></span> Add
-   </a>
-</div>
-<div class="col-xs-12" style="height:10px"></div>
-%end
 
 %include('footer')

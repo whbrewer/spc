@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
+%include('header')
+<!-- <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/static/css/bootstrap-tagsinput.css">
+<script src="/static/js/bootstrap-tagsinput.min.js"></script> -->
 </head>
 
 <body>
@@ -22,7 +25,7 @@
 <tr>
 <td><font size="+1">Tags:</font><br>
     <font size="-1">e.g. Bioinformatics</font></td>
-<td><input class="form-control" type="text" name="category"></td>
+<td><input class="form-control" id="category" name="category" data-role="tagsinput" type="text" ></td>
 <!--
 <td><select name="category" onchange="somefn()">
    <option SELECTED value="bioinformatics">Bioinformatics

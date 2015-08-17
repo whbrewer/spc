@@ -56,6 +56,18 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="deleteModal">Delete App {{rows['name']}}?</h4>
+                    <!-- <div class="form-group">
+                      <label for="del_app_dir">
+                        Delete app from disk?
+                      </label>
+                      <input type="checkbox" id="del_app_dir" name="del_app_dir"/>
+                    </div>
+                    <div class="form-group">
+                      <label for="del_app_cases">
+                        Delete {{rows['name']}} cases from disk?
+                      </label>
+                      <input type="checkbox" id="del_app_cases" name="del_app_cases"/>
+                    </div> -->
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="cid" value="{{cid}}">
                 </div>

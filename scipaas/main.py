@@ -786,6 +786,8 @@ def delete_app(appid):
     global user
     check_user_var()
     appname = request.forms.appname
+    del_app_dir = request.forms.del_app_dir
+    del_app_cases = request.forms.del_app_cases
     uid = apps(appid).uid
     owner = users(id=uid).user
     if user == owner or user == 'admin':
@@ -794,10 +796,11 @@ def delete_app(appid):
         a.delete(appid)
     else:
         return template("error", err="wrong user. must be owner or admin")
-    # delete files
-    path = os.path.join(config.apps_dir,appname)
-    if os.path.isdir(path):
-        shutil.rmtree(path)
+    # delete app directory
+    if del_app_dir == "on":
+        path = os.path.join(config.apps_dir,appname)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
     redirect("/apps")
 
 @get('/app/<app>')
