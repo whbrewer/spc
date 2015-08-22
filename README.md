@@ -12,11 +12,11 @@ QUICKSTART
 
 * To create and initialize the database which SciPaaS uses: 
   
-      sp init
+      spx init
 
 * To start running the web server: 
 
-      sp go
+      spx go
 
 * To run the dna case in scipaas:
 

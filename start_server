@@ -4,13 +4,13 @@
 if $(curl --output /dev/null --silent --head --fail http://localhost:8580)
 then
     echo "SERVER ALREADY RUNNING"
-    open 'http://0.0.0.0:8580/mendel'
+    open 'http://0.0.0.0:8580/'
     exit
 fi 
 
 # start the server
 cd "$( dirname "${BASH_SOURCE[0]}" )"
-./sp go >& log &
+./spx go >& log &
 pid=$!
 echo "STARTING SERVER PLEASE WAIT..."
 
@@ -22,11 +22,11 @@ until $(curl --output /dev/null --silent --head --fail http://0.0.0.0:8580); do
     if ((++var >= 10)); then
         echo
         echo "TIMEOUT REACHED... THERE MAY BE A PROBLEM STARTING THE SERVER" 
-        echo "but trying anyway to visit the site http://0.0.0.0:8580/mendel"
+        echo "but trying anyway to visit the site http://0.0.0.0:8580/"
         read option
     fi 
 done
 
 # open the site in the web browser
-open 'http://0.0.0.0:8580/mendel'
+open 'http://0.0.0.0:8580/'
 

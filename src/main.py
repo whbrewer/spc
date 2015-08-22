@@ -6,7 +6,7 @@ from bottle import *
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib
-# other SciPaaS modules
+# other local modules
 import config, uploads, process
 import scheduler, scheduler_smp
 import apps as appmod
@@ -539,7 +539,7 @@ def delete_job(jid):
     cid = request.forms.cid
     #try:
     if True:
-        # this will fail if the app has been removed from scipaas
+        # this will fail if the app has been removed 
         path = os.path.join(myapps[app].user_dir,user,app,cid)
         if os.path.isdir(path): shutil.rmtree(path)
         sched.stop()
@@ -566,12 +566,15 @@ def show_app(app):
     s = request.environ.get('beaker.session')
     s[APP_SESSION_KEY] = app
     # parameters for return template
-    params = myapps[app].params
-    params['cid'] = ''
-    params['app'] = app
-    params['user'] = user
-    params['apps'] = myapps
-    return template(os.path.join(config.apps_dir,app), params)
+    try:
+        params = myapps[app].params
+        params['cid'] = ''
+        params['app'] = app
+        params['user'] = user
+        params['apps'] = myapps
+        return template(os.path.join(config.apps_dir,app), params)
+    except:
+        return "ERROR: Problem loading app... please delete and reinstall."
 
 @get('/login')
 @get('/login/<referrer>')
@@ -670,7 +673,7 @@ def post_register():
         # email admin user
         try:
             server = smtplib.SMTP('localhost')
-            message = user + " just registered to scipaas " + email
+            message = user + " just registered " + email
             admin_email = db(users.user=="admin").select(users.email).first()
             server.sendmail('admin@scipaas.com', [admin_email], message)
             server.quit()
@@ -721,7 +724,7 @@ def app_exists(appname):
     else: return 'false'
 
 def check_user_var():
-    # this check is because user is global var when restarting scipaas
+    # this check is because user is global var when restarting 
     # user does not exist so return... need to implement better solution
     # such as using a session variable to check for user
     try: user
@@ -751,9 +754,12 @@ def load_apps():
         preprocess = row['preprocess']
         postprocess = row['postprocess']
         input_format = row['input_format']
-        print 'loading: %s (id: %s)' % (name,appid)
-        myapps[name] = app_instance(input_format,name,preprocess,postprocess)
-        myapps[name].appid = appid
+        try:
+            print 'loading: %s (id: %s)' % (name,appid)
+            myapps[name] = app_instance(input_format,name,preprocess,postprocess)
+            myapps[name].appid = appid
+        except:
+            print 'ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name,appid)
     default_app = name # simple soln - use last app read from DB
     return True
 
@@ -1188,6 +1194,30 @@ def zipget():
         print "URL Error:", e.reason, url
     status = "file downloaded"
     redirect("/aws?status="+status)
+
+@get('/newaddapp')
+def naddapp():
+    global user
+    check_user_var()
+    # ask for app name
+    return template('addapp/nstep0')
+
+@post('newaddapp')
+def pnaddapp():
+    appname = request.forms.appname
+    input_format = request.forms.input_format
+    category = request.forms.category
+    language = request.forms.language
+    description = request.forms.description
+    command = request.forms.command
+    preprocess = request.forms.preprocess
+    postprocess = request.forms.postprocess
+    myapp = app_instance(input_format,appname)
+    inputs,_,_ = myapp.read_params()
+    print "inputs:", inputs
+    params = { "appname": appname }
+    return template('addapp/step4', params, inputs=inputs,
+                                    input_format=input_format)
 
 @get('/addapp')
 @post('/addapp/<step>')

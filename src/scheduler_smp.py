@@ -133,7 +133,7 @@ class scheduler(object):
         with open(outfn,"a") as f:
             f.write("FINISHED EXECUTION")
         # update state to 'C' for completed
-        os.chdir(mycwd) # return to SciPaaS root directory
+        os.chdir(mycwd) 
         self._set_state(jid,STATE_COMPLETED)
         for i in range(np):
             self.sem.release()

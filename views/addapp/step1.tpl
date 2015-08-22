@@ -84,6 +84,9 @@
 -->
 
 </table>
+
+<p>Note: after submitting here, app will be written to database.</p>
+
 <br><input type="submit" class="btn btn-primary">
 </form>
 </div>
