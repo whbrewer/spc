@@ -7,11 +7,12 @@
 <body>
 
 <div class="container-fluid">
-<h1>Step 4</h1>
+<h3>Configure inputs: step 3 of 3</h3>
+<br>
 
-<h2>parsed inputs &ndash; assign html input types</h2>
+<h4>Parsed inputs &ndash; assign html input types</h4>
 
-<form method="post" action="/addapp/step5">
+<form method="post" action="/inputs/edit/end">
 <input type="submit" class="btn btn-primary" value="Next >>">
 <hr>
 How to represent a true Boolean value (e.g. T, True, true, 1)?

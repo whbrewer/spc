@@ -5,7 +5,7 @@ from bottle import *
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
-import cgi, urllib2, json, smtplib
+import cgi, urllib2, json, smtplib, time
 # other local modules
 import config, uploads, process
 import scheduler, scheduler_smp
@@ -574,7 +574,7 @@ def show_app(app):
         params['apps'] = myapps
         return template(os.path.join(config.apps_dir,app), params)
     except:
-        return "ERROR: Problem loading app... please delete and reinstall."
+        redirect('/app/'+app)
 
 @get('/login')
 @get('/login/<referrer>')
@@ -791,7 +791,7 @@ def app_save(appid):
 def delete_app(appid):
     global user
     check_user_var()
-    appname = request.forms.appname
+    appname = request.forms.app
     del_app_dir = request.forms.del_app_dir
     del_app_cases = request.forms.del_app_cases
     uid = apps(appid).uid
@@ -1221,24 +1221,14 @@ def pnaddapp():
 
 @get('/addapp')
 @post('/addapp/<step>')
-def addapp(step="step0"):
+def addapp(step="step1"):
     global user
     check_user_var()
     appname = request.forms.appname
     input_format = request.forms.input_format
     # ask for app name
-    if step == "step0":
-        return template('addapp/step0')
-    # ask user to configure app
-    elif step == "step1":
-        if len(appname) < 3:
-            return template('error',err="name must be at least 3 characters")
-        elif app_exists(appname) == 'true':
-            return template('error',err="app already exists")
-        else:
-            params = {'appname': appname, 'user': user }
-            return template('addapp/step1',params)
-    # write app configuration to db
+    if step == "step1":
+        return template('addapp/addapp')
     elif step == "step2":
         category = request.forms.category
         language = request.forms.language
@@ -1252,10 +1242,18 @@ def addapp(step="step0"):
         uid = users(user=user).id
         a.create(appname, description, category, language,
                  input_format, command, preprocess, postprocess, uid)
-        params = {'appname': appname, 'input_format': input_format }
-        return template('addapp/step2',params)
+        redirect('/app/'+appname)
+
+@post('/inputs/edit/<step>')
+def edit_inputs(step="upload"):
     # upload zip file and return a text copy of the input file
-    elif step == "step3":
+    if step == "upload":
+        appname = request.forms.appname
+        input_format = request.forms.input_format
+        params = {'appname': appname, 'input_format': input_format}
+        return template('addapp/inputs_upload',params)
+    if step == "parse":
+        input_format = request.forms.input_format
         appname    = request.forms.appname
         upload     = request.files.upload
         if not upload:
@@ -1272,15 +1270,18 @@ def addapp(step="step0"):
                 return template('addapp/error', err=msg)
             upload.save(save_path)
             # before unzip file check if directory exists
+            # if so rename it to the same name but add current date and time
             if os.path.isdir(save_path_dir):
-                msg =  'app folder already exists in apps dir.<br>'
-                msg += 'click "apps" delete the app and retry'
-                os.remove(save_path)
-                return template('addapp/error', err=msg)
-            else:
-                u = uploads.uploader()
-                u.unzip(save_path)
-                msg = u.verify(save_path_dir,name)
+                timestr = time.strftime("%Y%m%d-%H%M%S")
+                shutil.move(save_path_dir,save_path_dir+"."+timestr)
+                #msg =  'app folder already exists in apps dir.<br>'
+                #msg += 'click "apps" delete the app and retry'
+                #os.remove(save_path)
+                #return template('addapp/error', err=msg)
+            #else:
+            u = uploads.uploader()
+            u.unzip(save_path)
+            msg = u.verify(save_path_dir,name)
             # remove zip file
             os.remove(save_path)
             # return the contents of the input file
@@ -1294,27 +1295,26 @@ def addapp(step="step0"):
                 fn = appname + ".xml"
             else:
                 return "ERROR: input_format not valid: ", input_format
-
             path = os.path.join(config.apps_dir,appname,fn)
             params = {'fn': fn, 'contents': slurp_file(path),
                       'appname': appname, 'input_format': input_format }
-            return template('addapp/step3', params)
+            return template('addapp/inputs_parse', params)
         except IOError:
             return "IOerror:", IOError
         else:
             return "ERROR: must be already a file"
     # show parameters with options how to tag and describe each parameter
-    elif step == "step4":
+    elif step == "create_view":
         input_format = request.forms.input_format
         appname = request.forms.appname
         myapp = app_instance(input_format,appname)
         inputs,_,_ = myapp.read_params()
         print "inputs:", inputs
         params = { "appname": appname }
-        return template('addapp/step4', params, inputs=inputs,
+        return template('addapp/inputs_create_view', params, inputs=inputs,
                                         input_format=input_format)
     # create a template in the views/apps folder
-    elif step == "step5":
+    elif step == "end":
         appname = request.forms.get('appname')
         html_tags = request.forms.getlist('html_tags')
         data_type = request.forms.getlist('data_type')
@@ -1330,7 +1330,7 @@ def addapp(step="step0"):
                                      desc=key_desc):
             load_apps()
             params = { "appname": appname, "port": config.port }
-            return template('addapp/step5', params)
+            return template('addapp/inputs_end', params)
         else:
             return "ERROR: there was a problem when creating view"
     else:

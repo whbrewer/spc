@@ -6,15 +6,15 @@
         <div class="navbar-left"> 
             <div class="btn-group">
                 <button type="submit" class="btn btn-default" formaction="/apps">
-                     <span class="glyphicon glyphicon-th-large"></span> Apps </button>
+                    <span class="glyphicon glyphicon-th-large"></span> Apps </button>
                 %if defined('app'):
                 %if app != '':
                 <button type="submit" class="btn btn-default" formaction="/start">
-                     <span class="glyphicon glyphicon-play-circle"></span> Start </button>
+                    <span class="glyphicon glyphicon-play-circle"></span> Start </button>
                 %end
                 %end
                 <button type="submit" class="btn btn-default" formaction="/jobs">
-                     <span class="glyphicon glyphicon-tasks"></span> Jobs </button>
+                    <span class="glyphicon glyphicon-tasks"></span> Jobs </button>
             </div>
         </div> 
 

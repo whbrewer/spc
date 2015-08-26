@@ -8,9 +8,11 @@
 <body>
 
 <div class="container-fluid">
-<h1>Step 2</h1>
+<h3>Configure inputs: step 1 of 3</h3>
 
-<h2>Upload zip file</h2>
+<br>
+
+<h4>Upload zip file</h4>
 
 <font size="+1">
 <p>Upload a Zip file named <b><tt>{{appname}}.zip</tt></b>,
@@ -29,7 +31,7 @@ which contains the following files:</p>
 the input parameters.</p>
 </font>
 
-<form action="/addapp/step3" method="post" enctype="multipart/form-data">
+<form action="/inputs/edit/parse" method="post" enctype="multipart/form-data">
   <!-- Category: <input type="text" name="category" /> -->
   <font size="+1">Select a zip file:</font> 
 

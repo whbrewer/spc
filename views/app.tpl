@@ -8,10 +8,10 @@
       <td>Name:</td> 
       <td><a href="/app/{{rows['name']}}"></a>{{rows['name']}}</td></tr>
   </tr>
-  <tr>
+  <!-- <tr>
       <td>Category:</td>
       <td>{{rows['category']}}</td>
-  </tr>
+  </tr> -->
   <tr>
       <td>Description:</th>
       <td>{{rows['description']}}</td>
@@ -20,29 +20,46 @@
       <td>Input format:</td>
       <td>{{rows['input_format']}}</td> 
   </tr>
-  <tr>
+  <!-- <tr>
       <td>Language:</td>
       <td>{{rows['language']}}</td> 
-  </tr>
+  </tr> -->
   <tr>
       <td>Command:</td> 
       <td>{{rows['command']}}</td> 
   </tr>
 </table>
 
+<div class="container-fluid">
+
 <div class="btn-group">
+    <!-- <span class="glyphicon glyphicon-trash"></span> -->
     <form class="btn-group" method="post" action="/app/edit/{{rows['id']}}">
         <input type="submit" class="btn btn-default" value="Edit {{app}}">
         <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="hidden" name="edit" value="True">
     </form>
-    <form class="btn-group" method="get" action="/plots/edit">
-        <input type="hidden" name="app" value="{{rows['name']}}">
-        <input type="submit" class="btn btn-default" value="Plot configuration">
-    </form>
     <button type="button" class="btn btn-default" data-toggle="modal" 
             data-target="#dModal">
             <span class="glyphicon glyphicon-trash"></span> Delete {{app}}</button>
+</div>
+
+<div class="btn-group">       
+    <form class="btn-group" method="post" action="/inputs/edit/upload">
+        <input type="submit" class="btn btn-default" value="Configure Inputs">
+        <input type="hidden" name="appname" value="{{rows['name']}}">
+        <input type="hidden" name="input_format" value="{{rows['input_format']}}">
+    </form>
+    <form class="btn-group" method="post" action="/exe">
+        <input type="hidden" name="app" value="{{rows['name']}}">
+        <input type="hidden" name="input_format" value="{{rows['input_format']}}">
+        <input type="submit" class="btn btn-default" value="Configure Executable">
+    </form>
+    <form class="btn-group" method="get" action="/plots/edit">
+        <input type="hidden" name="app" value="{{rows['name']}}">
+        <input type="submit" class="btn btn-default" value="Configure Plots">
+    </form>
+
 </div>
 
 <!-- Delete Modal -->
@@ -56,18 +73,20 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="deleteModal">Delete App {{rows['name']}}?</h4>
-                    <!-- <div class="form-group">
-                      <label for="del_app_dir">
-                        Delete app from disk?
-                      </label>
-                      <input type="checkbox" id="del_app_dir" name="del_app_dir"/>
+                    <div class="modal-body">
+                      <div class="form-group">
+                        <label for="del_app_dir">
+                          Delete disk files stored in apps folder?
+                        </label>
+                        <input type="checkbox" id="del_app_dir" name="del_app_dir"/>
+                      </div>
+                      <!-- <div class="form-group">
+                        <label for="del_app_cases">
+                          Delete {{rows['name']}} cases from disk?
+                        </label>
+                        <input type="checkbox" id="del_app_cases" name="del_app_cases"/>
+                      </div> -->
                     </div>
-                    <div class="form-group">
-                      <label for="del_app_cases">
-                        Delete {{rows['name']}} cases from disk?
-                      </label>
-                      <input type="checkbox" id="del_app_cases" name="del_app_cases"/>
-                    </div> -->
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="cid" value="{{cid}}">
                 </div>
@@ -78,6 +97,8 @@
             </form>
         </div>
     </div>
+</div>
+
 </div>
 
 %include('footer')

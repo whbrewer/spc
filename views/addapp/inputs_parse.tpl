@@ -6,12 +6,13 @@
 <body>
 
 <div class="container-fluid">
-<h1>Step 3</h1>
-<h2>parse input file</h2>
-<p>choose how to parse this file:</p>
+<h3>Configure inputs: step 2 of 3</h3><br>
 
+<h4>Parse input file</h4>
 
-<form method="post" action="/addapp/step4">
+<p>Choose how to parse this file:</p>
+
+<form method="post" action="/inputs/edit/create_view">
     <select class="form-control" style="width:auto" name="input_format">
         %opts = {'namelist':'namelist.input','ini':'INI file','xml':'XML file'}
         %for key, value in opts.iteritems():
