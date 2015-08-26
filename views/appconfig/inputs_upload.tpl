@@ -12,28 +12,27 @@
 
 <br>
 
-<h4>Upload zip file</h4>
+<h4>Upload input file</h4>
 
 <font size="+1">
-<p>Upload a Zip file named <b><tt>{{appname}}.zip</tt></b>,
-which contains the following files:</p>
-<ol>
+<p>Upload 
 %if input_format == "namelist":
-    <li> an input file named <b><tt>{{appname}}.in</tt></b>
+    an input file named <b><tt>{{appname}}.in</tt></b>
+%elif input_format == "ini":
+    an input file named <b><tt>{{appname}}.ini</tt></b>
+%elif input_format == "xml":
+    an input file named <b><tt>{{appname}}.xml</tt></b>
 %else:
-    <li> an input file named <b><tt>{{appname}}.ini</tt></b>
+    an input file named <b><tt>{{appname}}.json</tt></b>
 %end
-<li> an executable file called <b><tt>{{appname}}</tt></b>, 
-     along  with any necessary supporting files 
-</ol>
+</p>
 
 <p>Your app must be able to read and parse a text input file with
 the input parameters.</p>
 </font>
 
-<form action="/inputs/edit/parse" method="post" enctype="multipart/form-data">
-  <!-- Category: <input type="text" name="category" /> -->
-  <font size="+1">Select a zip file:</font> 
+<form action="/appconfig/inputs/parse" method="post" enctype="multipart/form-data">
+  <font size="+1">Select a file:</font> 
 
   <input type="file" class="btn btn-default btn-file" name="upload"><br>
   <!-- see http://stackoverflow.com/questions/11235206/twitter-bootstrap-form-file-element-upload-button

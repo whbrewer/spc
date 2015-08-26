@@ -262,7 +262,7 @@ span.round-tab:hover {
                 </ul>
             </div>
 
-            <form action="/addapp/step2" method="post">
+            <form action="/addapp" method="post">
 
             <div class="tab-content">
                 <div class="tab-pane active" role="tabpanel" id="step1">
@@ -325,9 +325,9 @@ span.round-tab:hover {
                     <td><font size="+1">Input format:</font></td>
                     <td><select class="form-control" name="input_format"
                                 style="width:auto">
-                       <option SELECTED value="namelist">Namelist
-                       <option value="ini">INI
-                       <option value="xml">XML
+                        <option SELECTED value="namelist">Namelist
+                        <option value="ini">INI
+                        <option value="xml">XML
                     </select></td>
                     </tr>
 

@@ -1195,95 +1195,59 @@ def zipget():
     status = "file downloaded"
     redirect("/aws?status="+status)
 
-@get('/newaddapp')
-def naddapp():
+@get('/addapp')
+def getaddapp():
+    return template('appconfig/addapp')
+
+@post('/addapp')
+def addapp():
     global user
     check_user_var()
-    # ask for app name
-    return template('addapp/nstep0')
-
-@post('newaddapp')
-def pnaddapp():
     appname = request.forms.appname
     input_format = request.forms.input_format
+    # ask for app name
     category = request.forms.category
     language = request.forms.language
     description = request.forms.description
     command = request.forms.command
     preprocess = request.forms.preprocess
     postprocess = request.forms.postprocess
-    myapp = app_instance(input_format,appname)
-    inputs,_,_ = myapp.read_params()
-    print "inputs:", inputs
-    params = { "appname": appname }
-    return template('addapp/step4', params, inputs=inputs,
-                                    input_format=input_format)
+    # put in db
+    a = appmod.app()
+    #print "user:",user
+    uid = users(user=user).id
+    a.create(appname, description, category, language,
+             input_format, command, preprocess, postprocess, uid)
+    redirect('/app/'+appname)
 
-@get('/addapp')
-@post('/addapp/<step>')
-def addapp(step="step1"):
-    global user
-    check_user_var()
-    appname = request.forms.appname
-    input_format = request.forms.input_format
-    # ask for app name
-    if step == "step1":
-        return template('addapp/addapp')
-    elif step == "step2":
-        category = request.forms.category
-        language = request.forms.language
-        description = request.forms.description
-        command = request.forms.command
-        preprocess = request.forms.preprocess
-        postprocess = request.forms.postprocess
-        # put in db
-        a = appmod.app()
-        #print "user:",user
-        uid = users(user=user).id
-        a.create(appname, description, category, language,
-                 input_format, command, preprocess, postprocess, uid)
-        redirect('/app/'+appname)
-
-@post('/inputs/edit/<step>')
+@post('/appconfig/inputs/<step>')
 def edit_inputs(step="upload"):
     # upload zip file and return a text copy of the input file
     if step == "upload":
         appname = request.forms.appname
         input_format = request.forms.input_format
         params = {'appname': appname, 'input_format': input_format}
-        return template('addapp/inputs_upload',params)
+        return template('appconfig/inputs_upload',params)
     if step == "parse":
         input_format = request.forms.input_format
         appname    = request.forms.appname
         upload     = request.files.upload
         if not upload:
-            return template('addapp/error',
+            return template('appconfig/error',
                    err="no file selected. press back button and try again")
         name, ext = os.path.splitext(upload.filename)
-        if ext not in ('.zip','.txt'):
+        if ext not in ('.in','.ini','.xml','.json',):
             return 'ERROR: File extension not allowed.'
         try:
             save_path_dir = os.path.join(appmod.apps_dir,name)
-            save_path = save_path_dir + ext
+            if not os.path.exists(save_path_dir):
+                os.makedirs(save_path_dir)
+            save_path = os.path.join(save_path_dir,name) + ext
             if os.path.isfile(save_path):
-                msg = 'zip file exists already. Please remove first.'
-                return template('addapp/error', err=msg)
-            upload.save(save_path)
-            # before unzip file check if directory exists
-            # if so rename it to the same name but add current date and time
-            if os.path.isdir(save_path_dir):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
-                shutil.move(save_path_dir,save_path_dir+"."+timestr)
-                #msg =  'app folder already exists in apps dir.<br>'
-                #msg += 'click "apps" delete the app and retry'
-                #os.remove(save_path)
-                #return template('addapp/error', err=msg)
-            #else:
-            u = uploads.uploader()
-            u.unzip(save_path)
-            msg = u.verify(save_path_dir,name)
-            # remove zip file
-            os.remove(save_path)
+                shutil.move(save_path,save_path+"."+timestr)
+            upload.save(save_path)
+
             # return the contents of the input file
             # this is just for namelist.input format, but
             # we need to create this dynamically based on input_format
@@ -1298,7 +1262,7 @@ def edit_inputs(step="upload"):
             path = os.path.join(config.apps_dir,appname,fn)
             params = {'fn': fn, 'contents': slurp_file(path),
                       'appname': appname, 'input_format': input_format }
-            return template('addapp/inputs_parse', params)
+            return template('appconfig/inputs_parse', params)
         except IOError:
             return "IOerror:", IOError
         else:
@@ -1311,7 +1275,7 @@ def edit_inputs(step="upload"):
         inputs,_,_ = myapp.read_params()
         print "inputs:", inputs
         params = { "appname": appname }
-        return template('addapp/inputs_create_view', params, inputs=inputs,
+        return template('appconfig/inputs_create_view', params, inputs=inputs,
                                         input_format=input_format)
     # create a template in the views/apps folder
     elif step == "end":
@@ -1326,11 +1290,10 @@ def edit_inputs(step="upload"):
         input_format = request.forms.input_format
         myapp = app_instance(input_format,appname)
         params,_,_ = myapp.read_params()
-        if myapp.write_html_template(html_tags=key_tag,bool_rep=bool_rep,
-                                     desc=key_desc):
+        if myapp.write_html_template(html_tags=key_tag,bool_rep=bool_rep,desc=key_desc):
             load_apps()
             params = { "appname": appname, "port": config.port }
-            return template('addapp/inputs_end', params)
+            return template('appconfig/inputs_end', params)
         else:
             return "ERROR: there was a problem when creating view"
     else:
@@ -1342,7 +1305,7 @@ def edit_inputs(step="upload"):
 #def select_input_file(appname,fn):
 #    path = os.path.join(config.apps_dir,appname,fn)
 #    params = {'fn': fn, 'contents': slurp_file(path), 'appname': appname }
-#    return template('addapp/step3', params)
+#    return template('appconfig/step3', params)
 
 @post('/upload')
 def upload_data():

@@ -12,7 +12,7 @@
 
 <h4>Parsed inputs &ndash; assign html input types</h4>
 
-<form method="post" action="/inputs/edit/end">
+<form method="post" action="/appconfig/inputs/end">
 <input type="submit" class="btn btn-primary" value="Next >>">
 <hr>
 How to represent a true Boolean value (e.g. T, True, true, 1)?

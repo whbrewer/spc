@@ -39,13 +39,7 @@
         <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="hidden" name="edit" value="True">
     </form>
-    <button type="button" class="btn btn-default" data-toggle="modal" 
-            data-target="#dModal">
-            <span class="glyphicon glyphicon-trash"></span> Delete {{app}}</button>
-</div>
-
-<div class="btn-group">       
-    <form class="btn-group" method="post" action="/inputs/edit/upload">
+    <form class="btn-group" method="post" action="/appconfig/inputs/upload">
         <input type="submit" class="btn btn-default" value="Configure Inputs">
         <input type="hidden" name="appname" value="{{rows['name']}}">
         <input type="hidden" name="input_format" value="{{rows['input_format']}}">
@@ -59,7 +53,9 @@
         <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="submit" class="btn btn-default" value="Configure Plots">
     </form>
-
+    <button type="button" class="btn btn-danger" data-toggle="modal" 
+            data-target="#dModal">
+            <span class="glyphicon glyphicon-trash"></span> Delete {{app}}</button>
 </div>
 
 <!-- Delete Modal -->

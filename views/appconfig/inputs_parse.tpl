@@ -12,7 +12,7 @@
 
 <p>Choose how to parse this file:</p>
 
-<form method="post" action="/inputs/edit/create_view">
+<form method="post" action="/appconfig/inputs/create_view">
     <select class="form-control" style="width:auto" name="input_format">
         %opts = {'namelist':'namelist.input','ini':'INI file','xml':'XML file'}
         %for key, value in opts.iteritems():

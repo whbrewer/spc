@@ -8,11 +8,11 @@
 
 <table>
   </tr>
-  <tr>
+  <!-- <tr>
       <td>Category:</td>
       <td><input class="form-control" type="text" name="category"
                  value="{{rows['category']}}"></td>
-  </tr>
+  </tr> -->
   <tr>
       <td>Description:</th>
       <td><textarea class="form-control" name="description" cols="60" rows="4">{{rows['description']}}</textarea></td>
@@ -31,11 +31,11 @@
       </select>
       </td>
   </tr>
-  <tr>
+  <!-- <tr>
       <td>Language:</td>
       <td><input class="form-control" type="text" name="language" 
                  value="{{rows['language']}}"></td> 
-  </tr>
+  </tr> -->
   <tr>
       <td>Command:</td> 
       <td><input class="form-control" type="text" name="command" size="40"
