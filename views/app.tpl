@@ -44,9 +44,8 @@
         <input type="hidden" name="appname" value="{{rows['name']}}">
         <input type="hidden" name="input_format" value="{{rows['input_format']}}">
     </form>
-    <form class="btn-group" method="post" action="/exe">
-        <input type="hidden" name="app" value="{{rows['name']}}">
-        <input type="hidden" name="input_format" value="{{rows['input_format']}}">
+    <form class="btn-group" method="post" action="/appconfig/exe/upload">
+        <input type="hidden" name="appname" value="{{rows['name']}}">
         <input type="submit" class="btn btn-default" value="Configure Executable">
     </form>
     <form class="btn-group" method="get" action="/plots/edit">

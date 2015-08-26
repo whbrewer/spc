@@ -1220,8 +1220,44 @@ def addapp():
              input_format, command, preprocess, postprocess, uid)
     redirect('/app/'+appname)
 
+@post('/appconfig/exe/<step>')
+def appconfig_exe(step="upload"):
+    if step == "upload":
+        appname = request.forms.appname
+        params = {'appname': appname}
+        return template('appconfig/exe_upload',params)
+    elif step == "test":
+        appname    = request.forms.appname
+        upload     = request.files.upload
+        if not upload:
+            return template('appconfig/error',
+                   err="no file selected. press back button and try again")
+        name, ext = os.path.splitext(upload.filename)
+        # if ext not in ('.exe','.sh','.xml','.json',):
+        #     return 'ERROR: File extension not allowed.'
+        try:
+            save_path_dir = os.path.join(appmod.apps_dir,name)
+            if not os.path.exists(save_path_dir):
+                os.makedirs(save_path_dir)
+            save_path = os.path.join(save_path_dir,name) + ext
+            if os.path.isfile(save_path):
+                timestr = time.strftime("%Y%m%d-%H%M%S")
+                shutil.move(save_path,save_path+"."+timestr)
+            upload.save(save_path)
+
+            # process = subprocess.Popen(["otool -L", save_path], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+            # contents = process.readlines()
+            contents = "SUCCESS"
+            
+            params = {'appname': appname, 'contents': contents}
+            return template('appconfig/exe_test', params)
+        except IOError:
+            return "IOerror:", IOError
+        else:
+            return "ERROR: must be already a file"
+
 @post('/appconfig/inputs/<step>')
-def edit_inputs(step="upload"):
+def edit_inputs():
     # upload zip file and return a text copy of the input file
     if step == "upload":
         appname = request.forms.appname
