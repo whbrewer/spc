@@ -1,4 +1,42 @@
 %include('header')
+<script>
+$(document).ready(function() {
+   jQuery.ajax({
+      type: "get",
+      data: { app: '{{app}}' },
+      dataType: "json",
+      contentType: "application/json; charset=utf-8",
+      url:  "/appconfig/status",
+      complete: function(xhr){
+        var response = JSON.parse(xhr.responseText);
+        toggle(response.command,"db")
+        toggle(response.inputs,"in")
+        toggle(response.template,"tp")
+        toggle(response.binary,"bn")
+        toggle(response.plots,"pl")
+      }
+   })
+})
+
+function toggle(cmd,id) {
+   if (cmd == 1) {
+      $("#"+id).addClass('glyphicon-ok')
+      $("#"+id).removeClass('glyphicon-remove')   
+      $("#"+id+"div").toggleClass('has-error', false);
+      $("#"+id+"div").toggleClass('has-success', true);         
+   } else {
+      $("#"+id).removeClass('glyphicon-ok')
+      $("#"+id).addClass('glyphicon-remove')
+      $("#"+id+"div").toggleClass('has-error', true);
+      $("#"+id+"div").toggleClass('has-success', false);   
+   }
+}
+</script>
+
+
+</head>
+<body>
+
 %include('navbar')
 
 <h1>{{app}} app</h1>
@@ -56,6 +94,15 @@
             data-target="#dModal">
             <span class="glyphicon glyphicon-trash"></span> Delete {{app}}</button>
 </div>
+
+<form>
+<h3>Status of installation:</h3>
+<div class="form-group" id="dbdiv"><span id="db" class="glyphicon glyphicon-ok"> Database entry setup</div>
+<div class="form-group" id="indiv"><span id="in" class="glyphicon glyphicon-ok"> Inputs file uploaded</div>
+<div class="form-group" id="tpdiv"><span id="tp" class="glyphicon glyphicon-ok"> HTML template file setup</div>
+<div class="form-group" id="bndiv"><span id="bn" class="glyphicon glyphicon-ok"> Application binary uploaded</div>
+<div class="form-group" id="pldiv"><span id="pl" class="glyphicon glyphicon-ok"> Plots setup</div>
+</form>
 
 <!-- Delete Modal -->
 <div class="modal fade" id="dModal" tabindex="-1" role="dialog" 

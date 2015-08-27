@@ -54,8 +54,14 @@ td {text-align: center}
 
 <div class="container-fluid">
 
-<button type="button" class="btn btn-default" data-toggle="collapse" 
-        data-target="#addplot">Add Plot</button>
+<div class="btn-group">
+  <form class="btn-group" method="get" action="/app/{{app}}">
+      <input type="submit" class="btn btn-default" value="Configure App">
+      <input type="hidden" name="appname" value="{{app}}">
+  </form>
+  <button type="button" class="btn btn-default" data-toggle="collapse" 
+          data-target="#addplot">Add Plot</button>
+</div>
 
 <div id="addplot" class="collapse">
 <form class="form-horizontal" method="post" action="/plots/create">

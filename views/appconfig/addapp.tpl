@@ -58,17 +58,14 @@ function checkApp(appname) {
          if (response) {
             $("#appname").toggleClass('has-error', true);
             $("#appname").toggleClass('has-success', false);
-            //$("#appname").toggleClass('has-feedback', false);
             $("#appname").select()
             $("#helper").removeClass('hidden');
             $("#feedback").removeClass('glyphicon-ok')
             $("#feedback").addClass('glyphicon-remove')
             $("#submit").prop('disabled',true)
-            // alert("Appname " + appname + " is taken.\nPlease try another name.");
          } else {
             $("#appname").toggleClass('has-error', false);
             $("#appname").toggleClass('has-success', true);
-            //$("#appname").toggleClass('has-feedback', true);
             $("#helper").addClass('hidden');
             $("#feedback").addClass('glyphicon-ok')
             $("#feedback").removeClass('glyphicon-remove')
@@ -227,6 +224,8 @@ span.round-tab:hover {
 }
 </style>
 </head>
+<body>
+%include('navbar')
 
 <div class="container">
     <div class="row">
@@ -395,3 +394,8 @@ span.round-tab:hover {
     </section>
    </div>
 </div>
+
+</body>
+</html>
+
+

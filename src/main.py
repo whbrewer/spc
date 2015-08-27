@@ -784,7 +784,7 @@ def app_save(appid):
     row.update_record(language=lang, description=desc, input_format=info,
                       command=cmd)
     db.commit()
-    redirect("/apps")
+    redirect("/app/"+app)
 
 # allow only admin or user to delete apps
 @post('/app/delete/<appid>')
@@ -1220,6 +1220,41 @@ def addapp():
              input_format, command, preprocess, postprocess, uid)
     redirect('/app/'+appname)
 
+@get('/appconfig/status')
+def appconfig_status():
+    status = dict()
+    app = request.query.app
+    # check db file
+    command = apps(name=app).command
+    if command: 
+        status['command'] = 1
+    else:
+        status['command'] = 0
+    # check template file
+    if os.path.exists("views/apps/"+app+".tpl"):
+        status['template'] = 1
+    else:
+        status['template'] = 0
+    # check inputs file
+    if os.path.exists(os.path.join(config.apps_dir,app,app+".in")):
+        status['inputs'] = 1
+    else:
+        status['inputs'] = 0
+    # check app binary
+    if os.path.exists(os.path.join(config.apps_dir,app,app)):
+        status['binary'] = 1
+    else:
+        status['binary'] = 0
+    # check plots 
+    appid = apps(name=app).id
+    result = db(plots.appid==appid).select().first()
+    if result:
+        status['plots'] = 1
+    else:
+        status['plots'] = 0
+
+    return json.dumps(status)
+
 @post('/appconfig/exe/<step>')
 def appconfig_exe(step="upload"):
     if step == "upload":
@@ -1244,11 +1279,12 @@ def appconfig_exe(step="upload"):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
                 shutil.move(save_path,save_path+"."+timestr)
             upload.save(save_path)
+            os.chmod(save_path,700)
 
             # process = subprocess.Popen(["otool -L", save_path], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
             # contents = process.readlines()
             contents = "SUCCESS"
-            
+
             params = {'appname': appname, 'contents': contents}
             return template('appconfig/exe_test', params)
         except IOError:
@@ -1257,7 +1293,7 @@ def appconfig_exe(step="upload"):
             return "ERROR: must be already a file"
 
 @post('/appconfig/inputs/<step>')
-def edit_inputs():
+def edit_inputs(step):
     # upload zip file and return a text copy of the input file
     if step == "upload":
         appname = request.forms.appname

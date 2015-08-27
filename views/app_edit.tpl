@@ -44,7 +44,7 @@
 </table>
 <div class="row">
     <div class="col-md-12 col-md-offset-2">
-        <input type="hidden" name="appname" value="{{rows['name']}}">
+        <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="submit" class="btn btn-success" value="save changes">
         <a href="/app/{{app}}">
             <input type="button" class="btn btn-default" value="cancel">
