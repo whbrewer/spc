@@ -58,12 +58,20 @@ function checkApp(appname) {
          if (response) {
             $("#appname").toggleClass('has-error', true);
             $("#appname").toggleClass('has-success', false);
+            //$("#appname").toggleClass('has-feedback', false);
             $("#appname").select()
+            $("#helper").removeClass('hidden');
+            $("#feedback").removeClass('glyphicon-ok')
+            $("#feedback").addClass('glyphicon-remove')
             $("#submit").prop('disabled',true)
-            alert("Appname " + appname + " is taken.\nPlease try another name.");
+            // alert("Appname " + appname + " is taken.\nPlease try another name.");
          } else {
             $("#appname").toggleClass('has-error', false);
             $("#appname").toggleClass('has-success', true);
+            //$("#appname").toggleClass('has-feedback', true);
+            $("#helper").addClass('hidden');
+            $("#feedback").addClass('glyphicon-ok')
+            $("#feedback").removeClass('glyphicon-remove')
             $("#command").val("../../../../apps/"+appname+"/"+appname)
             $("#submit").prop('disabled',false)
          }
@@ -267,11 +275,16 @@ span.round-tab:hover {
             <div class="tab-content">
                 <div class="tab-pane active" role="tabpanel" id="step1">
                     <h3>Step 1</h3>
-                        <div id="appname" class="form-group">
-                            <label for="appname" class="control-label col-md-3">Name of app:</label>
+
+                    <div id="appname" class="form-group has-feedback">
+                        <label for="appname" style="text-align:right" class="control-label col-xs-6">Name of app:</label>
+                        <div class="col-xs-6">
                             <input type="text" class="form-control"  
                                    name="appname" onchange="checkApp(this.value)"><br>
+                            <span id="feedback" style="right:20px" class="glyphicon form-control-feedback"></span>
+                            <span id="helper" class="help-block hidden">App name is already taken. Try another name.</span>
                         </div>
+                    </div>
 
                     <ul class="list-inline pull-right">
                         <li><button type="button" class="btn btn-primary next-step">Save and continue</button></li>
@@ -281,7 +294,7 @@ span.round-tab:hover {
                 <div class="tab-pane" role="tabpanel" id="step2">
                     <h3>Step 2</h3>
                     <p>Configure App</p>
-                    <form action="/addapp/step2" method="post">
+                    <form class="form-horizontal" action="/addapp/step2" method="post">
                     <!-- <input type="hidden" name="appname" value="{appname}">
                     <input type="hidden" name="user" value="{user}"> -->
 
@@ -365,7 +378,7 @@ span.round-tab:hover {
 
                 <div class="tab-pane" role="tabpanel" id="complete">
                     <h3>Complete</h3>
-                    <p>Now we will submit this information to server.</p>
+                    <p>Now we will submit this information to the server.</p>
 
                     <ul class="list-inline pull-right">
                         <li><button type="button" class="btn btn-default prev-step">Previous</button></li>
