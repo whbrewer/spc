@@ -44,7 +44,7 @@ class app(object):
     def deploy(self):
         pass
 
-    def write_html_template(self,html_tags=None,bool_rep="T",desc=None):
+    def create_template(self,html_tags=None,bool_rep="T",desc=None):
         # need to output according to blocks
         f = open('views/apps/'+self.appname+'.tpl', 'w')
         f.write("%include('header',title='confirm')\n")

@@ -5,11 +5,11 @@ FROM library/python:2
 
 MAINTAINER Will Scott <willscott@gmail.com>
 
-ADD . /sciplex/
-WORKDIR /sciplex
+ADD . /src/
+WORKDIR /src
 
-RUN python spx init
+RUN python spc init
 
 EXPOSE 8580
 
-ENTRYPOINT ["python", "spx", "go"]
+ENTRYPOINT ["python", "spc", "go"]

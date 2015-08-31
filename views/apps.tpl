@@ -12,21 +12,6 @@
 <body>
 %include('navbar')
 
-<script>
-// function delete(id) {
-//    if(!confirm("Are you sure to delete?")) return                      
-//       document.student_modify.action = "/apps/delete/id"
-//       document.student_modify.submit()
-//    }
-// }
-// function edit(id) {
-//    if(!confirm("Are you sure to delete?")) return                      
-//       document.student_modify.action = "/apps/delete/id"
-//       document.student_modify.submit()
-//    }
-// }
-</script>
-
 <div class="row">
   <div class="col-sm-6">
     <h1>Installed Apps</h1>
@@ -36,20 +21,12 @@
    <a href="/addapp" class="btn btn-primary">
      <span class="glyphicon glyphicon-plus"></span> Add
    </a>
- </div>
- <!-- <div class="col-xs-12" style="height:10px"></div> -->
- %end
+  </div>
+  %end
 </div>
 
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53
-
-<!--
-<form method="get" action="/addapp">
-   <input type="submit" class="submit add" value="add">
-   <input type="submit" formaction="/apps/load" class="submit start" value="load">
-</form>
--->
 
 <div class="container-fluid">
   <div id="mypanel" class="panel-group">
@@ -64,7 +41,6 @@
             <a href="/app/{{row['name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog"></span></a>
           %end
         </div>
-        <!-- <a href="/{{row['name']}}"></a> -->
       <br>
       %end
     </div>

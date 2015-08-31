@@ -67,13 +67,13 @@ td {text-align: center}
 <form class="form-horizontal" method="post" action="/plots/create">
     <div class="form-group">
         <label for="title" class="control-label col-md-3">Title:</label>
-        <div class="col-md-6"><input type="text" name="title"></div>
+        <div class="col-md-6"><input type="text" class="form-control" name="title"></div>
     </div>
 
     <div class="form-group">
         <label for="ptype" class="control-label col-md-3">Type of plot:</label>
         <div class="col-md-6">
-            <select name="ptype">
+            <select name="ptype" class="form-control">
                 <option VALUE="flot-line">flot/line</option>
                 <option VALUE="flot-cat">flot/categories</option>
                 <option VALUE="mpl-line">matplotlib/line</option>
@@ -85,14 +85,14 @@ td {text-align: center}
     <div class="form-group">
         <label for="options" class="control-label col-md-3">Options:</label>
         <div class="col-md-6">
-            <textarea name="options"></textarea>
+            <textarea name="options" class="form-control"></textarea>
         </div>
     </div>
 
     <div class="form-group">
         <label for="datadef" class="control-label col-md-3">Data definition:</label>
         <div class="col-md-6">
-            <textarea name="datadef"></textarea>
+            <textarea name="datadef" class="form-control"></textarea>
         </div>
     </div>
 

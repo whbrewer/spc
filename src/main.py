@@ -733,9 +733,14 @@ def check_user_var():
 
 @get('/apps')
 def showapps():
+    global user
     if config.auth and not authorized(): redirect('/login')
     result = db().select(apps.ALL)
-    params = { 'apps': myapps.keys(), 'configurable': config.configurable }
+    if user == "admin":
+        configurable = True
+    else:
+        configurable = False    
+    params = { 'apps': myapps.keys(), 'configurable': configurable }
     return template('apps', params, rows=result)
 
 @get('/apps/load')
@@ -1279,7 +1284,7 @@ def appconfig_exe(step="upload"):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
                 shutil.move(save_path,save_path+"."+timestr)
             upload.save(save_path)
-            os.chmod(save_path,700)
+            os.chmod(save_path,0700)
 
             # process = subprocess.Popen(["otool -L", save_path], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
             # contents = process.readlines()
@@ -1362,7 +1367,7 @@ def edit_inputs(step):
         input_format = request.forms.input_format
         myapp = app_instance(input_format,appname)
         params,_,_ = myapp.read_params()
-        if myapp.write_html_template(html_tags=key_tag,bool_rep=bool_rep,desc=key_desc):
+        if myapp.create_template(html_tags=key_tag,bool_rep=bool_rep,desc=key_desc):
             load_apps()
             params = { "appname": appname, "port": config.port }
             return template('appconfig/inputs_end', params)

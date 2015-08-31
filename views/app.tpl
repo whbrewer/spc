@@ -118,7 +118,7 @@ function toggle(cmd,id) {
                     <div class="modal-body">
                       <div class="form-group">
                         <label for="del_app_dir">
-                          Delete disk files stored in apps folder?
+                          Delete associated files for app?
                         </label>
                         <input type="checkbox" id="del_app_dir" name="del_app_dir"/>
                       </div>

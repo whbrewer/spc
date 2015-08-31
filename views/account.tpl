@@ -4,6 +4,10 @@
 <h1>{{user}}'s account</h1>
 <br>
 
+
+%if user == "guest":
+<p>Guest account password can only be changed by the administrator.</p>
+%else:
 <fieldset>
 <legend>Change Password</legend>
 <form method="POST" action="/account/change_password">
@@ -15,6 +19,7 @@
 <input class="btn btn-default" type="submit">
 </form>
 </fieldset>
+%end
 
 <fieldset>
 <legend>Upload data to account</legend>

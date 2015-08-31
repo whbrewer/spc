@@ -1,10 +1,10 @@
 
-To start Mendel, run the start_server script
+To start server, run the start_server script
 
 --
 Information about SciPaaS
 
-SciPaaS is both a platform and framework for rapidly deploying scientific applications to the cloud.
+The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.
 
 -----------
 QUICKSTART
@@ -12,11 +12,11 @@ QUICKSTART
 
 * To create and initialize the database which SciPaaS uses: 
   
-      spx init
+      spc init
 
 * To start running the web server: 
 
-      spx go
+      spc go
 
 * To run the dna case in scipaas:
 
