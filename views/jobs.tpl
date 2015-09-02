@@ -23,14 +23,14 @@
     };
 
     function share(jid) {
-      $('#shared'+jid).toggleClass('glyphicon-share');
-      $('#shared'+jid).toggleClass('glyphicon-check');
+      $('#shared'+jid).toggleClass('glyphicon-share-alt');
+      $('#shared'+jid).toggleClass('glyphicon-pushpin');
       $.post('/jobs/share', { 'jid': jid });
     };
 
     function unshare(jid) {
-      $('#shared'+jid).toggleClass('glyphicon-share');
-      $('#shared'+jid).toggleClass('glyphicon-check');
+      $('#shared'+jid).toggleClass('glyphicon-share-alt');
+      $('#shared'+jid).toggleClass('glyphicon-pushpin');
       $.post('/jobs/unshare', { 'jid': jid });
     };
 </script>
@@ -64,7 +64,7 @@
   %end
   <th>date/time submitted</th> 
   <th>labels</th>
-  <th><a href="/jobs/shared" title="see shared cases"><span class="glyphicon glyphicon-share"></span></a></th>
+  <th><a href="/jobs/shared" title="see shared cases"><span class="glyphicon glyphicon-pushpin"></span></a></th>
 </tr>
 </thead>
 
@@ -103,12 +103,12 @@
   %if row['shared']=="True":
     <td>
       <a href="javascript:unshare({{row['id']}})" title="unshare this case">
-        <span id="shared{{row['id']}}" class="glyphicon glyphicon-check"></span></a>
+        <span id="shared{{row['id']}}" class="glyphicon glyphicon-pushpin"></span></a>
     </td>
   %else:
     <td>
       <a href="javascript:share({{row['id']}})" title="share this case with other users">
-        <span id="shared{{row['id']}}"  class="glyphicon glyphicon-share"></span></a>
+        <span id="shared{{row['id']}}"  class="glyphicon glyphicon-share-alt"></span></a>
     </td>
   %end
   </div>

@@ -13,7 +13,7 @@
 <body onload="init()">
 %include('navbar')
 
-<h1 align=center>Shared Cases</h1>
+<h1 align=center><span class="glyphicon glyphicon-pushpin"></span> Shared Cases</h1>
 
 <table id="clickable" class="table table-striped">
 <thead>
@@ -38,6 +38,11 @@
   </tr> 
 %end
 </table>
+
+<form method="get" action="/jobs/shared">
+  <input type="hidden" name="n" value="{{n+num_rows}}">
+  <input type="submit" class="btn btn-default btn-block" value="Show more">
+</form>
 
 <script>
 $(document).ready(function() {

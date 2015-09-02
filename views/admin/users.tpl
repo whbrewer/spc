@@ -1,6 +1,13 @@
 %include('header')
 
 <body onload="init()">
+
+<style>
+  .table {
+    font-size: 120%;
+  }
+</style>
+
 %include('navbar')
 <h1 align=center>Users</h1>
 

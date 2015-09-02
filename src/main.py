@@ -522,13 +522,20 @@ def get_shared():
     global user
     cid = request.query.cid
     app = request.query.app
+    n = request.query.n
+    if not n: 
+        n = config.jobs_num_rows
+    else:
+        n = int(n)
     # sort by descending order of jobs.id
-    result = db(jobs.shared=="True").select(orderby=~jobs.id)
+    result = db(jobs.shared=="True").select(orderby=~jobs.id)[:n]
     params = {}
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
+    params['n'] = n
+    params['num_rows'] = config.jobs_num_rows
     return template('shared', params, rows=result)
 
 @post('/jobs/delete/<jid>')
@@ -807,11 +814,16 @@ def delete_app(appid):
         a.delete(appid)
     else:
         return template("error", err="wrong user. must be owner or admin")
-    # delete app directory
+    # if delete files checkbox ticked
     if del_app_dir == "on":
+        # delete app directory
         path = os.path.join(config.apps_dir,appname)
         if os.path.isdir(path):
             shutil.rmtree(path)
+        # remove template file
+        path = "views/apps/"+appname+".tpl"
+        if os.path.isfile(path):
+            os.remove(path)
     redirect("/apps")
 
 @get('/app/<app>')

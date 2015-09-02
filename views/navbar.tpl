@@ -15,6 +15,8 @@
                 %end
                 <button type="submit" class="btn btn-default" formaction="/jobs">
                     <span class="glyphicon glyphicon-tasks"></span> Jobs </button>
+                <button type="submit" class="btn btn-default" formaction="/jobs/shared">
+                    <span class="glyphicon glyphicon-pushpin"></span> Shared </button>
             </div>
         </div> 
 
@@ -35,7 +37,11 @@
         %end
 
         %if True:
+
         <div class="navbar-right" style="margin-right: 5px;">
+            %if defined('user'):
+                <label class="control-label">{{user}}</label>
+            %end
             <div class="btn-group">
                 <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
                     <span class="glyphicon glyphicon-menu-hamburger"></span></a>
