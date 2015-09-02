@@ -11,10 +11,10 @@ sys.argv[1:]
 url = 'https://s3-us-west-1.amazonaws.com/scihub'
 
 def usage():
-    buf =  "sixpac usage: sp <command> [options]\n\n"
+    buf =  "usage: spc <command> [options]\n\n"
     buf += "available commands:\n"
     buf += "go       start the server\n"
-    buf += "init     initialize a database for sixpac\n"
+    buf += "init     initialize a database\n"
     buf += "install  install an app\n"
     buf += "list     list installed or available apps\n"
     buf += "search   search for available apps\n"
@@ -28,8 +28,8 @@ if (len(sys.argv) == 1):
 #db = config.db
 
 def create_config_file():
-    """Create a config.py file in the sixpac directory"""
-    fn="sixpac/config.py"
+    """Create a config.py file in the spc directory"""
+    fn="src/config.py"
     if not os.path.exists(fn):
         with open(fn, "w") as f:
             f.write("# USER AUTHENTICATION\n")
@@ -40,7 +40,7 @@ def create_config_file():
             f.write("\n# the number of rows to show at a time in the jobs table\n")
             f.write("jobs_num_rows = 20\n")
             f.write("\n# DATABASE\n")
-            f.write("db = 'sixpac.db'\n")
+            f.write("db = 'spc.db'\n")
             f.write("dbdir = 'db'\n")
             f.write("uri = 'sqlite://'+db\n")
             f.write("\n# DIRECTORIES\n")
@@ -53,7 +53,7 @@ def create_config_file():
             f.write("# uniprocessor scheduling -- for single-core machines\n")
             f.write("sched = 'uni'\n")
             f.write("# schedule more than one job at a time (multiprocessor)\n")
-            f.write("#sched = 'smp'\n")
+            f.write("#sched = 'mp'\n")
             f.write("# number of processors available to use on this machine\n")
             f.write("np = 2\n")
             f.write("\n# WEB SERVER\n")

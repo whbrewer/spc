@@ -1,7 +1,6 @@
 <div class="container-fluid">
     <div class="col-md-12 col-lg-12">
         <div class="btn-group">
-        <!-- <div class="btn-group" style="position:fixed; top:65px"> -->
             <form class="btn-group" action="/start" method="get">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-repeat"></span> Restart
@@ -29,13 +28,12 @@
                     <span class="glyphicon glyphicon-stats"></span> Plot
                 </button>
             </form>
-            <!--
             <form class="btn-group" action="/zipcase" method="get">
-                <button class="btn btn-default">Zip</button>
+                <button class="btn btn-default">
+                    <span class="glyphicon glyphicon-compressed"></span> Zip</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
-            -->
             <form class="btn-group" method="get" action="/inputs?cid={{cid}}&app={{app}}">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-wrench"></span> Inputs</button>
@@ -73,9 +71,6 @@
             %end
         </div>
     </div>
-<!-- </div> -->
-
-
 
 
 %if defined('jid'):

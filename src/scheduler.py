@@ -23,8 +23,10 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('state','string'),
                                Field('time_submit','string'),
                                Field('description','string'),
+                               Field('np','integer'),
                                Field('priority','integer'),
-                               Field('np','integer'))
+                               Field('starred', 'string'),
+                               Field('shared','string'))
 
 class scheduler(object):
     """simple single process scheduler"""

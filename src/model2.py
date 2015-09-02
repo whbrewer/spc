@@ -30,6 +30,7 @@ class dal(object):
                                        Field('description','string'),
                                        Field('np','integer'),
                                        Field('priority','integer'),
+                                       Field('starred','string')
                                        Field('shared','string'))
 
         self.plots = self.db.define_table('plots', Field('id','integer'),

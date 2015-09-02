@@ -32,6 +32,7 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('description','string'),
                                Field('np','integer'),
                                Field('priority','integer'),
+                               Field('starred', 'string'),
                                Field('shared','string'))
 
 plots = db.define_table('plots', Field('id','integer'),

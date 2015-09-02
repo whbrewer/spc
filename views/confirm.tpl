@@ -9,13 +9,27 @@
     <em>Wrote parameters to input file. Click Execute to start simulation.</em>
 </div>
 
-<form action="/execute" method="post">
-    <input type="hidden" name="np" value="1">
-
+<form class="form-horizontal" action="/execute" method="post">
     <div class="col-xs-12" style="height:5px"></div>
-    <button type="submit" class="btn btn-success"> <!-- pull-right -->
-        Execute <em class="glyphicon glyphicon-play"></em>
-    </button>
+    %if np > 1:
+        <div class="btn-group">
+            <select name="np" class="btn-group form-control" style="width:auto" title="Number of processors to use">
+                %for i in range(1,np+1):
+                    <option value="{{i}}">{{i}}
+                %end
+            </select>
+            <button type="submit" class="btn btn-success"> <!-- pull-right -->
+                Execute <em class="glyphicon glyphicon-play"></em>
+            </button>
+        </div>
+    %else:
+        <input type="hidden" name="np" value="1">
+        <button type="submit" class="btn btn-success"> <!-- pull-right -->
+            Execute <em class="glyphicon glyphicon-play"></em>
+        </button>
+    %end
+
+
 
     <div class="col-xs-12" style="height:5px"></div>
 

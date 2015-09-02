@@ -21,6 +21,18 @@
       $('#'+jid).toggleClass('glyphicon-star');
       $.post('/jobs/unstar', { 'jid': jid });
     };
+
+    function share(jid) {
+      $('#shared'+jid).toggleClass('glyphicon-share');
+      $('#shared'+jid).toggleClass('glyphicon-check');
+      $.post('/jobs/share', { 'jid': jid });
+    };
+
+    function unshare(jid) {
+      $('#shared'+jid).toggleClass('glyphicon-share');
+      $('#shared'+jid).toggleClass('glyphicon-check');
+      $.post('/jobs/unshare', { 'jid': jid });
+    };
 </script>
 
 <body>
@@ -52,6 +64,7 @@
   %end
   <th>date/time submitted</th> 
   <th>labels</th>
+  <th><a href="/jobs/shared" title="see shared cases"><span class="glyphicon glyphicon-share"></span></a></th>
 </tr>
 </thead>
 
@@ -59,7 +72,7 @@
 %for row in rows:
   <tr>
   <form>
-  %if row['shared']=="True":
+  %if row['starred']=="True":
     <td>
       <a href="javascript:unstar({{row['id']}})">
         <span id="{{row['id']}}" class="glyphicon glyphicon-star"></span></a>
@@ -87,6 +100,17 @@
       <!-- <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a> -->
       <a href="{{url}}"> </a>
     </td>
+  %if row['shared']=="True":
+    <td>
+      <a href="javascript:unshare({{row['id']}})" title="unshare this case">
+        <span id="shared{{row['id']}}" class="glyphicon glyphicon-check"></span></a>
+    </td>
+  %else:
+    <td>
+      <a href="javascript:share({{row['id']}})" title="share this case with other users">
+        <span id="shared{{row['id']}}"  class="glyphicon glyphicon-share"></span></a>
+    </td>
+  %end
   </div>
   </form>
 </tr> 

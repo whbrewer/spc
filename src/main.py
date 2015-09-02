@@ -8,7 +8,7 @@ import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib, time
 # other local modules
 import config, uploads, process
-import scheduler, scheduler_smp
+import scheduler, scheduler_mp
 import apps as appmod
 import plots as plotmod
 try:
@@ -39,8 +39,8 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # create instance of scheduler
-if config.sched == "smp":
-    sched = scheduler_smp.scheduler()
+if config.sched == "mp":
+    sched = scheduler_mp.scheduler()
 else:
     sched = scheduler.scheduler()
 
@@ -299,7 +299,7 @@ def show_jobs():
     else:
         n = int(n)
     if starred:
-        result = db(jobs.user==user and jobs.shared=="True").select(orderby=~jobs.id)[:n]
+        result = db(jobs.user==user and jobs.starred=="True").select(orderby=~jobs.id)[:n]
     elif q:
         result = db(jobs.user==user and \
             db.jobs.description.contains(q, case_sensitive=False)).select(orderby=~jobs.id)        
@@ -467,7 +467,55 @@ def get_account():
     uid = users(user=user).id
     return template('account',params)
 
-@get('/shared')
+@post('/jobs/annotate')
+def annotate_job():
+    if config.auth and not authorized(): redirect('/login')
+    check_user_var()
+    app = request.forms.app
+    cid = request.forms.cid
+    jid = request.forms.jid
+    desc = request.forms.description
+    jobs(id=jid).update_record(description=desc)
+    db.commit()
+    redirect('/jobs')
+
+@post('/jobs/star')
+def star_case():
+    jid = request.forms.jid
+    jobs(id=jid).update_record(starred="True")
+    db.commit()
+    redirect('/jobs')
+
+@post('/jobs/unstar')
+def unstar_case():
+    jid = request.forms.jid
+    jobs(id=jid).update_record(starred="False")
+    db.commit()
+    redirect('/jobs')
+
+@post('/jobs/share')
+def share_case():
+    if config.auth and not authorized(): redirect('/login')
+    check_user_var()
+    app = request.forms.app
+    cid = request.forms.cid
+    jid = request.forms.jid
+    jobs(id=jid).update_record(shared="True")
+    db.commit()
+    redirect('/jobs')
+
+@post('/jobs/unshare')
+def unshare_case():
+    if config.auth and not authorized(): redirect('/login')
+    check_user_var()
+    app = request.forms.app
+    cid = request.forms.cid
+    jid = request.forms.jid
+    jobs(id=jid).update_record(shared="False")
+    db.commit()
+    redirect('/jobs')
+
+@get('/jobs/shared')
 def get_shared():
     """Return the records from the shared table."""
     if config.auth and not authorized(): redirect('/login')
@@ -482,54 +530,6 @@ def get_shared():
     params['user'] = user
     params['apps'] = myapps.keys()
     return template('shared', params, rows=result)
-
-@post('/jobs/annotate')
-def annotate_job():
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
-    app = request.forms.app
-    cid = request.forms.cid
-    jid = request.forms.jid
-    desc = request.forms.description
-    jobs(id=jid).update_record(description=desc)
-    db.commit()
-    redirect('/jobs')
-
-@post('/shared')
-def post_shared():
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
-    app = request.forms.app
-    cid = request.forms.cid
-    jid = request.forms.jid
-    jobs(id=jid).update_record(shared="True")
-    db.commit()
-    redirect('/jobs')
-
-@post('/jobs/star')
-def star_case():
-    jid = request.forms.jid
-    jobs(id=jid).update_record(shared="True")
-    db.commit()
-    redirect('/jobs')
-
-@post('/jobs/unstar')
-def unstar_case():
-    jid = request.forms.jid
-    jobs(id=jid).update_record(shared="False")
-    db.commit()
-    redirect('/jobs')
-
-@post('/shared/unshare')
-def unshare_shared_item():
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
-    app = request.forms.app
-    cid = request.forms.cid
-    jid = request.forms.jid
-    jobs(id=jid).update_record(shared="False")
-    db.commit()
-    redirect ('/shared')
 
 @post('/jobs/delete/<jid>')
 def delete_job(jid):

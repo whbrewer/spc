@@ -1,9 +1,19 @@
 %include('header')
 
+<style>
+  .glyphicon.glyphicon-star, .glyphicon.glyphicon-star-empty {
+    font-size: 120%;
+  }
+  .table {
+    font-size: 120%;
+  }
+</style>
+</head>
+
 <body onload="init()">
 %include('navbar')
 
-<h1 align=center>Favorites</h1>
+<h1 align=center>Shared Cases</h1>
 
 <table id="clickable" class="table table-striped">
 <thead>
@@ -12,7 +22,7 @@
    <th>user</th> 
    <th>app</th> 
    <th>cid</th> 
-   <th>comment</th> 
+   <th>labels</th> 
 </tr>
 </thead>
 
