@@ -81,6 +81,10 @@ def confirm_form():
 def test():
     return template('websocket')
 
+@get('/plots/json')
+def test():
+    return template('plots/json-helper')
+
 @post('/execute')
 def execute():
     global user
@@ -127,6 +131,8 @@ def more():
     cid = request.query.cid
     filepath = request.query.filepath
     contents = slurp_file(filepath)
+    # convert html tags to entities (e.g. < to &lt;)
+    contents = cgi.escape(contents)
     params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user,
                'fn': filepath, 'apps': myapps.keys() }
     return template('more', params)
@@ -185,6 +191,9 @@ def output():
         run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
         fn = os.path.join(run_dir,myapps[app].outfn)
         output = slurp_file(fn)
+        # the following line will convert HTML chars like > to entities &gt;
+        # this is needed so that XML input files will show paramters labels
+        output = cgi.escape(output)
         params = { 'cid': cid, 'contents': output, 'app': app,
                    'user': u, 'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
@@ -211,7 +220,7 @@ def inputs():
         inputs = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
         # this is needed so that XML input files will show paramters labels
-        inputs = cgi.escape(inputs).encode('ascii', 'xmlcharrefreplace')
+        inputs = cgi.escape(inputs)
 
         params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u,
                    'fn': fn, 'apps': myapps.keys() }
@@ -1033,7 +1042,11 @@ def plot_interface(pltid):
     result = db(datasource.pltid==pltid).select()
     print pltid
 
+    #dd = ""
+    #dn = 0
     for r in result:
+        #dn += 1
+        #dd += "{ label: \"" + r['label'] + "\", data: d" + dn + ", color: \"" + r['color'] + "\"}, "
         plotfn = r['filename']
         cols = r['cols']
         line_range = r['line_range']
@@ -1062,6 +1075,7 @@ def plot_interface(pltid):
     #if not result:
     #    return template("error",err="need to specify at least one datasource")
 
+    #print "*** datadef:", dd
     stats = compute_stats(plotpath)
 
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u,
