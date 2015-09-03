@@ -34,12 +34,12 @@ function checkPassword(pw) {
   }
 
   if (pw === pw.toLowerCase()) {
-    msg += "ERROR: password doesn't contain any uppercase characters";
+    msg += "ERROR: password doesn't contain any uppercase characters. ";
     nerrors += 1;
   }
 
   if (pw.search(/[0-9]/) < 0) {
-    msg += "ERROR: password must have at least one digit";
+    msg += "ERROR: password must have at least one digit (e.g. 0-9). ";
     nerrors += 1;
   }
 

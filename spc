@@ -54,6 +54,7 @@ def create_config_file():
             f.write("sched = 'uni'\n")
             f.write("# schedule more than one job at a time (multiprocessor)\n")
             f.write("#sched = 'mp'\n")
+            f.write("default_priority = 3\n")
             f.write("# number of processors available to use on this machine\n")
             f.write("np = 2\n")
             f.write("\n# WEB SERVER\n")

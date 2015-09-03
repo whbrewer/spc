@@ -77,6 +77,10 @@ def confirm_form():
     except:
         return 'ERROR: failed to write parameters to file'
 
+@get('/test')
+def test():
+    return template('websocket')
+
 @post('/execute')
 def execute():
     global user
@@ -674,6 +678,10 @@ def post_register():
     email = request.forms.email
     if pw1 == pw2:
         hashpw = _hash_pass(pw1)
+        try:
+            config.default_priority
+        except:
+            config.default_priority = 3
         users.insert(user=user, passwd=hashpw, email=email,
                      priority=config.default_priority)
         db.commit()
@@ -880,40 +888,13 @@ def list_files():
         u = user
     if not path:
         path = os.path.join(myapps[app].user_dir,u,app,cid)
-
-    case_path = os.path.join(myapps[app].user_dir,u,app)
-
-    binary_extensions = ['.bz2','.gz','.xz','.zip']
-    image_extensions = ['.png','.gif','.jpg']
-    buf = '<table>'
-    for fn in os.listdir(path):
-        this_path = os.path.join(path,fn)
-        _, ext = os.path.splitext(this_path)
-        buf += '<tr>'
-        #buf += '<td><form action="/'+app+'/delete/'+fn+'">'
-        #buf += '<input type="image" src="/static/images/trash_can.gif">'
-        #buf += '</form></td>\n'
-        buf += '<td>'
-        if os.path.isdir(this_path):
-            buf += '<a href="/files?app='+app+'&cid='+cid+'&path=' \
-                                         +this_path+'">'+fn+'/</a>'
-        elif ext in binary_extensions:
-            buf += '<a href="'+this_path+'">'+fn+'</a>'
-        elif ext in image_extensions:
-            buf += '<a href="'+this_path+'"><img src="'+\
-                   this_path+'" width=100><br>'+fn+'</a>'
-        else:
-            buf += '<a href="/more?app='+app+'&cid='+cid+\
-                       '&filepath='+os.path.join(path,fn)+'">'+fn+'</a>'
-        buf += '</td></tr>\n'
-    buf += '</table>'
-    params = { 'content': buf }
+    params = dict()
     params['cid'] = cid
     params['app'] = app
     params['user'] = u
     params['apps'] = myapps.keys()
-    params['cases'] = '<a href="/files?app='+app+'&cid='+cid+'&path='+\
-                      case_path+'">cases</a>'
+    params['path'] = path
+    params['files'] = os.listdir(path)
     return template('files', params)
 
 @get('/plots/edit')

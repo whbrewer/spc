@@ -32,7 +32,11 @@ function toggle(cmd,id) {
    }
 }
 </script>
-
+<style>
+.table {
+    font-size: 120%;
+}
+</style>
 
 </head>
 <body>
