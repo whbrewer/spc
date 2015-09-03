@@ -13,7 +13,7 @@
 <body onload="init()">
 %include('navbar')
 
-<h1 align=center><span class="glyphicon glyphicon-pushpin"></span> Shared Cases</h1>
+<h1 align=center>Shared Cases</h1>
 
 <table id="clickable" class="table table-striped">
 <thead>
