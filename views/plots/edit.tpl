@@ -21,7 +21,7 @@ function leg(val) {
 </script>
 
 <style type="text/css">
-td {text-align: center}
+  td,th {text-align: center}
 </style>
 
 <div class="btn-group">
@@ -75,13 +75,6 @@ td {text-align: center}
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="datadef" class="control-label col-md-3">Data definition:</label>
-        <div class="col-md-6">
-            <textarea name="datadef" class="form-control"></textarea>
-        </div>
-    </div>
-
     <input type="submit" class="btn btn-primary" value="Submit">
     <input type="hidden" name="app" value="{{app}}">
     <input type="hidden" name="cid" value="{{cid}}">
@@ -101,7 +94,6 @@ td {text-align: center}
    <th>Title</th> 
    <th>Type</th> 
    <th>Options</th> 
-   <th>Data Definition</th> 
    <th>Action</th> 
 </tr>
 </thead>
@@ -111,7 +103,6 @@ td {text-align: center}
      <td>{{row['plots']['title']}}</td>
      <td width="50">{{row['plots']['ptype']}}</td>
      <td>{{row['plots']['options']}}</td>
-     <td>{{row['plots']['datadef']}}</td>
      <td width="100">
         %if not cid == '':
             <a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> <br><br>
@@ -120,13 +111,7 @@ td {text-align: center}
            onclick="if(confirm('confirm')) return true; return false">delete</a> <br><br>
         <a href="/plots/datasource/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">datasource</a>
      </td>
-
-  <!--
-  <form method="get" action="/apps/delete/{row[0]}}">
-     <td><input type="button" value="delete"></td> 
-  </form>
-  -->
-</tr> 
+  </tr> 
 %end
 </table>
 

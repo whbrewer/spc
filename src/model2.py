@@ -37,17 +37,14 @@ class dal(object):
                                          Field('appid',self.db.apps),
                                          Field('ptype','string'),
                                          Field('title','string'),
-                                         Field('options','string'),
-                                         Field('datadef','string'))
+                                         Field('options','string'))
 
         self.datasource = self.db.define_table('datasource', Field('id','integer'),
                                                    Field('pltid','integer'),
-                                                   Field('label','string'),
-                                                   Field('ptype','string'),
-                                                   Field('color','string'),
                                                    Field('filename','string'),
                                                    Field('cols','string'),
-                                                   Field('line_range','string'))
+                                                   Field('line_range','string'),
+                                                   Field('data_def','string'))
 
         self.aws_creds = self.db.define_table('aws_creds', Field('id','integer'),
                                                  Field('key','string'),

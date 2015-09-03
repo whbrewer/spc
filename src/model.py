@@ -39,17 +39,14 @@ plots = db.define_table('plots', Field('id','integer'),
                                  Field('appid',db.apps),
                                  Field('ptype','string'),
                                  Field('title','string'),
-                                 Field('options','string'),
-                                 Field('datadef','string'))
+                                 Field('options','string'))
 
 datasource = db.define_table('datasource', Field('id','integer'),
-                                           Field('label','string'),
-                                           Field('ptype','string'),
-                                           Field('color','string'),
                                            Field('pltid','integer'),
                                            Field('filename','string'),
                                            Field('cols','string'),
-                                           Field('line_range','string'))
+                                           Field('line_range','string'),
+                                           Field('data_def','string'))
 
 aws_creds = db.define_table('aws_creds', Field('id','integer'),
                                          Field('key','string'),

@@ -1,6 +1,26 @@
 %include('header')
 %include('navbar')
 
+<script>
+function ddef() {
+  l = document.getElementById("label").value
+  ls = "label: \"" + l + "\""
+  ds = "data: d" + {{len(rows)+1}}
+  ptype = document.getElementById("ptype").value
+  if (ptype == "line") {
+    ps = "lines: { show: true }"
+  } else if (ptype == "bars") {
+    ps = "bars: { show: true, autoWidth: true }"
+  } else {
+    ps = "points: { show: true }"
+  }
+  c = document.getElementById("color").value
+  cs = "color: \"" + c + "\"" 
+  document.getElementById("data_def").value = 
+    "{" + ls + ", " + ds + ", "+ ps + ", " + cs + "}"
+}
+</script>
+
 <div align="left" class="container-fluid">
     <div class="row">
         <div class="btn-group align-center">
@@ -26,15 +46,18 @@
 <div id="editsource" class="collapse">
 
 <form class="form-horizontal" method="post" action="/plots/datasource_add">
+
     <div class="form-group">
         <label for="label" class="control-label col-md-3">Label:</label>
-        <div class="col-md-6"><input type="text"  class="form-control" name="label"></div>
+        <div class="col-md-6">
+            <input type="text" class="form-control" name="label" id="label" onchange="ddef()">
+        </div>
     </div>
 
     <div class="form-group">
         <label for="ptype" class="control-label col-md-3">Plot type:</label>
         <div class="col-md-6">
-           <select name="ptype" class="form-control">
+           <select name="ptype" id="ptype" class="form-control" onchange="ddef()">
                <option VALUE="line">line</option>
                <option VALUE="points">points</option>
                <option VALUE="bars">bars</option>
@@ -45,13 +68,18 @@
     <div class="form-group">
         <label for="color" class="control-label col-md-3">Color:</label>
         <div class="col-md-6">
-            <select name="color" class="form-control">
+            <select name="color" id="color" class="form-control" onchange="ddef()">
                 <option VALUE="rgb(200,0,0)">red</option>
                 <option VALUE="rgb(0,200,0)">green</option>
                 <option VALUE="rgb(0,0,200)">blue</option>
                 <option VALUE="rgb(0,0,0)">black</option>
             </select>
         </div>
+    </div>
+
+    <div class="form-group">
+        <label for="data_def" class="control-label col-md-3">Data definition (JSON):</label>
+        <div class="col-md-6"><textarea class="form-control" name="data_def" id="data_def"></textarea></div>
     </div>
 
     <div class="form-group">
@@ -72,25 +100,19 @@
     <input type="hidden" name="pltid" value="{{pltid}}"> 
     <input type="hidden" name="app" value="{{app}}">
     <input type="hidden" name="cid" value="{{cid}}">
-</table>
-</div>
 </form>
 </div>
 
 <h1 align="center">Data Sources for Plot {{pltid}}</h1>
 
-<!--<table  class="table table-striped" border="0" cellpadding="0" cellspacing="1">-->
-<table  class="table table-striped">
-    <thead><tr><th>Label</th><th>Type</th><th>Color</th><th>Filename</th>
-               <th>Columns</th><th>Linerange</th><th>actions</th></tr></thead>
+<table class="table table-striped">
+    <thead><tr><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition</th><th>actions</th></tr></thead>
     %for row in rows:
     <tr>
-        <td contenteditable='true'>{{row['label']}}</td>
-        <td>{{row['ptype']}}</td>
-        <td>{{row['color']}}</td>
-        <td>{{row['filename']}}</td>
+        <td contenteditable='true'>{{row['filename']}}</td>
         <td>{{row['cols']}}</td>
         <td>{{row['line_range']}}</td>
+        <td>{{row['data_def']}}</td>
         <td><form method="post" action="/plots/datasource_delete">
             <input type="hidden" name="dsid" value="{{row['id']}}">
             <input type="hidden" name="pltid" value="{{pltid}}">

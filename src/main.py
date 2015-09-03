@@ -947,8 +947,7 @@ def add_datasource():
     pltid = request.forms.get('pltid')
     r = request.forms
     datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'],
-                      line_range=r['line_range'], label=r['label'],
-                      ptype=r['ptype'], color=r['color'])
+                      line_range=r['line_range'], data_def=r['data_def'])
     db.commit()
     redirect ('/plots/datasource/'+pltid+'?app='+app+'&cid='+cid)
 
@@ -1007,8 +1006,6 @@ def plot_interface(pltid):
         result = db(plots.id==pltid).select().first()
         plottype = result['ptype']
         options = result['options']
-        datadef = result['datadef']
-        #x = json.loads(datadef)
         title = result['title']
     except:
         redirect ('/plots/edit?app='+app+'&cid='+cid)
@@ -1042,14 +1039,16 @@ def plot_interface(pltid):
     result = db(datasource.pltid==pltid).select()
     print pltid
 
-    #dd = ""
-    #dn = 0
+
+    datadef = ""
     for r in result:
-        #dn += 1
-        #dd += "{ label: \"" + r['label'] + "\", data: d" + dn + ", color: \"" + r['color'] + "\"}, "
         plotfn = r['filename']
         cols = r['cols']
         line_range = r['line_range']
+        try:
+            datadef += r['data_def'] + ", "
+        except:
+            datadef = ""
         plotfn = re.sub(r"<cid>", c, plotfn)
         plotpath = os.path.join(sim_dir,plotfn)
         (col1str,col2str) = cols.split(":")
@@ -1075,7 +1074,6 @@ def plot_interface(pltid):
     #if not result:
     #    return template("error",err="need to specify at least one datasource")
 
-    #print "*** datadef:", dd
     stats = compute_stats(plotpath)
 
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u,
