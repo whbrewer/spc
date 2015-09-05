@@ -969,8 +969,7 @@ def create_plot():
     print "app:", app, "cid:", cid
     print myapps
     plots.insert(appid=myapps[app].appid, ptype=r.forms['ptype'],
-                 title=r.forms['title'], options=r.forms['options'],
-                 datadef=r.forms['datadef'])
+                 title=r.forms['title'], options=r.forms['options'])
     db.commit()
     redirect ('/plots/edit?app='+app+'&cid='+cid)
 

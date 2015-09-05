@@ -9,14 +9,30 @@ function opt() {
   xstr = "xaxis: { axisLabel: \"" + xl + "\"}"
   yl = document.getElementById("yaxis_label").value;
   ystr = "yaxis: { axisLabel: \"" + yl + "\"}"
-  document.getElementById("options").value = 
-    legstr + ", " + xstr + ", " + ystr;
+  // don't set options for categories plot b/c it will not work correctly
+  var e = document.getElementById("ptype")
+  var strUser = e.options[e.selectedIndex].value;
+  if (strUser != "flot-cat") {
+    document.getElementById("options").value = 
+      legstr + ", " + xstr + ", " + ystr;
+  }
 }
 
 function leg(val) {
   legpos = document.getElementById("legpos")
   legstr = "legend: { position: \"" + val + "\"}"
   opt()
+}
+
+function endis() {
+  // disable options for categories plot b/c it will not work correctly
+  var e = document.getElementById("ptype")
+  var strUser = e.options[e.selectedIndex].value;
+  if (strUser == "flot-cat") {
+    document.getElementById("options").readOnly = true;
+  } else {
+    document.getElementById("options").readOnly = false;
+  }
 }
 </script>
 
@@ -45,7 +61,7 @@ function leg(val) {
     <div class="form-group">
         <label for="ptype" class="control-label col-md-3">Type of plot:</label>
         <div class="col-md-6">
-            <select name="ptype" class="form-control">
+            <select name="ptype" id="ptype" class="form-control" onchange="endis()">
                 <option VALUE="flot-line">flot/line</option>
                 <option VALUE="flot-cat">flot/categories</option>
                 <option VALUE="mpl-line">matplotlib/line</option>
