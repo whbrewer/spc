@@ -106,7 +106,7 @@ function ddef() {
 <h1 align="center">Data Sources for Plot {{pltid}}</h1>
 
 <table class="table table-striped">
-    <thead><tr><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition</th><th>actions</th></tr></thead>
+    <thead><tr><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition (JSON)</th><th>actions</th></tr></thead>
     %for row in rows:
     <tr>
         <td contenteditable='true'>{{row['filename']}}</td>

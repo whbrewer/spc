@@ -69,7 +69,7 @@ function leg(val) {
     <input type="text" class="form-control" name="yaxis_label" id="yaxis_label" onchange="opt()">
 
     <div class="form-group">
-        <label for="options" class="control-label col-md-3">Options:</label>
+        <label for="options" class="control-label col-md-3">Options (JSON):</label>
         <div class="col-md-6">
             <textarea name="options" id="options" class="form-control"></textarea>
         </div>
