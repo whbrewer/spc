@@ -2,8 +2,8 @@
 %include('navbar')
 %include('plots/header')
 
-<!--<h1>Matplotlib {{cid}}</h1>-->
-
-<img src="../{{img_path}}">
+<script>
+	document.getElementById("myplot").innerHTML="<img src='../{{img_path}}'/>";
+</script>
 
 %include('footer')

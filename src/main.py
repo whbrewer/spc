@@ -81,10 +81,6 @@ def confirm_form():
 def test():
     return template('websocket')
 
-@get('/plots/json')
-def test():
-    return template('plots/json-helper')
-
 @post('/execute')
 def execute():
     global user
@@ -1093,18 +1089,31 @@ def matplotlib(pltid):
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
     global user
+    check_user_var()
     app = request.query.app
     cid = request.query.cid
 
     fig = Figure()
+    fig.set_tight_layout(True)
     ax = fig.add_subplot(111)
 
-    # get info about plot
+    # get info about plot from db
     p = plotmod.plot()
     result = db(plots.id==pltid).select().first()
+    title = result['title']
     plottype = result['ptype']
     options = result['options']
-    title = result['title']
+
+    # parse plot options to extract and set x- and y-axis labels
+    m = re.search("xaxis:\s*{(.*)}", options)
+    if m: 
+        n = re.search("axisLabel:\s*\"(\w*)\"", m.group(1))
+        if n: ax.set_xlabel(n.group(1))
+
+    m = re.search("yaxis:\s*{(.*)}", options)
+    if m: 
+        n = re.search("axisLabel:\s*\"(\w*)\"", m.group(1))
+        if n: ax.set_ylabel(n.group(1))
 
     # get info about data source
     # fix in the future to handle multiple data sources
@@ -1126,12 +1135,15 @@ def matplotlib(pltid):
     plotpath = os.path.join(sim_dir,plotfn)
     xx = p.get_column_of_data(plotpath,col1)
     yy = p.get_column_of_data(plotpath,col2)
+    # convert elements from strings to floats
+    xx = [float(i) for i in xx]
+    yy = [float(i) for i in yy]
 
     # plot
     if plottype == 'mpl-line':
         ax.plot(xx, yy)
     elif plottype == 'mpl-bar':
-        ax.hist(xx, yy, normed=1, histtype='bar', rwidth=0.8)
+        ax.bar(xx, yy)
     else:
         return "ERROR: plottype not supported"
     canvas = FigureCanvas(fig)
@@ -1149,10 +1161,11 @@ def matplotlib(pltid):
     # get list of all plots for this app
     query = (apps.id==plots.appid) & (apps.name==app)
     list_of_plots = db(query).select()
+    stats = compute_stats(plotpath)
 
     params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid,
               'plotpath': plotpath, 'img_path': img_path, 'title': title,
-              'rows': list_of_plots, 'apps': myapps.keys() }
+              'rows': list_of_plots, 'apps': myapps.keys(), 'stats': stats }
     return template('plots/matplotlib', params)
 
 @get('/monitor')
