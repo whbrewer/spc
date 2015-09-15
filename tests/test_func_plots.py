@@ -5,7 +5,7 @@ import sys, os
 import sqlite3 as lite
 # prepend parent directory to path
 sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
-#from scipaas import config
+#from spc import config
 
 class TestPlots(unittest.TestCase):
 
@@ -13,7 +13,7 @@ class TestPlots(unittest.TestCase):
         # Connect to DB 
         self.con = None
         try:
-            self.con = lite.connect("../db/scipaas.db")
+            self.con = lite.connect("../db/spc.db")
         except lite.Error, e:
             print "Error %s:" % e.args[0]
             sys.exit(1)

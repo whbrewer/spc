@@ -1,6 +1,6 @@
 Basic functionality tests:
 
-* add application to scipaas
+* add application 
 * start application
 * submit application
 * plot
@@ -36,7 +36,7 @@ Basic functionality tests:
 # verify throws error with no exe file
 # test if writing parameters correctly especially test booleans, integers, strings, etc.
 
-SciPaaS functions to unit test:
+functions to unit test:
 
 apps.py:#    def __init__(self,data_type):
 apps.py:    def __init__(self):

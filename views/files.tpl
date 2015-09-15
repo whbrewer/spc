@@ -26,7 +26,7 @@
 		% elif ext in binary_extensions:
 			<a href="{{path}}/{{file}}">{{file}}</a>
 		% elif ext in image_extensions:
-			<a href="{{path}}/{{file}}"><img src="{{path}}/{{file}}" width="100"></a> </td>
+			<a href="{{path}}/{{file}}"><img src="{{path}}/{{file}}" width="100"><br> {{file}} </a> </td>
 		% else:
 			<a href="/more?app={{app}}&cid={{cid}}&filepath={{path}}/{{file}}">{{file}}</a>
 		% end

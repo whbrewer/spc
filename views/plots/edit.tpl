@@ -100,9 +100,6 @@ function endis() {
 
 <h1 align=center>Plot definitions for {{app}} app</h1>
 
-%# template to generate a HTML table from a list of tuples
-%# from bottle documentation 0.12-dev p.53
-
 <table class="table table-striped">
 <thead>
 <tr>

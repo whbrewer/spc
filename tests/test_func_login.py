@@ -33,7 +33,7 @@ class TestRegistration(unittest.TestCase):
         # Connect to DB 
         self.con = None
         try:
-            self.con = lite.connect("../db/scipaas.db")
+            self.con = lite.connect("../db/spc.db")
         except lite.Error, e:
             print "Error %s:" % e.args[0]
             sys.exit(1)
@@ -47,7 +47,7 @@ class TestRegistration(unittest.TestCase):
     def test_registration_valid(self):
         url = misc.URL+'/register'
         values = { 'user': user, 'password1': passwd,
-                   'password2': passwd, 'email': 'test@scipaas.com' }
+                   'password2': passwd, 'email': 'test@spc.com' }
         (code, html) = misc.post(url,values)
         #print html
         self.assertEqual(code,httplib.OK)

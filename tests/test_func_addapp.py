@@ -25,7 +25,7 @@ class TestRoutes(unittest.TestCase):
         # Connect to DB 
         self.con = None
         try:
-            self.con = lite.connect("db/scipaas.db")
+            self.con = lite.connect("db/spc.db")
         except lite.Error, e:
             print "Error %s:" % e.args[0]
             sys.exit(1)

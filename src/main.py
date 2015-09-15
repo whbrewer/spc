@@ -140,8 +140,7 @@ def case():
     check_user_var()
     app = request.query.app
     cid = request.query.cid
-    jid = request.query.jid
-    if not jid: jid = -1
+    jid = request.query.jid or -1
     try:
         if re.search("/",cid):
             (u,c) = cid.split("/")
@@ -299,14 +298,10 @@ def show_jobs():
     global user
     cid = request.query.cid
     app = request.query.app
-    n = request.query.n
+    n = int(request.query.n or config.jobs_num_rows)
     q = request.query.q
     starred = request.query.starred
     check_user_var()
-    if not n: 
-        n = config.jobs_num_rows
-    else:
-        n = int(n)
     if starred:
         result = db(jobs.user==user and jobs.starred=="True").select(orderby=~jobs.id)[:n]
     elif q:
@@ -392,8 +387,7 @@ def aws_conn(id):
     instances = db(db.aws_instances.id==id).select().first()
     instance = instances['instance']
     region = instances['region']
-    rate = instances['rate']
-    if not rate: rate = 0.0
+    rate = instances['rate'] or 0.
     return awsmod.ec2(key,secret,account_id,instance,region,rate)
 
 @get('/aws/status/<aid>')

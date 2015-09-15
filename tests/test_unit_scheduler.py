@@ -2,12 +2,12 @@ import unittest
 import sys, os
 # prepend parent directory to path
 sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
-from scipaas import scheduler_smp
+from src import scheduler_mp
 
 class TestScheduler(unittest.TestCase):
 
     def setUp(self):
-        self.sched = scheduler_smp.scheduler()
+        self.sched = scheduler_mp.scheduler()
 
     def tearDown(self):
         pass

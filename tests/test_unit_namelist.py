@@ -2,7 +2,7 @@ import unittest
 import sys, os
 # prepend parent directory to path
 sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
-from scipaas import apps
+from src import apps
 
 class TestScheduler(unittest.TestCase):
 
