@@ -301,9 +301,12 @@ def show_jobs():
     n = int(request.query.n or config.jobs_num_rows)
     q = request.query.q
     starred = request.query.starred
+    shared = request.query.shared
     check_user_var()
     if starred:
         result = db(jobs.user==user and jobs.starred=="True").select(orderby=~jobs.id)[:n]
+    elif shared:
+        result = db(jobs.user==user and jobs.shared=="True").select(orderby=~jobs.id)[:n]
     elif q:
         result = db(jobs.user==user and \
             db.jobs.description.contains(q, case_sensitive=False)).select(orderby=~jobs.id)        
@@ -813,9 +816,7 @@ def delete_app(appid):
     appname = request.forms.app
     del_app_dir = request.forms.del_app_dir
     del_app_cases = request.forms.del_app_cases
-    uid = apps(appid).uid
-    owner = users(id=uid).user
-    if user == owner or user == 'admin':
+    if user == 'admin':
         # delete entry in DB
         a = appmod.app()
         a.delete(appid)

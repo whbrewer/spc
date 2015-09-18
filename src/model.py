@@ -19,8 +19,7 @@ apps = db.define_table('apps', Field('id','integer'),
                                Field('input_format','string'),
                                Field('command','string'),
                                Field('preprocess','string'),
-                               Field('postprocess','string'),
-                               Field('uid','integer'))
+                               Field('postprocess','string'))
 # this is also defined in scheduler.py
 # need to fix in the future
 jobs = db.define_table('jobs', Field('id','integer'),

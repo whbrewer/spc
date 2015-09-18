@@ -45,9 +45,9 @@
 <div class="row">
     <div class="col-md-12 col-md-offset-2">
         <input type="hidden" name="app" value="{{rows['name']}}">
-        <input type="submit" class="btn btn-success" value="save changes">
+        <input type="submit" class="btn btn-primary" value="Save changes">
         <a href="/app/{{app}}">
-            <input type="button" class="btn btn-default" value="cancel">
+            <input type="button" class="btn btn-default" value="Cancel">
         </a>
     </div>
 </div>

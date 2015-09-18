@@ -28,10 +28,10 @@ class app(object):
     def __init__(self):
         pass
 
-    def create(self, name, desc, cat, lang, info, cmd, pre, post, uid):
+    def create(self, name, desc, cat, lang, info, cmd, pre, post):
         apps.insert(name=name, description=desc, category=cat, language=lang,  
                     input_format=info, command=cmd, preprocess=pre, 
-                    postprocess=post,uid=uid)
+                    postprocess=post)
         db.commit()
 
     def update(self):

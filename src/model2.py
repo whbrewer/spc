@@ -19,8 +19,7 @@ class dal(object):
                                        Field('input_format','string'),
                                        Field('command','string'),
                                        Field('preprocess','string'),
-                                       Field('postprocess','string'),
-                                       Field('uid','integer'))
+                                       Field('postprocess','string'))
         self.jobs = self.db.define_table('jobs', Field('id','integer'),
                                        Field('user','string'),
                                        Field('app','string'),

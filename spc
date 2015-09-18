@@ -13,12 +13,12 @@ url = 'https://s3-us-west-1.amazonaws.com/scihub'
 def usage():
     buf =  "usage: spc <command> [options]\n\n"
     buf += "available commands:\n"
-    buf += "go       start the server\n"
     buf += "init     initialize a database\n"
-    buf += "install  install an app\n"
-    buf += "list     list installed or available apps\n"
-    buf += "search   search for available apps\n"
-    buf += "test     run unit tests\n"
+    buf += "go       start the server\n"
+    #buf += "install  install an app\n"
+    #buf += "list     list installed or available apps\n"
+    #buf += "search   search for available apps\n"
+    #buf += "test     run unit tests\n"
     return buf
 
 if (len(sys.argv) == 1):
@@ -184,7 +184,7 @@ if __name__ == "__main__":
             from src import model2
             # future here: unzip file
             app = sys.argv[2]
-            path = app + os.sep + app + ".json"
+            path = app + os.sep + "spc.json"
             print path
             with open(path,'r') as f: 
                 data = f.read()
@@ -209,13 +209,27 @@ if __name__ == "__main__":
 
             # add app to database
             os.chdir(os.pardir)
-            dal = model2.dal(uri=config.uri,migrate=True)
-            dal.db.apps.insert(name=parsed['name'],
+            dal = model2.dal(uri=config.uri) 
+            appid = dal.db.apps.insert(name=parsed['name'],
                                description=parsed['description'],
                                category=parsed['category'],
                                language=parsed['language'],
                                input_format=parsed['input_format'],
                                command=parsed['command'])
+     
+            # add plots and datasources to db
+            if 'plots' in parsed.keys():
+                for key in parsed['plots']:
+                    pltid = dal.db.plots.insert(appid=appid, ptype=key['ptype'],
+                                                title=key['title'], 
+                                                options=key['options'])
+                    for ds in key['datasource']:
+                        dal.db.datasource.insert(pltid=pltid, 
+                                                 filename=ds['filename'], 
+                                                 cols=ds['cols'], 
+                                                 line_range=ds['line_range'], 
+                                                 data_def=ds['data_def'])
+            # commit to db
             dal.db.commit()
         else:
             print install_usage
@@ -228,13 +242,17 @@ if __name__ == "__main__":
                 for r in result:
                     print r.name
             elif (sys.argv[2] == "available"):
-                response = urllib2.urlopen(url)
-                html = response.read()
-                root = ET.fromstring(html)
-                for child in root.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Contents"):
-                    for c in child.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Key"):
-                        (app,ext) = c.text.split(".")
-                        print app 
+                try:
+                    response = urllib2.urlopen(url)
+                    html = response.read()
+                    root = ET.fromstring(html)
+                    for child in root.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Contents"):
+                        for c in child.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Key"):
+                            (app,ext) = c.text.split(".")
+                            print app 
+                except:
+                    print "ERROR: problem accessing network"
+                    sys.exit()
             else:
                 print list_usage
         else:

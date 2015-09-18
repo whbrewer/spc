@@ -64,7 +64,7 @@
   %end
   <th>date/time submitted</th> 
   <th>labels</th>
-  <th><a href="/jobs/shared" title="see shared cases"><span class="glyphicon glyphicon-pushpin"></span></a></th>
+  <th><a href="/jobs?shared=1" title="see shared cases"><span class="glyphicon glyphicon-pushpin"></span></a></th>
 </tr>
 </thead>
 
