@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, os, shutil, urllib2
+import sys, os, shutil, urllib2, time
 if os.path.exists("src/config.py"):
     from src import config, uploads
     from src import apps as appmod
@@ -13,9 +13,9 @@ url = 'https://s3-us-west-1.amazonaws.com/scihub'
 def usage():
     buf =  "usage: spc <command> [options]\n\n"
     buf += "available commands:\n"
-    buf += "init     initialize a database\n"
+    buf += "init     initialize database and create basic config.py file\n"
     buf += "go       start the server\n"
-    #buf += "install  install an app\n"
+    buf += "install  install an app\n"
     #buf += "list     list installed or available apps\n"
     #buf += "search   search for available apps\n"
     #buf += "test     run unit tests\n"
@@ -152,29 +152,30 @@ if __name__ == "__main__":
         os.chdir('tests')  
         os.system("python test_unit.py")
     elif (sys.argv[1] == "install"):
-        install_usage = "usage: sp install appname [--local]"
+        install_usage = "usage: spc install /path/to/file.zip\n    or spc install http://url/to/file.zip"
                 
-        if 3 <= len(sys.argv) <= 4:
+        if len(sys.argv) == 3:
 
-            os.chdir(config.apps_dir)
-
-            # to install local zip file sitting in apps dir
-            # sp install xyz --local
-            if len(sys.argv) < 4:
+            if re.search(r'http://*$', sys.argv[2]):
                 # download zip file into apps folder
-                durl = url+'/'+sys.argv[2]+'.zip' 
+                durl = url+'/'+sys.argv[2]
                 print 'durl is:',durl
                 dlfile(durl)
 
             save_path = sys.argv[2]
-            print "save_path:", save_path
-            if os.path.isfile(save_path):
-                print 'ERROR: zip file exists already. Please remove first.'
+            app_dir_name = os.path.basename(save_path).split('.')[0]
+            if os.path.isfile(app_dir_name):
+                print 'ERROR: app directory exists already. Please remove first.'
                 sys.exit()
+            # don't overwrite another directory if it exists
+            # instead rename old redirectory with timestamp
+            if os.path.isfile(app_dir_name):
+                timestr = time.strftime("%Y%m%d-%H%M%S")
+                shutil.move(app_dir_name,app_dir_name+"."+timestr)
 
-            import zipfile
             # unzip file
-            fh = open(save_path+".zip", 'rb')
+            import zipfile
+            fh = open(save_path, 'rb')
             z = zipfile.ZipFile(fh)
             z.extractall()
             fh.close()
@@ -182,35 +183,39 @@ if __name__ == "__main__":
             # read the json app config file and insert info into db
             import json
             from src import model2
-            # future here: unzip file
-            app = sys.argv[2]
-            path = app + os.sep + "spc.json"
+            path = app_dir_name + os.sep + "spc.json"
             print path
             with open(path,'r') as f: 
                 data = f.read()
             print data
             parsed = json.loads(data)
             print parsed
+
+            # get name of app from json data
+            app = parsed['name']
+            app_path = config.apps_dir + os.sep + app
+
+            # move directory to apps folder
+            shutil.move(app_dir_name,app_path)
+
+            # connect to db
+            #os.chdir(os.pardir)
+            dal = model2.dal(uri=config.uri) 
+
+            # check if app already exists before preceding
+            result = dal.db(dal.db.apps.name==parsed['name']).select().first()
+            if result: 
+                print "\n*** ERROR: app already exists in database ***"
+                shutil.rmtree(app_path)
+                sys.exit()
             
             # copy tpl file to views/apps folder
-            src = app + os.sep + app + '.tpl'
-            dst = os.pardir + os.sep + 'views' + os.sep + 'apps'
+            src = config.apps_dir + os.sep + app + os.sep + app + '.tpl'
+            dst = 'views' + os.sep + 'apps'
             shutil.copy(src,dst)
-            # copy input file--don't need b/c file is already in apps folder
-            #if parsed['input_format'] == "namelist":
-            #    path = app + os.sep + app + ".in"
-            #else if parsed['input_format'] == "ini":
-            #    path = app + os.sep + app + ".ini"
-            #else if parsed['input_format'] == "xml":
-            #    path = app + os.sep + app + ".xml"
-            #else:
-            #    print "ERROR: input format not supported"
-            #    sys.exit()
 
             # add app to database
-            os.chdir(os.pardir)
-            dal = model2.dal(uri=config.uri) 
-            appid = dal.db.apps.insert(name=parsed['name'],
+            appid = dal.db.apps.insert(name=app,
                                description=parsed['description'],
                                category=parsed['category'],
                                language=parsed['language'],
@@ -231,11 +236,12 @@ if __name__ == "__main__":
                                                  data_def=ds['data_def'])
             # commit to db
             dal.db.commit()
+            print "SUCCESS: installed app", app
         else:
             print install_usage
 
     elif (sys.argv[1] == "list"):
-        list_usage = "usage: sp list [available|installed]"
+        list_usage = "usage: spc list [available|installed]"
         if (len(sys.argv) == 3):
             if (sys.argv[2] == "installed"):
                 result = Apps.all()
