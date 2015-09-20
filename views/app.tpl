@@ -62,10 +62,10 @@ function toggle(cmd,id) {
       <td>Input format:</td>
       <td>{{rows['input_format']}}</td> 
   </tr>
-  <!-- <tr>
+  <tr>
       <td>Language:</td>
       <td>{{rows['language']}}</td> 
-  </tr> -->
+  </tr>
   <tr>
       <td>Command:</td> 
       <td>{{rows['command']}}</td> 

@@ -31,11 +31,11 @@
       </select>
       </td>
   </tr>
-  <!-- <tr>
+  <tr>
       <td>Language:</td>
       <td><input class="form-control" type="text" name="language" 
                  value="{{rows['language']}}"></td> 
-  </tr> -->
+  </tr> 
   <tr>
       <td>Command:</td> 
       <td><input class="form-control" type="text" name="command" size="40"

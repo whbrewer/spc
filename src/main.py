@@ -157,7 +157,6 @@ def case():
             run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
             fn = os.path.join(run_dir,myapps[app].outfn)
             output = slurp_file(fn)
-            # result = db(jobs.id==jid).select().first()
             result = db(jobs.cid==cid).select().first()
             desc = result['description']
             shared = result['shared']
@@ -1265,6 +1264,10 @@ def appconfig_status():
         status['template'] = 0
     # check inputs file
     if os.path.exists(os.path.join(config.apps_dir,app,app+".in")):
+        status['inputs'] = 1
+    elif os.path.exists(os.path.join(config.apps_dir,app,app+".xml")):
+        status['inputs'] = 1
+    elif os.path.exists(os.path.join(config.apps_dir,app,app+".ini")):
         status['inputs'] = 1
     else:
         status['inputs'] = 0

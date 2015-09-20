@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import sys, os, shutil, urllib2, time
 if os.path.exists("src/config.py"):
-    from src import config, uploads
-    from src import apps as appmod
+    from src import config
+from src import apps as appmod
+from src import model2, uploads
 import xml.etree.ElementTree as ET
 import hashlib, re
 
@@ -16,13 +17,13 @@ def usage():
     buf += "init     initialize database and create basic config.py file\n"
     buf += "go       start the server\n"
     buf += "install  install an app\n"
-    #buf += "list     list installed or available apps\n"
+    buf += "list     list installed or available apps\n"
     #buf += "search   search for available apps\n"
     #buf += "test     run unit tests\n"
     return buf
 
 if (len(sys.argv) == 1):
-    print usage()
+    print(usage())
     sys.exit()
 
 #db = config.db
@@ -67,24 +68,22 @@ def create_config_file():
 
 def initdb():
     """Initializes database file"""
-    from src import config
-    from src import model2
-    # somehow the following doesn't work properly
 
     # create db directory if it doesn't exist
     if not os.path.exists(config.dbdir):
         os.makedirs(config.dbdir)
-    # make a backup copy of db file if it exists
 
+    # somehow the following doesn't work properly
+    # make a backup copy of db file if it exists
     #if os.path.isfile(db): 
-    #    print "ERROR: a database file already exists, please rename it and rerun"
+    #    print("ERROR: a database file already exists, please rename it and rerun")
     #    sys.exit()
     #    shutil.copyfile(db, db+".bak")
 
     # get rid of old .table files
     for f in os.listdir(config.dbdir):
         if re.search("\.table", f):
-            print "removing file:", f
+            print("removing file:", f)
             os.remove(os.path.join(config.dbdir, f))
     # delete previous .db file should back first (future)
     dbpath = os.path.join(config.dbdir, config.db)
@@ -128,26 +127,26 @@ def dlfile(url):
     # Open the url
     try:
         f = urllib2.urlopen(url)
-        print "downloading " + url
+        print("downloading " + url)
         # Open our local file for writing
         with open(os.path.basename(url), "wb") as local_file:
             local_file.write(f.read())
     #handle errors
-    except urllib2.HTTPError, e:
-        print "HTTP Error:", e.code, url
-    except urllib2.URLError, e:
-        print "URL Error:", e.reason, url
+    except urllib2.HTTPError as e:
+        print("HTTP Error:", e.code, url)
+    except urllib2.URLError as e:
+        print("URL Error:", e.reason, url)
 
 # process command line options
 if __name__ == "__main__":
     if (sys.argv[1] == "init"):
         create_config_file()
-        print "creating database."
+        print("creating database.")
         initdb()
     elif (sys.argv[1] == "go"):
         os.system("python src/main.py")
     elif (sys.argv[1] == "search"):
-        print notyet
+        print(notyet)
     elif (sys.argv[1] == "test"):
         os.chdir('tests')  
         os.system("python test_unit.py")
@@ -159,13 +158,13 @@ if __name__ == "__main__":
             if re.search(r'http://*$', sys.argv[2]):
                 # download zip file into apps folder
                 durl = url+'/'+sys.argv[2]
-                print 'durl is:',durl
+                print('durl is:',durl)
                 dlfile(durl)
 
             save_path = sys.argv[2]
             app_dir_name = os.path.basename(save_path).split('.')[0]
             if os.path.isfile(app_dir_name):
-                print 'ERROR: app directory exists already. Please remove first.'
+                print('ERROR: app directory exists already. Please remove first.')
                 sys.exit()
             # don't overwrite another directory if it exists
             # instead rename old redirectory with timestamp
@@ -184,12 +183,12 @@ if __name__ == "__main__":
             import json
             from src import model2
             path = app_dir_name + os.sep + "spc.json"
-            print path
+            print(path)
             with open(path,'r') as f: 
                 data = f.read()
-            print data
+            print(data)
             parsed = json.loads(data)
-            print parsed
+            print(parsed)
 
             # get name of app from json data
             app = parsed['name']
@@ -199,13 +198,12 @@ if __name__ == "__main__":
             shutil.move(app_dir_name,app_path)
 
             # connect to db
-            #os.chdir(os.pardir)
             dal = model2.dal(uri=config.uri) 
 
             # check if app already exists before preceding
             result = dal.db(dal.db.apps.name==parsed['name']).select().first()
             if result: 
-                print "\n*** ERROR: app already exists in database ***"
+                print("\n*** ERROR: app already exists in database ***")
                 shutil.rmtree(app_path)
                 sys.exit()
             
@@ -236,17 +234,17 @@ if __name__ == "__main__":
                                                  data_def=ds['data_def'])
             # commit to db
             dal.db.commit()
-            print "SUCCESS: installed app", app
+            print("SUCCESS: installed app", app)
         else:
-            print install_usage
+            print(install_usage)
 
     elif (sys.argv[1] == "list"):
         list_usage = "usage: spc list [available|installed]"
         if (len(sys.argv) == 3):
             if (sys.argv[2] == "installed"):
-                result = Apps.all()
-                for r in result:
-                    print r.name
+                dal = model2.dal(uri=config.uri)
+                result = dal.db().select(dal.db.apps.ALL)
+                for r in result: print(r.name)
             elif (sys.argv[2] == "available"):
                 try:
                     response = urllib2.urlopen(url)
@@ -255,15 +253,15 @@ if __name__ == "__main__":
                     for child in root.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Contents"):
                         for c in child.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Key"):
                             (app,ext) = c.text.split(".")
-                            print app 
+                            print(app)
                 except:
-                    print "ERROR: problem accessing network"
+                    print("ERROR: problem accessing network")
                     sys.exit()
             else:
-                print list_usage
+                print(list_usage)
         else:
-            print list_usage
+            print(list_usage)
     else:
-        print "ERROR: option not supported"
+        print("ERROR: option not supported")
         sys.exit()
 
