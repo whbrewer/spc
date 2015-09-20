@@ -4,7 +4,7 @@ import os
 def preprocess(params,fn,base_dir=""):
     buf = ''
     if fn == 'fpg.in':  
-        """convert input key/value params to command-line style args"""
+        # convert input key/value params to command-line style args
         for key, value in (params.iteritems()):
             if key == 't_pseudo_data':
                if value=='true': value = ''

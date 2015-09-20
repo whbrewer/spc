@@ -789,6 +789,8 @@ def load_apps():
 def app_edit(appid):
     global user
     if config.auth and not authorized(): redirect('/login')
+    if user != 'admin': 
+        return template('error',err="must be admin to edit app")
     cid = request.forms.cid
     app = request.forms.app
     result = db(apps.name==app).select().first()
@@ -821,7 +823,7 @@ def delete_app(appid):
         a = appmod.app()
         a.delete(appid)
     else:
-        return template("error", err="wrong user. must be owner or admin")
+        return template("error", err="must be admin")
     # if delete files checkbox ticked
     if del_app_dir == "on":
         # delete app directory
@@ -839,6 +841,8 @@ def view_app(app):
     if config.auth and not authorized(): redirect('/login')
     check_user_var()
     global user
+    if user != 'admin': 
+        return template('error',err="must be admin to edit app")
     cid = request.query.cid
     result = db(apps.name==app).select().first()
     params = {}
@@ -900,9 +904,11 @@ def list_files():
 @get('/plots/edit')
 def editplot():
     global user
+    check_user_var()
+    if user != 'admin': 
+        return template('error',err="must be admin to edit plots")
     app = request.query.app
     cid = request.query.cid
-    check_user_var()
     if config.auth and not authorized(): redirect('/login')
     if app not in myapps: redirect('/apps')
     query = (apps.id==plots.appid) & (apps.name==app)
@@ -1214,12 +1220,17 @@ def zipget():
 
 @get('/addapp')
 def getaddapp():
+    global user
+    if user != 'admin': 
+        return template('error',err="must be admin to add app")
     return template('appconfig/addapp')
 
 @post('/addapp')
 def addapp():
     global user
     check_user_var()
+    if user != 'admin': 
+        return template('error',err="must be admin to add app")
     appname = request.forms.appname
     input_format = request.forms.input_format
     # ask for app name
@@ -1274,6 +1285,9 @@ def appconfig_status():
 
 @post('/appconfig/exe/<step>')
 def appconfig_exe(step="upload"):
+    global user
+    if user != 'admin': 
+        return template('error',err="must be admin to configure app")
     if step == "upload":
         appname = request.forms.appname
         params = {'appname': appname}
@@ -1311,6 +1325,9 @@ def appconfig_exe(step="upload"):
 
 @post('/appconfig/inputs/<step>')
 def edit_inputs(step):
+    global user
+    if user != 'admin': 
+        return template('error',err="must be admin to edit app")
     # upload zip file and return a text copy of the input file
     if step == "upload":
         appname = request.forms.appname
