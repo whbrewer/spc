@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 import sys, os, shutil, urllib2, time
 if os.path.exists("src/config.py"):
-    from src import config
-from src import apps as appmod
-from src import model2, uploads
+    from src import config, apps as appmod, model2, uploads
 import xml.etree.ElementTree as ET
 import hashlib, re
 
@@ -68,6 +66,7 @@ def create_config_file():
 
 def initdb():
     """Initializes database file"""
+    from src import config, model2
 
     # create db directory if it doesn't exist
     if not os.path.exists(config.dbdir):
