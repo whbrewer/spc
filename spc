@@ -23,7 +23,7 @@ def usage():
     return buf
 
 if (len(sys.argv) == 1):
-    print(usage())
+    print usage() 
     sys.exit()
 
 #db = config.db
@@ -76,14 +76,14 @@ def initdb():
     # somehow the following doesn't work properly
     # make a backup copy of db file if it exists
     #if os.path.isfile(db): 
-    #    print("ERROR: a database file already exists, please rename it and rerun")
+    #    print "ERROR: a database file already exists, please rename it and rerun" 
     #    sys.exit()
     #    shutil.copyfile(db, db+".bak")
 
     # get rid of old .table files
     for f in os.listdir(config.dbdir):
         if re.search("\.table", f):
-            print("removing file:", f)
+            print "removing file:", f 
             os.remove(os.path.join(config.dbdir, f))
     # delete previous .db file should back first (future)
     dbpath = os.path.join(config.dbdir, config.db)
@@ -122,31 +122,31 @@ def initdb():
 
 notyet = "this feature not yet working"
 
-# http://stackoverflow.com/questions/4028697/how-do-i-download-a-zip-file-in-python-using-urllib2
+# ref: http://stackoverflow.com/questions/4028697
 def dlfile(url):
     # Open the url
     try:
         f = urllib2.urlopen(url)
-        print("downloading " + url)
+        print "downloading " + url 
         # Open our local file for writing
         with open(os.path.basename(url), "wb") as local_file:
             local_file.write(f.read())
     #handle errors
-    except urllib2.HTTPError as e:
-        print("HTTP Error:", e.code, url)
-    except urllib2.URLError as e:
-        print("URL Error:", e.reason, url)
+    except urllib2.HTTPError, e:
+        print "HTTP Error:", e.code, url 
+    except urllib2.URLError, e:
+        print "URL Error:", e.reason, url 
 
 # process command line options
 if __name__ == "__main__":
     if (sys.argv[1] == "init"):
         create_config_file()
-        print("creating database.")
+        print "creating database." 
         initdb()
     elif (sys.argv[1] == "go"):
         os.system("python src/main.py")
     elif (sys.argv[1] == "search"):
-        print(notyet)
+        print notyet 
     elif (sys.argv[1] == "test"):
         os.chdir('tests')  
         os.system("python test_unit.py")
@@ -154,17 +154,18 @@ if __name__ == "__main__":
         install_usage = "usage: spc install /path/to/file.zip\n    or spc install http://url/to/file.zip"
                 
         if len(sys.argv) == 3:
+            if re.search(r'http://.*$', sys.argv[2]):
+                dlfile(sys.argv[2]) # download zip file 
+                # if url is http://website.com/path/to/file.zip
+                # following line extracts out just "file.zip" which should 
+                # now be in the current directory
+                save_path = os.path.basename(sys.argv[2].split('//')[1])
+            else:
+                save_path = sys.argv[2]
 
-            if re.search(r'http://*$', sys.argv[2]):
-                # download zip file into apps folder
-                durl = url+'/'+sys.argv[2]
-                print('durl is:',durl)
-                dlfile(durl)
-
-            save_path = sys.argv[2]
             app_dir_name = os.path.basename(save_path).split('.')[0]
             if os.path.isfile(app_dir_name):
-                print('ERROR: app directory exists already. Please remove first.')
+                print 'ERROR: app directory exists already. Please remove first.' 
                 sys.exit()
             # don't overwrite another directory if it exists
             # instead rename old redirectory with timestamp
@@ -179,16 +180,24 @@ if __name__ == "__main__":
             z.extractall()
             fh.close()
 
+            # delete downloaded zip file
+            if re.search(r'http://.*$', sys.argv[2]):
+                os.unlink(save_path)
+
+            # delete __MACOSX dir if exists
+            if os.path.exists("__MACOSX"):
+                shutil.rmtree("__MACOSX")
+
             # read the json app config file and insert info into db
             import json
             from src import model2
             path = app_dir_name + os.sep + "spc.json"
-            print(path)
+            print path 
             with open(path,'r') as f: 
                 data = f.read()
-            print(data)
+            print data 
             parsed = json.loads(data)
-            print(parsed)
+            print parsed 
 
             # get name of app from json data
             app = parsed['name']
@@ -203,7 +212,7 @@ if __name__ == "__main__":
             # check if app already exists before preceding
             result = dal.db(dal.db.apps.name==parsed['name']).select().first()
             if result: 
-                print("\n*** ERROR: app already exists in database ***")
+                print "\n*** ERROR: app already exists in database ***" 
                 shutil.rmtree(app_path)
                 sys.exit()
             
@@ -234,9 +243,10 @@ if __name__ == "__main__":
                                                  data_def=ds['data_def'])
             # commit to db
             dal.db.commit()
-            print("SUCCESS: installed app", app)
+            print "SUCCESS: installed app", app 
+            print "Note: If SPC is running, you will need to restart"
         else:
-            print(install_usage)
+            print install_usage 
 
     elif (sys.argv[1] == "list"):
         list_usage = "usage: spc list [available|installed]"
@@ -244,7 +254,7 @@ if __name__ == "__main__":
             if (sys.argv[2] == "installed"):
                 dal = model2.dal(uri=config.uri)
                 result = dal.db().select(dal.db.apps.ALL)
-                for r in result: print(r.name)
+                for r in result: print r.name 
             elif (sys.argv[2] == "available"):
                 try:
                     response = urllib2.urlopen(url)
@@ -253,15 +263,15 @@ if __name__ == "__main__":
                     for child in root.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Contents"):
                         for c in child.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Key"):
                             (app,ext) = c.text.split(".")
-                            print(app)
+                            print app 
                 except:
-                    print("ERROR: problem accessing network")
+                    print "ERROR: problem accessing network" 
                     sys.exit()
             else:
-                print(list_usage)
+                print list_usage 
         else:
-            print(list_usage)
+            print list_usage 
     else:
-        print("ERROR: option not supported")
+        print "ERROR: option not supported" 
         sys.exit()
 
