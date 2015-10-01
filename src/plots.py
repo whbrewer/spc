@@ -2,7 +2,7 @@
 import re, string
 import config
 
-class plot(object):
+class Plot(object):
 
     def get_data(self,fn,col1,col2,line1=1,line2=1e6):
         """return data as string in format [ [x1,y1], [x2,y2], ... ]"""

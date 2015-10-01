@@ -1,7 +1,7 @@
 from gluino import DAL, Field
 import config
 
-class dal(object):
+class DAL(object):
     def __init__(self, uri=config.uri, migrate=False):
         #self.db = DAL(uri, auto_import=True, migrate=migrate, folder=config.dbdir)
         self.db = DAL(uri, migrate=migrate, folder=config.dbdir)

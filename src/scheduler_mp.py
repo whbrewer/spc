@@ -12,7 +12,7 @@ STATE_RUN = 'R'
 STATE_QUEUED = 'Q'
 STATE_COMPLETED = 'C'
 
-class scheduler(object):
+class Scheduler(object):
     """multi-process scheduler"""
 
     def __init__(self):

@@ -34,7 +34,7 @@ def get_docker():
         params['status'] = root.request.query.status
     return root.template('docker',params,instances=instances)
 
-class container(object):
+class Container(object):
     """start, stop, and status of Docker containers"""
 
     def __init__(self, host, image):

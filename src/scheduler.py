@@ -28,7 +28,7 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('starred', 'string'),
                                Field('shared','string'))
 
-class scheduler(object):
+class Scheduler(object):
     """simple single process scheduler"""
     def __init__(self):
         # if any jobs marked in run state when scheduler starts 

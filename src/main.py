@@ -7,7 +7,7 @@ import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib, time
 # other local modules
-import config, uploads, process
+import config, process
 import scheduler, scheduler_mp
 import apps as appmod
 import plots as plotmod
@@ -40,9 +40,9 @@ app = SessionMiddleware(app(), session_opts)
 
 # create instance of scheduler
 if config.sched == "mp":
-    sched = scheduler_mp.scheduler()
+    sched = scheduler_mp.Scheduler()
 else:
-    sched = scheduler.scheduler()
+    sched = scheduler.Scheduler()
 
 pbuffer = ''
 
@@ -390,7 +390,7 @@ def aws_conn(id):
     instance = instances['instance']
     region = instances['region']
     rate = instances['rate'] or 0.
-    return awsmod.ec2(key,secret,account_id,instance,region,rate)
+    return awsmod.EC2(key,secret,account_id,instance,region,rate)
 
 @get('/aws/status/<aid>')
 def aws_status(aid):
@@ -819,7 +819,7 @@ def delete_app(appid):
     del_app_cases = request.forms.del_app_cases
     if user == 'admin':
         # delete entry in DB
-        a = appmod.app()
+        a = appmod.App()
         a.delete(appid)
     else:
         return template("error", err="must be admin")
@@ -994,7 +994,7 @@ def plot_interface(pltid):
         result = db(query).select().first()
         if result: pltid = result['plots']['id']
 
-    p = plotmod.plot()
+    p = plotmod.Plot()
 
     # get the data for the pltid given
     try:
@@ -1102,7 +1102,7 @@ def matplotlib(pltid):
     ax = fig.add_subplot(111)
 
     # get info about plot from db
-    p = plotmod.plot()
+    p = plotmod.Plot()
     result = db(plots.id==pltid).select().first()
     title = result['title']
     plottype = result['ptype']
@@ -1244,7 +1244,7 @@ def addapp():
     preprocess = request.forms.preprocess
     postprocess = request.forms.postprocess
     # put in db
-    a = appmod.app()
+    a = appmod.App()
     #print "user:",user
     uid = users(user=user).id
     a.create(appname, description, category, language,
@@ -1442,13 +1442,13 @@ def upload_data():
 
 def app_instance(input_format,appname,preprocess=0,postprocess=0):
     if(input_format=='namelist'):
-        myapp = appmod.namelist(appname,preprocess,postprocess)
+        myapp = appmod.Namelist(appname,preprocess,postprocess)
     elif(input_format=='ini'):
-        myapp = appmod.ini(appname,preprocess,postprocess)
+        myapp = appmod.INI(appname,preprocess,postprocess)
     elif(input_format=='xml'):
-        myapp = appmod.xml(appname,preprocess,postprocess)
+        myapp = appmod.XML(appname,preprocess,postprocess)
     elif(input_format=='json'):
-        myapp = appmod.json(appname,preprocess,postprocess)
+        myapp = appmod.JSON(appname,preprocess,postprocess)
     else:
         return 'ERROR: input_format ',input_format,' not supported'
     return myapp

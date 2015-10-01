@@ -3,7 +3,7 @@ import boto.ec2
 import datetime
 import math
 
-class ec2(object):
+class EC2(object):
     """start, stop, and status of EC2 instances"""
 
     def __init__(self, key, secret, account_id, instance, region, rate):

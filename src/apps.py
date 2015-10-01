@@ -23,7 +23,7 @@ def is_number(value):
   except ValueError:
     return False
 
-class app(object):
+class App(object):
 
     def __init__(self):
         pass
@@ -141,7 +141,7 @@ class app(object):
         return True
 
 # user must write their own function for how to write the output file
-class namelist(app):
+class Namelist(App):
     '''Class for reading/writing Fortran namelist.input style files.'''
     
     def __init__(self,appname,preprocess=0,postprocess=0):
@@ -241,7 +241,7 @@ class namelist(app):
         #print "blockorder:",blockorder
         return params, blockmap, blockorder
 
-class ini(app):
+class INI(App):
 
     def __init__(self,appname,preprocess=0,postprocess=0):
         self.appname = appname
@@ -316,7 +316,7 @@ class ini(app):
         cfgfile.close()
         return 1
 
-class xml(app):
+class XML(App):
     '''Class for reading/writing XML files.'''
     def __init__(self,appname,preprocess=0,postprocess=0):
         self.appname = appname
