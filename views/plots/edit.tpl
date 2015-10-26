@@ -14,7 +14,7 @@ function opt() {
   var strUser = e.options[e.selectedIndex].value;
   if (strUser != "flot-cat") {
     document.getElementById("options").value = 
-      legstr + ", " + xstr + ", " + ystr;
+      "legend: { position: \"nw\"}" + ", " + xstr + ", " + ystr;
   }
 }
 
@@ -70,6 +70,7 @@ function endis() {
         </div>
     </div>
 
+    <!--
     <fieldset>
       <legend>legend position:</label>
       <input type="radio" name="legpos" value="ne" onclick="leg(this.value)"> ne
@@ -77,6 +78,7 @@ function endis() {
       <input type="radio" name="legpos" value="se" onclick="leg(this.value)"> se
       <input type="radio" name="legpos" value="sw" onclick="leg(this.value)"> sw
     </fieldset>
+    -->
 
     <label class="control-label">xaxis label:</label>
     <input type="text" class="form-control" name="xaxis_label" id="xaxis_label" onchange="opt()">

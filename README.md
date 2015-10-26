@@ -1,7 +1,3 @@
-
-To start server, run the start_server script
-
---
 Information about SPC
 
 The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.
