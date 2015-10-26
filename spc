@@ -154,7 +154,7 @@ if __name__ == "__main__":
         install_usage = "usage: spc install /path/to/file.zip\n    or spc install http://url/to/file.zip"
                 
         if len(sys.argv) == 3:
-            if re.search(r'http://.*$', sys.argv[2]):
+            if re.search(r'http[s]://.*$', sys.argv[2]):
                 dlfile(sys.argv[2]) # download zip file 
                 # if url is http://website.com/path/to/file.zip
                 # following line extracts out just "file.zip" which should 
@@ -178,10 +178,14 @@ if __name__ == "__main__":
             fh = open(save_path, 'rb')
             z = zipfile.ZipFile(fh)
             z.extractall()
+            # depending on how file was zipped, the extracted directory
+            # may be different than the zip filename, so update the app_dir_name
+            # to the extracted filename 
+            app_dir_name = z.namelist()[0]
             fh.close()
 
             # delete downloaded zip file
-            if re.search(r'http://.*$', sys.argv[2]):
+            if re.search(r'http[s]://.*$', sys.argv[2]):
                 os.unlink(save_path)
 
             # delete __MACOSX dir if exists
@@ -220,6 +224,9 @@ if __name__ == "__main__":
             src = config.apps_dir + os.sep + app + os.sep + app + '.tpl'
             dst = 'views' + os.sep + 'apps'
             shutil.copy(src,dst)
+
+            # turn on executable bit
+            os.chmod(config.apps_dir + os.sep + app + os.sep + app,0700)
 
             # add app to database
             appid = dal.db.apps.insert(name=app,
