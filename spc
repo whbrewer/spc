@@ -88,7 +88,8 @@ def initdb():
     dbpath = os.path.join(config.dbdir, config.db)
     if os.path.isfile(dbpath): os.remove(dbpath)
     # create db
-    dal = model2.DAL(uri=config.uri,migrate=True)
+    dal = model2.dal(uri=config.uri, migrate=True)
+
     # add guest and admin user
     hashpw = hashlib.sha256("guest").hexdigest()
     dal.db.users.insert(user="guest",passwd=hashpw)
@@ -206,7 +207,7 @@ if __name__ == "__main__":
             shutil.move(app_dir_name,app_path)
 
             # connect to db
-            dal = model2.DAL(uri=config.uri) 
+            dal = model2.dal(uri=config.uri) 
 
             # check if app already exists before preceding
             result = dal.db(dal.db.apps.name==parsed['name']).select().first()
@@ -251,7 +252,7 @@ if __name__ == "__main__":
         list_usage = "usage: spc list [available|installed]"
         if (len(sys.argv) == 3):
             if (sys.argv[2] == "installed"):
-                dal = model2.DAL(uri=config.uri)
+                dal = model2.dal(uri=config.uri)
                 result = dal.db().select(dal.db.apps.ALL)
                 for r in result: print r.name 
             elif (sys.argv[2] == "available"):
