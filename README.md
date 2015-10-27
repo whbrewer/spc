@@ -16,23 +16,23 @@ QUICKSTART
 
 * To run the dna case in SPC:
 
-  Login with default username/password: guest/guest
+      - Login with default username/password: guest/guest
 
-  Click "Show Apps" to show a list of isntalled apps 
+      - Click "Show Apps" to show a list of isntalled apps 
 
-  Click on "dna" the default installed app
+      - Click on "dna" the default installed app
 
-  Enter a DNA string
+      - Enter a DNA string
 
-  Click confirm to write the datafile to disk
+      - Click confirm to write the datafile to disk
 
-  Click execute to run the DNA analysis
+      - Click execute to run the DNA analysis
 
-  SPC will submit it to the job scheduleer
+      - SPC will submit it to the job scheduleer
 
-  Click output (if you see an error message, it most likely means the jobs has not started running yet, 
-                so you can just click output several times until you see the result)
-  Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  
+      - Click output (if you see an error message, it most likely means the jobs has not started running yet, so you can just click output several times until you see the result)
+
+      - Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  
 
 * To start a docker SPC instance:
 
