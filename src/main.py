@@ -1248,7 +1248,7 @@ def addapp():
     #print "user:",user
     uid = users(user=user).id
     a.create(appname, description, category, language,
-             input_format, command, preprocess, postprocess, uid)
+             input_format, command, preprocess, postprocess)
     redirect('/app/'+appname)
 
 @get('/appconfig/status')

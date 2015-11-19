@@ -1,24 +1,29 @@
-Information about SPC
+SPC
+===
 
-The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.
+INTRO
+-----
 
------------
+> The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.
+
 QUICKSTART
 -----------
 
 * To create and initialize the database which SPC uses: 
   
-      spc init
+      - `spc init`
 
 * To start running the web server: 
 
-      spc go
+      - `spc go`
 
-* To run the dna case in SPC:
+* Open browser to http://0.0.0.0:8580/
+
+* To run the pre-installed example DNA Analyzer app in SPC:
 
       - Login with default username/password: guest/guest
 
-      - Click "Show Apps" to show a list of isntalled apps 
+      - Click "Show Apps" to show a list of installed apps 
 
       - Click on "dna" the default installed app
 
@@ -34,31 +39,31 @@ QUICKSTART
 
       - Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  
 
+* For more information, see user's manual in the docs/ folder
+
 * To start a docker SPC instance:
 
       # Either use the published image
 
-      docker pull willscott/spc
+      `docker pull willscott/spc`
 
       # Or build your own
 
-      docker build -t spc .
+      `docker build -t spc .`
 
       # then run an instance of the loaded image.
 
-      docker run -d -P willscott/spc
+      `docker run -d -P willscott/spc`
 
-----------
 DEPENDENCIES
-----------
+------------
 
 * docker-py (optional-used to support containers)
 * matplotlib (optional-used to support matplotlib plotting)
 * boto (optional-used to support AWS features)
 
-----------
 QUESTIONS
-----------
+---------
 
-  send email to: wes@fluidphysics.com
+* send email to: wes@fluidphysics.com
 
