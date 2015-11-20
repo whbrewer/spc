@@ -8,11 +8,11 @@
 
 * To create and initialize the database which SPC uses: 
 
-      &gt; spc init
+      `> spc init`
 
 * To start running the web server: 
 
-      > spc go
+      `> spc go`
 
 * Open browser to http://0.0.0.0:8580/
 
@@ -44,21 +44,15 @@
 
       - Either use the published image
 
-      ~~~~
-      > docker pull willscott/spc
-      ~~~~
+      `> docker pull willscott/spc`
 
       - Or build your own
 
-      ~~~~
-      > docker build -t spc .
-      ~~~~
+      `> docker build -t spc .`
 
       - then run an instance of the loaded image.
 
-      ~~~~
-      > docker run -d -P willscott/spc
-      ~~~~
+      `> docker run -d -P willscott/spc`
 
 ## Dependencies
 
