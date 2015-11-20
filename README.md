@@ -8,11 +8,11 @@
 
 * To create and initialize the database which SPC uses: 
 
-      > spc init
+      &gt; spc init
 
 * To start running the web server: 
 
-      ``` > spc go
+      > spc go
 
 * Open browser to http://0.0.0.0:8580/
 
