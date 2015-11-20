@@ -1,21 +1,22 @@
-SPC
-===
+# SPC
 
-INTRO
------
+## Intro
 
-> The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.
+* The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.
 
-QUICKSTART
------------
+## Quickstart
 
 * To create and initialize the database which SPC uses: 
-  
-      - `spc init`
+
+      ```bash
+      > spc init
+      ```
 
 * To start running the web server: 
 
-      - `spc go`
+      ```bash
+      > spc go
+      ```
 
 * Open browser to http://0.0.0.0:8580/
 
@@ -41,29 +42,35 @@ QUICKSTART
 
 * For more information, see user's manual in the docs/ folder
 
+## Docker
+
 * To start a docker SPC instance:
 
-      # Either use the published image
+      - Either use the published image
 
-      `docker pull willscott/spc`
+      ```bash
+      > docker pull willscott/spc
+      ```
 
-      # Or build your own
+      - Or build your own
 
-      `docker build -t spc .`
+      ```bash
+      > docker build -t spc .
+      ```
 
-      # then run an instance of the loaded image.
+      - then run an instance of the loaded image.
 
-      `docker run -d -P willscott/spc`
+      ```bash
+      > docker run -d -P willscott/spc
+      ```
 
-DEPENDENCIES
-------------
+## Dependencies
 
 * docker-py (optional-used to support containers)
 * matplotlib (optional-used to support matplotlib plotting)
 * boto (optional-used to support AWS features)
 
-QUESTIONS
----------
+## Questions
 
 * send email to: wes@fluidphysics.com
 
