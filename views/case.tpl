@@ -22,7 +22,30 @@
 </form>
 -->
 
-<div id="output"></div>
+
+
+<style>
+/* comment out following if using ajax */
+/* uncomment following if using websocket */
+/*  .preformatted {
+    font-family: monospace;
+    white-space: pre;
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 10px;
+    margin-bottom: 55px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    color: #333;
+    word-break: break-all;
+    word-wrap: break-word;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }*/
+</style>
+
+<div id="output" class="preformatted"></div>
 
 <!-- <form name="nl" role="form">
   <div class="input-group col-xs-6" style="width:300px; padding-left:15px">
@@ -46,7 +69,7 @@ function show(update_interval) {
     //$("#selector").hide()
     showOutput();
 }
-show(1000);
+show(1000); // comment out if using websocket
 </script>
 
 %include('footer')

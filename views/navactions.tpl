@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid"> <!-- navbar-fixed-bottom -->
     <div class="col-md-12 col-lg-12">
         <div class="btn-group">
             <form class="btn-group" action="/start" method="get">
@@ -71,7 +71,7 @@
             %end
         </div>
     </div>
-
+</div>
 
 %if defined('jid'):
 %if jid > 0: 

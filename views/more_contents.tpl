@@ -11,6 +11,7 @@
 	%end
 %end
 
+<!-- comment out pre statements if using websocket rather than ajax -->
 <div id="mydiv">
 <pre>
 {{!contents}}

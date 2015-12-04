@@ -8,7 +8,7 @@ import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib, time
 # other local modules
 import config, process
-import scheduler, scheduler_mp
+import scheduler, scheduler_mp, scheduler_ws
 import apps as appmod
 import plots as plotmod
 try:
@@ -41,6 +41,8 @@ app = SessionMiddleware(app(), session_opts)
 # create instance of scheduler
 if config.sched == "mp":
     sched = scheduler_mp.Scheduler()
+elif config.sched == "ws":
+    sched = scheduler_ws.Scheduler()
 else:
     sched = scheduler.Scheduler()
 
@@ -1478,6 +1480,7 @@ if __name__ == "__main__":
     load_apps()
     # start a polling thread to continuously check for queued jobs
     sched.poll()
+    if config.sched == "ws": sched.start_data_server()
     # attempt to mix in docker functionality
     try:
         dockermod.bind(globals())

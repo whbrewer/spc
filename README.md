@@ -36,6 +36,10 @@
 
       - Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  
 
+* To install another SPC packaged app, e.g. Mendel's Accountant:
+
+    `> spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip`
+
 * For more information, see user's manual in the docs/ folder
 
 ## Docker
@@ -44,15 +48,15 @@
 
       - Either use the published image
 
-      `> docker pull willscott/spc`
+          `> docker pull willscott/spc`
 
       - Or build your own
 
-      `> docker build -t spc .`
+          `> docker build -t spc .`
 
       - then run an instance of the loaded image.
 
-      `> docker run -d -P willscott/spc`
+          `> docker run -d -P willscott/spc`
 
 ## Dependencies
 

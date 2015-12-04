@@ -13,7 +13,7 @@ def usage():
     buf =  "usage: spc <command> [options]\n\n"
     buf += "available commands:\n"
     buf += "init     initialize database and create basic config.py file\n"
-    buf += "go       start the server\n"
+    buf += "run      start the server\n"
     buf += "install  install an app\n"
     buf += "list     list installed or available apps\n"
     #buf += "search   search for available apps\n"
@@ -144,6 +144,10 @@ if __name__ == "__main__":
         print "creating database." 
         initdb()
     elif (sys.argv[1] == "go"):
+        print "\"spc go\" has been deprecated. use \"spc run\" instead"
+        time.sleep(3)
+        os.system("python src/main.py")
+    elif (sys.argv[1] == "run"):
         os.system("python src/main.py")
     elif (sys.argv[1] == "search"):
         print notyet 

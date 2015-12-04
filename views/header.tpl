@@ -34,4 +34,6 @@
 
 </head>
 
+<!-- %include('websocket') # comment out if using ajax -->
+
 <div class="container-fluid">
