@@ -12,7 +12,7 @@
 
 * To start running the web server: 
 
-      `> spc go`
+      `> spc run`
 
 * Open browser to http://0.0.0.0:8580/
 
@@ -60,9 +60,11 @@
 
 ## Dependencies
 
-* docker-py (optional-used to support containers)
-* matplotlib (optional-used to support matplotlib plotting)
-* boto (optional-used to support AWS features)
+* matplotlib >= 1.3.1 (optional-used to support matplotlib plotting)
+* docker-py >= 1.1.0 (optional-used to support containers)
+* boto >= 2.6.0 (optional-used to support AWS management)
+* gevent >= 1.0.1 (optional-used for websocket monitoring)
+* gevent-websocket >= 0.9.3 (optional-used for websocket monitoring)
 
 ## Questions
 

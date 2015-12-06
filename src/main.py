@@ -1434,6 +1434,7 @@ def upload_data():
     #    return template('error', err="file extension not allowed")
     #try:
     save_path_dir = os.path.join(config.user_dir,user,config.upload_dir)
+    if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
     save_path = os.path.join(save_path_dir,upload.filename)
     if os.path.isfile(save_path):
         return template('error', err="file exists")
