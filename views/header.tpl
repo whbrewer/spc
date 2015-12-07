@@ -34,6 +34,7 @@
 
 </head>
 
-<!-- %include('websocket') # comment out if using ajax -->
+<!-- can comment out if using ajax or just ignore which will give unnoticeable JS error -->
+%include('websocket')
 
 <div class="container-fluid">

@@ -79,10 +79,6 @@ def confirm_form():
     except:
         return 'ERROR: failed to write parameters to file'
 
-@get('/test')
-def test():
-    return template('websocket')
-
 @post('/execute')
 def execute():
     global user
@@ -151,7 +147,8 @@ def case():
             fn = os.path.join(run_dir,myapps[app].outfn)
             output = slurp_file(fn)
             params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid,
-                       'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys() }
+                       'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys(),
+                       'sched': config.sched }
             return template('case_public', params)
         else:
             u = user
@@ -164,7 +161,8 @@ def case():
             shared = result['shared']
             params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid,
                        'user': u, 'fn': fn, 'apps': myapps.keys(),
-                       'description': desc, 'shared': shared }
+                       'description': desc, 'shared': shared,
+                       'sched': config.sched  }
             return template('case', params)
     except:
         params = { 'app': app, 'apps': myapps.keys(),
@@ -1034,8 +1032,6 @@ def plot_interface(pltid):
     ticks = []
     plotpath = ''
     result = db(datasource.pltid==pltid).select()
-    print pltid
-
 
     datadef = ""
     for r in result:

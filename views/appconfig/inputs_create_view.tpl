@@ -2,6 +2,29 @@
 <html>
 <head>
 <link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
+<script>
+function add_option_row(x) {
+    sel = document.getElementById("html_tags")
+    if (x.value == "select") {
+        alert("After completing this dialogue, manually edit the template file in views/apps/app.tpl to add options to the select tag.")
+        
+        // add option to select tag
+        // var opt = document.createElement('option')
+        // opt.appendChild( document.createTextNode('New Option Text') )
+        // opt.value = 'option val'
+        // sel.appendChild(opt)
+        // var table = document.getElementById("html_tags")
+
+        // add row to table
+        //var x = document.getElementById("myTable").rows.length;
+        // var row = table.insertRow(0);
+        // var cell1 = row.insertCell(0);
+        // var cell2 = row.insertCell(1);
+        // cell1.innerHTML = "NEW CELL1";
+        // cell2.innerHTML = "NEW CELL2";
+    }  
+}
+</script>
 </head>
 
 <body>
@@ -18,7 +41,7 @@
 How to represent a true Boolean value (e.g. T, True, true, 1)?
 <input class="form-control" type="text" style="width:100px" name="bool_rep">
 <hr>
-<table class="table table-striped">
+<table id="html_tags" class="table table-striped">
 <thead align=left>
     <th>parameter</th>
     <th>value</th>
@@ -30,7 +53,8 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
 %for key,value in inputs.iteritems():
     <tr>
         <td>{{key}}</td> <td>{{value}}</td> 
-        <td><select class="form-control" name="html_tags">
+        <td><select class="form-control" id="html_tags" name="html_tags"  
+                    onchange="add_option_row(this)">
             <option value="text">text
             <option value="number">number
             <option value="hidden">hidden

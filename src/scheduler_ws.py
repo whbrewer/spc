@@ -96,6 +96,7 @@ class Scheduler(object):
         t.start()
 
     def start_data_server2(self):
+        print "Starting websocket data server..."
         server = WSGIServer(("0.0.0.0", 8581), app,
                             handler_class=WebSocketHandler)
         server.serve_forever()
@@ -166,18 +167,22 @@ class Scheduler(object):
         stdout_reader = AsynchronousFileReader(popen.stdout, stdout_queue)
         stdout_reader.start()
 
+        outfn = app + ".out"
+        fout = open(os.path.join(run_dir,outfn),"w")
+        lines = []
+
         # Check the queues if we received some output (until there is nothing more to get).
         while not stdout_reader.eof():
             # Show what we received from standard output.
             while not stdout_queue.empty():
                 line = stdout_queue.get()
-                #print 'Received line on standard output: ' + repr(line)
+                fout.write(str(line))
                 wsock.send(line)
 
         popen.wait()
+        fout.close()
 
         # let user know job has ended
-        outfn = app + ".out"
         with open(os.path.join(run_dir,outfn),"a") as f:
             f.write("FINISHED EXECUTION")
 
