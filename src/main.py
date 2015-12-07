@@ -1368,6 +1368,8 @@ def edit_inputs(step):
                 fn = appname + ".ini"
             elif input_format == "xml":
                 fn = appname + ".xml"
+            elif input_format == "json":
+                fn = appname + ".json"
             else:
                 return "ERROR: input_format not valid: ", input_format
             path = os.path.join(config.apps_dir,appname,fn)

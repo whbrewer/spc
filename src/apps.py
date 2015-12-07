@@ -1,6 +1,7 @@
 import re, sys, os
 import config
 import ConfigParser
+import json
 import xml.etree.ElementTree as ET
 from gluino import DAL, Field
 from model import *
@@ -255,7 +256,7 @@ class INI(App):
         self.postprocess = postprocess
 
     def read_params(self,user=None,cid=None):
-        '''read the namelist file and return as a dictionary'''
+        '''read the INI file and return as a dictionary'''
         if cid is None or user is None:
             fn = self.appdir
         else:
@@ -264,7 +265,7 @@ class INI(App):
         fn += os.sep + self.simfn
 
         Config = ConfigParser.ConfigParser()
-        out = Config.read(fn)
+        Config.read(fn)
         params = {}
         blockmap = {}
         blockorder = []
@@ -317,7 +318,7 @@ class INI(App):
         return 1
 
 class XML(App):
-    '''Class for reading/writing XML files.'''
+    """Class for reading/writing XML files."""
     def __init__(self,appname,preprocess=0,postprocess=0):
         self.appname = appname
         self.appdir = os.path.join(apps_dir,appname)
@@ -330,7 +331,7 @@ class XML(App):
         self.exe = os.path.join(apps_dir,self.appname,self.appname)
 
     def read_params(self,user=None,cid=None):
-        '''read the namelist file and return as a dictionary'''
+        """read the XML file and return as a dictionary"""
         if cid is None or user is None:
             fn = self.appdir
         else:
@@ -392,4 +393,82 @@ class XML(App):
                 f.write("\t<"+key+">"+form_params[key]+"</"+key+">\n")
             #f.write("</%s>\n" % section)
         f.write("</"+self.rootlabel+">\n")
+        return 1
+
+class JSON(App):
+    """Class for reading/writing JSON files."""
+    def __init__(self,appname,preprocess=0,postprocess=0):
+        self.appname = appname
+        self.appdir = os.path.join(apps_dir,appname)
+        self.outfn = appname + '.out'
+        self.simfn = appname + '.json'
+        self.preprocess = preprocess
+        self.postprocess = postprocess
+        self.user_dir = user_dir
+        self.params, self.blockmap, self.blockorder = self.read_params()
+        self.exe = os.path.join(apps_dir,self.appname,self.appname)
+
+    def read_params(self,user=None,cid=None):
+        """read the JSON file and return as a dictionary"""
+        if cid is None or user is None:
+            fn = self.appdir
+        else:
+            fn = os.path.join(self.user_dir,user,self.appname,cid)
+        # append name of input file to end of string
+        fn += os.sep + self.simfn
+
+        # read file
+        with open(fn,'r') as f: data = f.read()
+        # parse data
+        parsed = json.loads(data)
+
+        params = {}
+        blockmap = {}
+        blockorder = []
+
+        if not os.path.isfile(fn):
+            print "ERROR: input file does not exist: " + fn
+
+        for section in parsed:
+            # options = Config.options(section)
+            blockorder += [ section ]
+            for option in parsed[section]:
+                try:
+                    params[option] = parsed[section][option]
+                    blockmap.setdefault(section,[]).append(option)
+                    if params[option] == -1:
+                        DebugPrint("skip: %s" % option)
+                except:
+                    print("exception on %s!" % option)
+                    params[option] = None
+        # print 'params:',params
+        # print 'blockmap:',blockmap
+        # print 'blockorder:',blockorder
+        return params, blockmap, blockorder
+
+    def write_params(self,form_params,user):
+        """Write parameters to the JSON file."""
+        cid = form_params['case_id']
+        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
+        if not os.path.exists(sim_dir):
+            os.makedirs(sim_dir)
+        fn = os.path.join(sim_dir,self.simfn)
+
+        # write out parameters to screen\
+        #for (i,fp) in enumerate(form_params):
+        #    print i,fp, form_params[fp]
+
+        # create the JSON file
+        cfgfile = open(fn,'w')
+        params = dict()
+        for section in self.blockorder:
+            params[section] = dict()
+            for key in self.blockmap[section]:
+                params[section][key] = form_params[key]
+                # for checkboxes that dont get sent when unchecked
+                if key not in form_params: params[key] = 'false'
+                #print key, form_params[key]
+
+        cfgfile.write(json.dumps(params))
+        cfgfile.close()
         return 1

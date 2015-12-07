@@ -14,7 +14,7 @@
 
 <form method="post" action="/appconfig/inputs/create_view">
     <select class="form-control" style="width:auto" name="input_format">
-        %opts = {'namelist':'namelist.input','ini':'INI file','xml':'XML file'}
+        %opts = {'namelist':'namelist.input','ini':'INI file','xml':'XML file','json':'JSON file'}
         %for key, value in opts.iteritems():
             %if key == input_format:
                 <option selected value="{{key}}">{{value}}
