@@ -8,7 +8,7 @@ import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib, time
 # other local modules
 import config, process
-import scheduler, scheduler_mp, scheduler_ws
+import scheduler_sp, scheduler_mp, scheduler_ws
 import apps as appmod
 import plots as plotmod
 try:
@@ -44,7 +44,7 @@ if config.sched == "mp":
 elif config.sched == "ws":
     sched = scheduler_ws.Scheduler()
 else:
-    sched = scheduler.Scheduler()
+    sched = scheduler_sp.Scheduler()
 
 pbuffer = ''
 

@@ -433,6 +433,7 @@ class JSON(App):
             # options = Config.options(section)
             blockorder += [ section ]
             for option in parsed[section]:
+                print section, parsed[section]
                 try:
                     params[option] = parsed[section][option]
                     blockmap.setdefault(section,[]).append(option)
