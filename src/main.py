@@ -8,13 +8,20 @@ import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib, time
 # other local modules
 import config, process
-import scheduler_sp, scheduler_mp, scheduler_ws
+import scheduler_sp, scheduler_mp
 import apps as appmod
 import plots as plotmod
+# requires gevent
+try:
+    import scheduler_ws
+except ImportError:
+    pass
+# requires boto
 try:
     import aws as awsmod
 except ImportError:
     pass
+# requires docker-py
 try:
     import container as dockermod
 except ImportError:

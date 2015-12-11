@@ -36,6 +36,9 @@ function toggle(cmd,id) {
 .table {
     font-size: 120%;
 }
+tr:hover {
+    cursor: auto;
+}
 </style>
 
 </head>

@@ -337,8 +337,9 @@ span.round-tab:hover {
                     <td><font size="+1">Input format:</font></td>
                     <td><select class="form-control" name="input_format"
                                 style="width:auto">
-                        <option SELECTED value="namelist">Namelist
                         <option value="ini">INI
+                        <option value="json">JSON
+                        <option value="namelist">Namelist
                         <option value="xml">XML
                     </select></td>
                     </tr>
