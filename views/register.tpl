@@ -28,8 +28,8 @@ function checkPassword(pw) {
   var msg = "";
   var nerrors = 0;
 
-  if (pw.length < 8) {
-    msg += "ERROR: password must be at least 8 characters.  ";
+  if (pw.length < 7) {
+    msg += "ERROR: password must be at least 7 characters.  ";
     nerrors += 1;  
   }
 

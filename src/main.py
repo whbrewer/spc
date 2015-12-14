@@ -412,6 +412,7 @@ def aws_status(aid):
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
+    params['port'] = config.port
     if awsmod:
         a = aws_conn(aid)
     else:
@@ -611,8 +612,12 @@ def server_static(filepath):
     return static_file(filepath, root='static')
 
 @get('/user_data/<filepath:path>')
-def server_static(filepath):
+def user_data(filepath):
     return static_file(filepath, root='user_data')
+
+@get('/download/<filepath:path>')
+def download(filepath):
+    return static_file(filepath, root='download', download=filepath)
 
 @get('/favicon.ico')
 def get_favicon():
@@ -1025,6 +1030,8 @@ def plot_interface(pltid):
         tfn = 'plots/flot-cat'
     elif plottype == 'flot-line':
         tfn = 'plots/flot-line'
+    elif plottype == 'plotly-hist':
+        tfn = 'plots/plotly-hist'
     elif plottype == 'mpl-line' or plottype == 'mpl-bar':
         redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
     else:
@@ -1051,8 +1058,17 @@ def plot_interface(pltid):
             datadef = ""
         plotfn = re.sub(r"<cid>", c, plotfn)
         plotpath = os.path.join(sim_dir,plotfn)
-        (col1str,col2str) = cols.split(":")
-        col1 = int(col1str); col2 = int(col2str)
+         
+        if cols.find(":") > 0: # two columns
+           num_fields = 2
+           (col1str,col2str) = cols.split(":")
+           col1 = int(col1str); col2 = int(col2str)
+        else: # single column
+           num_fields = 1
+           col1 = int(cols)
+        
+        print "col1 is:", col1
+            
         # do some postprocessing
         if line_range is not None:
             (line1str,line2str) = line_range.split(":")
@@ -1066,12 +1082,17 @@ def plot_interface(pltid):
                 line2 = int(line2str)
                 dat = p.get_data(plotpath,col1,col2,line1,line2)
             except: # if line2 not specified
-                dat = p.get_data(plotpath,col1,col2,line1)
+                if num_fields == 2:
+                   dat = p.get_data(plotpath,col1,col2,line1)
+                else: # single column of data
+                   dat = p.get_data(plotpath,col1)
         else:
             dat = p.get_data(plotpath,col1,col2)
         # clean data
         #dat = [d.replace('?', '0') for d in dat]
         data.append(dat)
+        # [[1,2,3]] >>> [1,2,3]
+        if num_fields == 1: data = data[0] 
         #data.append(p.get_data(plotpath,col1,col2))
         if plottype == 'flot-cat':
             ticks = p.get_ticks(plotpath,col1,col2)

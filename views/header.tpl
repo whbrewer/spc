@@ -35,6 +35,6 @@
 </head>
 
 <!-- can comment out if using ajax or just ignore which will give unnoticeable JS error -->
-%include('websocket')
+<!-- %include('websocket') -->
 
 <div class="container-fluid">

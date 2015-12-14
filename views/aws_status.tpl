@@ -14,10 +14,10 @@
 %elif astatus['state']=="running":
     <fieldset>
     <center>
-    <p> LINK: <a href="http://{{astatus['public_dns_name']}}:8081/">http://{{astatus['public_dns_name']}}:8081</a> </p>
+    <p> LINK: <a href="http://{{astatus['public_dns_name']}}:{{port}}/">http://{{astatus['public_dns_name']}}:{{port}}</a> </p>
     <form action="/zipget">
         <input type="text" size="35" name="zipkey">
-        <input type="hidden" name="netloc" value="http://{{astatus['public_dns_name']}}:8081">
+        <input type="hidden" name="netloc" value="http://{{astatus['public_dns_name']}}:{{port}}">
         <input type="submit" value="get case">
     </form>
     <a href="/aws/stop/{{aid}}">stop machine</a>

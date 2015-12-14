@@ -64,6 +64,7 @@ function endis() {
             <select name="ptype" id="ptype" class="form-control" onchange="endis()">
                 <option VALUE="flot-line">flot/line</option>
                 <option VALUE="flot-cat">flot/categories</option>
+                <option VALUE="plotly-hist">plotly/histogram</option>
                 <option VALUE="mpl-line">matplotlib/line</option>
                 <option VALUE="mpl-bar">matplotlib/bar</option>
             </select>
