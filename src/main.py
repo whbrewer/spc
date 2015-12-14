@@ -1067,8 +1067,6 @@ def plot_interface(pltid):
            num_fields = 1
            col1 = int(cols)
         
-        print "col1 is:", col1
-            
         # do some postprocessing
         if line_range is not None:
             (line1str,line2str) = line_range.split(":")

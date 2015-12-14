@@ -9,33 +9,31 @@ class Plot(object):
         y = ''
         z = []
         lineno = 0
-        #try:
-        data = open(fn, 'rU').readlines()
-        nlines = len(data)
-        if not col2: print "fn, col1:", fn, col1
-        # allow for tailing a file by giving a negative range, e.g. -100:10000
-        if line1 < 0:
-            line1 += nlines
-        for line in data:
-            lineno += 1
-            if lineno >= line1 and lineno <= line2:
-                # don't parse comments
-                if re.search(r'#',line): continue
-                x = line.split()
-                if not col2: print x
-                #following line doesnt work when NaN's in another column
-                #if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
-                if col2:
-                    y += '[ ' + x[col1-1] + ', ' + x[col2-1] + '], ' 
-                else:
-                    try: z += [ float(x[col1-1]) ]
-                    except: pass
-        if col2:
-            return "[ %s ]" % y
-        else:
+        try:
+            data = open(fn, 'rU').readlines()
+            nlines = len(data)
+            # allow for tailing a file by giving a negative range, e.g. -100:10000
+            if line1 < 0:
+                line1 += nlines
+            for line in data:
+                lineno += 1
+                if lineno >= line1 and lineno <= line2:
+                    # don't parse comments
+                    if re.search(r'#',line): continue
+                    x = line.split()
+                    #following line doesnt work when NaN's in another column
+                    #if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
+                    if col2:
+                        y += '[ ' + x[col1-1] + ', ' + x[col2-1] + '], ' 
+                    else:
+                        try: z += [ float(x[col1-1]) ]
+                        except: pass
+            if col2:
+                return "[ %s ]" % y
+            else:
             return z
-        #except:
-        #    return False
+        except:
+            return False
 
     def get_data_gantt(self,fn,col1,col2,col3,col4,line1=1,line2=1e6):
         """return data as string in format [ [x1,y1], [x2,y2], ... ]"""

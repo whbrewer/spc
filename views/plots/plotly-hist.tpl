@@ -17,12 +17,6 @@ var trace1 = {
 };
 
 var data = [trace1];
-//var data = [
-//  {
-//    x: {{!data}},
-//    type: 'histogram'
-//  }
-//];
 
 var layout = {
   title: 'Allele Frequency Distribution',
