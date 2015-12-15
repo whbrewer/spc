@@ -31,7 +31,7 @@ class Plot(object):
             if col2:
                 return "[ %s ]" % y
             else:
-            return z
+                return z
         except:
             return False
 
