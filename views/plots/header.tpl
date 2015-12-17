@@ -16,8 +16,10 @@
         <div class="col-sm-4 sidebar">
             <h4>Available Plots:</h4>
             <ul class="nav nav-sidebar">
+                %i = 0
                 %for row in rows:
-                    <li> <a style="{text-decoration: none}" href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">{{row['plots']['title']}}</a> </li>
+                    % i += 1
+                    <li> <a style="text-decoration:none" href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}"><sup>{{i}}</sup> {{row['plots']['title']}}</a> </li>
                 %end
             </ul> 
         </div>        
