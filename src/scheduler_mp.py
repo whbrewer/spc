@@ -107,7 +107,7 @@ class Scheduler(object):
             self.sem.acquire()
         p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,))
         myjobs.append(p)
-        print len(myjobs), myjobs
+        #print len(myjobs), myjobs
         p.start()
         for i in range(np):
             self.sem.release()
@@ -124,14 +124,14 @@ class Scheduler(object):
         os.chdir(run_dir) # change to case directory
         
         #popen = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        #subprocess.call(cmd, shell=True)
-        popen = subprocess.Popen(cmd, shell=True)
-        #os.system(cmd)
+        #popen = subprocess.Popen(cmd, shell=True)
+        os.system(cmd)
 
         # let user know job has ended
         outfn = app + ".out"
         with open(outfn,"a") as f:
             f.write("FINISHED EXECUTION")
+
         # update state to 'C' for completed
         os.chdir(mycwd) 
         self._set_state(jid,STATE_COMPLETED)
