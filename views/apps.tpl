@@ -13,9 +13,6 @@
 %include('navbar')
 
 <div class="row">
-  <div class="col-sm-6">
-    <h1>Installed Apps</h1>
-  </div>
   %if configurable:
   <div class="col-sm-6" align="right">
    <a href="/addapp" class="btn btn-primary">
