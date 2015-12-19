@@ -55,15 +55,15 @@
   <th>jid</th> 
   <th>app</th> 
   <th>cid</th> 
-  <th>state</th>
+  <th class="hidden-xs">state</th>
   %if np > 1: 
     <th>np</th>
   %end 
   %if sched == "smp":
     <th>priority</th> 
   %end
-  <th>date/time submitted</th> 
-  <th>labels</th>
+  <th class="hidden-xs">date/time submitted</th> 
+  <th class="hidden-xs">labels</th>
   <th><a href="/jobs?shared=1" title="see shared cases"><span class="glyphicon glyphicon-pushpin"></span></a></th>
 </tr>
 </thead>
@@ -88,15 +88,15 @@
     <td class="case">{{row['id']}} <a href="{{url}}"></a></td>
     <td class="case">{{row['app']}} <a href="{{url}}"></a></td>
     <td class="case"><tt>{{row['cid']}}</tt> <a href="{{url}}"></a></td>
-    <td class="case"><tt>{{row['state']}}</tt> <a href="{{url}}"></a></td>
+    <td class="case hidden-xs"><tt>{{row['state']}}</tt> <a href="{{url}}"></a></td>
     %if np > 1:
-      <td class="case">{{row['np']}} <a href="{{url}}"></a></td>
+      <td class="case hidden-xs">{{row['np']}} <a href="{{url}}"></a></td>
     %end
     %if sched == "smp":
-      <td class="case"><tt>{{row['priority']}}</tt> <a href="{{url}}"></a></td>
+      <td class="case hidden-xs"><tt>{{row['priority']}}</tt> <a href="{{url}}"></a></td>
     %end
-    <td class="case"><tt>{{row['time_submit']}}</tt> <a href="{{url}}"></a></td>
-    <td class="case"> {{row['description']}}
+    <td class="case hidden-xs"><tt>{{row['time_submit']}}</tt> <a href="{{url}}"></a></td>
+    <td class="case hidden-xs"> {{row['description']}}
       <!-- <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a> -->
       <a href="{{url}}"> </a>
     </td>

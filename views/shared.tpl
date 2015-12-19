@@ -22,7 +22,7 @@
    <th>user</th> 
    <th>app</th> 
    <th>cid</th> 
-   <th>labels</th> 
+   <th class="hidden-xs">labels</th> 
 </tr>
 </thead>
 
@@ -32,7 +32,7 @@
      <td>{{row['user']}}</td>
      <td>{{row['app']}}</td>
      <td>{{row['cid']}}</td>
-     <td>{{row['description']}}
+     <td class="hidden-xs">{{row['description']}}
          <a href="/case?cid={{row['user']}}/{{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a>
      </td>
   </tr> 

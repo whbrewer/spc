@@ -1,5 +1,7 @@
-<div class="container-fluid"> <!-- navbar-fixed-bottom -->
-    <div class="col-md-12 col-lg-12">
+<div class="visible-xs" style="height:10px"></div>
+
+<div class="container-fluid" style="padding-left:0px"> <!-- navbar-fixed-bottom -->
+    <div class="col-xs-12">
         <div class="btn-group">
             <form class="btn-group" action="/start" method="get">
                 <button class="btn btn-default">
@@ -8,7 +10,7 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
-            <form class="btn-group" action="/case" method="get">
+            <form class="btn-group hidden-xs" action="/case" method="get">
                 <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
                 </span> Monitor</button>
                 <input type="hidden" name="cid" value="{{cid}}">
@@ -34,13 +36,13 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
-            <form class="btn-group" method="get" action="/inputs?cid={{cid}}&app={{app}}">
+            <form class="btn-group hidden-xs" method="get" action="/inputs?cid={{cid}}&app={{app}}">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-wrench"></span> Inputs</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
-            <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
+            <form class="btn-group hidden-xs" method="get" action="/output?cid={{cid}}&app={{app}}">
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
                 <button class="btn btn-default"><span class="glyphicon glyphicon-file"></span> Output</button>
@@ -50,12 +52,12 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
                 <input type="hidden" name="filepath" value="{{plotpath}}">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-list-alt"></span> Plot Data</button>
+                <button class="btn btn-default"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
             </form>    
             %end            
             %if defined('jid'):
             %if jid > 0:
-                <button type="button" class="btn btn-default" data-toggle="modal" 
+                <button type="button" class="btn btn-default hidden-xs" data-toggle="modal" 
                         data-target="#myModal">
                         <span class="glyphicon glyphicon-comment"></span> Label</button>
                 <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">
