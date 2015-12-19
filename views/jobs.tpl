@@ -57,7 +57,7 @@
   <th>cid</th> 
   <th class="hidden-xs">state</th>
   %if np > 1: 
-    <th>np</th>
+    <th class="hidden-xs">np</th>
   %end 
   %if sched == "smp":
     <th>priority</th> 
