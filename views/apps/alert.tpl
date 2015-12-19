@@ -1,4 +1,4 @@
-<div id="alert" align="center" class="alert-info">
+<div id="alert" align="center" class="alert-info hidden-xs">
     %if defined('cid'):
         %if not cid == '':
             <em>NOTE: Using inputs from case id: {{ cid }}</em>

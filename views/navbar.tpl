@@ -1,8 +1,8 @@
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-default navbar-fixed-top" style="white-space:nowrap" role="navigation">
 <!-- <nav class="navbar navbar-default navbar-static-top" role="navigation"> -->
 <form class="navbar-form">
 <div class="container-fluid">
-    <div class="row">
+    <div class="row" style="white-space:nowrap">
         <div class="navbar-left"> 
             <div class="btn-group">
                 <button type="submit" class="btn btn-default" formaction="/apps">
@@ -20,6 +20,7 @@
             </div>
         </div> 
 
+        <div class="hidden-xs">
         %if defined('app'):
             %if app != '':
                 <a class="navbar-brand" href="/">
@@ -35,10 +36,11 @@
                 <span class="navbar-brand">case: {{cid}}</span>
             %end
         %end
+        </div>
 
         %if True:
 
-        <div class="navbar-right" style="margin-right: 5px;">
+        <div class="navbar-right hidden-xs" style="margin-right: 5px;">
             %if defined('user'):
                 <label class="control-label">{{user}}</label>
             %end

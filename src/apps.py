@@ -67,7 +67,7 @@ class App(object):
         f.write("\t</div>\n")
         f.write("\t<label for=\"desc\" style=\"text-align:right\" class=\"control-label col-xs-4\">\n")
         f.write("\t\t<a href=\"#\" data-toggle=\"tooltip\" title=\"Separate labels by commas\">Labels:</a></label>\n")
-        f.write("\t<div class=\"col-xs-6\">\n")
+        f.write("\t<div class=\"col-xs-12 col-sm-6\">\n")
         f.write("\t\t<input type=\"text\" id=\"desc\" name=\"desc\" class=\"form-control\" style=\"width:100%\"\n")
         f.write("\t\t\tdata-role=\"tagsinput\" title=\"e.g. v2.5.1,bottleneck\">\n")
         f.write("\t</div>\n")
@@ -105,7 +105,7 @@ class App(object):
                         buf += param 
                     buf += ":</label>\n"
                 # input box
-                buf += "\t\t<div class=\"col-xs-6\">\n"               
+                buf += "\t\t<div class=\"col-xs-2 col-sm-6\">\n"               
                 if html_tags[param] == "checkbox":
                     buf += "\t\t\t<input type=\"checkbox\" name=\"" \
                             + param + "\" value=\""+ bool_rep + "\"\n"

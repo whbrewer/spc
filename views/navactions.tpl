@@ -14,7 +14,7 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
-            <form class="btn-group" action="/files" method="get">
+            <form class="btn-group hidden-xs" action="/files" method="get">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-folder-open"></span> Files
                 </button>
@@ -28,7 +28,7 @@
                     <span class="glyphicon glyphicon-stats"></span> Plot
                 </button>
             </form>
-            <form class="btn-group" action="/zipcase" method="get">
+            <form class="btn-group hidden-xs" action="/zipcase" method="get">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-compressed"></span> Zip</button>
                 <input type="hidden" name="cid" value="{{cid}}">
@@ -58,7 +58,7 @@
                 <button type="button" class="btn btn-default" data-toggle="modal" 
                         data-target="#myModal">
                         <span class="glyphicon glyphicon-comment"></span> Label</button>
-                <form class="btn-group" role="form" action="/jobs/stop" method="post">
+                <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="jid" value="{{jid}}">
