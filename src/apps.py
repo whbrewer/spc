@@ -1,4 +1,4 @@
-import re, sys, os
+import re, sys, os, shutil
 import config
 import ConfigParser
 import json
@@ -26,8 +26,8 @@ def is_number(value):
 
 class App(object):
 
-    def __init__(self):
-        pass
+    def __init__(self,name=""):
+        self.appname=name
 
     def create(self, name, desc, cat, lang, info, cmd, pre, post):
         apps.insert(name=name, description=desc, category=cat, language=lang,  
@@ -38,9 +38,20 @@ class App(object):
     def update(self):
         pass
 
-    def delete(self,appid):
+    def delete(self,appid,del_files=False):
         del apps[appid]
         db.commit()
+        # if delete files checkbox ticked
+        if del_files:
+            # delete app directory
+            path = os.path.join(config.apps_dir,self.appname)
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            # remove template file
+            path = "views/apps/"+self.appname+".tpl"
+            if os.path.isfile(path):
+                os.remove(path)
+        return True
 
     def deploy(self):
         pass

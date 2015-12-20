@@ -10,12 +10,13 @@ sys.argv[1:]
 url = 'https://s3-us-west-1.amazonaws.com/scihub'
 
 def usage():
-    buf =  "usage: spc <command> [options]\n\n"
+    buf =  "usage: spc <command> [<args>]\n\n"
     buf += "available commands:\n"
-    buf += "init     initialize database and create basic config.py file\n"
-    buf += "run      start the server\n"
-    buf += "install  install an app\n"
-    buf += "list     list installed or available apps\n"
+    buf += "init       initialize database and create basic config.py file\n"
+    buf += "list       list installed or available apps\n"
+    buf += "install    install an app\n"
+    buf += "run        start the server\n"
+    buf += "uninstall  uninstall an app\n"
     #buf += "search   search for available apps\n"
     #buf += "test     run unit tests\n"
     return buf
@@ -154,6 +155,24 @@ if __name__ == "__main__":
     elif (sys.argv[1] == "test"):
         os.chdir('tests')  
         os.system("python test_unit.py")
+    elif (sys.argv[1] == "uninstall"):
+        install_usage = "usage: spc uninstall appname"
+        if len(sys.argv) == 3:
+            from src import apps as appmod
+            app = sys.argv[2]
+            a = appmod.App(app)
+            # connect to db
+            dal = model2.dal(uri=config.uri)
+            result = dal.db(dal.db.apps.name==app).select()
+            if result:
+                appid = dal.db(dal.db.apps.name==app).select().first()["id"]
+                if a.delete(appid,True):
+                    print "SUCCESS: uninstalled app", app, "with appid:", appid
+            else:
+                print "ERROR: app does not exist"
+                sys.exit()
+        else:
+            print install_usage
     elif (sys.argv[1] == "install"):
         install_usage = "usage: spc install /path/to/file.zip\n    or spc install http://url/to/file.zip"
                 
@@ -200,12 +219,12 @@ if __name__ == "__main__":
             import json
             from src import model2
             path = app_dir_name + os.sep + "spc.json"
-            print path 
+            #print path 
             with open(path,'r') as f: 
                 data = f.read()
-            print data 
+            #print data 
             parsed = json.loads(data)
-            print parsed 
+            #print parsed 
 
             # get name of app from json data
             app = parsed['name']

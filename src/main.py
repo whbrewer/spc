@@ -832,19 +832,23 @@ def delete_app(appid):
     if user == 'admin':
         # delete entry in DB
         a = appmod.App()
-        a.delete(appid)
+        if del_app_dir == "on": 
+            del_files = True
+        else:
+            del_files = False
+        a.delete(appid,del_files)
     else:
         return template("error", err="must be admin")
-    # if delete files checkbox ticked
-    if del_app_dir == "on":
-        # delete app directory
-        path = os.path.join(config.apps_dir,appname)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
-        # remove template file
-        path = "views/apps/"+appname+".tpl"
-        if os.path.isfile(path):
-            os.remove(path)
+    ## if delete files checkbox ticked
+    #if del_app_dir == "on":
+    #    # delete app directory
+    #    path = os.path.join(config.apps_dir,appname)
+    #    if os.path.isdir(path):
+    #        shutil.rmtree(path)
+    #    # remove template file
+    #    path = "views/apps/"+appname+".tpl"
+    #    if os.path.isfile(path):
+    #        os.remove(path)
     redirect("/apps")
 
 @get('/app/<app>')

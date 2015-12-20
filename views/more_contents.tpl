@@ -13,7 +13,7 @@
 
 <!-- comment out pre statements if using websocket rather than ajax -->
 <div id="mydiv">
-<pre>
+<pre style="overflow:auto">
 {{!contents}}
 </pre>
 </div>
