@@ -60,6 +60,9 @@ class App(object):
         # need to output according to blocks
         f = open('views/apps/'+self.appname+'.tpl', 'w')
         f.write("%include('header',title='confirm')\n")
+        f.write("<head>\n")
+        f.write("<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>\n")
+        f.write("</head>\n")
         f.write("<body onload=\"init()\">\n")
         f.write("%include('navbar')\n")
         f.write("%include('apps/alert')\n")

@@ -14,11 +14,12 @@
 
 <div class="row">
   %if configurable:
-  <div class="col-sm-6" align="right">
+  <div class="col-xs-12" align="right">
    <a href="/addapp" class="btn btn-primary">
      <span class="glyphicon glyphicon-plus"></span> Add
    </a>
   </div>
+  <div class="col-xs-12" style="height:5px"></div>
   %end
 </div>
 

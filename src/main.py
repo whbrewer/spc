@@ -1403,8 +1403,10 @@ def edit_inputs(step):
             else:
                 return "ERROR: input_format not valid: ", input_format
             path = os.path.join(config.apps_dir,appname,fn)
-            params = {'fn': fn, 'contents': slurp_file(path),
-                      'appname': appname, 'input_format': input_format }
+            # cgi.escape converts HTML chars like > to entities &gt;
+            contents = cgi.escape(slurp_file(path))
+            params = {'fn': fn, 'contents': contents, 'appname': appname, 
+                      'input_format': input_format }
             return template('appconfig/inputs_parse', params)
         except IOError:
             return "IOerror:", IOError
