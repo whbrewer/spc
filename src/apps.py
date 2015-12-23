@@ -63,7 +63,7 @@ class App(object):
         f.write("<head>\n")
         f.write("<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>\n")
         f.write("</head>\n")
-        f.write("<body onload=\"init()\">\n")
+        f.write("<body>\n")
         f.write("%include('navbar')\n")
         f.write("%include('apps/alert')\n")
         f.write("<div class=\"container-fluid\">\n")
@@ -73,15 +73,15 @@ class App(object):
         f.write("<input type=\"hidden\" name=\"cid\" value=\"{{cid}}\">\n")
         f.write("%end\n")
         f.write("<div class=\"col-xs-12\" style=\"height:5px\"></div>\n")
-
+        f.write("<div class=\"col-xs-12 visible-xs\" style=\"height:5px\"></div>\n")
         f.write("<div class=\"form-group\">\n")
         f.write("\t<div class=\"col-xs-2\">\n")
         f.write("\t\t<button type=\"submit\" class=\"btn btn-success\"> <!-- pull-right -->\n")
         f.write("\t\tContinue <em class=\"glyphicon glyphicon-forward\"></em> </button>\n")
         f.write("\t</div>\n")
-        f.write("\t<label for=\"desc\" style=\"text-align:right\" class=\"control-label col-xs-4\">\n")
+        f.write("\t<label for=\"desc\" style=\"text-align:right\" class=\"control-label col-sm-4 hidden-xs\">\n")
         f.write("\t\t<a href=\"#\" data-toggle=\"tooltip\" title=\"Separate labels by commas\">Labels:</a></label>\n")
-        f.write("\t<div class=\"col-xs-12 col-sm-6\">\n")
+        f.write("\t<div class=\"hidden-xs col-sm-6\">\n")
         f.write("\t\t<input type=\"text\" id=\"desc\" name=\"desc\" class=\"form-control\" style=\"width:100%\"\n")
         f.write("\t\t\tdata-role=\"tagsinput\" title=\"e.g. v2.5.1,bottleneck\">\n")
         f.write("\t</div>\n")
@@ -119,7 +119,7 @@ class App(object):
                         buf += param 
                     buf += ":</label>\n"
                 # input box
-                buf += "\t\t<div class=\"col-xs-2 col-sm-6\">\n"               
+                buf += "\t\t<div class=\"col-xs-12 col-sm-6\">\n"               
                 if html_tags[param] == "checkbox":
                     buf += "\t\t\t<input type=\"checkbox\" name=\"" \
                             + param + "\" value=\""+ bool_rep + "\"\n"
