@@ -32,8 +32,10 @@ from model import *
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
+
 USER_ID_SESSION_KEY = 'user_id'
 APP_SESSION_KEY = 'app'
+NOAUTH_USER = 'guest'
 
 session_opts = {
     'session.type': 'file',
@@ -57,8 +59,7 @@ pbuffer = ''
 
 @post('/confirm')
 def confirm_form():
-    global user
-    check_user_var()
+    user = authorized()
     app = request.forms.app
     # force the first string to be a letter so that the case id
     # will be guaranteed to be a string
@@ -88,8 +89,7 @@ def confirm_form():
 
 @post('/execute')
 def execute():
-    global user
-    check_user_var()
+    user = authorized()
     app = request.forms.app
     cid = request.forms.cid
     np = request.forms.np
@@ -127,7 +127,7 @@ def execute():
 def more():
     """given a form with the attribute plotpath,
        output the file to the browser"""
-    global user
+    user = authorized()
     app = request.query.app
     cid = request.query.cid
     filepath = request.query.filepath
@@ -140,9 +140,7 @@ def more():
 
 @get('/case')
 def case():
-    if config.auth and not authorized(): redirect('/login')
-    global user
-    check_user_var()
+    user = authorized()
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid or -1
@@ -178,11 +176,9 @@ def case():
 
 @get('/output')
 def output():
-    if config.auth and not authorized(): redirect('/login')
-    global user
+    user = authorized()
     app = request.query.app
     cid = request.query.cid
-    check_user_var()
     try:
         if re.search("/",cid):
             (u,c) = cid.split("/")
@@ -205,11 +201,9 @@ def output():
 
 @get('/inputs')
 def inputs():
-    if config.auth and not authorized(): redirect('/login')
-    global user
+    user = authorized()
     app = request.query.app
     cid = request.query.cid
-    check_user_var()
     try:
         if re.search("/",cid):
             (u,c) = cid.split("/")
@@ -258,8 +252,7 @@ def compute_stats(path):
 
 @get('/<app>/<cid>/tail')
 def tail(app,cid):
-    global user
-    check_user_var()
+    user = authorized()
     # submit num_lines as form parameter
     # num_lines = int(request.query.num_lines)
     # if not num_lines or num_lines < 10:
@@ -299,16 +292,14 @@ def root():
 
 @get('/jobs')
 def show_jobs():
-    if config.auth and not authorized(): redirect('/login')
+    user = authorized()
     #if app not in myapps: redirect('/apps')
-    global user
     cid = request.query.cid
     app = request.query.app
     n = int(request.query.n or config.jobs_num_rows)
     q = request.query.q
     starred = request.query.starred
     shared = request.query.shared
-    check_user_var()
     if starred:
         result = db(jobs.user==user and jobs.starred=="True").select(orderby=~jobs.id)[:n]
     elif shared:
@@ -331,9 +322,7 @@ def show_jobs():
 
 @get('/aws')
 def get_aws():
-    if config.auth and not authorized(): redirect('/login')
-    #if app not in myapps: redirect('/apps')
-    global user
+    user = authorized()
     cid = request.query.cid
     app = request.query.app
     uid = db(users.user==user).select(users.id).first()
@@ -353,9 +342,7 @@ def get_aws():
 
 @post('/aws/creds')
 def post_aws_creds():
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
-    global user
+    user = authorized()
     a = request.forms.account_id
     s = request.forms.secret
     k = request.forms.key
@@ -366,9 +353,7 @@ def post_aws_creds():
 
 @post('/aws/instance')
 def post_instance():
-    if config.auth and not authorized(): redirect('/login')
-    global user
-    check_user_var()
+    user = authorized()
     i = request.forms.instance
     t = request.forms.itype
     r = request.forms.region
@@ -386,8 +371,7 @@ def aws_cred_del():
 
 def aws_conn(id):
     """create a connection to the EC2 machine and return the handle"""
-    global user
-    check_user_var()
+    user = authorized()
     uid = users(user=user).id
     creds = db(db.aws_creds.uid==uid).select().first()
     account_id = creds['account_id']
@@ -401,9 +385,7 @@ def aws_conn(id):
 
 @get('/aws/status/<aid>')
 def aws_status(aid):
-    if config.auth and not authorized(): redirect('/login')
-    global user
-    check_user_var()
+    user = authorized()
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -427,9 +409,7 @@ def aws_status(aid):
 
 @get('/aws/start/<aid>')
 def aws_start(aid):
-    if config.auth and not authorized(): redirect('/login')
-    global user
-    check_user_var()
+    user = authorized()
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -450,9 +430,7 @@ def aws_start(aid):
 
 @get('/aws/stop/<aid>')
 def aws_stop(aid):
-    if config.auth and not authorized(): redirect('/login')
-    global user
-    check_user_var()
+    user = authorized()
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -469,9 +447,7 @@ def aws_stop(aid):
 
 @get('/account')
 def get_account():
-    if config.auth and not authorized(): redirect('/login')
-    global user
-    check_user_var()
+    user = authorized()
     app = request.query.app
     params = {}
     params['app'] = app
@@ -482,8 +458,7 @@ def get_account():
 
 @post('/jobs/annotate')
 def annotate_job():
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
+    user = authorized()
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
@@ -508,8 +483,7 @@ def unstar_case():
 
 @post('/jobs/share')
 def share_case():
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
+    user = authorized()
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
@@ -519,8 +493,7 @@ def share_case():
 
 @post('/jobs/unshare')
 def unshare_case():
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
+    user = authorized()
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
@@ -531,8 +504,7 @@ def unshare_case():
 @get('/jobs/shared')
 def get_shared():
     """Return the records from the shared table."""
-    if config.auth and not authorized(): redirect('/login')
-    global user
+    user = authorized()
     cid = request.query.cid
     app = request.query.app
     n = request.query.n
@@ -553,8 +525,7 @@ def get_shared():
 
 @post('/jobs/delete/<jid>')
 def delete_job(jid):
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
+    user = authorized()
     app = request.forms.app
     cid = request.forms.cid
     #try:
@@ -570,7 +541,7 @@ def delete_job(jid):
 
 @post('/jobs/stop')
 def stop_job():
-    if config.auth and not authorized(): redirect('/login')
+    user = authorized()
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
@@ -579,9 +550,7 @@ def stop_job():
 
 @get('/<app>')
 def show_app(app):
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
-    global user, myapps
+    user = authorized()
     # set a session variable to keep track of the current app
     s = request.environ.get('beaker.session')
     s[APP_SESSION_KEY] = app
@@ -622,11 +591,9 @@ def download(filepath):
 @get('/favicon.ico')
 def get_favicon():
     return static_file('favicon.ico', root='static')
-#    return server_static('favicon.ico')
 
 @post('/login')
 def post_login():
-    global user
     s = request.environ.get('beaker.session')
     user = users(user=request.forms.get('user'))
     pw = request.forms.passwd
@@ -635,7 +602,7 @@ def post_login():
     hashpw = hashlib.sha256(pw).hexdigest()
     try:
         if hashpw == user.passwd:
-            # set global user and session key
+            # set session key
             user = s[USER_ID_SESSION_KEY] = user.user
         else:
             return err
@@ -650,7 +617,8 @@ def post_login():
 def change_password():
     # this is basically the same coding as the register function
     # needs to be DRY'ed out in the future
-    global user
+    user = authorized()
+    #global user
     if config.auth and not authorized(): redirect('/login')
     opasswd = request.forms.opasswd
     pw1 = request.forms.npasswd1
@@ -713,8 +681,7 @@ def post_register():
 
 @get('/admin/show_users')
 def admin_show_users():
-    global user
-    if config.auth and not authorized(): redirect('/login')
+    user = authorized()
     if not user == "admin":
         return template("error",err="must be admin to delete")
     result = db().select(users.ALL)
@@ -723,8 +690,7 @@ def admin_show_users():
 
 @post('/admin/delete_user')
 def admin_delete_user():
-    global user
-    if config.auth and not authorized(): redirect('/login')
+    user = authorized()
     if not user == "admin":
         return template("error",err="must be admin to delete")
     uid = request.forms.uid
@@ -751,18 +717,9 @@ def app_exists(appname):
     if apps(name=appname): return 'true'
     else: return 'false'
 
-def check_user_var():
-    # this check is because user is global var when restarting 
-    # user does not exist so return... need to implement better solution
-    # such as using a session variable to check for user
-    try: user
-    except: redirect('/apps')
-    return True
-
 @get('/apps')
 def showapps():
-    global user
-    if config.auth and not authorized(): redirect('/login')
+    user = authorized()
     result = db().select(apps.ALL)
     if user == "admin":
         configurable = True
@@ -798,8 +755,7 @@ def load_apps():
 
 @post('/app/edit/<appid>')
 def app_edit(appid):
-    global user
-    if config.auth and not authorized(): redirect('/login')
+    user = authorized()
     if user != 'admin': 
         return template('error',err="must be admin to edit app")
     cid = request.forms.cid
@@ -824,8 +780,7 @@ def app_save(appid):
 # allow only admin or user to delete apps
 @post('/app/delete/<appid>')
 def delete_app(appid):
-    global user
-    check_user_var()
+    user = authorized()
     appname = request.forms.app
     del_app_dir = request.forms.del_app_dir
     del_app_cases = request.forms.del_app_cases
@@ -836,26 +791,16 @@ def delete_app(appid):
             del_files = True
         else:
             del_files = False
-        a.delete(appid,del_files)
+        #a.delete(appid,del_files)
+        myapps[appname].delete(appid,del_files)
+        #a.delete(appid,del_files)
     else:
         return template("error", err="must be admin")
-    ## if delete files checkbox ticked
-    #if del_app_dir == "on":
-    #    # delete app directory
-    #    path = os.path.join(config.apps_dir,appname)
-    #    if os.path.isdir(path):
-    #        shutil.rmtree(path)
-    #    # remove template file
-    #    path = "views/apps/"+appname+".tpl"
-    #    if os.path.isfile(path):
-    #        os.remove(path)
     redirect("/apps")
 
 @get('/app/<app>')
 def view_app(app):
-    if config.auth and not authorized(): redirect('/login')
-    check_user_var()
-    global user
+    user = authorized()
     if user != 'admin': 
         return template('error',err="must be admin to edit app")
     cid = request.query.cid
@@ -872,8 +817,7 @@ def view_app(app):
 
 @get('/start')
 def getstart():
-    global user
-    check_user_var()
+    user = authorized()
     app = request.query.app
     if config.auth and not authorized(): redirect('/login')
     if myapps[app].appname not in myapps: redirect('/apps')
@@ -896,11 +840,10 @@ def getstart():
 
 @get('/files')
 def list_files():
-    global user
+    user = authorized()
     cid = request.query.cid
     app = request.query.app
     path = request.query.path
-    check_user_var()
     if re.search("/",cid):
         (u,cid) = cid.split("/")
     else:
@@ -918,8 +861,7 @@ def list_files():
 
 @get('/plots/edit')
 def editplot():
-    global user
-    check_user_var()
+    user = authorized()
     if user != 'admin': 
         return template('error',err="must be admin to edit plots")
     app = request.query.app
@@ -941,10 +883,9 @@ def delete_plot(pltid):
 
 @get('/plots/datasource/<pltid>')
 def get_datasource(pltid):
-    global user
+    user = authorized()
     app = request.query.app
     cid = request.query.cid
-    check_user_var()
     if myapps[app].appname not in myapps: redirect('/apps')
     if config.auth and not authorized(): redirect('/login')
     result = db(datasource.pltid==pltid).select()
@@ -987,9 +928,9 @@ def create_plot():
 
 @get('/plot/<pltid>')
 def plot_interface(pltid):
+    user = authorized()
     app = request.query.app
     cid = request.query.cid
-    check_user_var()
     params = dict()
 
     if not cid:
@@ -1115,13 +1056,12 @@ def matplotlib(pltid):
     # in the future create a private function __import__ to import third-party
     # libraries, so that it can respond gracefully.  See for example the
     # Examples section at https://docs.python.org/2/library/imp.html
+    user = authorized()
     from pylab import savefig
     import numpy as np
     import StringIO
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
-    global user
-    check_user_var()
     app = request.query.app
     cid = request.query.cid
 
@@ -1200,21 +1140,10 @@ def matplotlib(pltid):
               'rows': list_of_plots, 'apps': myapps.keys(), 'stats': stats }
     return template('plots/matplotlib', params)
 
-@get('/monitor')
-def monitor():
-    global user
-    check_user_var()
-    cid = request.query.cid
-    app = request.query.app
-    jid = request.query.jid
-    params = { 'cid': cid, 'app': app, 'jid': jid, 'user': user,
-               'apps': myapps.keys() }
-    return template('monitor', params)
-
 @get('/zipcase')
 def zipcase():
     """zip case on machine to prepare for download"""
-    global user
+    user = authorized()
     import zipfile
     app = request.query.app
     cid = request.query.cid
@@ -1251,15 +1180,14 @@ def zipget():
 
 @get('/addapp')
 def getaddapp():
-    global user
+    user = authorized()
     if user != 'admin': 
         return template('error',err="must be admin to add app")
     return template('appconfig/addapp')
 
 @post('/addapp')
 def addapp():
-    global user
-    check_user_var()
+    user = authorized()
     if user != 'admin': 
         return template('error',err="must be admin to add app")
     appname = request.forms.appname
@@ -1320,7 +1248,7 @@ def appconfig_status():
 
 @post('/appconfig/exe/<step>')
 def appconfig_exe(step="upload"):
-    global user
+    user = authorized()
     if user != 'admin': 
         return template('error',err="must be admin to configure app")
     if step == "upload":
@@ -1360,7 +1288,7 @@ def appconfig_exe(step="upload"):
 
 @post('/appconfig/inputs/<step>')
 def edit_inputs(step):
-    global user
+    user = authorized()
     if user != 'admin': 
         return template('error',err="must be admin to edit app")
     # upload zip file and return a text copy of the input file
@@ -1454,8 +1382,7 @@ def edit_inputs(step):
 
 @post('/upload')
 def upload_data():
-    global user
-    if config.auth and not authorized(): redirect('/login')
+    user = authorized()
     upload = request.files.upload
     if not upload:
         return template('error', err="no file selected.")
@@ -1487,25 +1414,26 @@ def app_instance(input_format,appname,preprocess=0,postprocess=0):
     return myapp
 
 def authorized():
-    '''Return True if user is already logged in, False otherwise'''
-    global user
-    s = request.environ.get('beaker.session')
-    s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY,False)
-    if not s[USER_ID_SESSION_KEY]:
-        return False
-    else:
-        user = s[USER_ID_SESSION_KEY]
-        return True
+    '''Return True if user is already logged in, redirect otherwise'''
+    if config.auth:
+        s = request.environ.get('beaker.session')
+        s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY,False)
+        if not s[USER_ID_SESSION_KEY]:
+            redirect('/login')
+        else:
+            return s[USER_ID_SESSION_KEY]
+    else: 
+        return NOAUTH_USER
 
 def getuser():
     '''Return the current user, if logged in'''
-    global user
+    user = authorized()
     return user
 
 if __name__ == "__main__":
     # set user session if authentication is disabled
     if not config.auth:
-        s = {USER_ID_SESSION_KEY: "guest"}
+        s = {USER_ID_SESSION_KEY: NOAUTH_USER}
         user = s[USER_ID_SESSION_KEY]
     # load apps into memory
     load_apps()

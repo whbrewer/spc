@@ -39,19 +39,25 @@ class App(object):
         pass
 
     def delete(self,appid,del_files=False):
+        # remove db entry
         del apps[appid]
         db.commit()
         # if delete files checkbox ticked
         if del_files:
             # delete app directory
-            path = os.path.join(config.apps_dir,self.appname)
-            if os.path.isdir(path):
-                shutil.rmtree(path)
-            # remove template file
-            path = "views/apps/"+self.appname+".tpl"
-            if os.path.isfile(path):
-                os.remove(path)
-        return True
+            if not self.appname == '':
+                path = os.path.join(config.apps_dir,self.appname)
+                print "deleting app dir:", path
+                if os.path.isdir(path):
+                   shutil.rmtree(path)
+                # remove template file
+                path = "views/apps/"+self.appname+".tpl"
+                print "deleting template:", path
+                if os.path.isfile(path):
+                    os.remove(path)
+                return True
+            else:
+                return False
 
     def deploy(self):
         pass
