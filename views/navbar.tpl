@@ -3,7 +3,7 @@
 <form class="navbar-form">
 <div class="container-fluid">
     <div class="row" style="white-space:nowrap">
-        <div class="navbar-left"> 
+        <div class="navbar-left">
             <div class="btn-group">
                 <button type="submit" class="btn btn-default" formaction="/apps">
                     <span class="glyphicon glyphicon-th-large"></span> Apps </button>
@@ -18,7 +18,7 @@
                 <button type="submit" class="btn btn-default" formaction="/jobs/shared">
                     <span class="glyphicon glyphicon-pushpin"></span> Shared </button>
             </div>
-        </div> 
+        </div>
 
         <div class="hidden-xs">
         %if defined('app'):
@@ -42,7 +42,7 @@
 
         <div class="navbar-right hidden-xs" style="margin-right: 5px;">
             %if defined('user'):
-                <label class="control-label">{{user}}</label>
+                <label class="control-label hidden-xs">{{user}}</label>
             %end
             <div class="btn-group">
                 <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">

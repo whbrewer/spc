@@ -91,7 +91,7 @@ class Scheduler(object):
 
         exe = os.path.join(config.apps_dir,app,app)
         outfn = app + ".out"
-        cmd = command + ' >& ' + outfn
+        cmd = command + ' > ' + outfn + ' 2>&1 '
 
         run_dir = os.path.join(config.user_dir,user,app,cid)
         thread = threading.Thread(target = self.start_job(run_dir,cmd,app,jid))
