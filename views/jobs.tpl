@@ -123,6 +123,13 @@
   <input type="submit" class="btn btn-default btn-block" value="Show more">
 </form>
 
+<footer class="footer">
+  <div class="container">
+    <p class="text-muted" align=center>running:{{nr}} queued:{{nq}} completed:{{nc}}</p>
+  </div>
+</footer>
+
+
 <script>
 $(document).ready(function() {
     // $('#clickable tr').click(function(e) {

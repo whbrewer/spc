@@ -38,7 +38,13 @@
 
 * To install another SPC packaged app, e.g. Mendel's Accountant:
 
-    `> ./spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip`
+      - Mac OS X version:
+
+      `> ./spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip`
+
+      - Linux version:
+
+      `> ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip`
 
 * For more information, see user's manual in the docs/ folder
 

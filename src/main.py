@@ -309,6 +309,10 @@ def show_jobs():
             db.jobs.description.contains(q, case_sensitive=False)).select(orderby=~jobs.id)        
     else:
         result = db(jobs.user==user).select(orderby=~jobs.id)[:n]
+    # number of jobs in queued state
+    nq = db(jobs.state=='Q').count()
+    nr = db(jobs.state=='R').count()
+    nc = db(jobs.state=='C').count()
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -316,6 +320,9 @@ def show_jobs():
     params['apps'] = myapps.keys()
     params['sched'] = config.sched
     params['np'] = config.np
+    params['nq'] = nq
+    params['nr'] = nr
+    params['nc'] = nc
     params['n'] = n
     params['num_rows'] = config.jobs_num_rows
     return template('jobs', params, rows=result)
