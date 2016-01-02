@@ -41,7 +41,7 @@ plots = db.define_table('plots', Field('id','integer'),
                                  Field('options','string'))
 
 datasource = db.define_table('datasource', Field('id','integer'),
-                                           Field('pltid','integer'),
+                                           Field('pltid',db.plots),
                                            Field('filename','string'),
                                            Field('cols','string'),
                                            Field('line_range','string'),

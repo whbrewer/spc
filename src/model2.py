@@ -39,7 +39,7 @@ class dal(object):
                                          Field('options','string'))
 
         self.datasource = self.db.define_table('datasource', Field('id','integer'),
-                                                   Field('pltid','integer'),
+                                                   Field('pltid',self.db.plots),
                                                    Field('filename','string'),
                                                    Field('cols','string'),
                                                    Field('line_range','string'),
