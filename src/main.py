@@ -15,17 +15,17 @@ import plots as plotmod
 try:
     import scheduler_ws
 except ImportError:
-    pass
+    print "WARNING: scheduler_ws not imported because gevent not installed"
 # requires boto
 try:
     import aws as awsmod
 except ImportError:
-    pass
+    print "WARNING: disabling AWS menu because boto not installed"
 # requires docker-py
 try:
     import container as dockermod
 except ImportError:
-    pass
+    print "WARNING: docker options disabled because container is not installed"
 # data access layer
 from gluino import DAL, Field
 from model import *
@@ -115,7 +115,8 @@ def execute():
         params['app'] = app
         params['user'] = user
         priority = db(users.user==user).select(users.priority).first().priority
-        jid = sched.qsub(app,cid,user,np,priority,desc)
+        uid = users(user=user).id
+        jid = sched.qsub(app,cid,uid,np,priority,desc)
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >>sys.stderr, "Execution failed:", e
@@ -243,7 +244,7 @@ def compute_stats(path):
         output = f.readlines()
         for line in output:
             m = re.search(r'#.*$', line)
-            if m: 
+            if m:
                 xoutput += line
         # this is a temporary hack for mendel
         if path[-3:] == "hst":
@@ -268,7 +269,7 @@ def tail(app,cid):
         # custom mendel mods for progress bar
         for line in output:
             m = re.search("num_generations\s=\s*(\d+)", line)
-            if m: 
+            if m:
                 complete = int(m.group(1))
             if complete > 0:
                 m = re.match("generation\s=\s*(\d+)", line)
@@ -300,15 +301,16 @@ def show_jobs():
     q = request.query.q
     starred = request.query.starred
     shared = request.query.shared
+    uid = users(user=user).id
     if starred:
-        result = db(jobs.user==user and jobs.starred=="True").select(orderby=~jobs.id)[:n]
+        result = db(jobs.uid==uid and jobs.starred=="True").select(orderby=~jobs.id)[:n]
     elif shared:
-        result = db(jobs.user==user and jobs.shared=="True").select(orderby=~jobs.id)[:n]
+        result = db(jobs.uid==uid and jobs.shared=="True").select(orderby=~jobs.id)[:n]
     elif q:
-        result = db(jobs.user==user and \
-            db.jobs.description.contains(q, case_sensitive=False)).select(orderby=~jobs.id)        
+        result = db(jobs.uid==uid and \
+            db.jobs.description.contains(q, case_sensitive=False)).select(orderby=~jobs.id)
     else:
-        result = db(jobs.user==user).select(orderby=~jobs.id)[:n]
+        result = db(jobs.uid==uid).select(orderby=~jobs.id)[:n]
     # number of jobs in queued state
     nq = db(jobs.state=='Q').count()
     nr = db(jobs.state=='R').count()
@@ -431,7 +433,7 @@ def aws_start(aid):
         return template('error',err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
     a.start()
     # takes a few seconds for the status to change on the Amazon end
-    time.sleep(5) 
+    time.sleep(5)
     astatus = a.status()
     return template('aws_status',params,astatus=astatus)
 
@@ -449,7 +451,7 @@ def aws_stop(aid):
     a = aws_conn(aid)
     a.stop()
     # takes a few seconds for the status to change on the Amazon end
-    time.sleep(5) 
+    time.sleep(5)
     return template('aws_status',params,astatus=a.status())
 
 @get('/account')
@@ -515,7 +517,7 @@ def get_shared():
     cid = request.query.cid
     app = request.query.app
     n = request.query.n
-    if not n: 
+    if not n:
         n = config.jobs_num_rows
     else:
         n = int(n)
@@ -537,7 +539,7 @@ def delete_job(jid):
     cid = request.forms.cid
     #try:
     if True:
-        # this will fail if the app has been removed 
+        # this will fail if the app has been removed
         path = os.path.join(myapps[app].user_dir,user,app,cid)
         if os.path.isdir(path): shutil.rmtree(path)
         sched.stop()
@@ -731,7 +733,7 @@ def showapps():
     if user == "admin":
         configurable = True
     else:
-        configurable = False    
+        configurable = False
     params = { 'apps': myapps.keys(), 'configurable': configurable }
     return template('apps', params, rows=result)
 
@@ -763,7 +765,7 @@ def load_apps():
 @post('/app/edit/<appid>')
 def app_edit(appid):
     user = authorized()
-    if user != 'admin': 
+    if user != 'admin':
         return template('error',err="must be admin to edit app")
     cid = request.forms.cid
     app = request.forms.app
@@ -794,7 +796,7 @@ def delete_app(appid):
     if user == 'admin':
         # delete entry in DB
         a = appmod.App()
-        if del_app_dir == "on": 
+        if del_app_dir == "on":
             del_files = True
         else:
             del_files = False
@@ -808,7 +810,7 @@ def delete_app(appid):
 @get('/app/<app>')
 def view_app(app):
     user = authorized()
-    if user != 'admin': 
+    if user != 'admin':
         return template('error',err="must be admin to edit app")
     cid = request.query.cid
     result = db(apps.name==app).select().first()
@@ -869,7 +871,7 @@ def list_files():
 @get('/plots/edit')
 def editplot():
     user = authorized()
-    if user != 'admin': 
+    if user != 'admin':
         return template('error',err="must be admin to edit plots")
     app = request.query.app
     cid = request.query.cid
@@ -1042,7 +1044,7 @@ def plot_interface(pltid):
         #dat = [d.replace('?', '0') for d in dat]
         data.append(dat)
         # [[1,2,3]] >>> [1,2,3]
-        if num_fields == 1: data = data[0] 
+        if num_fields == 1: data = data[0]
         #data.append(p.get_data(plotpath,col1,col2))
         if plottype == 'flot-cat':
             ticks = p.get_ticks(plotpath,col1,col2)
@@ -1085,12 +1087,12 @@ def matplotlib(pltid):
 
     # parse plot options to extract and set x- and y-axis labels
     m = re.search("xaxis:\s*{(.*)}", options)
-    if m: 
+    if m:
         n = re.search("axisLabel:\s*\"(\w*)\"", m.group(1))
         if n: ax.set_xlabel(n.group(1))
 
     m = re.search("yaxis:\s*{(.*)}", options)
-    if m: 
+    if m:
         n = re.search("axisLabel:\s*\"(\w*)\"", m.group(1))
         if n: ax.set_ylabel(n.group(1))
 
@@ -1188,14 +1190,14 @@ def zipget():
 @get('/addapp')
 def getaddapp():
     user = authorized()
-    if user != 'admin': 
+    if user != 'admin':
         return template('error',err="must be admin to add app")
     return template('appconfig/addapp')
 
 @post('/addapp')
 def addapp():
     user = authorized()
-    if user != 'admin': 
+    if user != 'admin':
         return template('error',err="must be admin to add app")
     appname = request.forms.appname
     input_format = request.forms.input_format
@@ -1220,7 +1222,7 @@ def appconfig_status():
     app = request.query.app
     # check db file
     command = apps(name=app).command
-    if command: 
+    if command:
         status['command'] = 1
     else:
         status['command'] = 0
@@ -1243,7 +1245,7 @@ def appconfig_status():
         status['binary'] = 1
     else:
         status['binary'] = 0
-    # check plots 
+    # check plots
     appid = apps(name=app).id
     result = db(plots.appid==appid).select().first()
     if result:
@@ -1256,7 +1258,7 @@ def appconfig_status():
 @post('/appconfig/exe/<step>')
 def appconfig_exe(step="upload"):
     user = authorized()
-    if user != 'admin': 
+    if user != 'admin':
         return template('error',err="must be admin to configure app")
     if step == "upload":
         appname = request.forms.appname
@@ -1296,7 +1298,7 @@ def appconfig_exe(step="upload"):
 @post('/appconfig/inputs/<step>')
 def edit_inputs(step):
     user = authorized()
-    if user != 'admin': 
+    if user != 'admin':
         return template('error',err="must be admin to edit app")
     # upload zip file and return a text copy of the input file
     if step == "upload":
@@ -1340,7 +1342,7 @@ def edit_inputs(step):
             path = os.path.join(config.apps_dir,appname,fn)
             # cgi.escape converts HTML chars like > to entities &gt;
             contents = cgi.escape(slurp_file(path))
-            params = {'fn': fn, 'contents': contents, 'appname': appname, 
+            params = {'fn': fn, 'contents': contents, 'appname': appname,
                       'input_format': input_format }
             return template('appconfig/inputs_parse', params)
         except IOError:
@@ -1429,7 +1431,7 @@ def authorized():
             redirect('/login')
         else:
             return s[USER_ID_SESSION_KEY]
-    else: 
+    else:
         return NOAUTH_USER
 
 def getuser():

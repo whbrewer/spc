@@ -9,6 +9,7 @@ users = db.define_table('users', Field('id','integer'),
                                  Field('passwd','string'),
                                  Field('email','string'),
                                  Field('priority','integer'))
+
 # this is also defined in scheduler.py
 # need to fix in the future
 apps = db.define_table('apps', Field('id','integer'),
@@ -20,10 +21,11 @@ apps = db.define_table('apps', Field('id','integer'),
                                Field('command','string'),
                                Field('preprocess','string'),
                                Field('postprocess','string'))
+
 # this is also defined in scheduler.py
 # need to fix in the future
 jobs = db.define_table('jobs', Field('id','integer'),
-                               Field('user','string'),
+                               Field('uid',db.users),
                                Field('app','string'),
                                Field('cid','string'),
                                Field('state','string'),
@@ -51,18 +53,18 @@ aws_creds = db.define_table('aws_creds', Field('id','integer'),
                                          Field('key','string'),
                                          Field('secret','string'),
                                          Field('account_id','string'),
-                                         Field('uid','integer'))
+                                         Field('uid',db.users))
 
 aws_instances = db.define_table('aws_instances', Field('id','integer'),
                                                  Field('region','string'),
                                                  Field('instance','string'),
                                                  Field('itype','string'),
                                                  Field('rate','double'),
-                                                 Field('uid','integer'))
+                                                 Field('uid',db.users))
 
 
 containers = db.define_table('containers', Field('id','integer'),
                                            Field('containerid','string'),
                                            Field('image','string'),
                                            Field('command','string'),
-                                           Field('uid','integer'))
+                                           Field('uid',db.users))

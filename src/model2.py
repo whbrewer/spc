@@ -3,14 +3,17 @@ import config
 
 class dal(object):
     def __init__(self, uri=config.uri, migrate=False):
+
         #self.db = DAL(uri, auto_import=True, migrate=migrate, folder=config.dbdir)
         self.db = DAL(uri, migrate=migrate, folder=config.dbdir)
+
         # must define these here because need to use the db instance
         self.users = self.db.define_table('users', Field('id','integer'),
                                          Field('user', 'string'),
                                          Field('passwd','string'),
                                          Field('email','string'),
                                          Field('priority','integer'))
+
         self.apps = self.db.define_table('apps', Field('id','integer'),
                                        Field('name','string'),
                                        Field('description','string'),
@@ -20,8 +23,9 @@ class dal(object):
                                        Field('command','string'),
                                        Field('preprocess','string'),
                                        Field('postprocess','string'))
+
         self.jobs = self.db.define_table('jobs', Field('id','integer'),
-                                       Field('user','string'),
+                                       Field('uid',self.db.users),
                                        Field('app','string'),
                                        Field('cid','string'),
                                        Field('state','string'),
@@ -49,7 +53,7 @@ class dal(object):
                                                  Field('key','string'),
                                                  Field('secret','string'),
                                                  Field('account_id','string'),
-                                                 Field('uid','integer'))
+                                                 Field('uid',self.db.users))
 
         self.aws_instances = self.db.define_table('aws_instances',
                                                         Field('id','integer'),
@@ -57,14 +61,14 @@ class dal(object):
                                                         Field('instance','string'),
                                                         Field('itype','string'),
                                                         Field('rate','double'),
-                                                        Field('uid','integer'))
+                                                        Field('uid',self.db.users))
 
         self.containers = self.db.define_table('containers',
                                            Field('id','integer'),
                                            Field('containerid','string'),
                                            Field('image','string'),
                                            Field('command','string'),
-                                           Field('uid','integer'))
+                                           Field('uid',self.db.users))
 
         self.disciplines = self.db.define_table('disciplines', Field('name'))
 

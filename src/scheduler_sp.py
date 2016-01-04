@@ -16,8 +16,15 @@ apps = db.define_table('apps', Field('id','integer'),
                                Field('language','string'),
                                Field('input_format','string'),
                                Field('command','string'))
+
+users = db.define_table('users', Field('id','integer'),
+                                 Field('user', 'string'),
+                                 Field('passwd','string'),
+                                 Field('email','string'),
+                                 Field('priority','integer'))
+
 jobs = db.define_table('jobs', Field('id','integer'),
-                               Field('user','string'),
+                               Field('uid',db.users),
                                Field('app','string'),
                                Field('cid','string'),
                                Field('state','string'),
@@ -31,7 +38,7 @@ jobs = db.define_table('jobs', Field('id','integer'),
 class Scheduler(object):
     """simple single process scheduler"""
     def __init__(self):
-        # if any jobs marked in run state when scheduler starts 
+        # if any jobs marked in run state when scheduler starts
         # replace their state with X to mark that they have been shutdown
         myset = db(db.jobs.state == 'R')
         myset.update(state='X')
@@ -45,16 +52,16 @@ class Scheduler(object):
 
     def assignTask(self):
         while(True):
-            #print "scheduler:", self.qstat(), "jobs in queued state", 
+            #print "scheduler:", self.qstat(), "jobs in queued state",
             #time.asctime()
             j = self.qfront()
             if j is not None and j > 0:
-                self.start(j)            
-            time.sleep(1) 
+                self.start(j)
+            time.sleep(1)
 
-    def qsub(self,app,cid,user,np,pry,desc=""):
+    def qsub(self,app,cid,uid,np,pry,desc=""):
         state = 'Q'
-        jid = jobs.insert(user=user, app=app, cid=cid, state=state, description=desc,
+        jid = jobs.insert(uid=uid, app=app, cid=cid, state=state, description=desc,
                           time_submit=time.asctime(), np=np, priority=pry)
         db.commit()
         return str(jid)
@@ -79,7 +86,8 @@ class Scheduler(object):
         db.jobs[jid] = dict(state='R')
         db.commit()
 
-        user = jobs(jid).user
+        uid = jobs(jid).uid
+        user = users(uid).user
         app = jobs(jid).app
         cid = jobs(jid).cid
         np = jobs(jid).np
@@ -102,8 +110,8 @@ class Scheduler(object):
         global popen
         # The os.setsid() is passed in the argument preexec_fn so
         # it's run after the fork() and before  exec() to run the shell.
-        popen = subprocess.Popen(cmd, cwd=run_dir, stdout=subprocess.PIPE, 
-                                 shell=True, preexec_fn=os.setsid) 
+        popen = subprocess.Popen(cmd, cwd=run_dir, stdout=subprocess.PIPE,
+                                 shell=True, preexec_fn=os.setsid)
         popen.wait()
 
         # let user know job has ended
@@ -118,7 +126,7 @@ class Scheduler(object):
     def stop(self):
         # Send the signal to all the process groups
         try: # if running
-            os.killpg(popen.pid, signal.SIGTERM) 
+            os.killpg(popen.pid, signal.SIGTERM)
         except: # if not running
             return -1
 
