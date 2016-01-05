@@ -97,6 +97,10 @@ tr:hover {
         <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="submit" class="btn btn-default" value="Configure Plots">
     </form>
+    <form class="btn-group" method="post" action="/appconfig/export">
+        <input type="hidden" name="app" value="{{rows['name']}}">
+        <input type="submit" class="btn btn-default" value="Export Config">
+    </form>
     <button type="button" class="btn btn-danger" data-toggle="modal" 
             data-target="#dModal">
             <span class="glyphicon glyphicon-trash"></span> Delete {{app}}</button>

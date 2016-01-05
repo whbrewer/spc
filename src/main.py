@@ -1294,6 +1294,52 @@ def appconfig_exe(step="upload"):
             return "IOerror:", IOError
         else:
             return "ERROR: must be already a file"
+@post('/appconfig/export')
+def export():
+    user = authorized()
+    if user != 'admin':
+        return template('error',err="must be admin to use export function")
+    app = request.forms.app
+    result = db(apps.name==app).select().first()
+  
+    data = {}
+    data['name'] = result.name
+    data['description'] = result.description
+    data['category'] = result.category
+    data['language'] = result.language
+    data['input_format'] = result.input_format
+    data['command'] = result.command
+    data['preprocess'] = result.preprocess
+    data['postprocess'] = result.postprocess
+
+    appid = apps(name=app).id
+
+    myplots = db(plots.appid==appid).select()
+    data['plots'] = list()
+    
+    for p in myplots:
+        thisplot = {}
+        thisplot['ptype'] = p.ptype
+        thisplot['title'] = p.title
+        thisplot['options'] = p.options
+        thisplot['datasource'] = list()
+        
+        myds = db(datasource.pltid==p.id).select()
+
+        for ds in myds:
+            thisds = {}
+            thisds['filename'] = ds.filename
+            thisds['cols'] = ds.cols
+            thisds['line_range'] = ds.line_range
+            thisds['data_def'] = ds.data_def
+            
+            thisplot['datasource'].append(thisds)
+
+        data['plots'].append(thisplot)
+
+    with open('spc.json', 'w') as outfile:
+        json.dump(data, outfile)
+    return "spc.json file written"
 
 @post('/appconfig/inputs/<step>')
 def edit_inputs(step):
