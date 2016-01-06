@@ -52,9 +52,8 @@
 <thead>
 <tr>
   <th><a href="/jobs?starred=1"><span class="glyphicon glyphicon-star"></span></a></th>
-  <th class="hidden-xs">jid</th> 
-  <th>app</th> 
   <th>cid</th> 
+  <th>app</th> 
   <th>state</th>
   %if np > 1: 
     <th class="hidden-xs">np</th>
@@ -85,9 +84,8 @@
   %end
   <div>
     %url="/case?cid="+row['cid']+"&app="+row['app']+"&jid="+str(row['id'])
-    <td class="case hidden-xs">{{row['id']}} <a href="{{url}}"></a></td>
-    <td class="case">{{row['app']}} <a href="{{url}}"></a></td>
     <td class="case"><tt>{{row['cid']}}</tt> <a href="{{url}}"></a></td>
+    <td class="case">{{row['app']}} <a href="{{url}}"></a></td>
     <td class="case"><tt>{{row['state']}}</tt> <a href="{{url}}"></a></td>
     %if np > 1:
       <td class="case hidden-xs">{{row['np']}} <a href="{{url}}"></a></td>

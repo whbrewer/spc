@@ -522,7 +522,8 @@ def get_shared():
     else:
         n = int(n)
     # sort by descending order of jobs.id
-    result = db(jobs.shared=="True").select(orderby=~jobs.id)[:n]
+    result = db(jobs.shared=="True" and jobs.uid==users.id).select(orderby=~jobs.id)[:n]
+    
     params = {}
     params['cid'] = cid
     params['app'] = app
@@ -1294,6 +1295,7 @@ def appconfig_exe(step="upload"):
             return "IOerror:", IOError
         else:
             return "ERROR: must be already a file"
+
 @post('/appconfig/export')
 def export():
     user = authorized()
@@ -1337,9 +1339,11 @@ def export():
 
         data['plots'].append(thisplot)
 
-    with open('spc.json', 'w') as outfile:
+    path = os.path.join(config.apps_dir,app,'spc.json')
+    with open(path, 'w') as outfile:
         json.dump(data, outfile)
-    return "spc.json file written"
+
+    return "spc.json file written to " + path + "<meta http-equiv='refresh' content='2; url=/app/"+app+"'>"
 
 @post('/appconfig/inputs/<step>')
 def edit_inputs(step):

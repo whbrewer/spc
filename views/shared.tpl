@@ -18,22 +18,20 @@
 <table id="clickable" class="table table-striped">
 <thead>
 <tr> 
-   <th>job id</th> 
+   <th>cid</th> 
    <th>user</th> 
    <th>app</th> 
-   <th>cid</th> 
    <th class="hidden-xs">labels</th> 
 </tr>
 </thead>
 
 %for row in rows:
   <tr>
-     <td>{{row['id']}}</td>
-     <td>{{row['user']}}</td>
-     <td>{{row['app']}}</td>
-     <td>{{row['cid']}}</td>
-     <td class="hidden-xs">{{row['description']}}
-         <a href="/case?cid={{row['user']}}/{{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a>
+     <td>{{row['jobs.cid']}}</td>
+     <td>{{row['users.user']}}</td>
+     <td>{{row['jobs.app']}}</td>
+     <td class="hidden-xs">{{row['jobs.description']}}
+         <a href="/case?cid={{row['users.user']}}/{{row['jobs.cid']}}&app={{row['jobs.app']}}&jid={{row['jobs.id']}}"></a>
      </td>
   </tr> 
 %end
