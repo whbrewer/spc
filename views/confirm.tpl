@@ -13,14 +13,14 @@
     <div class="col-xs-12" style="height:5px"></div>
     %if np > 1:
         <div class="btn-group">
+            <button type="submit" class="btn btn-success"> <!-- pull-right -->
+                Execute <em class="glyphicon glyphicon-play"></em>
+            </button>
             <select name="np" class="btn-group form-control" style="width:auto" title="Number of processors to use">
                 %for i in range(1,np+1):
                     <option value="{{i}}">{{i}}
                 %end
             </select>
-            <button type="submit" class="btn btn-success"> <!-- pull-right -->
-                Execute <em class="glyphicon glyphicon-play"></em>
-            </button>
         </div>
     %else:
         <input type="hidden" name="np" value="1">

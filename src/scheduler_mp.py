@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 import threading, time, os
 import config
-from multiprocessing import Process, BoundedSemaphore, Lock
-import subprocess
+from multiprocessing import Process, BoundedSemaphore, Lock, Manager
+import subprocess, signal
 from gluino import DAL, Field
-
-#inspired from:
-#http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
 
 STATE_RUN = 'R'
 STATE_QUEUED = 'Q'
@@ -32,9 +29,10 @@ class Scheduler(object):
         t.start()
 
     def assignTask(self):
+        global dict_jobs
+        manager = Manager()
+        dict_jobs = manager.dict()
         while(True):
-            #print "scheduler:", self.qstat(), "jobs in queued state",
-            #time.asctime()
             j = self.qfront()
             if j is not None and j > 0:
                 self.start(j)
@@ -63,15 +61,11 @@ class Scheduler(object):
 
     def qdel(self,jid):
         """delete job jid from the queue"""
-        #try:
         db = DAL(config.uri, auto_import=True, migrate=False,
                  folder=config.dbdir)
         del db.jobs[jid]
         db.commit()
         db.close()
-        #return True
-        #except:
-        #    return False
 
     def qstat(self):
         """return the number of jobs in a queued 'Q' state"""
@@ -82,8 +76,6 @@ class Scheduler(object):
 
     def start(self,jid):
         """start running a job by creating a new process"""
-        global p, jobs
-        myjobs = []
         db = DAL(config.uri, auto_import=True, migrate=False,
                  folder=config.dbdir)
         uid = db.jobs(jid).uid
@@ -106,17 +98,13 @@ class Scheduler(object):
         # if number procs available fork new process with command
         for i in range(np):
             self.sem.acquire()
-        p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,))
-        myjobs.append(p)
-        #print len(myjobs), myjobs
+        p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,dict_jobs))
         p.start()
         for i in range(np):
             self.sem.release()
 
-    def start_job(self,run_dir,cmd,app,jid,np):
+    def start_job(self,run_dir,cmd,app,jid,np,dict_jobs):
         """this is what the separate job process runs"""
-        global popen
-        #print '*** pid:', os.getpid()
         for i in range(np):
             self.sem.acquire()
         # update state to 'R' for run
@@ -124,9 +112,10 @@ class Scheduler(object):
         mycwd = os.getcwd()
         os.chdir(run_dir) # change to case directory
         
-        #popen = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        #popen = subprocess.Popen(cmd, shell=True)
-        os.system(cmd)
+        pro = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+        dict_jobs[jid] = pro
+
+        pro.wait() # wait for job to finish
 
         # let user know job has ended
         outfn = app + ".out"
@@ -149,17 +138,10 @@ class Scheduler(object):
         db.close()
         self.mutex.release()
 
-    def stop(self):
-        # this is currently not working
-        pass
-        #p.shutdown
-        #popen.terminate()
-        #time.sleep(0.1)
-        #print p, p.is_alive()
-        #p.join()
-        #print p, p.is_alive()
-        #print '%s.exitcode = %s' % (popen.name, popen.exitcode)
-        #os.system("killall " + app)
+    def stop(self,jid):
+        pro = dict_jobs[long(jid)]
+        dict_jobs.pop(long(jid),None) # remove item from dictionary
+        os.killpg(os.getpgid(pro.pid), signal.SIGTERM)  # send termination signal
 
     def test_qfront(self):
         print self.qfront()

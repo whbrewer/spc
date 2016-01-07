@@ -543,7 +543,7 @@ def delete_job(jid):
         # this will fail if the app has been removed
         path = os.path.join(myapps[app].user_dir,user,app,cid)
         if os.path.isdir(path): shutil.rmtree(path)
-        sched.stop()
+        sched.stop(jid)
         sched.qdel(jid)
     #except:
     #    return "there was an error!"
@@ -555,7 +555,7 @@ def stop_job():
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
-    sched.stop()
+    sched.stop(jid)
     redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
 
 @get('/<app>')

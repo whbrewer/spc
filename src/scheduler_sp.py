@@ -123,7 +123,7 @@ class Scheduler(object):
         db.jobs[jid] = dict(state='C')
         db.commit()
 
-    def stop(self):
+    def stop(self,jid):
         # Send the signal to all the process groups
         try: # if running
             os.killpg(popen.pid, signal.SIGTERM)
