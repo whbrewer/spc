@@ -29,9 +29,9 @@ class Scheduler(object):
         t.start()
 
     def assignTask(self):
-        global dict_jobs
+        global myjobs
         manager = Manager()
-        dict_jobs = manager.dict()
+        myjobs = manager.dict()
         while(True):
             j = self.qfront()
             if j is not None and j > 0:
@@ -98,12 +98,12 @@ class Scheduler(object):
         # if number procs available fork new process with command
         for i in range(np):
             self.sem.acquire()
-        p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,dict_jobs))
+        p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,myjobs))
         p.start()
         for i in range(np):
             self.sem.release()
 
-    def start_job(self,run_dir,cmd,app,jid,np,dict_jobs):
+    def start_job(self,run_dir,cmd,app,jid,np,myjobs):
         """this is what the separate job process runs"""
         for i in range(np):
             self.sem.acquire()
@@ -113,9 +113,10 @@ class Scheduler(object):
         os.chdir(run_dir) # change to case directory
         
         pro = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
-        dict_jobs[jid] = pro
+        myjobs[jid] = pro
 
         pro.wait() # wait for job to finish
+        myjobs.pop(long(jid),None) # remove job from buffer
 
         # let user know job has ended
         outfn = app + ".out"
@@ -139,7 +140,7 @@ class Scheduler(object):
         self.mutex.release()
 
     def stop(self,jid):
-        p = dict_jobs.pop(long(jid),None)
+        p = myjobs.pop(long(jid),None)
         if p: os.killpg(os.getpgid(p.pid), signal.SIGTERM)
 
     def test_qfront(self):
