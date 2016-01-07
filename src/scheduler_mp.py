@@ -139,9 +139,8 @@ class Scheduler(object):
         self.mutex.release()
 
     def stop(self,jid):
-        pro = dict_jobs[long(jid)]
-        dict_jobs.pop(long(jid),None) # remove item from dictionary
-        os.killpg(os.getpgid(pro.pid), signal.SIGTERM)  # send termination signal
+        p = dict_jobs.pop(long(jid),None)
+        if p: os.killpg(os.getpgid(p.pid), signal.SIGTERM)
 
     def test_qfront(self):
         print self.qfront()
