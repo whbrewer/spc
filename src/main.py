@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # web framework
-from bottle import *
+from bottle import Bottle, template, static_file, request, redirect, app, get, post, run
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
@@ -72,10 +72,10 @@ def confirm_form():
         desc = request.forms['desc']
     except:
         desc = "None"
-    myapps[app].write_params(request.forms,user)
+    myapps[app].write_params(request.forms, user)
     # read the file
-    run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
-    fn = os.path.join(run_dir,myapps[app].simfn)
+    run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
+    fn = os.path.join(run_dir, myapps[app].simfn)
     inputs = slurp_file(fn)
     # convert html tags to entities (e.g. < to &lt;)
     inputs = cgi.escape(inputs)
@@ -96,18 +96,18 @@ def execute():
     desc = request.forms.desc
     #priority = request.forms.priority
     params = {}
-    base_dir = os.path.join(myapps[app].user_dir,user,app,cid)
+    base_dir = os.path.join(myapps[app].user_dir, user, app, cid)
 
     # if preprocess is set run the preprocessor
     try:
         if myapps[app].preprocess:
-            run_params,_,_ = myapps[app].read_params(user,cid)
+            run_params, _, _ = myapps[app].read_params(user, cid)
             processed_inputs = process.preprocess(run_params,
                                        myapps[app].preprocess,base_dir)
         if myapps[app].preprocess == "terra.in":
             myapps[app].outfn = "out"+run_params['casenum']+".00"
     except:
-        return template('error',err="There was an error with the preprocessor")
+        return template('error', err="There was an error with the preprocessor")
 
     # submit job to queue
     try:
@@ -116,13 +116,13 @@ def execute():
         params['user'] = user
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
-        jid = sched.qsub(app,cid,uid,np,priority,desc)
+        jid = sched.qsub(app, cid, uid, np, priority, desc)
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
-        print >>sys.stderr, "Execution failed:", e
+        print >> sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
                    'err': e, 'apps': myapps.keys() }
-        return template('error',params)
+        return template('error', params)
 
 @get('/more')
 def more():
@@ -146,11 +146,11 @@ def case():
     cid = request.query.cid
     jid = request.query.jid or -1
     try:
-        if re.search("/",cid):
-            (u,c) = cid.split("/")
+        if re.search("/", cid):
+            (u, c) = cid.split("/")
             sid = request.query.sid # id of item in shared
-            run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
-            fn = os.path.join(run_dir,myapps[app].outfn)
+            run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+            fn = os.path.join(run_dir, myapps[app].outfn)
             output = slurp_file(fn)
             params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid,
                        'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys(),
@@ -159,8 +159,8 @@ def case():
         else:
             u = user
             c = cid
-            run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
-            fn = os.path.join(run_dir,myapps[app].outfn)
+            run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+            fn = os.path.join(run_dir, myapps[app].outfn)
             output = slurp_file(fn)
             result = db(jobs.cid==cid).select().first()
             desc = result['description']
@@ -181,13 +181,13 @@ def output():
     app = request.query.app
     cid = request.query.cid
     try:
-        if re.search("/",cid):
-            (u,c) = cid.split("/")
+        if re.search("/", cid):
+            (u, c) = cid.split("/")
         else:
             u = user
             c = cid
-        run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
-        fn = os.path.join(run_dir,myapps[app].outfn)
+        run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+        fn = os.path.join(run_dir, myapps[app].outfn)
         output = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
         # this is needed so that XML input files will show paramters labels
@@ -206,13 +206,13 @@ def inputs():
     app = request.query.app
     cid = request.query.cid
     try:
-        if re.search("/",cid):
-            (u,c) = cid.split("/")
+        if re.search("/", cid):
+            (u, c) = cid.split("/")
         else:
             u = user
             c = cid
-        run_dir = os.path.join(myapps[app].user_dir,u,myapps[app].appname,c)
-        fn = os.path.join(run_dir,myapps[app].simfn)
+        run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+        fn = os.path.join(run_dir, myapps[app].simfn)
         inputs = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
         # this is needed so that XML input files will show paramters labels
@@ -252,7 +252,7 @@ def compute_stats(path):
     return xoutput
 
 @get('/<app>/<cid>/tail')
-def tail(app,cid):
+def tail(app, cid):
     user = authorized()
     # submit num_lines as form parameter
     # num_lines = int(request.query.num_lines)
@@ -261,8 +261,8 @@ def tail(app,cid):
     num_lines = config.tail_num_lines
     progress = 0
     complete = 0
-    run_dir = os.path.join(myapps[app].user_dir,user,myapps[app].appname,cid)
-    ofn = os.path.join(run_dir,myapps[app].outfn)
+    run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
+    ofn = os.path.join(run_dir, myapps[app].outfn)
     if os.path.exists(ofn):
         f = open(ofn,'r')
         output = f.readlines()
@@ -347,7 +347,7 @@ def get_aws():
     params['apps'] = myapps.keys()
     if request.query.status:
         params['status'] = request.query.status
-    return template('aws',params,creds=creds,instances=instances)
+    return template('aws', params, creds=creds, instances=instances)
 
 @post('/aws/creds')
 def post_aws_creds():
@@ -356,7 +356,7 @@ def post_aws_creds():
     s = request.forms.secret
     k = request.forms.key
     uid = users(user=user).id
-    db.aws_creds.insert(account_id=a,secret=s,key=k,uid=uid)
+    db.aws_creds.insert(account_id=a, secret=s, key=k, uid=uid)
     db.commit()
     redirect('/aws')
 
@@ -367,7 +367,7 @@ def post_instance():
     t = request.forms.itype
     r = request.forms.region
     uid = users(user=user).id
-    db.aws_instances.insert(instance=i,itype=t,region=r,uid=uid)
+    db.aws_instances.insert(instance=i, itype=t, region=r, uid=uid)
     db.commit()
     redirect('/aws')
 
@@ -390,7 +390,7 @@ def aws_conn(id):
     instance = instances['instance']
     region = instances['region']
     rate = instances['rate'] or 0.
-    return awsmod.EC2(key,secret,account_id,instance,region,rate)
+    return awsmod.EC2(key, secret, account_id, instance, region, rate)
 
 @get('/aws/status/<aid>')
 def aws_status(aid):
@@ -407,14 +407,14 @@ def aws_status(aid):
     if awsmod:
         a = aws_conn(aid)
     else:
-        return template('error',err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
+        return template('error', err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
     try:
         astatus = a.status()
         astatus['uptime'] = a.uptime(astatus['launch_time'])
         astatus['charge since last boot'] = a.charge(astatus['uptime'])
-        return template('aws_status',params,astatus=astatus)
+        return template('aws_status', params, astatus=astatus)
     except:
-        return template('error',err="There was a problem connecting to the AWS machine. Check the credentials and make sure the machine is running.")
+        return template('error', err="There was a problem connecting to the AWS machine. Check the credentials and make sure the machine is running.")
 
 @get('/aws/start/<aid>')
 def aws_start(aid):
@@ -430,12 +430,12 @@ def aws_start(aid):
     if awsmod:
         a = aws_conn(aid)
     else:
-        return template('error',err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
+        return template('error', err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
     a.start()
     # takes a few seconds for the status to change on the Amazon end
     time.sleep(5)
     astatus = a.status()
-    return template('aws_status',params,astatus=astatus)
+    return template('aws_status', params, astatus=astatus)
 
 @get('/aws/stop/<aid>')
 def aws_stop(aid):
@@ -452,7 +452,7 @@ def aws_stop(aid):
     a.stop()
     # takes a few seconds for the status to change on the Amazon end
     time.sleep(5)
-    return template('aws_status',params,astatus=a.status())
+    return template('aws_status', params, astatus=a.status())
 
 @get('/account')
 def get_account():
@@ -463,7 +463,7 @@ def get_account():
     params['user'] = user
     params['apps'] = myapps.keys()
     uid = users(user=user).id
-    return template('account',params)
+    return template('account', params)
 
 @post('/jobs/annotate')
 def annotate_job():
@@ -541,7 +541,7 @@ def delete_job(jid):
     #try:
     if True:
         # this will fail if the app has been removed
-        path = os.path.join(myapps[app].user_dir,user,app,cid)
+        path = os.path.join(myapps[app].user_dir, user, app, cid)
         if os.path.isdir(path): shutil.rmtree(path)
         sched.stop(jid)
         sched.qdel(jid)
@@ -571,14 +571,14 @@ def show_app(app):
         params['app'] = app
         params['user'] = user
         params['apps'] = myapps
-        return template(os.path.join(config.apps_dir,app), params)
+        return template(os.path.join(config.apps_dir, app),  params)
     except:
         redirect('/app/'+app)
 
 @get('/login')
 @get('/login/<referrer>')
 def get_login(referrer=''):
-    return template('login',{'referrer': referrer})
+    return template('login', {'referrer': referrer})
 
 @get('/logout')
 def logout():
@@ -635,17 +635,17 @@ def change_password():
     pw2 = request.forms.npasswd2
     # check old passwd
     #user = request.forms.user
-    if _check_user_passwd(user,opasswd) and pw1 == pw2 and len(pw1) > 0:
+    if _check_user_passwd(user, opasswd) and pw1 == pw2 and len(pw1) > 0:
         u = users(user=user)
         u.update_record(passwd=_hash_pass(pw1))
         db.commit()
     else:
-        return template('error',err="problem with password")
+        return template('error', err="problem with password")
     params = {}
     params['status'] = "password changed"
-    return template('account',params)
+    return template('account', params)
 
-def _check_user_passwd(user,passwd):
+def _check_user_passwd(user, passwd):
     """check password against database"""
     u = users(user=user)
     hashpw = _hash_pass(passwd)
@@ -681,7 +681,7 @@ def post_register():
             server = smtplib.SMTP('localhost')
             message = user + " just registered " + email
             admin_email = db(users.user=="admin").select(users.email).first()
-            server.sendmail('admin@scipaas.com', [admin_email], message)
+            server.sendmail('admin@spc.com', [admin_email], message)
             server.quit()
             redirect('/login')
         except:
@@ -693,20 +693,19 @@ def post_register():
 def admin_show_users():
     user = authorized()
     if not user == "admin":
-        return template("error",err="must be admin to delete")
+        return template("error", err="must be admin to delete")
     result = db().select(users.ALL)
     params = {'user': user}
-    return template('admin/users',params,rows=result)
+    return template('admin/users', params, rows=result)
 
 @post('/admin/delete_user')
 def admin_delete_user():
     user = authorized()
     if not user == "admin":
-        return template("error",err="must be admin to delete")
+        return template("error", err="must be admin to delete")
     uid = request.forms.uid
-    print "uid is:",uid
     if int(uid) == 0:
-        return template("error",err="can't delete admin user")
+        return template("error", err="can't delete admin user")
     del db.users[uid]
     db.commit()
     redirect("/admin/show_users")
@@ -755,11 +754,11 @@ def load_apps():
         postprocess = row['postprocess']
         input_format = row['input_format']
         try:
-            print 'loading: %s (id: %s)' % (name,appid)
-            myapps[name] = app_instance(input_format,name,preprocess,postprocess)
+            print 'loading: %s (id: %s)' % (name, appid)
+            myapps[name] = app_instance(input_format, name, preprocess, postprocess)
             myapps[name].appid = appid
         except:
-            print 'ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name,appid)
+            print 'ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name, appid)
     default_app = name # simple soln - use last app read from DB
     return True
 
@@ -767,7 +766,7 @@ def load_apps():
 def app_edit(appid):
     user = authorized()
     if user != 'admin':
-        return template('error',err="must be admin to edit app")
+        return template('error', err="must be admin to edit app")
     cid = request.forms.cid
     app = request.forms.app
     result = db(apps.name==app).select().first()
@@ -791,6 +790,8 @@ def app_save(appid):
 @post('/app/delete/<appid>')
 def delete_app(appid):
     user = authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit app")
     appname = request.forms.app
     del_app_dir = request.forms.del_app_dir
     del_app_cases = request.forms.del_app_cases
@@ -801,9 +802,7 @@ def delete_app(appid):
             del_files = True
         else:
             del_files = False
-        #a.delete(appid,del_files)
-        myapps[appname].delete(appid,del_files)
-        #a.delete(appid,del_files)
+        myapps[appname].delete(appid, del_files)
     else:
         return template("error", err="must be admin")
     redirect("/apps")
@@ -812,7 +811,7 @@ def delete_app(appid):
 def view_app(app):
     user = authorized()
     if user != 'admin':
-        return template('error',err="must be admin to edit app")
+        return template('error', err="must be admin to edit app")
     cid = request.query.cid
     result = db(apps.name==app).select().first()
     params = {}
@@ -832,16 +831,16 @@ def getstart():
     if config.auth and not authorized(): redirect('/login')
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
-    if re.search("/",cid):
-        (u,cid) = cid.split("/")
+    if re.search("/", cid):
+        (u, cid) = cid.split("/")
     else:
         u = user
     params = myapps[app].params
     # if no valid casename read default parameters
-    if not re.search("[a-z]",cid):
+    if not re.search("[a-z]", cid):
         params = myapps[app].params
     else: # read parameters from file
-        params,_,_ = myapps[app].read_params(u,cid)
+        params, _, _ = myapps[app].read_params(u, cid)
     params['cid'] = cid
     params['app'] = app
     params['user'] = u
@@ -854,12 +853,12 @@ def list_files():
     cid = request.query.cid
     app = request.query.app
     path = request.query.path
-    if re.search("/",cid):
-        (u,cid) = cid.split("/")
+    if re.search("/", cid):
+        (u, cid) = cid.split("/")
     else:
         u = user
     if not path:
-        path = os.path.join(myapps[app].user_dir,u,app,cid)
+        path = os.path.join(myapps[app].user_dir, u, app, cid)
     params = dict()
     params['cid'] = cid
     params['app'] = app
@@ -873,7 +872,7 @@ def list_files():
 def editplot():
     user = authorized()
     if user != 'admin':
-        return template('error',err="must be admin to edit plots")
+        return template('error', err="must be admin to edit plots")
     app = request.query.app
     cid = request.query.cid
     if config.auth and not authorized(): redirect('/login')
@@ -944,16 +943,16 @@ def plot_interface(pltid):
     params = dict()
 
     if not cid:
-        params['err']="No case id specified. First select a case id from the list of jobs."
+        params['err'] = "No case id specified. First select a case id from the list of jobs."
         return template('error', params)
 
-    if re.search("/",cid):
-        (u,c) = cid.split("/")
+    if re.search("/", cid):
+        (u, c) = cid.split("/")
     else:
         u = user
         c = cid
 
-    sim_dir = os.path.join(myapps[app].user_dir,u,app,c)
+    sim_dir = os.path.join(myapps[app].user_dir, u, app, c)
 
     # use pltid of 0 to trigger finding the first pltid for the current app
     if int(pltid) == 0:
@@ -1012,45 +1011,45 @@ def plot_interface(pltid):
         except:
             datadef = ""
         plotfn = re.sub(r"<cid>", c, plotfn)
-        plotpath = os.path.join(sim_dir,plotfn)
+        plotpath = os.path.join(sim_dir, plotfn)
          
         if cols.find(":") > 0: # two columns
-           num_fields = 2
-           (col1str,col2str) = cols.split(":")
-           col1 = int(col1str); col2 = int(col2str)
+            num_fields = 2
+            (col1str, col2str) = cols.split(":")
+            col1 = int(col1str); col2 = int(col2str)
         else: # single column
-           num_fields = 1
-           col1 = int(cols)
+            num_fields = 1
+            col1 = int(cols)
         
         # do some postprocessing
         if line_range is not None:
-            (line1str,line2str) = line_range.split(":")
+            (line1str, line2str) = line_range.split(":")
             line1 = int(line1str)
             ## there is a problem with the following statement
             ## shows up in mendel app
             # if myapps[app].postprocess > 0:
-            #    dat = process.postprocess(plotpath,line1,line2)
+            #    dat = process.postprocess(plotpath, line1, line2)
             # else:
             try: # if line2 is specified
                 line2 = int(line2str)
-                dat = p.get_data(plotpath,col1,col2,line1,line2)
+                dat = p.get_data(plotpath, col1, col2, line1, line2)
             except: # if line2 not specified
                 if num_fields == 2:
-                   dat = p.get_data(plotpath,col1,col2,line1)
+                    dat = p.get_data(plotpath, col1, col2, line1)
                 else: # single column of data
-                   dat = p.get_data(plotpath,col1)
+                    dat = p.get_data(plotpath, col1)
         else:
-            dat = p.get_data(plotpath,col1,col2)
+            dat = p.get_data(plotpath, col1, col2)
         # clean data
         #dat = [d.replace('?', '0') for d in dat]
         data.append(dat)
         # [[1,2,3]] >>> [1,2,3]
         if num_fields == 1: data = data[0]
-        #data.append(p.get_data(plotpath,col1,col2))
+        #data.append(p.get_data(plotpath, col1, col2))
         if plottype == 'flot-cat':
-            ticks = p.get_ticks(plotpath,col1,col2)
+            ticks = p.get_ticks(plotpath, col1, col2)
     #if not result:
-    #    return template("error",err="need to specify at least one datasource")
+    #    return template("error", err="need to specify at least one datasource")
 
     stats = compute_stats(plotpath)
 
@@ -1068,7 +1067,6 @@ def matplotlib(pltid):
     # Examples section at https://docs.python.org/2/library/imp.html
     user = authorized()
     from pylab import savefig
-    import numpy as np
     import StringIO
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
@@ -1104,19 +1102,19 @@ def matplotlib(pltid):
         plotfn = r['filename']
         cols = r['cols']
         line_range = r['line_range']
-        (col1str,col2str) = cols.split(":")
+        (col1str, col2str) = cols.split(":")
         col1 = int(col1str)
         col2 = int(col2str)
         if line_range is not None:
-            (line1str,line2str) = line_range.split(":")
+            (line1str, line2str) = line_range.split(":")
             line1 = int(line1str)
             line2 = int(line2str)
 
     plotfn = re.sub(r"<cid>", cid, plotfn)
-    sim_dir = os.path.join(myapps[app].user_dir,user,app,cid)
-    plotpath = os.path.join(sim_dir,plotfn)
-    xx = p.get_column_of_data(plotpath,col1)
-    yy = p.get_column_of_data(plotpath,col2)
+    sim_dir = os.path.join(myapps[app].user_dir, user, app, cid)
+    plotpath = os.path.join(sim_dir, plotfn)
+    xx = p.get_column_of_data(plotpath, col1)
+    yy = p.get_column_of_data(plotpath, col2)
     # convert elements from strings to floats
     xx = [float(i) for i in xx]
     yy = [float(i) for i in yy]
@@ -1136,8 +1134,8 @@ def matplotlib(pltid):
     if not os.path.exists(config.tmp_dir):
         os.makedirs(config.tmp_dir)
     fn = title+'.png'
-    fig.set_size_inches(7,4)
-    img_path = os.path.join(sim_dir,fn)
+    fig.set_size_inches(7, 4)
+    img_path = os.path.join(sim_dir, fn)
     fig.savefig(img_path)
 
     # get list of all plots for this app
@@ -1157,12 +1155,12 @@ def zipcase():
     import zipfile
     app = request.query.app
     cid = request.query.cid
-    base_dir = os.path.join(myapps[app].user_dir,user,app)
-    path = os.path.join(base_dir,cid+".zip")
+    base_dir = os.path.join(myapps[app].user_dir, user, app)
+    path = os.path.join(base_dir, cid+".zip")
     zf = zipfile.ZipFile(path, mode='w')
-    sim_dir = os.path.join(base_dir,cid)
+    sim_dir = os.path.join(base_dir, cid)
     for fn in os.listdir(sim_dir):
-        zf.write(os.path.join(sim_dir,fn))
+        zf.write(os.path.join(sim_dir, fn))
     zf.close()
     status="<a href=\""+path+"\">"+path+"</a>"
     redirect("/aws?status="+status)
@@ -1172,8 +1170,7 @@ def zipget():
     """get zipfile from another machine, save to current machine"""
     zipkey = request.query.zipkey
     netloc = request.query.netloc
-    #url = os.path.join(netloc,config.tmp_dir,zipkey+".zip")
-    url = os.path.join(netloc,zipkey)
+    url = os.path.join(netloc, zipkey)
     try:
         f = urllib2.urlopen(url)
         print "downloading " + url
@@ -1192,14 +1189,14 @@ def zipget():
 def getaddapp():
     user = authorized()
     if user != 'admin':
-        return template('error',err="must be admin to add app")
+        return template('error', err="must be admin to add app")
     return template('appconfig/addapp')
 
 @post('/addapp')
 def addapp():
     user = authorized()
     if user != 'admin':
-        return template('error',err="must be admin to add app")
+        return template('error', err="must be admin to add app")
     appname = request.forms.appname
     input_format = request.forms.input_format
     # ask for app name
@@ -1233,16 +1230,16 @@ def appconfig_status():
     else:
         status['template'] = 0
     # check inputs file
-    if os.path.exists(os.path.join(config.apps_dir,app,app+".in")):
+    if os.path.exists(os.path.join(config.apps_dir, app, app+".in")):
         status['inputs'] = 1
-    elif os.path.exists(os.path.join(config.apps_dir,app,app+".xml")):
+    elif os.path.exists(os.path.join(config.apps_dir, app, app+".xml")):
         status['inputs'] = 1
-    elif os.path.exists(os.path.join(config.apps_dir,app,app+".ini")):
+    elif os.path.exists(os.path.join(config.apps_dir, app, app+".ini")):
         status['inputs'] = 1
     else:
         status['inputs'] = 0
     # check app binary
-    if os.path.exists(os.path.join(config.apps_dir,app,app)):
+    if os.path.exists(os.path.join(config.apps_dir, app, app)):
         status['binary'] = 1
     else:
         status['binary'] = 0
@@ -1260,11 +1257,11 @@ def appconfig_status():
 def appconfig_exe(step="upload"):
     user = authorized()
     if user != 'admin':
-        return template('error',err="must be admin to configure app")
+        return template('error', err="must be admin to configure app")
     if step == "upload":
         appname = request.forms.appname
         params = {'appname': appname}
-        return template('appconfig/exe_upload',params)
+        return template('appconfig/exe_upload', params)
     elif step == "test":
         appname    = request.forms.appname
         upload     = request.files.upload
@@ -1275,15 +1272,15 @@ def appconfig_exe(step="upload"):
         # if ext not in ('.exe','.sh','.xml','.json',):
         #     return 'ERROR: File extension not allowed.'
         try:
-            save_path_dir = os.path.join(appmod.apps_dir,name)
+            save_path_dir = os.path.join(appmod.apps_dir, name)
             if not os.path.exists(save_path_dir):
                 os.makedirs(save_path_dir)
-            save_path = os.path.join(save_path_dir,name) + ext
+            save_path = os.path.join(save_path_dir, name) + ext
             if os.path.isfile(save_path):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
-                shutil.move(save_path,save_path+"."+timestr)
+                shutil.move(save_path, save_path+"."+timestr)
             upload.save(save_path)
-            os.chmod(save_path,0700)
+            os.chmod(save_path, 0700)
 
             # process = subprocess.Popen(["otool -L", save_path], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
             # contents = process.readlines()
@@ -1300,7 +1297,7 @@ def appconfig_exe(step="upload"):
 def export():
     user = authorized()
     if user != 'admin':
-        return template('error',err="must be admin to use export function")
+        return template('error', err="must be admin to use export function")
     app = request.forms.app
     result = db(apps.name==app).select().first()
   
@@ -1339,7 +1336,7 @@ def export():
 
         data['plots'].append(thisplot)
 
-    path = os.path.join(config.apps_dir,app,'spc.json')
+    path = os.path.join(config.apps_dir, app, 'spc.json')
     with open(path, 'w') as outfile:
         json.dump(data, outfile)
 
@@ -1349,13 +1346,13 @@ def export():
 def edit_inputs(step):
     user = authorized()
     if user != 'admin':
-        return template('error',err="must be admin to edit app")
+        return template('error', err="must be admin to edit app")
     # upload zip file and return a text copy of the input file
     if step == "upload":
         appname = request.forms.appname
         input_format = request.forms.input_format
         params = {'appname': appname, 'input_format': input_format}
-        return template('appconfig/inputs_upload',params)
+        return template('appconfig/inputs_upload', params)
     if step == "parse":
         input_format = request.forms.input_format
         appname    = request.forms.appname
@@ -1364,16 +1361,16 @@ def edit_inputs(step):
             return template('appconfig/error',
                    err="no file selected. press back button and try again")
         name, ext = os.path.splitext(upload.filename)
-        if ext not in ('.in','.ini','.xml','.json',):
+        if ext not in ('.in', '.ini', '.xml', '.json',):
             return 'ERROR: File extension not allowed.'
         try:
-            save_path_dir = os.path.join(appmod.apps_dir,name)
+            save_path_dir = os.path.join(appmod.apps_dir, name)
             if not os.path.exists(save_path_dir):
                 os.makedirs(save_path_dir)
-            save_path = os.path.join(save_path_dir,name) + ext
+            save_path = os.path.join(save_path_dir, name) + ext
             if os.path.isfile(save_path):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
-                shutil.move(save_path,save_path+"."+timestr)
+                shutil.move(save_path, save_path+"."+timestr)
             upload.save(save_path)
 
             # return the contents of the input file
@@ -1389,7 +1386,7 @@ def edit_inputs(step):
                 fn = appname + ".json"
             else:
                 return "ERROR: input_format not valid: ", input_format
-            path = os.path.join(config.apps_dir,appname,fn)
+            path = os.path.join(config.apps_dir, appname, fn)
             # cgi.escape converts HTML chars like > to entities &gt;
             contents = cgi.escape(slurp_file(path))
             params = {'fn': fn, 'contents': contents, 'appname': appname,
@@ -1403,8 +1400,8 @@ def edit_inputs(step):
     elif step == "create_view":
         input_format = request.forms.input_format
         appname = request.forms.appname
-        myapp = app_instance(input_format,appname)
-        inputs,_,_ = myapp.read_params()
+        myapp = app_instance(input_format, appname)
+        inputs, _, _ = myapp.read_params()
         print "inputs:", inputs
         params = { "appname": appname }
         return template('appconfig/inputs_create_view', params, inputs=inputs,
@@ -1417,12 +1414,12 @@ def edit_inputs(step):
         descriptions = request.forms.getlist('descriptions')
         bool_rep = request.forms.bool_rep
         keys = request.forms.getlist('keys')
-        key_tag = dict(zip(keys,html_tags))
-        key_desc = dict(zip(keys,descriptions))
+        key_tag = dict(zip(keys, html_tags))
+        key_desc = dict(zip(keys, descriptions))
         input_format = request.forms.input_format
-        myapp = app_instance(input_format,appname)
-        params,_,_ = myapp.read_params()
-        if myapp.create_template(html_tags=key_tag,bool_rep=bool_rep,desc=key_desc):
+        myapp = app_instance(input_format, appname)
+        params, _, _ = myapp.read_params()
+        if myapp.create_template(html_tags=key_tag, bool_rep=bool_rep, desc=key_desc):
             load_apps()
             params = { "appname": appname, "port": config.port }
             return template('appconfig/inputs_end', params)
@@ -1434,8 +1431,8 @@ def edit_inputs(step):
 # this shows a listing of all files and allows the user to pick
 # which one to use
 #@get('/upload_contents/<appname>/<fn>')
-#def select_input_file(appname,fn):
-#    path = os.path.join(config.apps_dir,appname,fn)
+#def select_input_file(appname, fn):
+#    path = os.path.join(config.apps_dir, appname, fn)
 #    params = {'fn': fn, 'contents': slurp_file(path), 'appname': appname }
 #    return template('appconfig/step3', params)
 
@@ -1449,9 +1446,9 @@ def upload_data():
     #if ext not in ('.zip','.txt'):
     #    return template('error', err="file extension not allowed")
     #try:
-    save_path_dir = os.path.join(config.user_dir,user,config.upload_dir)
+    save_path_dir = os.path.join(config.user_dir, user, config.upload_dir)
     if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
-    save_path = os.path.join(save_path_dir,upload.filename)
+    save_path = os.path.join(save_path_dir, upload.filename)
     if os.path.isfile(save_path):
         return template('error', err="file exists")
     upload.save(save_path)
@@ -1459,24 +1456,24 @@ def upload_data():
     #except:
     #    return "FAILED"
 
-def app_instance(input_format,appname,preprocess=0,postprocess=0):
+def app_instance(input_format, appname, preprocess=0, postprocess=0):
     if(input_format=='namelist'):
-        myapp = appmod.Namelist(appname,preprocess,postprocess)
+        myapp = appmod.Namelist(appname, preprocess, postprocess)
     elif(input_format=='ini'):
-        myapp = appmod.INI(appname,preprocess,postprocess)
+        myapp = appmod.INI(appname, preprocess, postprocess)
     elif(input_format=='xml'):
-        myapp = appmod.XML(appname,preprocess,postprocess)
+        myapp = appmod.XML(appname, preprocess, postprocess)
     elif(input_format=='json'):
-        myapp = appmod.JSON(appname,preprocess,postprocess)
+        myapp = appmod.JSON(appname, preprocess, postprocess)
     else:
-        return 'ERROR: input_format ',input_format,' not supported'
+        return 'ERROR: input_format', input_format, 'not supported'
     return myapp
 
 def authorized():
     '''Return True if user is already logged in, redirect otherwise'''
     if config.auth:
         s = request.environ.get('beaker.session')
-        s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY,False)
+        s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY, False)
         if not s[USER_ID_SESSION_KEY]:
             redirect('/login')
         else:
@@ -1503,11 +1500,11 @@ if __name__ == "__main__":
     try:
         dockermod.bind(globals())
         app.app.merge(dockermod.dockerMod)
-    except Exception,e:
+    except Exception, e:
         pass
     # run the app
     try:
-        run(server=config.server, app=app, host='0.0.0.0',\
+        run(server=config.server, app=app, host='0.0.0.0', \
             port=config.port, debug=False)
     except:
         run(app=app, host='0.0.0.0', port=config.port, debug=False)
