@@ -22,6 +22,7 @@
    <th>user</th> 
    <th>app</th> 
    <th class="hidden-xs">labels</th> 
+   <th class="hidden-xs">time/date</th>
 </tr>
 </thead>
 
@@ -33,6 +34,7 @@
      <td class="hidden-xs">{{row['jobs.description']}}
          <a href="/case?cid={{row['users.user']}}/{{row['jobs.cid']}}&app={{row['jobs.app']}}&jid={{row['jobs.id']}}"></a>
      </td>
+    <td class="case hidden-xs"><tt>{{row['jobs.time_submit']}}</tt> </td>
   </tr> 
 %end
 </table>
