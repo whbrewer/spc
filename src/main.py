@@ -8,7 +8,7 @@ import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib, time
 # other local modules
 import config, process
-import scheduler_sp, scheduler_mp
+import scheduler_sp, scheduler_mp, scheduler_mq
 import apps as appmod
 import plots as plotmod
 # requires gevent
@@ -52,6 +52,8 @@ if config.sched == "mp":
     sched = scheduler_mp.Scheduler()
 elif config.sched == "ws":
     sched = scheduler_ws.Scheduler()
+elif config.sched == "mq":
+    sched = scheduler_mq.Scheduler()
 else:
     sched = scheduler_sp.Scheduler()
 

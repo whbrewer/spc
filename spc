@@ -52,6 +52,8 @@ def create_config_file():
             f.write("\n# SCHEDULER\n")
             f.write("# single processor scheduling\n")
             f.write("sched = 'sp'\n")
+            f.write("# use RabbitMQ for scheduling (requires pika + RabbitMQ)\n")
+            f.write("#sched = 'mq'\n")
             f.write("# schedule more than one job at a time (multiprocessor)\n")
             f.write("#sched = 'mp'\n")
             f.write("default_priority = 3\n")

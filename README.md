@@ -71,6 +71,7 @@
 * boto >= 2.6.0 (optional-used to support AWS management)
 * gevent >= 1.0.1 (optional-used for websocket monitoring)
 * gevent-websocket >= 0.9.3 (optional-used for websocket monitoring)
+* pika > 0.10.0 and RabbitMQ optionally required for using RabbitMQ for scheduling
 
 ## Questions
 
