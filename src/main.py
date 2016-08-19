@@ -529,8 +529,8 @@ def get_shared():
     else:
         n = int(n)
     # sort by descending order of jobs.id
-    result = db(jobs.shared=="True" and jobs.uid==users.id).select(orderby=~jobs.id)[:n]
-    
+    result = db((db.jobs.shared=="True") & (db.jobs.uid==users.id)).select(orderby=~jobs.id)[:n]
+
     params = {}
     params['cid'] = cid
     params['app'] = app
