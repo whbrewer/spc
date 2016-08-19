@@ -8,9 +8,14 @@ import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib, time
 # other local modules
 import config, process
-import scheduler_sp, scheduler_mp, scheduler_mq
+import scheduler_sp, scheduler_mp
 import apps as appmod
 import plots as plotmod
+# requires pika
+try:
+    import scheduler_mq
+except ImportError:
+    print "WARNING: scheduler_ws not imported because pika not installed"
 # requires gevent
 try:
     import scheduler_ws

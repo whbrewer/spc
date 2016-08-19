@@ -112,7 +112,7 @@ function validateForm() {
       <div id="user_div" class="form-group">
         <label for="username" class="control-label col-md-3">Username:</label>
         <div class="col-md-6">
-          <input class="form-control" type="text" name="user" id="user" onchange="checkUser(this.value)">
+          <input class="form-control" id="cname" type="text" name="user" id="user" onchange="checkUser(this.value)">
         </div>
       </div>
 
@@ -140,6 +140,14 @@ function validateForm() {
       <input class="btn btn-primary" type="submit" id="submit" value="Register" class="btn">
     </form>
 </div>
+
+<script>
+$().ready(function() 
+{ 
+// validate the comment form on submission
+$("#reg_form").validate(); 
+}); 
+</script>
 
 </body>
 </html>
