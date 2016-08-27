@@ -11,6 +11,11 @@ import config, process
 import scheduler_sp, scheduler_mp
 import apps as appmod
 import plots as plotmod
+# requires pika
+try:
+    import scheduler_mq
+except ImportError:
+    print "WARNING: scheduler_ws not imported because pika not installed"
 # requires gevent
 try:
     import scheduler_ws
@@ -52,6 +57,8 @@ if config.sched == "mp":
     sched = scheduler_mp.Scheduler()
 elif config.sched == "ws":
     sched = scheduler_ws.Scheduler()
+elif config.sched == "mq":
+    sched = scheduler_mq.Scheduler()
 else:
     sched = scheduler_sp.Scheduler()
 
@@ -522,8 +529,8 @@ def get_shared():
     else:
         n = int(n)
     # sort by descending order of jobs.id
-    result = db(jobs.shared=="True" and jobs.uid==users.id).select(orderby=~jobs.id)[:n]
-    
+    result = db((db.jobs.shared=="True") & (db.jobs.uid==users.id)).select(orderby=~jobs.id)[:n]
+
     params = {}
     params['cid'] = cid
     params['app'] = app
