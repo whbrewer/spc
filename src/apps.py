@@ -50,6 +50,11 @@ class App(object):
                 print "deleting app dir:", path
                 if os.path.isdir(path):
                    shutil.rmtree(path)
+                # remove static assets
+                path = os.path.join('static/apps',self.appname)
+                print "deleting static assets:", path
+                if os.path.isdir(path):
+                   shutil.rmtree(path)
                 # remove template file
                 path = "views/apps/"+self.appname+".tpl"
                 print "deleting template:", path

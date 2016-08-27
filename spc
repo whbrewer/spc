@@ -52,6 +52,8 @@ def create_config_file():
             f.write("\n# SCHEDULER\n")
             f.write("# single processor scheduling\n")
             f.write("sched = 'sp'\n")
+            f.write("# use RabbitMQ for scheduling (requires pika + RabbitMQ)\n")
+            f.write("#sched = 'mq'\n")
             f.write("# schedule more than one job at a time (multiprocessor)\n")
             f.write("#sched = 'mp'\n")
             f.write("default_priority = 3\n")
@@ -249,7 +251,7 @@ if __name__ == "__main__":
             shutil.copy(src,dst)
 
             # turn on executable bit
-            os.chmod(config.apps_dir + os.sep + app + os.sep + app,0700)
+            os.chmod(config.apps_dir + os.sep + app + os.sep + app, 0700)
 
             # add app to database
             appid = dal.db.apps.insert(name=app,
@@ -258,6 +260,21 @@ if __name__ == "__main__":
                                language=parsed['language'],
                                input_format=parsed['input_format'],
                                command=parsed['command'])
+
+            # copy static assets to static/apps/appname directory
+            stat_apps_dir = os.path.join('static', 'apps')
+            if not os.path.exists(stat_apps_dir):
+                os.makedirs(stat_apps_dir)
+
+            stat_app_dir = os.path.join(stat_apps_dir, app)
+            if not os.path.exists(stat_app_dir):
+                os.makedirs(stat_app_dir)
+
+            dst = 'static' + os.sep + 'apps' + os.sep + app
+            if 'assets' in parsed.keys():
+                for asset in parsed['assets']:
+                    src = os.path.join(config.apps_dir, app, asset)
+                    shutil.copy(src, dst)
      
             # add plots and datasources to db
             if 'plots' in parsed.keys():
