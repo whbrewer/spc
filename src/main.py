@@ -309,6 +309,7 @@ def show_jobs():
     starred = request.query.starred
     shared = request.query.shared
     uid = users(user=user).id
+
     if starred:
         result = db(jobs.uid==uid and jobs.starred=="True").select(orderby=~jobs.id)[:n]
     elif shared:
@@ -611,12 +612,16 @@ def get_favicon():
 
 @post('/login')
 def post_login():
+    if not config.auth: 
+        return "ERROR: authorization disabled. Modify config.py to change setting"
+
     s = request.environ.get('beaker.session')
     user = users(user=request.forms.get('user'))
     pw = request.forms.passwd
     err = "<p>Login failed: wrong username or password</p>"
     # if password matches, set the USER_ID_SESSION_KEY
     hashpw = hashlib.sha256(pw).hexdigest()
+
     try:
         if hashpw == user.passwd:
             # set session key
