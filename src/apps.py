@@ -111,14 +111,14 @@ class App(object):
                 first_tab = False
             else:
                 f.write("\t<li role=\"presentation\">\n")
-            f.write("\t\t<a href=\"#" + block + "\" aria-controls=\"home\" role=\"tab\"")
+            f.write("\t\t<a href=\"#" + block.replace(" ", "_") + "\" aria-controls=\"home\" role=\"tab\"")
             f.write(" data-toggle=\"tab\">" + block + "</a>\n")
             f.write("\t</li>\n")
         f.write("</ul>\n")
         f.write("<div class=\"tab-content\">\n")
 
         for block in self.blockorder:
-            f.write("<div role=\"tabpanel\" class=\"tab-pane fade in active\" id=\"" + block + "\">\n")
+            f.write("<div role=\"tabpanel\" class=\"tab-pane fade in active\" id=\"" + block.replace(" ", "_") + "\">\n")
             for param in self.blockmap[block]:
                 f.write("\t<div class=\"form-group\">\n")
                 # label
