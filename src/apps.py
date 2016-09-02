@@ -104,13 +104,8 @@ class App(object):
         # tabs
         f.write("<ul class=\"nav nav-pills\" role=\"tablist\">\n")
         #f.write("<ul class=\"nav nav-tabs\" role=\"tablist\">\n")
-        first_tab = True
         for block in self.blockorder:
-            if first_tab: 
-                f.write("\t<li role=\"presentation\" class=\"active\">\n")
-                first_tab = False
-            else:
-                f.write("\t<li role=\"presentation\">\n")
+            f.write("\t<li role=\"presentation\">\n")
             f.write("\t\t<a href=\"#" + block.replace(" ", "_") + "\" aria-controls=\"home\" role=\"tab\"")
             f.write(" data-toggle=\"tab\">" + block + "</a>\n")
             f.write("\t</li>\n")
@@ -118,7 +113,13 @@ class App(object):
         f.write("<div class=\"tab-content\">\n")
 
         for block in self.blockorder:
-            f.write("<div role=\"tabpanel\" class=\"tab-pane fade in active\" id=\"" + block.replace(" ", "_") + "\">\n")
+            # only make the first pane active and hide the others
+            if 'active_status' in locals(): active_status = "inactive"
+            else: active_status = "active"
+
+            f.write("<div role=\"tabpanel\" class=\"tab-pane fade in "+active_status+"\" id=\"" \
+                + block.replace(" ", "_") + "\">\n")
+
             for param in self.blockmap[block]:
                 f.write("\t<div class=\"form-group\">\n")
                 # label
@@ -142,10 +143,16 @@ class App(object):
                     buf = "\t\t\t<input type=\"hidden\" name=\"" \
                               + param + "\" value=\"{{" + param + "}}\"/>\n"
                 elif html_tags[param] == "select":
-                    buf += "\t\t\t<select class=\"form-control\" name=\""+param+"\">\n"  \
-                           "\t\t\t\t<option value=\"{{"+param+"}}\">"+ \
-                                                "{{"+param+"}}</option>\n" \
-                           "\t\t\t</select>"
+                    buf += "\t\t\t<select class=\"form-control\" name=\""+param+"\">\n" 
+                    buf += "\t\t\t%opts = {"+param+": "+param+", 'option2': 'option2'}\n"
+                    buf += "\t\t\t%for key, value in opts.iteritems():\n"
+                    buf += "\t\t\t\t%if key == "+param+":\n" \
+                           "\t\t\t\t\t<option selected value=\"{{key}}\">{{value}}</option>\n"
+                    buf += "\t\t\t\t%else:\n"
+                    buf += "\t\t\t\t\t<option value=\"{{key}}\">{{value}}</option>\n"
+                    buf += "\t\t\t\t%end\n"
+                    buf += "\t\t\t%end\n"
+                    buf += "\t\t\t</select>\n"
                 elif html_tags[param] == "textarea":
                     buf += "\t\t\t<textarea class=\"form-control\" name=\"" \
                                 + param + ">{{" + param + "}}\"</textarea>\n"
