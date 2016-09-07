@@ -32,7 +32,7 @@ try:
 except ImportError:
     print "WARNING: docker options disabled because container is not installed"
 # data access layer
-from gluino import DAL, Field
+#from gluino import DAL, Field
 from model import *
 
 ### session management configuration ###
