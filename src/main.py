@@ -6,11 +6,14 @@ from bottle import Bottle, template, static_file, request, redirect, app, get, p
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib, time
+import requests
 # other local modules
 import config, process
 import scheduler_sp, scheduler_mp
 import apps as appmod
 import plots as plotmod
+import pickle
+
 # requires pika
 try:
     import scheduler_mq
@@ -75,24 +78,38 @@ def confirm_form():
     # if case_id is defined in the input deck it will be used
     # otherwise it is ignored
     request.forms['case_id'] = cid
+    request.forms['cid'] = cid
+    request.forms['user'] = user
     try:
         desc = request.forms['desc']
     except:
         desc = "None"
-    myapps[app].write_params(request.forms, user)
-    # read the file
-    run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
-    fn = os.path.join(run_dir, myapps[app].simfn)
-    inputs = slurp_file(fn)
-    # convert html tags to entities (e.g. < to &lt;)
-    inputs = cgi.escape(inputs)
-    params = { 'cid': cid, 'inputs': inputs, 'app': app,
-               'user': user, 'apps': myapps.keys(), 'np': config.np,
-               'desc': desc }
-    try:
-        return template('confirm', params)
-    except:
-        return 'ERROR: failed to write parameters to file'
+    request.forms['desc'] = desc
+
+    request.forms['appmod'] = pickle.dumps(myapps[app])
+
+    #print json.dumps(dict(request.forms))
+    # headers = {'content-type': 'application/json'}
+
+    jid = requests.post('http://localhost:'+ str(config.port+1) +'/execute', 
+        data=dict(request.forms))
+        # data=json.dumps(dict(request.forms)), headers=headers)
+    redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
+
+    # myapps[app].write_params(request.forms, user)
+    # # read the file
+    # run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
+    # fn = os.path.join(run_dir, myapps[app].simfn)
+    # inputs = slurp_file(fn)
+    # # convert html tags to entities (e.g. < to &lt;)
+    # inputs = cgi.escape(inputs)
+    # params = { 'cid': cid, 'inputs': inputs, 'app': app,
+    #            'user': user, 'apps': myapps.keys(), 'np': config.np,
+    #            'desc': desc }
+    # try:
+    #     return template('confirm', params)
+    # except:
+    #     return 'ERROR: failed to write parameters to file'
 
 @post('/execute')
 def execute():
@@ -1505,8 +1522,10 @@ if __name__ == "__main__":
         user = s[USER_ID_SESSION_KEY]
     # load apps into memory
     load_apps()
-    # start a polling thread to continuously check for queued jobs
+    # for local workers, start a polling thread to continuously check for queued jobs
+    # if worker == "local": sched.poll()
     sched.poll()
+
     if config.sched == "ws": sched.start_data_server()
     # attempt to mix in docker functionality
     try:

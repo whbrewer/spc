@@ -16,6 +16,7 @@ def usage():
     buf += "list       list installed or available apps\n"
     buf += "install    install an app\n"
     buf += "run        start the server\n"
+    buf += "runworker  start a worker\n"
     buf += "uninstall  uninstall an app\n"
     #buf += "search   search for available apps\n"
     #buf += "test     run unit tests\n"
@@ -58,7 +59,7 @@ def create_config_file():
             f.write("#sched = 'mp'\n")
             f.write("default_priority = 3\n")
             f.write("# number of processors available to use on this machine\n")
-            f.write("np = 1\n")
+            f.write("np = 2\n")
             f.write("\n# WEB SERVER\n")
             f.write("# don't define server if you want to use built-in\n")
             f.write("# other options: cherrypy, bjoern, tornado, gae, etc.\n")
@@ -152,6 +153,8 @@ if __name__ == "__main__":
         os.system("python src/main.py")
     elif (sys.argv[1] == "run"):
         os.system("python src/main.py")
+    elif (sys.argv[1] == "runworker"):
+        os.system("python src/worker.py")
     elif (sys.argv[1] == "search"):
         print notyet 
     elif (sys.argv[1] == "test"):
