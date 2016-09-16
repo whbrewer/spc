@@ -12,4 +12,4 @@ RUN python spc init
 
 EXPOSE 8580
 
-ENTRYPOINT ["python", "spc", "go"]
+ENTRYPOINT ["python", "spc", "run"]
