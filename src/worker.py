@@ -1,5 +1,6 @@
 from bottle import Bottle, template, static_file, request, redirect, app, get, post, run
 import config, cgi, os
+from os import listdir
 import scheduler_sp
 import pickle, re
 from model import *
@@ -15,6 +16,13 @@ def query(): pass
 
 @post('/stop')
 def stop(): pass
+
+@get('/listfiles')
+def listfiles():
+    app = request.forms['app']
+    user = request.forms['user']
+    cid = request.forms['cid']    
+    return listdir(mypath)
 
 @post('/execute')
 def execute():
@@ -76,6 +84,30 @@ def output():
         # params = { 'app': app, 'apps': myapps.keys(),
         #            'err': "Couldn't read input file. Check casename." }
         # return template('error', params)
+
+@get('/zipcase')
+def zipcase():
+    """zip case on machine to prepare for download"""
+    import zipfile
+    app = request.query.app
+    cid = request.query.cid
+    user = request.query.user
+    base_dir = os.path.join(config.user_dir, user, app)
+    path = os.path.join(base_dir, cid+".zip")
+    print "path is:", path
+    zf = zipfile.ZipFile(path, mode='w')
+    sim_dir = os.path.join(base_dir, cid)
+    for fn in os.listdir(sim_dir):
+        zf.write(os.path.join(sim_dir, fn))
+    zf.close()
+    # status="<a href=\""+path+"\">"+path+"</a>"
+    # redirect("/aws?status="+status)
+    return "OK"
+
+
+@get('/user_data/<filepath:path>')
+def user_data(filepath):
+    return static_file(filepath, root='user_data')
 
 if __name__ == "__main__":
     sched.poll()

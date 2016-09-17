@@ -36,6 +36,12 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
+            <form class="btn-group hidden-xs" action="/zipget" method="get">
+                <button class="btn btn-default">
+                    <span class="glyphicon glyphicon-download"></span> Download</button>
+                <input type="hidden" name="cid" value="{{cid}}">
+                <input type="hidden" name="app" value="{{app}}">
+            </form>
             <form class="btn-group hidden-xs" method="get" action="/inputs?cid={{cid}}&app={{app}}">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-wrench"></span> Inputs</button>

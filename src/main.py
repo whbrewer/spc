@@ -5,7 +5,8 @@ from bottle import Bottle, template, static_file, request, redirect, app, get, p
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
-import cgi, urllib2, json, smtplib, time
+import cgi, urllib, urllib2, json, smtplib, time
+import pickle
 try:
     import requests
 except:
@@ -16,7 +17,6 @@ import config, process
 import scheduler_sp, scheduler_mp
 import apps as appmod
 import plots as plotmod
-import pickle
 
 # requires pika
 try:
@@ -1198,35 +1198,36 @@ def zipcase():
     import zipfile
     app = request.query.app
     cid = request.query.cid
-    base_dir = os.path.join(myapps[app].user_dir, user, app)
-    path = os.path.join(base_dir, cid+".zip")
-    zf = zipfile.ZipFile(path, mode='w')
-    sim_dir = os.path.join(base_dir, cid)
-    for fn in os.listdir(sim_dir):
-        zf.write(os.path.join(sim_dir, fn))
-    zf.close()
-    status="<a href=\""+path+"\">"+path+"</a>"
-    redirect("/aws?status="+status)
+
+    requests.get("http://localhost:"+str(config.port+1)+"/zipcase", 
+         params={'app': app, 'cid': cid, 'user': user})
+
+    status = "case compressed"
+    redirect(request.headers.get('Referer')+"&status="+status)
 
 @get('/zipget')
 def zipget():
     """get zipfile from another machine, save to current machine"""
-    zipkey = request.query.zipkey
-    netloc = request.query.netloc
-    url = os.path.join(netloc, zipkey)
-    try:
-        f = urllib2.urlopen(url)
+    import zipfile
+    user = authorized()
+    cid = request.query.cid
+    app = request.query.app
+    path = os.path.join(config.user_dir, user, app, cid)
+    file_path = path+".zip"
+    url = os.path.join("http://localhost:"+str(config.port+1), file_path)
+    print "url is:", url
+    if not os.path.exists(path):
+        os.makedirs(path)
+    # try:
+    if True:
+        # f = urllib2.urlopen(url)
         print "downloading " + url
-        # Open our local file for writing
-        with open(os.path.basename(url), "wb") as local_file:
-            local_file.write(f.read())
-    #handle errors
-    except urllib2.HTTPError, e:
-        print "HTTP Error:", e.code, url
-    except urllib2.URLError, e:
-        print "URL Error:", e.reason, url
+        fh, _ = urllib.urlretrieve(url)
+        z = zipfile.ZipFile(fh, 'r')
+        z.extractall()
+
     status = "file downloaded"
-    redirect("/aws?status="+status)
+    redirect(request.headers.get('Referer')+"&status="+status)
 
 @get('/addapp')
 def getaddapp():
