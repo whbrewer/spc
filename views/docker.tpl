@@ -19,12 +19,12 @@
 <legend>Docker containers</legend>
 
 <table class="table table-striped">
-    <thead><tr><th>Container id</th><th>Image</th><th>Status</th><th>Actions</th></thead>
+    <thead><tr><th>Container id</th><th>Image</th><th>Command</th><th>Actions</th></thead>
     %for i in instances:
         <tr>
             <td>{{i['containerid']}}</td>
             <td>{{i['image']}}</td>
-            <td>{{i['status']}}</td>
+            <td>{{i['command']}}</td>
             <td>
                 <!--<a href="/aws/status/{{i['id']}}">status</a> -->
                 <!--<a href="/aws/start/{{i['id']}}">start</a> -->
@@ -35,10 +35,10 @@
 
 <tr>
 <form method="POST" action="/docker/container">
-  <td></td>
-  <td></td>
-</td></td>
-<td> <input class="btn btn-default" type="submit" value="Add"> </td>
+    <td><input class="form-control" type="text" size=10 name="containerid"></td>
+    <td><input class="form-control" type="text" size=10 name="image"></td>
+    <td><input class="form-control" type="text" size=10 name="command"></td>
+    <td> <input class="btn btn-default" type="submit" value="Add"> </td>
 </form>
 </tr>
 </table>

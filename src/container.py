@@ -4,7 +4,7 @@ import datetime
 import math
 import argparse as ap
 from model import *
-from bottle import Bottle
+from bottle import Bottle, request, redirect
 
 root = 0
 
@@ -24,15 +24,31 @@ def get_docker():
     uid = root.db(users.user==user).select(users.id).first()
     instances = root.db(containers.uid==uid).select()
     params = {}
-    params['cid'] = cid
-    params['app'] = app
+    # params['cid'] = cid
+    # params['app'] = app
     params['user'] = user
     params['apps'] = root.myapps.keys()
     params['host'] = 'localhost'
     params['image'] = 'ubuntu'
     if root.request.query.status:
         params['status'] = root.request.query.status
-    return root.template('docker',params,instances=instances)
+    return root.template('docker', params, instances=instances)
+
+@dockerMod.route('/docker/container', method='POST')
+def get_docker():
+    # user = authorized()
+    cid = request.forms.containerid
+    img = request.forms.image
+    cmd = request.forms.command
+    user = root.getuser()
+    uid = root.db(users.user==user).select(users.id).first()
+    root.db.containers.insert(containerid=cid, image=img, command=cmd, uid=uid)
+    db.commit()
+    # if root.request.query.status:
+    #     params['status'] = root.request.query.status
+    #redirect("/docker?app="+app+"&cid="+str(cid))
+    redirect("/docker")
+
 
 class Container(object):
     """start, stop, and status of Docker containers"""
