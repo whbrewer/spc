@@ -52,6 +52,8 @@ def execute():
 def output():
     app = request.query.app
     cid = request.query.cid
+    user = request.query.user
+    
     try:
         if re.search("/", cid):
             (u, c) = cid.split("/")

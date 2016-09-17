@@ -6,7 +6,10 @@ from bottle import Bottle, template, static_file, request, redirect, app, get, p
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 import cgi, urllib2, json, smtplib, time
-import requests
+try:
+    import requests
+except:
+    print "WARNING: not importing requests... only needed for remote workers"
 # other local modules
 import config, process
 import scheduler_sp, scheduler_mp
@@ -91,10 +94,14 @@ def confirm_form():
     #print json.dumps(dict(request.forms))
     # headers = {'content-type': 'application/json'}
 
-    jid = requests.post('http://localhost:'+ str(config.port+1) +'/execute', 
-        data=dict(request.forms))
-        # data=json.dumps(dict(request.forms)), headers=headers)
-    redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
+    try:
+        jid = requests.post('http://localhost:'+ str(config.port+1) +'/execute', 
+            data=dict(request.forms))
+            # data=json.dumps(dict(request.forms)), headers=headers)
+        return "Job submitted.  Job ID is: " + str(jid)
+        redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
+    except:
+        print "ERROR: there was a problem... possibly Python requests package is not installed"
 
     # myapps[app].write_params(request.forms, user)
     # # read the file
@@ -141,7 +148,8 @@ def execute():
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
         jid = sched.qsub(app, cid, uid, np, priority, desc)
-        redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
+        return "Job submitted. Job ID is:" + str(jid)
+        # redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >> sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
