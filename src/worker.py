@@ -1,8 +1,9 @@
 from bottle import Bottle, template, static_file, request, redirect, app, get, post, run
 import config, cgi, os
 import scheduler_sp
-import pickle
+import pickle, re
 from model import *
+from common import *
 
 sched = scheduler_sp.Scheduler()
 
@@ -43,7 +44,7 @@ def execute():
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
         jid = sched.qsub(app, cid, uid, config.np, priority, desc)
-        return jid
+        return str(jid)
         #redirect("http://localhost:"+str(config.port)+"/case?app="+str(app)+"&cid="+str(cid)+"&jid="+str(jid))
     except OSError, e:
         return "ERROR: a problem occurred"
@@ -60,19 +61,21 @@ def output():
         else:
             u = user
             c = cid
-        run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
-        fn = os.path.join(run_dir, myapps[app].outfn)
+        run_dir = os.path.join(config.user_dir, u, app, c)
+        fn = os.path.join(run_dir, app + '.out')
         output = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
         # this is needed so that XML input files will show paramters labels
         output = cgi.escape(output)
-        params = { 'cid': cid, 'contents': output, 'app': app,
-                   'user': u, 'fn': fn, 'apps': myapps.keys() }
-        return template('more', params)
+        return output
+        # params = { 'cid': cid, 'contents': output, 'app': app,
+        #            'user': u, 'fn': fn, 'apps': myapps.keys() }
+        # return template('more', params)
     except:
-        params = { 'app': app, 'apps': myapps.keys(),
-                   'err': "Couldn't read input file. Check casename." }
-        return template('error', params)
+        return "ERROR: something went wrong!"
+        # params = { 'app': app, 'apps': myapps.keys(),
+        #            'err': "Couldn't read input file. Check casename." }
+        # return template('error', params)
 
 if __name__ == "__main__":
     sched.poll()

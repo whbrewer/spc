@@ -11,6 +11,7 @@ try:
 except:
     print "WARNING: not importing requests... only needed for remote workers"
 # other local modules
+from common  import *
 import config, process
 import scheduler_sp, scheduler_mp
 import apps as appmod
@@ -94,14 +95,23 @@ def confirm_form():
     #print json.dumps(dict(request.forms))
     # headers = {'content-type': 'application/json'}
 
-    try:
-        jid = requests.post('http://localhost:'+ str(config.port+1) +'/execute', 
+    pry = 1
+    uid = users(user=user).id
+    db.jobs.insert(uid=uid, app=app, cid=cid, state='REMOTE', description=desc,
+                   time_submit=time.asctime(), np=config.np, priority=pry)
+    db.commit()
+
+    # try:
+    if True:
+        resp = requests.post('http://localhost:'+ str(config.port+1) +'/execute', 
             data=dict(request.forms))
+        jid = resp.text
             # data=json.dumps(dict(request.forms)), headers=headers)
-        return "Job submitted.  Job ID is: " + str(jid)
+        # return "Job submitted.  Job ID is: " + str(jid.text)
+        # redirect("/output?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
         redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
-    except:
-        print "ERROR: there was a problem... possibly Python requests package is not installed"
+    # except:
+    #     print "ERROR: there was a problem... possibly Python requests package is not installed"
 
     # myapps[app].write_params(request.forms, user)
     # # read the file
@@ -223,7 +233,13 @@ def output():
         output = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
         # this is needed so that XML input files will show paramters labels
-        output = cgi.escape(output)
+
+        params = {'user': user, 'app': app, 'cid': cid}
+        resp = requests.get('http://localhost:'+ str(config.port+1) +'/output', params=params)
+        output = resp.text
+        # return resp.text
+
+        # output = cgi.escape(output)
         params = { 'cid': cid, 'contents': output, 'app': app,
                    'user': u, 'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
@@ -257,16 +273,6 @@ def inputs():
         params = { 'app': app, 'apps': myapps.keys(),
                    'err': "Couldn't read input file. Check casename." }
         return template('error', params)
-
-def slurp_file(path):
-    """read file given by path and return the contents of the file
-       as a single string datatype"""
-    try:
-        with open(path,'r') as f:
-            data = f.read()
-        return data
-    except IOError:
-        return("ERROR: the file cannot be opened or does not exist " + path)
 
 def compute_stats(path):
     """compute statistics on output data"""
