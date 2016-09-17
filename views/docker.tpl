@@ -1,7 +1,7 @@
 %include('header')
 %include('navbar')
 
-<h1>Docker Containers</h1>
+<!-- <h1>Docker Containers</h1>
 
 <br>
 <fieldset>
@@ -11,7 +11,7 @@
     <label for="image">Docker Image:</label><input class="form-control" type="text" name="image" size=40 value="{{image}}" placeholder="ubuntu:14.04"><br />
     <input class="btn btn-default" type="submit" value="Update">
     </form>
-</fieldset>
+</fieldset> -->
 
 <br>
 
@@ -26,9 +26,9 @@
             <td>{{i['image']}}</td>
             <td>{{i['command']}}</td>
             <td>
-                <!--<a href="/aws/status/{{i['id']}}">status</a> -->
-                <!--<a href="/aws/start/{{i['id']}}">start</a> -->
-                <!--<a href="/aws/stop/{{i['id']}}">stop</a> -->
+                <a href="/docker/status/{{i['id']}}">status</a> ::
+                <a href="/docker/start/{{i['id']}}">start</a> ::
+                <a href="/docker/stop/{{i['id']}}">stop</a> 
             </td>
         </tr>
     %end
