@@ -32,13 +32,13 @@
             </form>
             <form class="btn-group hidden-xs" action="/zipcase" method="get">
                 <button class="btn btn-default">
-                    <span class="glyphicon glyphicon-compressed"></span> Zip</button>
+                    <span class="glyphicon glyphicon-cloud-download"></span> Download</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
             <form class="btn-group hidden-xs" action="/zipget" method="get">
                 <button class="btn btn-default">
-                    <span class="glyphicon glyphicon-download"></span> Download</button>
+                    <span class="glyphicon glyphicon-transfer"></span> Fetch</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>

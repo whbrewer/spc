@@ -1199,11 +1199,17 @@ def zipcase():
     app = request.query.app
     cid = request.query.cid
 
-    requests.get("http://localhost:"+str(config.port+1)+"/zipcase", 
-         params={'app': app, 'cid': cid, 'user': user})
+    base_dir = os.path.join(myapps[app].user_dir, user, app)
+    path = os.path.join(base_dir, cid+".zip")
+    zf = zipfile.ZipFile(path, mode='w')
+    sim_dir = os.path.join(base_dir, cid)
+    for fn in os.listdir(sim_dir):
+        zf.write(os.path.join(sim_dir, fn))
+    zf.close()
 
-    status = "case compressed"
-    redirect(request.headers.get('Referer')+"&status="+status)
+    return static_file(path, root="./")
+    # status = "case compressed"
+    # redirect(request.headers.get('Referer')+"&status="+status)
 
 @get('/zipget')
 def zipget():
@@ -1212,6 +1218,10 @@ def zipget():
     user = authorized()
     cid = request.query.cid
     app = request.query.app
+
+    requests.get("http://localhost:"+str(config.port+1)+"/zipcase", 
+         params={'app': app, 'cid': cid, 'user': user})
+
     path = os.path.join(config.user_dir, user, app, cid)
     file_path = path+".zip"
     url = os.path.join("http://localhost:"+str(config.port+1), file_path)
