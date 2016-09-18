@@ -187,35 +187,37 @@ def case():
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid or -1
-    try:
-        if re.search("/", cid):
-            (u, c) = cid.split("/")
-            sid = request.query.sid # id of item in shared
-            run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
-            fn = os.path.join(run_dir, myapps[app].outfn)
-            output = slurp_file(fn)
-            params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid,
-                       'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys(),
-                       'sched': config.sched }
-            return template('case_public', params)
-        else:
-            u = user
-            c = cid
-            run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
-            fn = os.path.join(run_dir, myapps[app].outfn)
-            output = slurp_file(fn)
-            result = db(jobs.cid==cid).select().first()
-            desc = result['description']
-            shared = result['shared']
-            params = { 'cid': cid, 'contents': output, 'app': app, 'jid': jid,
-                       'user': u, 'fn': fn, 'apps': myapps.keys(),
-                       'description': desc, 'shared': shared,
-                       'sched': config.sched  }
-            return template('case', params)
-    except:
-        params = { 'app': app, 'apps': myapps.keys(),
-                   'err': "There was a problem... Sorry!" }
-        return template('error', params)
+    # try:
+    if re.search("/", cid):
+        (u, c) = cid.split("/")
+        sid = request.query.sid # id of item in shared
+        run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+        fn = os.path.join(run_dir, myapps[app].outfn)
+        # output = slurp_file(fn)
+
+        params = { 'cid': cid, 'app': app, 'jid': jid,
+                   'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys(),
+                   'sched': config.sched }
+        return template('case_public', params)
+
+    else:
+        run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
+        fn = os.path.join(run_dir, myapps[app].outfn)
+        # if config.worker == 'remote':
+        #     myparams = {'user': user, 'app': app, 'cid': cid}
+        #     resp = requests.get('http://localhost:'+ str(config.port+1) +'/output', params=myparams)
+        #     output = resp.text 
+        # else:
+        #     output = slurp_file(fn)
+
+        result = db(jobs.cid==cid).select().first()
+        desc = result['description']
+        shared = result['shared']
+        params = { 'cid': cid, 'app': app, 'jid': jid,
+                   'user': user, 'fn': fn, 'apps': myapps.keys(),
+                   'description': desc, 'shared': shared,
+                   'sched': config.sched  }
+        return template('case', params)
 
 @get('/output')
 def output():
@@ -237,9 +239,6 @@ def output():
         params = {'user': user, 'app': app, 'cid': cid}
         resp = requests.get('http://localhost:'+ str(config.port+1) +'/output', params=params)
         output = resp.text
-        # return resp.text
-
-        # output = cgi.escape(output)
         params = { 'cid': cid, 'contents': output, 'app': app,
                    'user': u, 'fn': fn, 'apps': myapps.keys() }
         return template('more', params)
@@ -299,25 +298,35 @@ def tail(app, cid):
     num_lines = config.tail_num_lines
     progress = 0
     complete = 0
-    run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
-    ofn = os.path.join(run_dir, myapps[app].outfn)
-    if os.path.exists(ofn):
-        f = open(ofn,'r')
-        output = f.readlines()
-        # custom mendel mods for progress bar
-        for line in output:
-            m = re.search("num_generations\s=\s*(\d+)", line)
-            if m:
-                complete = int(m.group(1))
-            if complete > 0:
-                m = re.match("generation\s=\s*(\d+)", line)
-                if m: progress = int(float(m.group(1))/float(complete)*100)
-        # end mendel mods
-        myoutput = output[len(output)-num_lines:]
-        xoutput = ''.join(myoutput)
-        f.close()
+    if config.worker == 'remote':
+        myparams = {'user': user, 'app': app, 'cid': cid}
+        resp = requests.get('http://localhost:'+ str(config.port+1) +'/output', params=myparams)
+        output = resp.text 
+        myoutput = output #[len(output)-num_lines:]
+        # xoutput = ''.join(myoutput)
+        xoutput = myoutput
+        ofn = 'remote'
     else:
-        xoutput = 'waiting to start...'
+        run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
+        ofn = os.path.join(run_dir, myapps[app].outfn)
+        if os.path.exists(ofn):
+            f = open(ofn,'r')
+            output = f.readlines()
+            # custom mendel mods for progress bar
+            for line in output:
+                m = re.search("num_generations\s=\s*(\d+)", line)
+                if m:
+                    complete = int(m.group(1))
+                if complete > 0:
+                    m = re.match("generation\s=\s*(\d+)", line)
+                    if m: progress = int(float(m.group(1))/float(complete)*100)
+            # end mendel mods
+            myoutput = output[len(output)-num_lines:]
+            xoutput = ''.join(myoutput)
+            f.close()
+        else:
+            xoutput = 'waiting to start...'
+
     params = { 'cid': cid, 'contents': xoutput, 'app': app,
                'user': user, 'fn': ofn, 'apps': myapps.keys(),
                'progress': progress }
