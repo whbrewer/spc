@@ -1,6 +1,6 @@
 %include('header')
 %include('navbar')
-% import datetime, re
+% import datetime, re, urllib
 
 <h2>Docker Containers</h2>
 
@@ -36,7 +36,7 @@
 
 <!--  % def sha(x): x.split(":")[1] -->
 <table class="table table-striped">
-    <thead><tr><th>REPOSITORY</th><th>IMAGE ID</th><th>CREATED</th><th>SIZE</th><th>CREATE</th></tr></thead>
+    <thead><tr><th>REPOSITORY</th><th>IMAGE ID</th><th>CREATED</th><th>SIZE</th><th>ACTIONS</th></tr></thead>
     % for i in images:
         % for t in i['RepoTags']:
             <tr>
@@ -46,7 +46,9 @@
                 <td>{{datetime.datetime.fromtimestamp(i['Created'])}}</td>
                 % from common import sizeof_fmt
                 <td>{{sizeof_fmt(i['Size'])}}</td>
-                <td><a href="/docker/create/{{id[:12]}}"><span class="glyphicon glyphicon-new-window"></span></a></td>
+                <td><a href="/docker/create/{{id[:12]}}"><span class="glyphicon glyphicon-new-window"></span></a> &nbsp;&nbsp;
+                    <a href="/docker/remove_image/{{t}}"><span class="glyphicon glyphicon-remove-circle"></span></a> 
+                </td>
             </tr>
         % end
     % end

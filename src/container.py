@@ -4,6 +4,7 @@ import datetime
 import math
 import json
 import argparse as ap
+import config
 from model import *
 from bottle import Bottle, request, redirect
 
@@ -46,18 +47,32 @@ def get_docker():
 
 @dockerMod.route('/docker/create/<id>', method='GET')
 def create_container(id):
-    print "image id is:", id
+    print "creating container:", id
     cli = docker.Client(base_url='unix://var/run/docker.sock')
     try:
-        cli.create_container(image=id)
+        cli.create_container(image=id, host_config=cli.create_host_config(port_bindings={
+        config.port+1: config.port+1}))
         status = "SUCCESS: container created " + id
     except:
         status = "ERROR: failed to start container ", id
     redirect("/docker?status="+status)
 
+@dockerMod.route('/docker/remove_image/<id:path>', method='GET')
+def remove_image(id):
+    print "removing image:", id
+    cli = docker.Client(base_url='unix://var/run/docker.sock')
+    try:
+        msg = cli.remove_image(image=id)
+        status = "SUCCESS: image removed " + id
+    except: 
+        status = "ERROR: unable to remove image " + id + \
+                 " Either has dependent child images, or a container is running." + \
+                 " Remove the container and retry."
+    redirect("/docker?status="+status)
+
 @dockerMod.route('/docker/start/<id>', method='GET')
 def start_container(id):
-    print "container_id is:", id
+    print "starting container:", id
     cli = docker.Client(base_url='unix://var/run/docker.sock')
     try:
         cli.start(container=id)
@@ -78,8 +93,8 @@ def stop_container(id):
 
 @dockerMod.route('/docker/remove/<id>', method='GET')
 def container_status(id):
+    print "removing container:", id
     cli = docker.Client(base_url='unix://var/run/docker.sock')
-    # return json.dumps(cli.containers())
     try: 
         cli.remove_container(id)
         status = "SUCCESS: removed container " + id
