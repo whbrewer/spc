@@ -101,17 +101,16 @@ def confirm_form():
                    time_submit=time.asctime(), np=config.np, priority=pry)
     db.commit()
 
-    # try:
-    if True:
+    try:
         resp = requests.post('http://localhost:'+ str(config.port+1) +'/execute', 
             data=dict(request.forms))
-        jid = resp.text
-            # data=json.dumps(dict(request.forms)), headers=headers)
-        # return "Job submitted.  Job ID is: " + str(jid.text)
-        # redirect("/output?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
-        redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
-    # except:
-    #     print "ERROR: there was a problem... possibly Python requests package is not installed"
+    except:
+        return template('error', err="failed to submit job to SPC worker. " + \
+            "Possible solutions: Is a container running? Is Python requests " + \
+            "package installed? (pip install requests)")
+
+    jid = resp.text
+    redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
 
     # myapps[app].write_params(request.forms, user)
     # # read the file
