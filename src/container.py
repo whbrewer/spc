@@ -36,8 +36,6 @@ def get_docker():
         params['status'] = "there was a problem talking to the Docker daemon... Are you sure Docker is running?"
 
     params['user'] = user
-    params['host'] = 'localhost'
-    params['image'] = 'ubuntu'
 
     if root.request.query.status:
         params['status'] = root.request.query.status
@@ -49,7 +47,7 @@ def create_container(id):
     cli = docker.Client(base_url='unix://var/run/docker.sock')
     try:
         cli.create_container(image=id, host_config=cli.create_host_config(port_bindings={
-        config.port+1: config.port+1}))
+        config.remote_worker_port:config.remote_worker_port}))
         status = "SUCCESS: container created " + id
     except:
         status = "ERROR: failed to start container ", id

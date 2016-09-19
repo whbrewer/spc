@@ -104,8 +104,9 @@ def confirm_form():
     if config.worker == 'remote':
 
         try:
-            resp = requests.post('http://localhost:'+ str(config.port+1) +'/execute', 
-                data=dict(request.forms))
+            print config.remote_worker_url + '/execute'
+            resp = requests.post(config.remote_worker_url +'/execute', data=dict(request.forms))
+
         except:
             return template('error', err="failed to submit job to SPC worker. " + \
                 "Possible solutions: Is a container running? Is Python requests " + \
@@ -219,6 +220,7 @@ def output():
     user = authorized()
     app = request.query.app
     cid = request.query.cid
+
     try:
         if re.search("/", cid):
             (u, c) = cid.split("/")
@@ -226,16 +228,17 @@ def output():
             u = user
             c = cid
 
+        run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+        fn = os.path.join(run_dir, myapps[app].outfn)
+
         if config.worker == 'remote': 
 
             params = {'user': user, 'app': app, 'cid': cid}
-            resp = requests.get('http://localhost:'+ str(config.port+1) +'/output', params=params)
+            resp = requests.get(config.remote_worker_url +'/output', params=params)
             output = resp.text
 
         else:
 
-            run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
-            fn = os.path.join(run_dir, myapps[app].outfn)
             output = slurp_file(fn)
             # the following line will convert HTML chars like > to entities &gt;
             # this is needed so that XML input files will show paramters labels
@@ -305,7 +308,7 @@ def tail(app, cid):
     complete = 0
     if config.worker == 'remote':
         myparams = {'user': user, 'app': app, 'cid': cid}
-        resp = requests.get('http://localhost:'+ str(config.port+1) +'/output', params=myparams)
+        resp = requests.get(config.remote_worker_url +'/output', params=myparams)
         output = resp.text 
         myoutput = output #[len(output)-num_lines:]
         # xoutput = ''.join(myoutput)
@@ -1233,12 +1236,12 @@ def zipget():
     cid = request.query.cid
     app = request.query.app
 
-    requests.get("http://localhost:"+str(config.port+1)+"/zipcase", 
+    requests.get(config.remote_worker_url + "/zipcase", 
          params={'app': app, 'cid': cid, 'user': user})
 
     path = os.path.join(config.user_dir, user, app, cid)
     file_path = path+".zip"
-    url = os.path.join("http://localhost:"+str(config.port+1), file_path)
+    url = os.path.join(config.remote_worker_url, file_path)
     print "url is:", url
     if not os.path.exists(path):
         os.makedirs(path)
