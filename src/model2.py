@@ -63,13 +63,6 @@ class dal(object):
                                                         Field('rate','double'),
                                                         Field('uid',self.db.users))
 
-        self.containers = self.db.define_table('containers',
-                                           Field('id','integer'),
-                                           Field('containerid','string'),
-                                           Field('image','string'),
-                                           Field('command','string'),
-                                           Field('uid',self.db.users))
-
         self.disciplines = self.db.define_table('disciplines', Field('name'))
 
     def commit(self):
