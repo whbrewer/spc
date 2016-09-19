@@ -60,6 +60,8 @@ def create_config_file():
             f.write("default_priority = 3\n")
             f.write("# number of processors available to use on this machine\n")
             f.write("np = 2\n")
+            f.write("\n# WORKERS\n")
+            f.write("worker = 'local'\n")
             f.write("\n# WEB SERVER\n")
             f.write("# don't define server if you want to use built-in\n")
             f.write("# other options: cherrypy, bjoern, tornado, gae, etc.\n")

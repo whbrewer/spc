@@ -101,31 +101,35 @@ def confirm_form():
                    time_submit=time.asctime(), np=config.np, priority=pry)
     db.commit()
 
-    try:
-        resp = requests.post('http://localhost:'+ str(config.port+1) +'/execute', 
-            data=dict(request.forms))
-    except:
-        return template('error', err="failed to submit job to SPC worker. " + \
-            "Possible solutions: Is a container running? Is Python requests " + \
-            "package installed? (pip install requests)")
+    if config.worker == 'remote':
 
-    jid = resp.text
-    redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
+        try:
+            resp = requests.post('http://localhost:'+ str(config.port+1) +'/execute', 
+                data=dict(request.forms))
+        except:
+            return template('error', err="failed to submit job to SPC worker. " + \
+                "Possible solutions: Is a container running? Is Python requests " + \
+                "package installed? (pip install requests)")
 
-    # myapps[app].write_params(request.forms, user)
-    # # read the file
-    # run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
-    # fn = os.path.join(run_dir, myapps[app].simfn)
-    # inputs = slurp_file(fn)
-    # # convert html tags to entities (e.g. < to &lt;)
-    # inputs = cgi.escape(inputs)
-    # params = { 'cid': cid, 'inputs': inputs, 'app': app,
-    #            'user': user, 'apps': myapps.keys(), 'np': config.np,
-    #            'desc': desc }
-    # try:
-    #     return template('confirm', params)
-    # except:
-    #     return 'ERROR: failed to write parameters to file'
+        jid = resp.text
+        redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
+
+    else:
+
+        myapps[app].write_params(request.forms, user)
+        # read the file
+        run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
+        fn = os.path.join(run_dir, myapps[app].simfn)
+        inputs = slurp_file(fn)
+        # convert html tags to entities (e.g. < to &lt;)
+        inputs = cgi.escape(inputs)
+        params = { 'cid': cid, 'inputs': inputs, 'app': app,
+                   'user': user, 'apps': myapps.keys(), 'np': config.np,
+                   'desc': desc }
+        try:
+            return template('confirm', params)
+        except:
+            return 'ERROR: failed to write parameters to file'
 
 @post('/execute')
 def execute():
@@ -157,8 +161,7 @@ def execute():
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
         jid = sched.qsub(app, cid, uid, np, priority, desc)
-        return "Job submitted. Job ID is:" + str(jid)
-        # redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
+        redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >> sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
@@ -202,13 +205,6 @@ def case():
     else:
         run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
         fn = os.path.join(run_dir, myapps[app].outfn)
-        # if config.worker == 'remote':
-        #     myparams = {'user': user, 'app': app, 'cid': cid}
-        #     resp = requests.get('http://localhost:'+ str(config.port+1) +'/output', params=myparams)
-        #     output = resp.text 
-        # else:
-        #     output = slurp_file(fn)
-
         result = db(jobs.cid==cid).select().first()
         desc = result['description']
         shared = result['shared']
@@ -229,21 +225,31 @@ def output():
         else:
             u = user
             c = cid
-        run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
-        fn = os.path.join(run_dir, myapps[app].outfn)
-        output = slurp_file(fn)
-        # the following line will convert HTML chars like > to entities &gt;
-        # this is needed so that XML input files will show paramters labels
 
-        params = {'user': user, 'app': app, 'cid': cid}
-        resp = requests.get('http://localhost:'+ str(config.port+1) +'/output', params=params)
-        output = resp.text
+        if config.worker == 'remote': 
+
+            params = {'user': user, 'app': app, 'cid': cid}
+            resp = requests.get('http://localhost:'+ str(config.port+1) +'/output', params=params)
+            output = resp.text
+
+        else:
+
+            run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+            fn = os.path.join(run_dir, myapps[app].outfn)
+            output = slurp_file(fn)
+            # the following line will convert HTML chars like > to entities &gt;
+            # this is needed so that XML input files will show paramters labels
+            output = cgi.escape(output)
+
         params = { 'cid': cid, 'contents': output, 'app': app,
                    'user': u, 'fn': fn, 'apps': myapps.keys() }
+
         return template('more', params)
+
     except:
         params = { 'app': app, 'apps': myapps.keys(),
                    'err': "Couldn't read input file. Check casename." }
+
         return template('error', params)
 
 @get('/inputs')
