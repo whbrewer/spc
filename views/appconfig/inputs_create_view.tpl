@@ -50,16 +50,28 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
     <!--<th>data_type</th>-->
 </thead>
 <tbody>
-%for key,value in inputs.iteritems():
+% import common
+% for key,value in inputs.iteritems():
     <tr>
         <td>{{key}}</td> <td>{{value}}</td> 
         <td><select class="form-control" id="html_tags" name="html_tags"  
                     onchange="add_option_row(this)">
-            <option value="text">text
-            <option value="number">number
+            % vtype = common.type(value)
+            % if vtype == "number":
+                <option selected value="number">number
+                <option value="text">text
+                <option value="checkbox">checkbox            
+            % elif vtype == "bool":
+                <option selected value="checkbox">checkbox
+                <option value="number">number
+                <option value="text">text
+            % else:
+                <option selected value="text">text
+                <option value="number">number
+                <option value="checkbox">checkbox            
+            % end
             <option value="hidden">hidden
             <option value="select">select
-            <option value="checkbox">checkbox
             <option value="textarea">textarea
         </select></td>
         <!--
@@ -75,7 +87,7 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
     <input type="hidden" name="keys" value="{{key}}">
     <input type="hidden" name="appname" value="{{appname}}">
     <input type="hidden" name="input_format" value="{{input_format}}">
-%end
+% end
 </tbody>
 </table>
 </form>

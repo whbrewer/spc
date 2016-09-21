@@ -1329,7 +1329,7 @@ def appconfig_exe(step="upload"):
     user = authorized()
     if user != 'admin':
         return template('error', err="must be admin to configure app")
-    if step == "upload":
+    if step == "upload":    
         appname = request.forms.appname
         params = {'appname': appname}
         return template('appconfig/exe_upload', params)
