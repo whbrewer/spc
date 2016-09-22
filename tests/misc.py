@@ -1,8 +1,9 @@
 import urllib, urllib2, httplib
+from src import config
 
-URL = 'http://localhost:8081'
+URL = 'http://localhost:' + str(config.port)
 
-def post(url,values):
+def post(url, values):
     data = urllib.urlencode(values)
     req = urllib2.Request(url, data)
     response = urllib2.urlopen(req)

@@ -1,4 +1,5 @@
 import unittest, misc
+import logging
 from bottle import response
 import urllib, urllib2, httplib
 import sqlite3 as lite
@@ -19,29 +20,38 @@ sys.path = [os.path.join(os.path.dirname(__file__), os.pardir)] + sys.path
 # already is installed in the system
 APP = "xyz123"
 
+def login():
+    url = misc.URL+'/login'
+    values = { 'user': 'admin', 'passwd': 'admin' }
+    # response = misc.post(url,values)
+    (code,html) = misc.post(url, values)
+    return code
+
 class TestRoutes(unittest.TestCase):
 
     def setUp(self):
-        # Connect to DB 
-        self.con = None
-        try:
-            self.con = lite.connect("db/spc.db")
-        except lite.Error, e:
-            print "Error %s:" % e.args[0]
-            sys.exit(1)
+        pass
+        # # Connect to DB 
+        # self.con = None
+        # try:
+        #     self.con = lite.connect("db/spc.db")
+        # except lite.Error, e:
+        #     print "Error %s:" % e.args[0]
+        #     sys.exit(1)
 
     def tearDown(self):
-        # remove the test app from the database
-        cur = self.con.cursor()
-        cur.execute('delete from apps where name = (?)',(APP,))
-        self.con.commit()
-        # remove directory created in apps folder
-        path = os.path.join("apps", APP)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
-        # remove template file that was created
-        try: os.remove('views/apps/'+APP+'.tpl')
-        except OSError: pass
+        pass
+        # # remove the test app from the database
+        # cur = self.con.cursor()
+        # cur.execute('delete from apps where name = (?)',(APP,))
+        # self.con.commit()
+        # # remove directory created in apps folder
+        # path = os.path.join("apps", APP)
+        # if os.path.isdir(path):
+        #     shutil.rmtree(path)
+        # # remove template file that was created
+        # try: os.remove('views/apps/'+APP+'.tpl')
+        # except OSError: pass
 
     #@unittest.skip("skipping test...")
     # test app name that does not exist
@@ -65,11 +75,27 @@ class TestRoutes(unittest.TestCase):
     
     def test_addapp(self):
         """test /addapp route"""
+        # resp = login()
+        url = misc.URL+'/login'
+        # response = urllib2.urlopen(url)
+        # html = response.read()
+        values = { 'user': 'admin', 'passwd': 'admin' }
+        data = urllib.urlencode(values)
+        req = urllib2.Request(url, data)
+        response = urllib2.urlopen(req)
+        html = response.read()
+        response.close()
+        # response = misc.post(url,values)
+        # (code, html) = misc.post(url, values)
+
+        # log= logging.getLogger( "TestRoutes.test_addapp" )
+        # log.debug( login() )
+        # if code == httplib.OK:
         url = misc.URL+'/addapp'
         response = urllib2.urlopen(url)
         html = response.read()
-        self.assertEqual(response.getcode(),httplib.OK)
-        self.assertIn("Enter name of app",html)
+        self.assertEqual(response.getcode(), httplib.OK)
+        self.assertIn("Enter name of app", html)
 
     def test_step0(self):
         """enter app name"""
@@ -146,5 +172,7 @@ class TestRoutes(unittest.TestCase):
         self.assertIn("Template file successfully written",html)
 
 if __name__ == '__main__':
+    logging.basicConfig( stream=sys.stderr )
+    logging.getLogger( "TestRoutes.test_addapp" ).setLevel( logging.DEBUG )
     unittest.main()
 

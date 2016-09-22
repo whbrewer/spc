@@ -160,6 +160,10 @@ if __name__ == "__main__":
         print notyet 
     elif (sys.argv[1] == "test"):
         os.chdir('tests')  
+        if not os.path.exists('db'): os.makedirs('db')
+        if not os.path.exists('src'): os.makedirs('src')
+        if not os.path.exists('apps'): os.makedirs('apps')        
+        os.system("../spc init")
         os.system("python test_unit.py")
     elif (sys.argv[1] == "uninstall"):
         install_usage = "usage: spc uninstall appname"
@@ -225,12 +229,9 @@ if __name__ == "__main__":
             import json
             from src import model2
             path = app_dir_name + os.sep + "spc.json"
-            #print path 
             with open(path,'r') as f: 
                 data = f.read()
-            #print data 
             parsed = json.loads(data)
-            #print parsed 
 
             # get name of app from json data
             app = parsed['name']
