@@ -164,7 +164,10 @@ if __name__ == "__main__":
         if not os.path.exists('src'): os.makedirs('src')
         if not os.path.exists('apps'): os.makedirs('apps')        
         os.system("../spc init")
+        print "RUNNING UNIT TESTS..."
         os.system("python test_unit.py")
+        print "RUNNING FUNCTIONAL TESTS..."
+        os.system("python test_func.py")
     elif (sys.argv[1] == "uninstall"):
         install_usage = "usage: spc uninstall appname"
         if len(sys.argv) == 3:

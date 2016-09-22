@@ -1,0 +1,10 @@
+{
+   "name": "xyz123",
+   "description": "app for testing",
+   "category": "testing",
+   "language": "python",
+   "input_format": "namelist",
+   "command": "../../../../apps/xyz123/xyz123",
+   "preprocess": "None",
+   "postprocess": "None"
+}

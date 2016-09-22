@@ -1,4 +1,5 @@
 import unittest, misc
+import requests
 from bottle import response
 import httplib
 import sys, os
