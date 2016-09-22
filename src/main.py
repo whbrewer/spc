@@ -1554,12 +1554,31 @@ def authorized():
     else:
         return NOAUTH_USER
 
+def init_config_options():
+    try: config.worker
+    except: config.worker = "local"
+
+    try: config.auth
+    except: config.auth = False
+
+    try: config.sched
+    except: config.sched = "sp"
+
+    try: config.np
+    except: config.np = 1
+
+    try: config.port
+    except: config.port = 8580
+
+    return None
+
 def getuser():
     '''Return the current user, if logged in'''
     user = authorized()
     return user
 
 if __name__ == "__main__":
+    init_config_options()
     # set user session if authentication is disabled
     if not config.auth:
         s = {USER_ID_SESSION_KEY: NOAUTH_USER}
