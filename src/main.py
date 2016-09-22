@@ -839,10 +839,12 @@ def app_save(appid):
     cmd = request.forms.command
     lang = request.forms.language
     info = request.forms.input_format
+    preprocess = request.forms.preprocess
+    postprocess = request.forms.postprocess    
     desc = request.forms.description
     row = db(db.apps.id==appid).select().first()
     row.update_record(language=lang, description=desc, input_format=info,
-                      command=cmd)
+                      preprocess=preprocess, postprocess=postprocess, command=cmd)
     db.commit()
     redirect("/app/"+app)
 

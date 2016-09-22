@@ -66,6 +66,14 @@ tr:hover {
       <td>{{rows['input_format']}}</td> 
   </tr>
   <tr>
+      <td>Pre-process:</td>
+      <td>{{rows['preprocess']}}</td> 
+  </tr>
+  <tr>
+      <td>Post-process:</td>
+      <td>{{rows['postprocess']}}</td> 
+  </tr>
+  <tr>
       <td>Language:</td>
       <td>{{rows['language']}}</td> 
   </tr>

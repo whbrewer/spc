@@ -32,6 +32,16 @@
       </td>
   </tr>
   <tr>
+      <td>Pre-process:</td>
+      <td><input class="form-control" type="text" name="preprocess" 
+                 value="{{rows['preprocess']}}"></td> 
+  </tr> 
+  <tr>
+      <td>Post-process:</td>
+      <td><input class="form-control" type="text" name="postprocess" 
+                 value="{{rows['postprocess']}}"></td> 
+  </tr> 
+  <tr>
       <td>Language:</td>
       <td><input class="form-control" type="text" name="language" 
                  value="{{rows['language']}}"></td> 
