@@ -10,7 +10,7 @@ import pickle
 try:
     import requests
 except:
-    print "WARNING: not importing requests... only needed for remote workers"
+    print "INFO: not importing requests... only needed for remote workers"
 # other local modules
 from common  import *
 import config, process
@@ -22,22 +22,22 @@ import plots as plotmod
 try:
     import scheduler_mq
 except ImportError:
-    print "WARNING: scheduler_ws not imported because pika not installed"
+    print "INFO: scheduler_ws not imported because pika not installed"
 # requires gevent
 try:
     import scheduler_ws
 except ImportError:
-    print "WARNING: scheduler_ws not imported because gevent not installed"
+    print "INFO: scheduler_ws not imported because gevent not installed"
 # requires boto
 try:
     import aws as awsmod
 except ImportError:
-    print "WARNING: disabling AWS menu because boto not installed"
+    print "INFO: disabling AWS menu because boto not installed"
 # requires docker-py
 try:
     import container as dockermod
 except ImportError:
-    print "WARNING: docker options disabled because container is not installed"
+    print "INFO: docker options disabled because docker-py is not installed"
 # data access layer
 #from gluino import DAL, Field
 from model import *

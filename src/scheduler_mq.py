@@ -33,8 +33,12 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('starred', 'string'),
                                Field('shared','string'))
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
+try:
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+except:
+    print "WARNING: cannot start blocking connection.  Make sure RabbitMQ server is running, especially if you're trying to use message queuing option for scheduler"
+
 
 class Scheduler(object):
     """simple single process scheduler"""
