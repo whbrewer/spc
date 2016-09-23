@@ -17,6 +17,11 @@ def query(): pass
 @post('/stop')
 def stop(): pass
 
+@get('/status/<jid>')
+def get_status(jid):
+    resp = db(jobs.id==jid).select(jobs.state).first()
+    return resp.state
+
 @get('/listfiles')
 def listfiles():
     app = request.forms['app']
