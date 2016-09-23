@@ -94,12 +94,6 @@ def confirm_form():
         request.forms['desc'] = desc
         request.forms['appmod'] = pickle.dumps(myapps[app])
 
-        pry = 1
-        uid = users(user=user).id
-        db.jobs.insert(uid=uid, app=app, cid=cid, state='REMOTE', description=desc,
-                       time_submit=time.asctime(), np=config.np, priority=pry)
-        db.commit()
-
         try:
             print config.remote_worker_url + '/execute'
             resp = requests.post(config.remote_worker_url +'/execute', data=dict(request.forms))
@@ -108,9 +102,15 @@ def confirm_form():
             return template('error', err="failed to submit job to SPC worker. " + \
                 "Possible solutions: Is a container running? Is Python requests " + \
                 "package installed? (pip install requests)")
-
-        jid = resp.text
-        redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
+        else:
+            jid = resp.text
+            # insert job entry in local DB; scheduler will also insert entry in remote DB
+            pry = 1
+            uid = users(user=user).id
+            db.jobs.insert(uid=uid, app=app, cid=cid, state=jid, description=desc,
+                           time_submit=time.asctime(), np=config.np, priority=pry)
+            db.commit()
+            redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
 
     else:
 
