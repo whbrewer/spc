@@ -88,11 +88,11 @@ def confirm_form():
         desc = request.forms['desc']
     except:
         desc = "None"
-    request.forms['desc'] = desc
-
-    request.forms['appmod'] = pickle.dumps(myapps[app])
 
     if config.worker == 'remote':
+
+        request.forms['desc'] = desc
+        request.forms['appmod'] = pickle.dumps(myapps[app])
 
         pry = 1
         uid = users(user=user).id
