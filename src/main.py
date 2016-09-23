@@ -92,16 +92,13 @@ def confirm_form():
 
     request.forms['appmod'] = pickle.dumps(myapps[app])
 
-    #print json.dumps(dict(request.forms))
-    # headers = {'content-type': 'application/json'}
-
-    pry = 1
-    uid = users(user=user).id
-    db.jobs.insert(uid=uid, app=app, cid=cid, state='REMOTE', description=desc,
-                   time_submit=time.asctime(), np=config.np, priority=pry)
-    db.commit()
-
     if config.worker == 'remote':
+
+        pry = 1
+        uid = users(user=user).id
+        db.jobs.insert(uid=uid, app=app, cid=cid, state='REMOTE', description=desc,
+                       time_submit=time.asctime(), np=config.np, priority=pry)
+        db.commit()
 
         try:
             print config.remote_worker_url + '/execute'
