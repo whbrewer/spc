@@ -8,40 +8,33 @@ from common import *
 
 sched = scheduler_sp.Scheduler()
 
-# the decorator
-def enable_cors(fn):
-    def _enable_cors(*args, **kwargs):
-        # set CORS headers
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
-
-        if bottle.request.method != 'OPTIONS':
-            # actual request; reply with the actual response
-            return fn(*args, **kwargs)
-
-    return _enable_cors
-
-
 @get('/')
 def root(): return "hello this is an SPC worker node"
 
-@get('/query')
-def query(): pass
+@get('/delete')
+def del_job():
+    # jid = request.forms['jid']
+    jid = request.query.jid
+    sched.stop(jid)
+    sched.qdel(jid)
+    return "OK"
 
 @get('/stop')
 def stop():
     # jid = request.forms['jid']
     jid = request.query.jid
-    sched.qdel(jid)
+    sched.stop(jid)
+    return "OK"
 
 @get('/status/<jid>')
 def get_status(jid):
+    # following headers are needed because of CORS
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
     resp = db(jobs.id==jid).select(jobs.state).first()
-    return resp.state
+    if resp is None: return 'X'
+    else: return resp.state
 
 @get('/listfiles')
 def listfiles():
