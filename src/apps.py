@@ -1,7 +1,7 @@
 import re, sys, os, shutil
 import config
 import ConfigParser
-import json
+import json, yaml
 import xml.etree.ElementTree as ET
 from gluino import DAL, Field
 from model import *
@@ -464,7 +464,6 @@ class JSON(App):
             print "ERROR: input file does not exist: " + fn
 
         for section in parsed:
-            # options = Config.options(section)
             blockorder += [ section ]
             for option in parsed[section]:
                 print section, parsed[section]
@@ -505,5 +504,111 @@ class JSON(App):
                 #print key, form_params[key]
 
         cfgfile.write(json.dumps(params))
+        cfgfile.close()
+        return 1
+
+class YAML(App):
+    """Class for reading/writing YAML files."""
+    def __init__(self,appname,preprocess=0,postprocess=0):
+        self.appname = appname
+        self.appdir = os.path.join(apps_dir,appname)
+        self.outfn = appname + '.out'
+        self.simfn = appname + '.yaml'
+        self.preprocess = preprocess
+        self.postprocess = postprocess
+        self.user_dir = user_dir
+        self.params, self.blockmap, self.blockorder = self.read_params()
+        self.exe = os.path.join(apps_dir,self.appname,self.appname)
+
+    def read_params(self,user=None,cid=None):
+        """read the YAML file and return as a dictionary"""
+        if cid is None or user is None:
+            fn = self.appdir
+        else:
+            fn = os.path.join(self.user_dir,user,self.appname,cid)
+        # append name of input file to end of string
+        fn += os.sep + self.simfn
+
+        # read file
+        with open(fn,'r') as f: data = f.read()
+        # parse data
+        parsed = yaml.load(data)
+        print parsed
+
+        params = {}
+        blockmap = {}
+        blockorder = []
+
+        if not os.path.isfile(fn):
+            print "ERROR: input file does not exist: " + fn
+
+        # note: in the future this needs to be a recursively called function
+        # see "flatten" below. the keys need to be glued-together versions of
+        # the tree hierarchy
+        for section in parsed:
+            print section, parsed[section] #, len(parsed[section])
+            # value is a dict
+            if type(parsed[section]) == type({}):
+                for option in parsed[section]:
+                    # blockorder += [ section ]
+                    try:
+                        params[option] = parsed[section][option]
+                        blockmap.setdefault(section,[]).append(option)
+                        if params[option] == -1:
+                            DebugPrint("skip: %s" % option)
+                    except:
+                        print("exception on %s!" % option)
+                        params[option] = None
+  
+            # value is a list
+            if type(parsed[section]) == type([]):
+                for item in parsed[section]:
+                    blockorder += [ section ]
+                    for option in item:
+                        try:
+                            # params[option + "_" + item] = parsed[section][item][option]
+                            #params[option] = parsed[section][item][option]                            
+                            blockmap.setdefault(section,[]).append(option)
+                            if params[option] == -1:
+                                DebugPrint("skip: %s" % option)
+                        except:
+                            print("exception on %s!" % option)
+                            params[option] = None
+
+            else: # value is string, integer, or Boolean
+                print "im here", section
+                if "basic" not in blockorder: 
+                    blockorder += [ "basic" ]
+                blockmap.setdefault("basic",[]).append(section)
+                params[section] = str(parsed[section]) # simply a key/value assignment
+
+        # print 'params:',params
+        # print 'blockmap:',blockmap
+        # print 'blockorder:',blockorder
+        return params, blockmap, blockorder
+
+    def flatten(self, params):
+        pass
+
+    def write_params(self,form_params,user):
+        """Write parameters to the YAML file."""
+        cid = form_params['case_id']
+        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
+        if not os.path.exists(sim_dir):
+            os.makedirs(sim_dir)
+        fn = os.path.join(sim_dir,self.simfn)
+
+        # create the YAML file
+        cfgfile = open(fn,'w')
+        params = dict()
+        for section in self.blockorder:
+            params[section] = dict()
+            for key in self.blockmap[section]:
+                params[section][key] = form_params[key]
+                # for checkboxes that dont get sent when unchecked
+                if key not in form_params: params[key] = 'false'
+                #print key, form_params[key]
+
+        cfgfile.write(yaml.dump(params))
         cfgfile.close()
         return 1

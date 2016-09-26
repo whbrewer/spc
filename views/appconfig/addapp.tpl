@@ -341,6 +341,7 @@ span.round-tab:hover {
                         <option value="json">JSON
                         <option value="namelist">Namelist
                         <option value="xml">XML
+                        <option value="yaml">YAML                        
                     </select></td>
                     </tr>
 

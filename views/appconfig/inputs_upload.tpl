@@ -22,6 +22,8 @@
     an input file named <b><tt>{{appname}}.ini</tt></b>
 %elif input_format == "xml":
     an input file named <b><tt>{{appname}}.xml</tt></b>
+%elif input_format == "yaml":
+    an input file named <b><tt>{{appname}}.yaml</tt></b>
 %else:
     an input file named <b><tt>{{appname}}.json</tt></b>
 %end

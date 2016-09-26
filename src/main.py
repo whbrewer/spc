@@ -1282,6 +1282,10 @@ def addapp():
     uid = users(user=user).id
     a.create(appname, description, category, language,
              input_format, command, preprocess, postprocess)
+    # load_apps() needs to be called here in case a user wants to delete
+    # this app just after it has been created... it is called again after
+    # the user uploads a sample input file
+    load_apps()
     redirect('/app/'+appname)
 
 @get('/appconfig/status')
@@ -1431,7 +1435,7 @@ def edit_inputs(step):
             return template('appconfig/error',
                    err="no file selected. press back button and try again")
         name, ext = os.path.splitext(upload.filename)
-        if ext not in ('.in', '.ini', '.xml', '.json',):
+        if ext not in ('.in', '.ini', '.xml', '.json', '.yaml', ):
             return 'ERROR: File extension not allowed.'
         try:
             save_path_dir = os.path.join(appmod.apps_dir, name)
@@ -1454,6 +1458,8 @@ def edit_inputs(step):
                 fn = appname + ".xml"
             elif input_format == "json":
                 fn = appname + ".json"
+            elif input_format == "yaml":
+                fn = appname + ".yaml"
             else:
                 return "ERROR: input_format not valid: ", input_format
             path = os.path.join(config.apps_dir, appname, fn)
@@ -1535,6 +1541,8 @@ def app_instance(input_format, appname, preprocess=0, postprocess=0):
         myapp = appmod.XML(appname, preprocess, postprocess)
     elif(input_format=='json'):
         myapp = appmod.JSON(appname, preprocess, postprocess)
+    elif(input_format=='yaml'):
+        myapp = appmod.YAML(appname, preprocess, postprocess)
     else:
         return 'ERROR: input_format', input_format, 'not supported'
     return myapp
