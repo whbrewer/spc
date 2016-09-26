@@ -533,7 +533,6 @@ class YAML(App):
         with open(fn,'r') as f: data = f.read()
         # parse data
         parsed = yaml.load(data)
-        print parsed
 
         params = {}
         blockmap = {}
@@ -550,7 +549,6 @@ class YAML(App):
             # value is a dict
             if type(parsed[section]) == type({}):
                 for option in parsed[section]:
-                    # blockorder += [ section ]
                     try:
                         params[option] = parsed[section][option]
                         blockmap.setdefault(section,[]).append(option)
@@ -566,8 +564,6 @@ class YAML(App):
                     blockorder += [ section ]
                     for option in item:
                         try:
-                            # params[option + "_" + item] = parsed[section][item][option]
-                            #params[option] = parsed[section][item][option]                            
                             blockmap.setdefault(section,[]).append(option)
                             if params[option] == -1:
                                 DebugPrint("skip: %s" % option)
@@ -576,7 +572,7 @@ class YAML(App):
                             params[option] = None
 
             else: # value is string, integer, or Boolean
-                print "im here", section
+                # put every variable that is not part of a subtree in the "basic" category
                 if "basic" not in blockorder: 
                     blockorder += [ "basic" ]
                 blockmap.setdefault("basic",[]).append(section)
