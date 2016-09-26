@@ -187,15 +187,15 @@ def case():
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid or -1
-    # try:
+    
     if re.search("/", cid):
         (u, c) = cid.split("/")
         sid = request.query.sid # id of item in shared
         run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
         fn = os.path.join(run_dir, myapps[app].outfn)
-        # output = slurp_file(fn)
+        output = slurp_file(fn)
 
-        params = { 'cid': cid, 'app': app, 'jid': jid,
+        params = { 'cid': cid, 'app': app, 'jid': jid, 'contents': output,
                    'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys(),
                    'sched': config.sched }
         return template('case_public', params)
