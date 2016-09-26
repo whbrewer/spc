@@ -297,6 +297,8 @@ class INI(App):
         fn += os.sep + self.simfn
 
         Config = ConfigParser.ConfigParser()
+        # following line keeps the parser from making the keys lowercase
+        #Config.optionxform = str
         Config.read(fn)
         params = {}
         blockmap = {}

@@ -141,15 +141,15 @@ def execute():
     base_dir = os.path.join(myapps[app].user_dir, user, app, cid)
 
     # if preprocess is set run the preprocessor
-    try:
-        if myapps[app].preprocess:
-            run_params, _, _ = myapps[app].read_params(user, cid)
-            processed_inputs = process.preprocess(run_params,
-                                       myapps[app].preprocess,base_dir)
-        if myapps[app].preprocess == "terra.in":
-            myapps[app].outfn = "out"+run_params['casenum']+".00"
-    except:
-        return template('error', err="There was an error with the preprocessor")
+    # try:
+    if myapps[app].preprocess:
+        run_params, _, _ = myapps[app].read_params(user, cid)
+        processed_inputs = process.preprocess(run_params,
+                                   myapps[app].preprocess,base_dir)
+    if myapps[app].preprocess == "terra.in":
+        myapps[app].outfn = "out"+run_params['casenum']+".00"
+    # except:
+    #     return template('error', err="There was an error with the preprocessor")
 
     # submit job to queue
     try:

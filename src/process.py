@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+from bottle import template
 
 def preprocess(params,fn,base_dir=""):
     buf = ''
@@ -11,13 +12,18 @@ def preprocess(params,fn,base_dir=""):
                else: continue # don't output anything when this param is false
             option = '-' + key.split('_')[0] # extract first letter
             buf += option + value + ' ' 
-        sim_dir = os.path.join(base_dir,fn)
-        return _write_file(buf,sim_dir)
+        sim_dir = os.path.join(base_dir, fn)
+        return _write_file(buf, sim_dir)
     elif fn == 'Nemo2.ini':
         for key, value in (params.iteritems()):
             buf += key + ' ' + value + '\n'
-        sim_dir = os.path.join(base_dir,fn)
-        return _write_file(buf,sim_dir)
+        sim_dir = os.path.join(base_dir, fn)
+        return _write_file(buf, sim_dir)
+    elif fn == 'simple.sim':
+        # use a template based approach 
+        buf = template('simple.sim', params) 
+        sim_dir = os.path.join(base_dir, fn)
+        return _write_file(buf, sim_dir)
     elif fn == 'terra.in':
         # this doesn't work because already redirecting output to terra.out
         # only way it might work is if we don't redirect output to terra.out
