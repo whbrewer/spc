@@ -1,7 +1,11 @@
 import re, sys, os, shutil
 import config
 import ConfigParser
-import json, yaml
+import json
+try:
+    import yaml
+except:
+    print "INFO: yaml not installed... if you need support for YAML files: pip install pyyaml"
 import xml.etree.ElementTree as ET
 from gluino import DAL, Field
 from model import *
