@@ -1099,6 +1099,12 @@ def plot_interface(pltid):
                     dat = p.get_data(plotpath, col1)
         else:
             dat = p.get_data(plotpath, col1, col2)
+
+        if dat == -1: 
+            return template('error', err="Could not read data file. Is filename correct in datasource setup?")
+        elif dat == -2:
+            return template('error', err="Data file exists but either there were problems parsing its data")
+
         # clean data
         #dat = [d.replace('?', '0') for d in dat]
         data.append(dat)
@@ -1503,7 +1509,7 @@ def edit_inputs(step):
             return "ERROR: there was a problem when creating view"
     else:
         return template('error', err="step not supported")
-
+ 
 # this shows a listing of all files and allows the user to pick
 # which one to use
 #@get('/upload_contents/<appname>/<fn>')

@@ -5,6 +5,7 @@
     <script src="/static/jquery-2.1.4.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/jquery.highlight.js"></script>
+    <script src="/static/js/jquery.validate.min.js"></script>    
     <script src="/static/js/bootstrap-tagsinput.min.js"></script>
 
     <link rel="stylesheet" href="/static/css/style.css">

@@ -21,11 +21,18 @@
 </form> -->
 
 <font size="+1">
+<p>Redirecting to <a href="/app/{{appname}}">app configuration page</a></p>
+
+<meta http-equiv="refresh" content="1; url=/app/{{appname}}">
+</font>
+
+<!-- <font size="+1">
 <a href="/apps">Browse Apps</a><br>
 <a href="/app/{{appname}}">Edit {{appname}}</a><br>
 <a href="/{{appname}}">Test {{appname}}</a>
 </font>
-
+ -->
+ 
 <hr>
 
 <pre>

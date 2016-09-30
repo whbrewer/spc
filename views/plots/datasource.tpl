@@ -21,6 +21,8 @@ function ddef() {
 }
 </script>
 
+<div id="warning" align="center" class="alert-warning"></div>
+
 <div align="left" class="container-fluid">
     <div class="row">
         <div class="btn-group align-center">
@@ -45,12 +47,12 @@ function ddef() {
 
 <div id="editsource" class="collapse">
 
-<form class="form-horizontal" method="post" action="/plots/datasource_add">
+<form id="datasourceForm" class="form-horizontal" method="post" action="/plots/datasource_add" onsubmit="return validateForm()">
 
     <div class="form-group">
         <label for="label" class="control-label col-md-3">Label:</label>
         <div class="col-md-6">
-            <input type="text" class="form-control" name="label" id="label" onchange="ddef()">
+            <input type="text" class="form-control" name="label" id="label" onchange="ddef()" required>
         </div>
     </div>
 
@@ -84,17 +86,17 @@ function ddef() {
 
     <div class="form-group">
         <label for="filename" class="control-label col-md-3">Filename:</label>
-        <div class="col-md-6"><input type="text" class="form-control" name="fn"></div>
+        <div class="col-md-6"><input type="text" class="form-control" name="fn" required></div>
     </div>
 
     <div class="form-group">
         <label for="cols" class="control-label col-md-3">Column range (e.g. 1:2):</label>
-        <div class="col-md-6"><input type="text" class="form-control" name="cols"></div>
+        <div class="col-md-6"><input type="text" class="form-control" id="cols" name="cols" pattern="\d+:\d+" required></div>
     </div>
 
     <div class="form-group">
         <label for="line_range" class="control-label col-md-3">Line range (e.g. 3:53):</label>
-        <div class="col-md-6"><input type="text" class="form-control" name="line_range"></div>
+        <div class="col-md-6"><input type="text" class="form-control" id="line_range" name="line_range" pattern="\d+:\d+" required></div>
     </div>
     <button class="btn btn-primary">Submit</button>
     <input type="hidden" name="pltid" value="{{pltid}}"> 

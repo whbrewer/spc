@@ -11,6 +11,10 @@ class Plot(object):
         lineno = 0
         try:
             data = open(fn, 'rU').readlines()
+        except IOError:
+            return -1
+
+        try:
             nlines = len(data)
             # allow for tailing a file by giving a negative range, e.g. -100:10000
             if line1 < 0:
@@ -33,7 +37,7 @@ class Plot(object):
             else:
                 return z
         except:
-            return False
+            return -2
 
     def get_data_gantt(self,fn,col1,col2,col3,col4,line1=1,line2=1e6):
         """return data as string in format [ [x1,y1], [x2,y2], ... ]"""

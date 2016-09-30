@@ -14,7 +14,7 @@
 
 <h4>Upload input file</h4>
 
-<font size="+1">
+<font size="+1" color="blue">
 <p>Upload 
 %if input_format == "namelist":
     an input file named <b><tt>{{appname}}.in</tt></b>
@@ -27,8 +27,9 @@
 %else:
     an input file named <b><tt>{{appname}}.json</tt></b>
 %end
-</p>
+</p></font>
 
+<font size="+1">
 <p>Your app must be able to read and parse a text input file with
 the input parameters.</p>
 </font>

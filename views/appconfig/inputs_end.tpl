@@ -11,10 +11,13 @@
 
 <h4>Template file successfully written.</h4>
 
-<p>You may test the app <a href="/{{appname}}">here</a></p>
+<!-- <p>You may test the app <a href="/{{appname}}">here</a></p> -->
+
+<p>Redirecting to <a href="/app/{{appname}}">app configuration page</a></p>
+
+<meta http-equiv="refresh" content="1; url=/app/{{appname}}">
 
 
-<p>Return to app configuration <a href="/app/{{appname}}">here</a></p>
 </font>
 
 </div>

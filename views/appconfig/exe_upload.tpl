@@ -16,7 +16,7 @@
 
 <font size="+1">
 
-<p>Upload binary file that is compatible to run on the host platform:</p>
+<p>Upload an executable file that is compatible to run on the host platform.</p>
 
 </font>
 
