@@ -134,6 +134,8 @@ class App(object):
                     else:
                         buf += param 
                     buf += ":</label>\n"
+                else:
+                    buf = ""
                 # input box
                 buf += "\t\t<div class=\"col-xs-12 col-sm-6\">\n"               
                 if html_tags[param] == "checkbox":
