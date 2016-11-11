@@ -22,7 +22,7 @@ import plots as plotmod
 try:
     import scheduler_mq
 except ImportError:
-    print "INFO: scheduler_ws not imported because pika not installed"
+    print "INFO: scheduler_mq not imported because pika not installed"
 # requires gevent
 try:
     import scheduler_ws
@@ -1101,9 +1101,12 @@ def plot_interface(pltid):
             dat = p.get_data(plotpath, col1, col2)
 
         if dat == -1: 
-            return template('error', err="Could not read data file. Is filename correct in datasource setup?")
+            return template('error', err="Could not read data file. " + \
+                                         "Is filename correct in datasource setup?")
         elif dat == -2:
-            return template('error', err="Data file exists but either there were problems parsing its data")
+            return template('error', 
+                err="Data file exists there was problems parsing its data." + \
+                    "Are the column and line ranges setup properly?")
 
         # clean data
         #dat = [d.replace('?', '0') for d in dat]
