@@ -4,7 +4,7 @@ import ConfigParser
 import json
 try:
     import yaml
-except:
+except ImportError:
     print "INFO: yaml not installed... if you need support for YAML files: pip install pyyaml"
 import xml.etree.ElementTree as ET
 from gluino import DAL, Field
@@ -15,11 +15,6 @@ from model import *
 # and the input file is the name of the app + '.in'
 apps_dir = config.apps_dir
 user_dir = config.user_dir
-# end set 
-
-#class Parameter(object):
-#    def __init__(self,data_type):
-#        self.data_type 
 
 def is_number(value):
   try:
@@ -494,7 +489,7 @@ class JSON(App):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
 
-        # write out parameters to screen\
+        # write out parameters to screen
         #for (i,fp) in enumerate(form_params):
         #    print i,fp, form_params[fp]
 
