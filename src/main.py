@@ -22,22 +22,26 @@ import plots as plotmod
 try:
     import scheduler_mq
 except ImportError:
-    print "INFO: scheduler_ws not imported because pika not installed"
-# requires gevent
+    print "INFO: scheduler_mq not imported because pika not installed"
+
+# requires gevent and gevent-websocket
 try:
     import scheduler_ws
 except ImportError:
-    print "INFO: scheduler_ws not imported because gevent not installed"
+    print "INFO: scheduler_ws not imported because gevent and/or gevent-websocket not installed"
+
 # requires boto
 try:
     import aws as awsmod
 except ImportError:
     print "INFO: disabling AWS menu because boto not installed"
+
 # requires docker-py
 try:
     import container as dockermod
 except ImportError:
     print "INFO: docker options disabled because docker-py is not installed"
+
 # data access layer
 #from gluino import DAL, Field
 from model import *

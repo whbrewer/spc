@@ -267,7 +267,9 @@ if __name__ == "__main__":
                                category=parsed['category'],
                                language=parsed['language'],
                                input_format=parsed['input_format'],
-                               command=parsed['command'])
+                               command=parsed['command'],
+                               preprocess=parsed['preprocess'],
+                               postprocess=parsed['postprocess'])
 
             # copy static assets to static/apps/appname directory
             stat_apps_dir = os.path.join('static', 'apps')

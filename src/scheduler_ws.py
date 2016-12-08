@@ -205,6 +205,3 @@ class Scheduler(object):
         except: # if not running
             return -1
 
-
-
-

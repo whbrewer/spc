@@ -472,7 +472,7 @@ class JSON(App):
         for section in parsed:
             blockorder += [ section ]
             for option in parsed[section]:
-                print section, parsed[section]
+                #print section, parsed[section]
                 try:
                     params[option] = parsed[section][option]
                     blockmap.setdefault(section,[]).append(option)
@@ -551,7 +551,7 @@ class YAML(App):
         # see "flatten" below. the keys need to be glued-together versions of
         # the tree hierarchy
         for section in parsed:
-            print section, parsed[section] #, len(parsed[section])
+            #print section, parsed[section] #, len(parsed[section])
             # value is a dict
             if type(parsed[section]) == type({}):
                 for option in parsed[section]:
