@@ -790,7 +790,13 @@ def app_exists(appname):
 @get('/apps')
 def showapps():
     user = authorized()
-    result = db().select(apps.ALL)
+    q = request.query.q
+    if not q:
+        result = db().select(apps.ALL)
+    else:
+        result = db(db.apps.name.contains(q, case_sensitive=False) |
+                    db.apps.category.contains(q, case_sensitive=False) |
+                    db.apps.description.contains(q, case_sensitive=False)).select()
     if user == "admin":
         configurable = True
     else:
