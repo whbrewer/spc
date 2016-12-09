@@ -5,7 +5,7 @@
     <div class="row" style="white-space:nowrap">
         <div class="navbar-left">
             <div class="btn-group">
-                <button type="submit" class="btn btn-default" formaction="/apps">
+                <button type="submit" class="btn btn-default" formaction="/myapps">
                     <span class="glyphicon glyphicon-th-large"></span> Apps </button>
                 %if defined('app'):
                 %if app != '':

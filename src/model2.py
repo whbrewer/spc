@@ -24,6 +24,10 @@ class dal(object):
                                        Field('preprocess','string'),
                                        Field('postprocess','string'))
 
+        self.app_user = self.db.define_table('app_user', Field('id', 'integer'), 
+                                       Field('appid', 'integer'),
+                                       Field('uid', 'integer'))
+
         self.jobs = self.db.define_table('jobs', Field('id','integer'),
                                        Field('uid',self.db.users),
                                        Field('app','string'),

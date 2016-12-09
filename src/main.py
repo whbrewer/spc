@@ -345,7 +345,7 @@ def tail(app, cid):
 def root():
     if config.auth and not authorized(): redirect('/login')
     #return template('overview')
-    redirect('/apps')
+    redirect('/myapps')
 
 @get('/jobs')
 def show_jobs():
@@ -682,7 +682,7 @@ def post_login():
     # if referred to login from another page redirect to referring page
     referrer = request.forms.referrer
     if referrer: redirect('/'+referrer)
-    else: redirect('/apps')
+    else: redirect('/myapps')
 
 @post('/account/change_password')
 def change_password():
@@ -798,10 +798,22 @@ def showapps():
     params = { 'apps': myapps.keys(), 'configurable': configurable }
     return template('apps', params, rows=result)
 
+@get('/myapps')
+def showapps():
+    user = authorized()
+    uid = users(user=user).id
+    result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select() 
+    if user == "admin":
+        configurable = True
+    else:
+        configurable = False
+    params = { 'myapps': myapps.keys(), 'configurable': configurable }
+    return template('myapps', params, rows=result)
+
 @get('/apps/load')
 def get_load_apps():
     load_apps()
-    redirect('/apps')
+    redirect('/myapps')
 
 def load_apps():
     global myapps, default_app
@@ -1267,6 +1279,29 @@ def zipget():
 
     status = "file downloaded"
     redirect(request.headers.get('Referer')+"&status="+status)
+
+@post('/useapp')
+def useapp():
+    user = authorized()
+    uid = users(user=user).id
+    app = request.forms.app
+    appid = apps(name=app).id
+    print "allowing user", user, uid, "to access app", app, appid
+    app_user.insert(uid=uid, appid=appid)
+    db.commit()
+    redirect('/apps')
+
+@post('/removeapp')
+def removeapp():
+    user = authorized()
+    uid = users(user=user).id
+    app = request.forms.app
+    appid = apps(name=app).id
+    auid = app_user(uid=uid, appid=appid).id
+    del app_user[auid]
+    print "removing user", user, uid, "access to app", app, appid
+    db.commit()
+    redirect('/myapps')
 
 @get('/addapp')
 def getaddapp():

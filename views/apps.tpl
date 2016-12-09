@@ -13,8 +13,16 @@
 %include('navbar')
 
 <div class="row">
+
+  <div class="col-xs-6" align="left">  
+    <div class="btn-group">
+        <a class="btn btn-default" href="/myapps">My apps</a>
+        <a class="btn btn-default active" href="/apps">Installed apps</a>
+    </div>
+  </div>
+
   %if configurable:
-  <div class="col-xs-12" align="right">
+  <div class="col-xs-6" align="right">
    <a href="/addapp" class="btn btn-primary">
      <span class="glyphicon glyphicon-plus"></span> Add
    </a>
@@ -27,14 +35,16 @@
 %# from bottle documentation 0.12-dev p.53
 
 <div class="container-fluid">
+
   <div id="mypanel" class="panel-group">
     <div class="row">
       % for row in rows:
-        <div class="panel panel-primary">
+        <div class="panel panel-info">
           <div class="panel-heading"><h2>{{row['name']}}</h2></div>
-          <a style="text-decoration:none" href="/{{row['name']}}">
           <div class="panel-body"><h4>{{row['description']}}</h4></div>
-          <div class="panel-footer">category: {{row['category']}}</div></a>
+          <div class="panel-footer">category: {{row['category']}}</div>
+          <button type="button" class="btn btn-success" onclick="useapp('{{row['name']}}')">Activate</button>
+          <!-- <a href="javascript:useapp('{{row['name']}}')"><span class="glyphicon glyphicon-plus-sign" onclick="useapp('{{row['name']}}')"></span></a> -->
           %if configurable:
             <a href="/app/{{row['name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog"></span></a>
           %end
@@ -44,5 +54,11 @@
     </div>
   </div>
 </div>
+
+<script>
+function useapp(app) {
+    $.post('/useapp', {'app': app})
+}
+</script>
 
 %include('footer')
