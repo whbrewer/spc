@@ -16,8 +16,8 @@
 
   <div class="col-xs-6" align="left">
     <div class="btn-group">
-      <a class="btn btn-default active" href="/myapps">My apps</a>
-      <a class="btn btn-default" href="/apps">Installed apps</a>
+      <a class="btn btn-default active" href="/myapps">Activated</a>
+      <a class="btn btn-default" href="/apps">Installed</a>
     </div>
   </div>
 
@@ -39,7 +39,7 @@
   % if not rows:
     <div class="bs-callout bs-callout-warning">
       <h4>No active apps</h4>
-      <p>To activate an app, click on "installed apps" and activate an app.</p>
+      <p>To activate an app, click "Installed" and activate an app.</p>
     </div>
   % end
 

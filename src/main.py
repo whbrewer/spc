@@ -797,12 +797,21 @@ def showapps():
         result = db(db.apps.name.contains(q, case_sensitive=False) |
                     db.apps.category.contains(q, case_sensitive=False) |
                     db.apps.description.contains(q, case_sensitive=False)).select()
+
+    # find out what apps have already been activated so that a user can't activate twice
+    uid = users(user=user).id
+    activated = db(app_user.uid == uid).select()
+    activated_apps = []
+    for row in activated:
+        activated_apps.append(row.appid)
+
     if user == "admin":
         configurable = True
     else:
         configurable = False
+        
     params = { 'apps': myapps.keys(), 'configurable': configurable }
-    return template('apps', params, rows=result)
+    return template('apps', params, rows=result, activated=activated_apps)
 
 @get('/myapps')
 def showapps():

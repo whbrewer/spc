@@ -16,8 +16,8 @@
 
   <div class="col-xs-4" align="left">  
     <div class="btn-group">
-        <a class="btn btn-default" href="/myapps">My apps</a>
-        <a class="btn btn-default active" href="/apps">Installed apps</a>
+        <a class="btn btn-default" href="/myapps">Activated</a>
+        <a class="btn btn-default active" href="/apps">Installed</a>
     </div>
   </div>
 
@@ -50,8 +50,13 @@
           <div class="panel-heading"><h2>{{row['name']}}</h2></div>
           <div class="panel-body"><h4>{{row['description']}}</h4></div>
           <div class="panel-footer">category: {{row['category']}}</div>
-          <button type="button" class="btn btn-success" onclick="useapp('{{row['name']}}')">Activate</button>
-          <!-- <a href="javascript:useapp('{{row['name']}}')"><span class="glyphicon glyphicon-plus-sign" onclick="useapp('{{row['name']}}')"></span></a> -->
+
+          % if row['id'] in activated:
+            <button type="button" class="btn btn-info" disabled="true">Activated</button>
+          % else:
+            <button type="button" class="btn btn-success" onclick="useapp('{{row['name']}}')">Activate</button>
+          % end
+
           %if configurable:
             <a href="/app/{{row['name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog"></span></a>
           %end
@@ -65,6 +70,7 @@
 <script>
 function useapp(app) {
     $.post('/useapp', {'app': app})
+    location.reload();
 }
 </script>
 
