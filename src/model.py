@@ -2,8 +2,8 @@ from gluino import DAL, Field
 import config
 
 #db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
-#db = DAL(config.uri, migrate=False, folder=config.dbdir)
-db = DAL(config.uri, migrate=True, migrate_enabled=True, folder=config.dbdir)
+#db = DAL(config.uri, migrate=True, migrate_enabled=True, fake_migrate=True, folder=config.dbdir)
+db = DAL(config.uri, migrate=False, folder=config.dbdir)
 
 users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),

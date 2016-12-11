@@ -16,27 +16,28 @@
 
   <div class="col-xs-4" align="left">  
     <div class="btn-group">
-        <a class="btn btn-default" href="/myapps">Activated</a>
-        <a class="btn btn-default active" href="/apps">Installed</a>
+      <a class="btn btn-default" href="/myapps">Activated</a>
+      <a class="btn btn-default active" href="/apps">Installed</a>
     </div>
   </div>
 
   <div class="col-xs-4">
     <form role="form" action="/apps">
       <input name="q" type="text" class="form-control input-mg"
-           onchange="show(this.value)" placeholder="Search for apps...">
+             onchange="show(this.value)" placeholder="Search for apps...">
     </form>
   </div>
 
   %if configurable:
   <div class="col-xs-4" align="right">
-   <a href="/addapp" class="btn btn-primary">
-     <span class="glyphicon glyphicon-plus"></span> Add
-   </a>
+    <a href="/addapp" class="btn btn-primary">
+      <span class="glyphicon glyphicon-plus"></span> Add
+    </a>
   </div>
-  <div class="col-xs-12" style="height:5px"></div>
   %end
 </div>
+
+<div style="height:5px"></div>
 
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53

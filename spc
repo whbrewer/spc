@@ -14,6 +14,7 @@ def usage():
     buf += "available commands:\n"
     buf += "init       initialize database and create basic config.py file\n"
     buf += "list       list installed or available apps\n"
+    buf += "migrate    migrate new database changes\n"
     buf += "install    install an app\n"
     buf += "run        start the server\n"
     buf += "runworker  start a worker\n"
@@ -125,6 +126,11 @@ def initdb():
     # write changes to db
     dal.db.commit()
 
+def migrate():
+    """Migrate DB schema changes"""
+    from src import model2
+    dal = model2.dal(uri=config.uri, migrate=True)
+
 notyet = "this feature not yet working"
 
 # ref: http://stackoverflow.com/questions/4028697
@@ -148,6 +154,9 @@ if __name__ == "__main__":
         create_config_file()
         print "creating database." 
         initdb()
+    elif (sys.argv[1] == "migrate"):
+        print "migrating database schema changes" 
+        migrate()
     elif (sys.argv[1] == "go"):
         print "\"spc go\" has been deprecated. use \"spc run\" instead"
         time.sleep(3)

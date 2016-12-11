@@ -14,7 +14,7 @@
 
 <div class="row">
 
-  <div class="col-xs-6" align="left">
+  <div class="col-xs-4" align="left">
     <div class="btn-group">
       <a class="btn btn-default active" href="/myapps">Activated</a>
       <a class="btn btn-default" href="/apps">Installed</a>
@@ -22,14 +22,15 @@
   </div>
 
   %if configurable:
-  <div class="col-xs-6" align="right">
-   <a href="/addapp" class="btn btn-primary">
-     <span class="glyphicon glyphicon-plus"></span> Add
-   </a>
+  <div class="col-xs-4" align="right">
+    <a href="/addapp" class="btn btn-primary">
+      <span class="glyphicon glyphicon-plus"></span> Add
+    </a>
   </div>
-  <div class="col-xs-12" style="height:5px"></div>
   %end
 </div>
+
+<div style="height:15px"></div>
 
 %# template to generate a HTML table from a list of tuples
 %# from bottle documentation 0.12-dev p.53
