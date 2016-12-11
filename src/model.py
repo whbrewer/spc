@@ -25,7 +25,7 @@ apps = db.define_table('apps', Field('id','integer'),
 
 app_user = db.define_table('app_user', Field('id', 'integer'), 
                                        Field('appid', 'integer'),
-                                       Field('uid', 'integer'), migrate='app_user.table')
+                                       Field('uid', 'integer'))
 
 # this is also defined in scheduler.py
 # need to fix in the future
