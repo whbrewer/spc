@@ -139,6 +139,7 @@ def execute():
     app = request.forms.app
     cid = request.forms.cid
     np = request.forms.np
+    walltime = request.forms.walltime
     desc = request.forms.desc
     #priority = request.forms.priority
     params = {}
@@ -162,7 +163,7 @@ def execute():
         params['user'] = user
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
-        jid = sched.qsub(app, cid, uid, np, priority, desc)
+        jid = sched.qsub(app, cid, uid, np, priority, walltime, desc)
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >> sys.stderr, "Execution failed:", e

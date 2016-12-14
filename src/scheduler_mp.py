@@ -4,10 +4,12 @@ import config
 from multiprocessing import Process, BoundedSemaphore, Lock, Manager
 import subprocess, signal
 from gluino import DAL, Field
+import datetime
 
 STATE_RUN = 'R'
 STATE_QUEUED = 'Q'
 STATE_COMPLETED = 'C'
+STATE_STOPPED = 'X'
 
 class Scheduler(object):
     """multi-process scheduler"""
@@ -17,8 +19,8 @@ class Scheduler(object):
         # replace their state with X to mark that they have been shutdown
         db = DAL(config.uri, auto_import=True, migrate=False,
                  folder=config.dbdir)
-        myset = db(db.jobs.state == 'R')
-        myset.update(state='X')
+        myset = db(db.jobs.state == STATE_RUN)
+        myset.update(state=STATE_STOPPED)
         db.commit()
         self.sem = BoundedSemaphore(config.np)
         self.mutex = Lock()
@@ -33,25 +35,26 @@ class Scheduler(object):
         manager = Manager()
         myjobs = manager.dict()
         while(True):
+            self.stop_expired_jobs()
             j = self.qfront()
             if j is not None and j > 0:
                 self.start(j)
             time.sleep(1)
 
-    def qsub(self,app,cid,uid,np,pry,desc=""):
+    def qsub(self, app, cid, uid, np, pry, walltime, desc=""):
         """queue job ... really just set state to 'Q'."""
         db = DAL(config.uri, auto_import=True, migrate=False,
                  folder=config.dbdir)
         jid = db.jobs.insert(uid=uid, app=app, cid=cid, state=STATE_QUEUED,
-                              description=desc, time_submit=time.asctime(), np=np, priority=pry)
+                              description=desc, time_submit=time.asctime(),
+                              walltime=walltime, np=np, priority=pry)
         db.commit()
         db.close()
         return str(jid)
 
     def qfront(self):
         """pop the top job off of the queue that is in a queued 'Q' state"""
-        db = DAL(config.uri, auto_import=True, migrate=False,
-                 folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
         myorder = db.jobs.priority
         #myorder = db.jobs.priority | db.jobs.id
         row = db(db.jobs.state==STATE_QUEUED).select(orderby=myorder).first()
@@ -61,8 +64,7 @@ class Scheduler(object):
 
     def qdel(self,jid):
         """delete job jid from the queue"""
-        db = DAL(config.uri, auto_import=True, migrate=False,
-                 folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
         del db.jobs[jid]
         db.commit()
         db.close()
@@ -139,9 +141,32 @@ class Scheduler(object):
         db.close()
         self.mutex.release()
 
+    def stop_expired_jobs(self):
+        """shutdown jobs that exceed their time limit"""
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        row = db(db.jobs.state==STATE_RUN).select().first()
+        if row: 
+            walltime = int(row.walltime)
+            time_submit = time.mktime(datetime.datetime.strptime(row.time_submit, "%a %b %d %H:%M:%S %Y").timetuple())
+            now = time.mktime(datetime.datetime.now().timetuple())
+            runtime = now - time_submit
+            if runtime > walltime:
+                print "INFO: scheduler_mp stopped job", row.id, "REASON: reached timeout"
+                self.stop(row.id)
+
+        db.close()
+
     def stop(self,jid):
         p = myjobs.pop(long(jid),None)
         if p: os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+        
+        # the following doesn't work because it gets overwritten by line 128 above
+        # need a way to feedback to start_job method whether job has been stopped or not
+        # db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        # myset = db(db.jobs.id == jid)
+        # myset.update(state=STATE_STOPPED)
+        # db.commit()
+        # db.close()
 
     def test_qfront(self):
         print self.qfront()

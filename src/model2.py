@@ -34,6 +34,7 @@ class dal(object):
                                        Field('cid','string'),
                                        Field('state','string'),
                                        Field('time_submit','string'),
+                                       Field('walltime','string'),
                                        Field('description','string'),
                                        Field('np','integer'),
                                        Field('priority','integer'),

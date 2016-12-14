@@ -59,7 +59,7 @@ def create_config_file():
             f.write("#sched = 'mp'\n")
             f.write("default_priority = 3\n")
             f.write("# number of processors available to use on this machine\n")
-            f.write("np = 2\n")
+            f.write("np = 1\n")
             f.write("\n# WORKERS\n")
             f.write("worker = 'local'\n")
             f.write("\n# WEB SERVER\n")

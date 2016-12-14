@@ -29,6 +29,7 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('cid','string'),
                                Field('state','string'),
                                Field('time_submit','string'),
+                               Field('walltime','string'),
                                Field('description','string'),
                                Field('np','integer'),
                                Field('priority','integer'),
@@ -59,10 +60,10 @@ class Scheduler(object):
                 self.start(j)
             time.sleep(1)
 
-    def qsub(self,app,cid,uid,np,pry,desc=""):
+    def qsub(self, app, cid, uid, np, pry, walltime, desc=""):
         state = 'Q'
         jid = jobs.insert(uid=uid, app=app, cid=cid, state=state, description=desc,
-                          time_submit=time.asctime(), np=np, priority=pry)
+                          walltime=walltime, time_submit=time.asctime(), np=np, priority=pry)
         db.commit()
         return str(jid)
 
