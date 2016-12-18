@@ -21,13 +21,6 @@
     </div>
   </div>
 
-  %if configurable:
-  <div class="col-xs-4" align="right">
-    <a href="/addapp" class="btn btn-primary">
-      <span class="glyphicon glyphicon-plus"></span> Add
-    </a>
-  </div>
-  %end
 </div>
 
 <div style="height:15px"></div>

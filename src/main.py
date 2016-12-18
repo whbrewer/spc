@@ -1101,9 +1101,24 @@ def plot_interface(pltid):
             datadef += r['data_def'] + ", "
         except:
             datadef = ""
-        plotfn = re.sub(r"<cid>", c, plotfn)
+
+        # search for special <placeholders> in filename and replace
+        # with inputs set in user interface
+        matches = re.findall(r"<(\w+)>", plotfn)
+        inputs, _, _ = myapps[app].read_params(u, c)
+        
+        # in addition to supporting input params, also support case id
+        if "cid" not in inputs: inputs["cid"] = c
+
+        try:
+            for m in matches:
+                replacement = inputs[m]
+                plotfn = re.sub(r"<"+m+">", replacement, plotfn)
+        except:
+            print "ERROR: there is a problem with your data filename", plotfn
+
         plotpath = os.path.join(sim_dir, plotfn)
-         
+
         if cols.find(":") > 0: # two columns
             num_fields = 2
             (col1str, col2str) = cols.split(":")
