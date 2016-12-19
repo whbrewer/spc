@@ -196,6 +196,9 @@ if __name__ == "__main__":
         else:
             print install_usage
     elif (sys.argv[1] == "install"):
+        #import platform
+        #platform.system()  # Darwin, Linux, Windows, or Java
+        #platform.machine() # i386, x86_64
         install_usage = "usage: spc install /path/to/file.zip\n    or spc install http://url/to/file.zip"
                 
         if len(sys.argv) == 3:

@@ -607,6 +607,24 @@ def delete_job(jid):
     #    return "there was an error!"
     redirect("/jobs")
 
+@post('/jobs/delete_selected_cases')
+def delete_jobs():
+    user = authorized()
+    selected_cases = request.forms.selected_cases
+    cases = selected_cases.rstrip(':').split(':')
+    for jid in cases:
+        cid = jobs(id=jid).cid
+        app = jobs(id=jid).app
+        path = os.path.join(myapps[app].user_dir, user, app, cid)
+        if cid:
+            print "removing path:", path
+            if os.path.isdir(path): shutil.rmtree(path)
+            sched.stop(jid)
+            sched.qdel(jid)
+        else:
+            print "ERROR: not removing:", path, "because cid is missing"
+    redirect("/jobs")
+
 @post('/jobs/stop')
 def stop_job():
     user = authorized()
