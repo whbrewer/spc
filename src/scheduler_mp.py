@@ -144,15 +144,17 @@ class Scheduler(object):
     def stop_expired_jobs(self):
         """shutdown jobs that exceed their time limit"""
         db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
-        row = db(db.jobs.state==STATE_RUN).select().first()
-        if row: 
-            walltime = int(row.walltime)
-            time_submit = time.mktime(datetime.datetime.strptime(row.time_submit, "%a %b %d %H:%M:%S %Y").timetuple())
-            now = time.mktime(datetime.datetime.now().timetuple())
-            runtime = now - time_submit
-            if runtime > walltime:
-                print "INFO: scheduler_mp stopped job", row.id, "REASON: reached timeout"
-                self.stop(row.id)
+        rows = db(db.jobs.state==STATE_RUN).select()
+        for row in rows:
+            if row: 
+                walltime = int(row.walltime)
+                time_submit = time.mktime(datetime.datetime.strptime(
+                              row.time_submit, "%a %b %d %H:%M:%S %Y").timetuple())
+                now = time.mktime(datetime.datetime.now().timetuple())
+                runtime = now - time_submit
+                if runtime > walltime:
+                    print "INFO: scheduler_mp stopped job", row.id, "REASON: reached timeout"
+                    self.stop(row.id)
 
         db.close()
 

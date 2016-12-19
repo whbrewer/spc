@@ -69,6 +69,7 @@
     <th>priority</th> 
   %end
   <th class="hidden-xs">date/time submitted</th> 
+  <th class="hidden-xs">walltime (s)</th>
   <th class="hidden-xs">labels</th>
   <th><a href="/jobs?shared=1" title="see shared cases"><span class="glyphicon glyphicon-pushpin"></span></a></th>
 </tr>
@@ -101,6 +102,7 @@
       <td class="case hidden-xs"><tt>{{row['priority']}}</tt> <a href="{{url}}"></a></td>
     %end
     <td class="case hidden-xs"><tt>{{row['time_submit']}}</tt> <a href="{{url}}"></a></td>
+    <td class="case hidden-xs"><tt>{{row['walltime']}}</tt> <a href="{{url}}"></a></td>
     <td class="case hidden-xs"> {{row['description']}}
       <!-- <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a> -->
       <a href="{{url}}"> </a>
