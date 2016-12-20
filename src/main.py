@@ -361,12 +361,36 @@ def show_jobs():
     uid = users(user=user).id
 
     if starred:
-        result = db(jobs.uid==uid and jobs.starred=="True").select(orderby=~jobs.id)[:n]
+        result = db(jobs.uid==uid and jobs.starred=="True").select(
+                    orderby=~jobs.id)[:n]
     elif shared:
-        result = db(jobs.uid==uid and jobs.shared=="True").select(orderby=~jobs.id)[:n]
+        result = db(jobs.uid==uid and jobs.shared=="True").select(
+                    orderby=~jobs.id)[:n]
     elif q:
-        result = db(jobs.uid==uid and \
-            db.jobs.description.contains(q, case_sensitive=False)).select(orderby=~jobs.id)
+        query_array = q.split(":")
+        if len(query_array) == 2:
+            key = query_array[0]
+            query = query_array[1]
+            if key == "cid":
+                result = db(jobs.uid==uid and \
+                    db.jobs.cid.contains(query, case_sensitive=False)).select(
+                                                 orderby=~jobs.id)
+            elif key == "app":
+                result = db(jobs.uid==uid and db.jobs.app==query).select(orderby=~jobs.id)
+            elif key == "is":
+                if query == "starred":
+                    result = db(jobs.uid==uid and jobs.starred=="True").select(
+                             orderby=~jobs.id)[:n]
+                elif query == "shared":
+                    result = db(jobs.uid==uid and jobs.shared=="True").select(
+                             orderby=~jobs.id)[:n]
+            elif key == "label":
+                result = db(jobs.uid==uid and db.jobs.description.contains(
+                            query, case_sensitive=False)).select(orderby=~jobs.id)
+        else: # search labels by default
+            result = db(jobs.uid==uid and \
+                db.jobs.description.contains(q, case_sensitive=False)).select(
+                                             orderby=~jobs.id)
     else:
         result = db(jobs.uid==uid).select(orderby=~jobs.id)[:n]
     # number of jobs in queued state
@@ -374,6 +398,7 @@ def show_jobs():
     nr = db(jobs.state=='R').count()
     nc = db(jobs.state=='C').count()
     params = {}
+    params['q'] = q
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
@@ -616,13 +641,13 @@ def delete_jobs():
         cid = jobs(id=jid).cid
         app = jobs(id=jid).app
         path = os.path.join(myapps[app].user_dir, user, app, cid)
-        if cid:
+        if cid is not None:
             print "removing path:", path
             if os.path.isdir(path): shutil.rmtree(path)
             sched.stop(jid)
             sched.qdel(jid)
         else:
-            print "ERROR: not removing:", path, "because cid is missing"
+            print "ERROR: not removing path:", path, "because cid missing"
     redirect("/jobs")
 
 @post('/jobs/stop')
