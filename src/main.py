@@ -17,6 +17,7 @@ import config, process
 import scheduler_sp, scheduler_mp
 import apps as appmod
 import plots as plotmod
+from datetime import datetime, timedelta
 
 # requires pika
 try:
@@ -367,32 +368,77 @@ def show_jobs():
         result = db(jobs.uid==uid and jobs.shared=="True").select(
                     orderby=~jobs.id)[:n]
     elif q:
-        query_array = q.split(":")
-        if len(query_array) == 2:
-            key = query_array[0]
-            query = query_array[1]
-            if key == "cid":
+        query_array = [ tuple(qa.strip().split(":")) for qa in q.strip().split() ] 
+
+        if len(query_array) == 1:
+
+            if len(query_array[0]) == 1: # for general case search 3 main fields: cid, app, labels
                 result = db(jobs.uid==uid and \
-                    db.jobs.cid.contains(query, case_sensitive=False)).select(
-                                                 orderby=~jobs.id)
-            elif key == "app":
-                result = db(jobs.uid==uid and db.jobs.app==query).select(orderby=~jobs.id)
-            elif key == "is":
-                if query == "starred":
-                    result = db(jobs.uid==uid and jobs.starred=="True").select(
-                             orderby=~jobs.id)[:n]
-                elif query == "shared":
-                    result = db(jobs.uid==uid and jobs.shared=="True").select(
-                             orderby=~jobs.id)[:n]
-            elif key == "label":
-                result = db(jobs.uid==uid and db.jobs.description.contains(
-                            query, case_sensitive=False)).select(orderby=~jobs.id)
-        else: # search labels by default
-            result = db(jobs.uid==uid and \
-                db.jobs.description.contains(q, case_sensitive=False)).select(
-                                             orderby=~jobs.id)
+                            db.jobs.cid.contains(q, case_sensitive=False) |
+                            db.jobs.app.contains(q, case_sensitive=False) |
+                            db.jobs.description.contains(q, case_sensitive=False)).select(orderby=~jobs.id)
+
+            else: # in the case of specific tag searching, e.g. app:mendel
+                key = query_array[0][0]
+                query = query_array[0][1]
+                if key == "cid":
+                    result = db(jobs.uid==uid and \
+                        db.jobs.cid.contains(query, case_sensitive=False)).select(
+                                                     orderby=~jobs.id)
+                elif key == "app":
+                    result = db(jobs.uid==uid and db.jobs.app==query).select(orderby=~jobs.id)
+                elif key == "is":
+                    if query == "starred":
+                        result = db(jobs.uid==uid and jobs.starred=="True").select(
+                                 orderby=~jobs.id)[:n]
+                    elif query == "shared":
+                        result = db(jobs.uid==uid and jobs.shared=="True").select(
+                                 orderby=~jobs.id)[:n]
+                elif key == "state":
+                    result = db(jobs.uid==uid and db.jobs.state == query).select(orderby=~jobs.id)                    
+                elif key == "label":
+                    result = db(jobs.uid==uid and db.jobs.description.contains(
+                                query, case_sensitive=False)).select(orderby=~jobs.id)
+                elif key == "after" or key == "before":
+                    if len(query) != 8: 
+                        return template('error', err="date format must be YY/MM/DD, e.g. after:16/12/01")                        
+                    rows = db(jobs.uid==uid).select(orderby=~jobs.id)
+                    result = []
+                    for row in rows:
+                        a = datetime.strptime(row.time_submit, "%a %b %d %H:%M:%S %Y") 
+                        b = datetime.strptime(query, "%y/%m/%d")
+                        if key == "after":
+                            if a-b > timedelta(days=0): result.append(row)
+                        else:
+                            if a-b < timedelta(days=0): result.append(row)
+                else:
+                    return template('error', err="search key not supported: "+key)
+
+        elif len(query_array) == 2: # the case when user search with both after and before dates
+            key1, query1 = query_array[0][0], query_array[0][1]
+            key2, query2 = query_array[1][0], query_array[1][1]
+            if len(query1) != 8 or len(query2) != 8: 
+                return template('error', err="date format must be YY/MM/DD, e.g. after:16/12/01")  
+            if key1 == "after" and key2 == "before" or key1 == "before" and key2 == "after":
+                rows = db(jobs.uid==uid).select(orderby=~jobs.id)
+                result = []
+                for row in rows:
+                    a = datetime.strptime(row.time_submit, "%a %b %d %H:%M:%S %Y") 
+                    b = datetime.strptime(query1, "%y/%m/%d")
+                    c = datetime.strptime(query2, "%y/%m/%d")
+                    if key1 == "after":
+                        if a-b > timedelta(days=0) and a-c < timedelta(days=0): result.append(row)
+                    else:
+                        if a-c > timedelta(days=0) and a-b < timedelta(days=0): result.append(row)
+            else:
+                return template('error', err="search type not supported") 
+                   
+        else:
+            return template('error', err="search type not supported")  
+
     else:
         result = db(jobs.uid==uid).select(orderby=~jobs.id)[:n]
+
     # number of jobs in queued state
     nq = db(jobs.state=='Q').count()
     nr = db(jobs.state=='R').count()
