@@ -36,6 +36,10 @@
                 <span class="navbar-brand">case: {{cid}}</span>
             %end
         %end
+
+        %if defined('status'):
+            <span class="navbar-brand">{{!status}}</span>
+        %end
         </div>
 
         %if True:
@@ -74,11 +78,5 @@
 </form>
 </nav>
 
-%if defined('status'):
-<div align="center">
-    <font color="red">
-        {{!status}}
-    </font>
-</div>
-%end
+
 

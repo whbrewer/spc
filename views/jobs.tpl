@@ -88,17 +88,18 @@
 <div class="col-xs-12" style="height:10px"></div>
 
 <div class="row">
-<div class="col-xs-6">
-  <form role="form" action="/jobs">
-    <input name="q" type="text" class="form-control input-lg"
-         onchange="show(this.value)" placeholder="Search... (e.g. app:mendel, cid:k64cd6, label:foo, etc.)" value="{{q}}">
-  </form>
-</div>
+  <div class="col-xs-6">
+    <form role="form" action="/jobs">
+      <input name="q" type="text" class="form-control input-lg"
+           onchange="show(this.value)" placeholder="Search... (e.g. app:mendel, cid:k64cd6, label:foo, etc.)" value="{{q}}">
+    </form>
+  </div>
 
-<form>
-<div class="col-xs-6">
-<button id="delete_button" type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal" style="display:none"><span class="glyphicon glyphicon-trash"></span> Delete</button>
-</div>
+  <form>
+  <div class="col-xs-6">
+  <button id="delete_button" type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal" style="display:none"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+  </div>
+
 </div>
 
 <!--<meta http-equiv="refresh" content="5">-->

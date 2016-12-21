@@ -409,6 +409,7 @@ def show_jobs():
     params['nr'] = nr
     params['nc'] = nc
     params['n'] = n
+    params['status'] = "showing " + str(len(result)) + " cases"
     params['num_rows'] = config.jobs_num_rows
     return template('jobs', params, rows=result)
 
@@ -1334,25 +1335,36 @@ def zipget():
     cid = request.query.cid
     app = request.query.app
 
-    requests.get(config.remote_worker_url + "/zipcase", 
-         params={'app': app, 'cid': cid, 'user': user})
+    if config.worker != "remote" or config.remote_worker_url is None:
+        params = { 'app': app, 'apps': myapps.keys(),
+                   'err': "worker and remote_worker_url parameters must be set " +
+                          " in config.py for this feature to work" }
+        return template('error', params)        
 
-    path = os.path.join(config.user_dir, user, app, cid)
-    file_path = path+".zip"
-    url = os.path.join(config.remote_worker_url, file_path)
-    print "url is:", url
-    if not os.path.exists(path):
-        os.makedirs(path)
-    # try:
-    if True:
-        # f = urllib2.urlopen(url)
+    try:
+        requests.get(config.remote_worker_url + "/zipcase", 
+             params={'app': app, 'cid': cid, 'user': user})
+
+        path = os.path.join(config.user_dir, user, app, cid)
+        file_path = path+".zip"
+        url = os.path.join(config.remote_worker_url, file_path)
+        print "url is:", url
+        if not os.path.exists(path):
+            os.makedirs(path)
+
         print "downloading " + url
         fh, _ = urllib.urlretrieve(url)
         z = zipfile.ZipFile(fh, 'r')
         z.extractall()
 
-    status = "file downloaded"
-    redirect(request.headers.get('Referer')+"&status="+status)
+        status = "file downloaded"
+        redirect(request.headers.get('Referer')+"&status="+status)
+
+    except:
+        params = { 'app': app, 'apps': myapps.keys(),
+                   'err': "Configuration not setup with remote worker." }
+        return template('error', params)
+
 
 @post('/useapp')
 def useapp():
