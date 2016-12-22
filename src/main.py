@@ -362,43 +362,39 @@ def show_jobs():
     uid = users(user=user).id
 
     if starred:
-        result = db(jobs.uid==uid and jobs.starred=="True").select(
-                    orderby=~jobs.id)[:n]
+        result = db((jobs.uid==uid) & (jobs.starred=="True")).select(orderby=~jobs.id)[:n]
     elif shared:
-        result = db(jobs.uid==uid and jobs.shared=="True").select(
-                    orderby=~jobs.id)[:n]
+        result = db(jobs.shared=="True").select(orderby=~jobs.id)[:n]
     elif q:
         query_array = [ tuple(qa.strip().split(":")) for qa in q.strip().split() ] 
 
         if len(query_array) == 1:
 
             if len(query_array[0]) == 1: # for general case search 3 main fields: cid, app, labels
-                result = db(jobs.uid==uid and \
-                            db.jobs.cid.contains(q, case_sensitive=False) |
-                            db.jobs.app.contains(q, case_sensitive=False) |
-                            db.jobs.description.contains(q, case_sensitive=False)).select(orderby=~jobs.id)
+                result = db((jobs.uid==uid) & \
+                           ((db.jobs.cid.contains(q, case_sensitive=False)) |
+                            (db.jobs.app.contains(q, case_sensitive=False)) |
+                            (db.jobs.description.contains(q, case_sensitive=False)))).select(orderby=~jobs.id)
 
             else: # in the case of specific tag searching, e.g. app:mendel
                 key = query_array[0][0]
                 query = query_array[0][1]
                 if key == "cid":
-                    result = db(jobs.uid==uid and \
-                        db.jobs.cid.contains(query, case_sensitive=False)).select(
-                                                     orderby=~jobs.id)
+                    result = db((jobs.uid==uid) & \
+                        (db.jobs.cid.contains(query, case_sensitive=False))).select(orderby=~jobs.id)
                 elif key == "app":
-                    result = db(jobs.uid==uid and db.jobs.app==query).select(orderby=~jobs.id)
+                    result = db((jobs.uid==uid) & (jobs.app==query)).select(orderby=~jobs.id)
                 elif key == "is":
                     if query == "starred":
-                        result = db(jobs.uid==uid and jobs.starred=="True").select(
+                        result = db((jobs.uid==uid) & (jobs.starred=="True")).select(
                                  orderby=~jobs.id)[:n]
                     elif query == "shared":
-                        result = db(jobs.uid==uid and jobs.shared=="True").select(
-                                 orderby=~jobs.id)[:n]
+                        result = db(jobs.shared=="True").select(orderby=~jobs.id)[:n]
                 elif key == "state":
-                    result = db(jobs.uid==uid and db.jobs.state == query).select(orderby=~jobs.id)                    
+                    result = db((jobs.uid==uid) & (db.jobs.state==query)).select(orderby=~jobs.id)                    
                 elif key == "label":
-                    result = db(jobs.uid==uid and db.jobs.description.contains(
-                                query, case_sensitive=False)).select(orderby=~jobs.id)
+                    result = db((db.jobs.uid==uid) & (db.jobs.description.contains(
+                                 query, case_sensitive=False))).select(orderby=~jobs.id)
                 elif key == "after" or key == "before":
                     if len(query) != 8: 
                         return template('error', err="date format must be YY/MM/DD, e.g. after:16/12/01")                        
