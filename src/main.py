@@ -811,11 +811,25 @@ def get_register():
 
 @post('/register')
 def post_register():
+    valid = True
+
     user = request.forms.user
-    pw1 = request.forms.password1
-    pw2 = request.forms.password2
+    if check_user(user) == 'true': valid = False
+
     email = request.forms.email
-    if pw1 == pw2:
+    if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email) is None:
+        valid = False
+
+    pw1 = request.forms.password1
+    if (any(x.isupper() for x in pw1) and any(x.isdigit() for x in pw1) and len(pw1) >= 7):
+        pass
+    else:
+        valid = False
+
+    pw2 = request.forms.password2
+    if pw1 != pw2: valid = False
+
+    if valid:
         hashpw = _hash_pass(pw1)
         try:
             config.default_priority
@@ -835,7 +849,9 @@ def post_register():
         except:
             redirect('/login')
     else:
-        return template('register')
+        return "ERROR: there was a problem registering. Please try again...<p>" \
+             + "<a href='/register'>Return to registration</a>"
+
 
 @get('/admin/show_users')
 def admin_show_users():
@@ -859,8 +875,8 @@ def admin_delete_user():
     redirect("/admin/show_users")
 
 @post('/check_user')
-def check_user():
-    user = request.forms.user
+def check_user(user=""):
+    if user == "": user = request.forms.user
     """Server-side AJAX function to check if a username exists in the DB."""
     # return booleans as strings here b/c they get parsed by JavaScript
     if users(user=user): return 'true'
