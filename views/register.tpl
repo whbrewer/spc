@@ -1,6 +1,17 @@
 %include('header')
 
 <script>
+
+function fixUsername(user) {
+  // re = /[\s:;`?<>,!~@#$%^&*(){}/\]/g;
+  re = /[\s\W]/g;
+  if (user.search(re) > 0) { 
+    document.getElementById("username_feedback").innerText = "special characters or spaces not allowed";
+  }
+  document.getElementById("user").value = user.replace(re, '');
+}
+
+
 function checkUser(user) {
    if (user.length == 0) { 
       $("#user_div").toggleClass('has-success', false);
@@ -77,10 +88,10 @@ function checkPasswordMatch() {
 }
 
 function checkEmail(email) {
-    if (email.length == 0) { 
-      $("#email_div").toggleClass('has-success', false);
-      return false;
-    }
+    // if (email.length == 0) { 
+    //   $("#email_div").toggleClass('has-success', false);
+    //   return false;
+    // }
 
     re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     // regex is a variation of the official standard: RFC 5322
@@ -92,10 +103,12 @@ function checkEmail(email) {
       document.getElementById("email_feedback").innerText = "ERROR: incorrect e-mail format";
       $("#email_div").toggleClass('has-error', true);
       $("#email_div").toggleClass('has-success', false);
+      $("#submit").prop('disabled', true)
     } else {
       document.getElementById("email_feedback").innerText = "";
       $("#email_div").toggleClass('has-error', false);
       $("#email_div").toggleClass('has-success', true);   
+      $("#submit").prop('disabled', false)
     }
 }
 
@@ -133,7 +146,7 @@ function validateForm() {
       <div id="user_div" class="form-group">
         <label for="username" class="control-label col-md-3">Username:</label>
         <div class="col-md-9">
-          <input class="form-control" id="cname" type="text" name="user" id="user" onchange="checkUser(this.value)">
+          <input class="form-control" id="user" type="text" name="user" onkeyup="fixUsername(this.value)" onchange="checkUser(this.value)">
           <span class="has-error" id="username_feedback"></span>
         </div>
       </div>

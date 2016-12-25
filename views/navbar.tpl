@@ -46,7 +46,7 @@
 
         <div class="navbar-right hidden-xs" style="margin-right: 5px;">
             %if defined('user'):
-                <label class="control-label hidden-xs">{{user}}</label>
+                <label class="control-label hidden-xs">{{user.capitalize()}}</label>
             %end
             <div class="btn-group">
                 <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">

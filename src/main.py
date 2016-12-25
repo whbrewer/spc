@@ -752,16 +752,16 @@ def post_login():
         return "ERROR: authorization disabled. Modify config.py to change setting"
 
     s = request.environ.get('beaker.session')
-    user = users(user=request.forms.get('user'))
+    row = users(user=request.forms.get('user').lower())
     pw = request.forms.passwd
     err = "<p>Login failed: wrong username or password</p>"
     # if password matches, set the USER_ID_SESSION_KEY
     hashpw = hashlib.sha256(pw).hexdigest()
 
     try:
-        if hashpw == user.passwd:
+        if hashpw == row.passwd:
             # set session key
-            user = s[USER_ID_SESSION_KEY] = user.user
+            user = s[USER_ID_SESSION_KEY] = row.user.lower()
         else:
             return err
     except:
@@ -835,7 +835,9 @@ def post_register():
             config.default_priority
         except:
             config.default_priority = 3
-        users.insert(user=user, passwd=hashpw, email=email,
+
+        # insert into database
+        users.insert(user=user.lower(), passwd=hashpw, email=email,
                      priority=config.default_priority)
         db.commit()
         # email admin user
@@ -879,7 +881,7 @@ def check_user(user=""):
     if user == "": user = request.forms.user
     """Server-side AJAX function to check if a username exists in the DB."""
     # return booleans as strings here b/c they get parsed by JavaScript
-    if users(user=user): return 'true'
+    if users(user=user.lower()): return 'true'
     else: return 'false'
 
 @post('/app_exists/<appname>')
