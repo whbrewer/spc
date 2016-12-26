@@ -6,18 +6,24 @@ function fixUsername(user) {
   // re = /[\s:;`?<>,!~@#$%^&*(){}/\]/g;
   re = /[\s\W]/g;
   if (user.search(re) > 0) { 
-    document.getElementById("username_feedback").innerText = "special characters or spaces not allowed";
+    document.getElementById("user_comments").innerText = "special characters or spaces not allowed"
   }
-  document.getElementById("user").value = user.replace(re, '');
+  document.getElementById("user").value = user.replace(re, '')
 }
-
 
 function checkUser(user) {
    if (user.length == 0) { 
-      $("#user_div").toggleClass('has-success', false);
-      return false;
+      $("#user_div").toggleClass('has-success', false)
+      return false
+   } else if (user.length > 20) {
+      $("#user_div").toggleClass('has-error', true)
+      $("#user_div").toggleClass('has-success', false)
+      $("#user_feedback").addClass('glyphicon-remove')
+      $("#user_feedback").removeClass('glyphicon-ok')
+      document.getElementById("user_comments").innerText = "username should be less than 20 characters"
+      return false
    }
-   
+
    jQuery.ajax({
       type: "POST",
       url:  "/check_user", 
@@ -29,13 +35,17 @@ function checkUser(user) {
             $("#user_div").toggleClass('has-success', false);
             $("#user").select()
             $("#submit").prop('disabled', true)
-            document.getElementById("username_feedback").innerText = "ERROR: username is already taken.";
+            $("#user_feedback").addClass('glyphicon-remove')
+            $("#user_feedback").removeClass('glyphicon-ok')
+            document.getElementById("user_comments").innerText = "ERROR: username is already taken.";
          } else {
             document.reg_form.password1.focus()
             $("#user_div").toggleClass('has-error', false);
             $("#user_div").toggleClass('has-success', true);
+            $("#user_feedback").addClass('glyphicon-ok')
+            $("#user_feedback").removeClass('glyphicon-remove')
             $("#submit").prop('disabled', false)
-            document.getElementById("username_feedback").innerText = "";
+            document.getElementById("user_comments").innerText = "";
          }
       }
    })
@@ -62,13 +72,17 @@ function checkPassword(pw) {
     $("#pw1_div").toggleClass('has-error', true);
     $("#pw1_div").toggleClass('has-success', false);
     $("#submit").prop('disabled', true)
+    $("#pw1_feedback").addClass('glyphicon-remove')
+    $("#pw1_feedback").removeClass('glyphicon-ok')
   } else {
     $("#pw1_div").toggleClass('has-error', false);
     $("#pw1_div").toggleClass('has-success', true);
     $("#submit").prop('disabled', false)
+    $("#pw1_feedback").addClass('glyphicon-ok')
+    $("#pw1_feedback").removeClass('glyphicon-remove')
   }
 
-  document.getElementById("pw1_feedback").innerText = msg;
+  document.getElementById("pw1_comments").innerText = msg;
 }
 
 function checkPasswordMatch() {
@@ -76,13 +90,17 @@ function checkPasswordMatch() {
         $("#pw2_div").toggleClass('has-error', false);
         $("#pw2_div").toggleClass('has-success', true); 
         $("#submit").prop('disabled', false)
-        document.getElementById("pw2_feedback").innerText = "";
+        $("#pw2_feedback").addClass('glyphicon-ok')
+        $("#pw2_feedback").removeClass('glyphicon-remove')
+        document.getElementById("pw2_comments").innerText = "";
         return true;
     } else {
         $("#pw2_div").toggleClass('has-error', true);
         $("#pw2_div").toggleClass('has-success', false);
         $("#submit").prop('disabled', true)
-        document.getElementById("pw2_feedback").innerText = "ERROR: passwords do not match";
+        $("#pw2_feedback").addClass('glyphicon-remove')
+        $("#pw2_feedback").removeClass('glyphicon-ok')
+        document.getElementById("pw2_comments").innerText = "ERROR: passwords do not match";
         return false;
     }
 }
@@ -100,15 +118,19 @@ function checkEmail(email) {
 
     matches = email.search(re)
     if (matches < 0) {
-      document.getElementById("email_feedback").innerText = "ERROR: incorrect e-mail format";
+      document.getElementById("email_comments").innerText = "ERROR: incorrect e-mail format";
       $("#email_div").toggleClass('has-error', true);
       $("#email_div").toggleClass('has-success', false);
       $("#submit").prop('disabled', true)
+      $("#email_feedback").addClass('glyphicon-remove')
+      $("#email_feedback").removeClass('glyphicon-ok')
     } else {
-      document.getElementById("email_feedback").innerText = "";
+      document.getElementById("email_comments").innerText = "";
       $("#email_div").toggleClass('has-error', false);
       $("#email_div").toggleClass('has-success', true);   
       $("#submit").prop('disabled', false)
+      $("#email_feedback").addClass('glyphicon-ok')
+      $("#email_feedback").removeClass('glyphicon-remove')
     }
 }
 
@@ -132,51 +154,66 @@ function validateForm() {
 <style>
     input[type="text"], input[type="password"] { 
       background-color: #faffbd; 
-      width: 200px;
+      /*width: 200px;*/
     }
 </style>
 
 <body>
 <div id="warning" align="center" class="alert-danger"></div>
 
-<div class="main left">
-    <h1>Register</h1>
-    <form class="form-horizontal" name="reg_form" action="/register" method="post" onsubmit="return validateForm()">
+<div class="container">
+  <div class="main left">
+      <h2 align="center">Registration</h2>
+      <div style="height:10px"></div>
 
-      <div id="user_div" class="form-group">
-        <label for="username" class="control-label col-md-3">Username:</label>
-        <div class="col-md-9">
-          <input class="form-control" id="user" type="text" name="user" onkeyup="fixUsername(this.value)" onchange="checkUser(this.value)">
-          <span class="has-error" id="username_feedback"></span>
+      <form class="form-horizontal" name="reg_form" action="/register" method="post" onsubmit="return validateForm()">
+
+        <div id="user_div" class="form-group has-feedback">
+          <label for="username" class="control-label col-xs-12 col-sm-offset-2 col-sm-2">Username:</label>
+          <div class="col-xs-12 col-sm-4">
+            <input class="form-control" id="user" type="text" name="user" onkeyup="fixUsername(this.value)" onchange="checkUser(this.value)">
+            <span id="user_feedback" style="right:20px" class="glyphicon form-control-feedback"></span>
+            <span id="user_comments" class="text-danger"></span>
+          </div>
         </div>
-      </div>
 
-      <div id="pw1_div" class="form-group">
-        <label for="password1" class="control-label col-md-3">Password:</label>
-        <div class="col-md-9">
-          <input class="form-control" type="password" name="password1" id="password1" onkeyup="checkPassword(this.value)">
-          <span id="pw1_feedback"></span>
+        <div id="pw1_div" class="form-group has-feedback">
+          <label for="password1" class="control-label col-xs-12 col-sm-offset-2 col-sm-2">Password:</label>
+          <div class="col-xs-12 col-sm-4">
+            <input class="form-control" type="password" name="password1" id="password1" onkeyup="checkPassword(this.value)">
+            <span id="pw1_feedback" style="right:20px" class="glyphicon form-control-feedback"></span>
+            <span id="pw1_comments" class="text-danger"></span>
+          </div>
         </div>
-      </div>
 
-      <div id="pw2_div" class="form-group">
-        <label for="password2" class="control-label col-md-3">Retype Password:</label>
-        <div class="col-md-9">
-          <input class="form-control" type="password" name="password2" id="password2" onkeyup="checkPasswordMatch()">
-          <span id="pw2_feedback"></span>
+        <div id="pw2_div" class="form-group has-feedback">
+          <label for="password2" class="control-label col-xs-12 col-sm-offset-1 col-sm-3">Retype Password:</label>
+          <div class="col-xs-12 col-sm-4">
+            <input class="form-control" type="password" name="password2" id="password2" onkeyup="checkPasswordMatch()">
+            <span id="pw2_feedback" style="right:20px" class="glyphicon form-control-feedback"></span>
+            <span id="pw2_comments" class="text-danger"></span>
+          </div>
         </div>
-      </div>
 
-      <div id="email_div" class="form-group">
-        <label for="email" class="control-label col-md-3">Email:</label>
-        <div class="col-md-9">
-          <input class="form-control" type="text" name="email" id="email" onkeyup="checkEmail(this.value)">
-          <span id="email_feedback"></span>
+        <div id="email_div" class="form-group has-feedback">
+          <label for="email" class="control-label col-xs-12 col-sm-offset-2 col-sm-2">Email:</label>
+          <div class="col-xs-12 col-sm-4">
+            <input class="form-control" type="text" name="email" id="email" onkeyup="checkEmail(this.value)">
+            <span id="email_feedback" style="right:20px" class="glyphicon form-control-feedback"></span>
+            <span id="email_comments" class="text-danger"></span>
+          </div>
         </div>
-      </div>
 
-      <input class="btn btn-primary" type="submit" id="submit" value="Register" class="btn">
-    </form>
+        <input class="btn btn-primary col-xs-12 col-sm-offset-5 col-sm-2" style="align:center" type="submit" id="submit" value="Register" class="btn">
+
+      </form>
+  </div>
+
+  <br><br>
+  <hr>
+    <p align="center">Already have an account?
+    <a class="btn btn-default" href="/login">Login</a></p>
+
 </div>
 
 <script>
