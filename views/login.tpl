@@ -1,8 +1,5 @@
 %include('header')
 
-
-
-
 <body>
 
 <!--
@@ -40,7 +37,6 @@
 
     <form class="form-horizontal" action="/login" method="post">
         <div class="form-group">
-            <!-- <label for="username" class="control-label col-md-3">Username:</label> -->
             <div class="col-xs-12 col-sm-offset-4 col-sm-4">
                 <div class="input-group">
                     <div class="input-group-addon">
@@ -53,7 +49,6 @@
         </div>
 
         <div class="form-group">
-            <!-- <label for="password" class="control-label col-md-3">Password:</label> -->
             <div class="col-xs-12 col-sm-offset-4 col-sm-4">
                 <div class="input-group">
                     <div class="input-group-addon">

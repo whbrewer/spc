@@ -70,8 +70,8 @@
 
 <script>
 function useapp(app) {
-    $.post('/useapp', {'app': app})
-    location.reload();
+  $.post('/useapp', {'app': app})
+  location.reload();
 }
 </script>
 

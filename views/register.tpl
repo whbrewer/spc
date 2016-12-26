@@ -1,4 +1,5 @@
 %include('header')
+<script src='https://www.google.com/recaptcha/api.js'></script>
 
 <script>
 
@@ -37,7 +38,7 @@ function checkUser(user) {
             $("#submit").prop('disabled', true)
             $("#user_feedback").addClass('glyphicon-remove')
             $("#user_feedback").removeClass('glyphicon-ok')
-            document.getElementById("user_comments").innerText = "ERROR: username is already taken.";
+            document.getElementById("user_comments").innerText = "username is already taken.";
          } else {
             document.reg_form.password1.focus()
             $("#user_div").toggleClass('has-error', false);
@@ -58,13 +59,13 @@ function checkPassword(pw) {
   if (pw.length == 0) { return false }
 
   if (pw.length < 7) {
-    msg += "ERROR: password must be at least 7 characters. ";
+    msg += "password must be at least 7 characters. ";
     nerrors += 1;  
   } else if (pw === pw.toLowerCase()) {
-    msg += "ERROR: password doesn't contain any uppercase characters. ";
+    msg += "password doesn't contain any uppercase characters. ";
     nerrors += 1;
   } else if (pw.search(/[0-9]/) < 0) {
-    msg += "ERROR: password must have at least one digit (e.g. 0-9). ";
+    msg += "password must have at least one digit (e.g. 0-9). ";
     nerrors += 1;
   }
 
@@ -100,7 +101,7 @@ function checkPasswordMatch() {
         $("#submit").prop('disabled', true)
         $("#pw2_feedback").addClass('glyphicon-remove')
         $("#pw2_feedback").removeClass('glyphicon-ok')
-        document.getElementById("pw2_comments").innerText = "ERROR: passwords do not match";
+        document.getElementById("pw2_comments").innerText = "passwords do not match";
         return false;
     }
 }
@@ -118,7 +119,7 @@ function checkEmail(email) {
 
     matches = email.search(re)
     if (matches < 0) {
-      document.getElementById("email_comments").innerText = "ERROR: incorrect e-mail format";
+      document.getElementById("email_comments").innerText = "incorrect e-mail format";
       $("#email_div").toggleClass('has-error', true);
       $("#email_div").toggleClass('has-success', false);
       $("#submit").prop('disabled', true)
@@ -138,7 +139,7 @@ function validateForm() {
     if( $("#user_div" ).hasClass( "has-success" ) && $("#pw1_div").hasClass("has-success") && $("$pw2_div").hasClass("has-success") && $("#email_div").hasClass("has-success") && ($("#password1").val() == $("#password2").val())) {
         return true;
     } else {
-        document.getElementById("warning").innerText = "ERROR: correct errors and try again";
+        document.getElementById("warning").innerText = "ERROR: correct errors and/or blanks and try again";
         return false;
     }
 
@@ -205,6 +206,8 @@ function validateForm() {
         </div>
 
         <input class="btn btn-primary col-xs-12 col-sm-offset-5 col-sm-2" style="align:center" type="submit" id="submit" value="Register" class="btn">
+
+        <div class="g-recaptcha" data-sitekey="{{import config; config.google_recaptcha_sitekey}}"></div>
 
       </form>
   </div>

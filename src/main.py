@@ -915,7 +915,7 @@ def showapps():
     else:
         configurable = False
         
-    params = { 'apps': myapps.keys(), 'configurable': configurable }
+    params = { 'apps': myapps.keys(), 'configurable': configurable, 'user': user }
     return template('apps', params, rows=result, activated=activated_apps)
 
 @get('/myapps')
@@ -927,7 +927,7 @@ def showapps():
         configurable = True
     else:
         configurable = False
-    params = { 'myapps': myapps.keys(), 'configurable': configurable }
+    params = { 'myapps': myapps.keys(), 'configurable': configurable, 'user': user }
     return template('myapps', params, rows=result)
 
 @get('/apps/load')

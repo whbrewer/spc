@@ -33,7 +33,7 @@ def get_docker():
     except:
         images = []
         conts = []
-        params['status'] = "there was a problem talking to the Docker daemon... Are you sure Docker is running?"
+        params['status'] = "there was a problem talking to the Docker daemon..."
 
     params['user'] = user
 
