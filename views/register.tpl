@@ -1,5 +1,4 @@
 %include('header')
-<script src='https://www.google.com/recaptcha/api.js'></script>
 
 <script>
 
@@ -206,8 +205,6 @@ function validateForm() {
         </div>
 
         <input class="btn btn-primary col-xs-12 col-sm-offset-5 col-sm-2" style="align:center" type="submit" id="submit" value="Register" class="btn">
-
-        <div class="g-recaptcha" data-sitekey="{{import config; config.google_recaptcha_sitekey}}"></div>
 
       </form>
   </div>
