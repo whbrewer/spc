@@ -140,6 +140,7 @@ def execute():
     app = request.forms.app
     cid = request.forms.cid
     np = request.forms.np
+    par_system = request.forms.par_system
     walltime = request.forms.walltime
     desc = request.forms.desc
     #priority = request.forms.priority

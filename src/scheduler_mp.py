@@ -17,8 +17,7 @@ class Scheduler(object):
     def __init__(self):
         # if any jobs marked in run state when scheduler starts
         # replace their state with X to mark that they have been shutdown
-        db = DAL(config.uri, auto_import=True, migrate=False,
-                 folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
         myset = db(db.jobs.state == STATE_RUN)
         myset.update(state=STATE_STOPPED)
         db.commit()
@@ -78,8 +77,7 @@ class Scheduler(object):
 
     def start(self,jid):
         """start running a job by creating a new process"""
-        db = DAL(config.uri, auto_import=True, migrate=False,
-                 folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
         uid = db.jobs(jid).uid
         user = db.users(uid).user
         app = db.jobs(jid).app
@@ -107,8 +105,7 @@ class Scheduler(object):
 
     def start_job(self,run_dir,cmd,app,jid,np,myjobs):
         """this is what the separate job process runs"""
-        for i in range(np):
-            self.sem.acquire()
+        for i in range(np): self.sem.acquire()
         # update state to 'R' for run
         self._set_state(jid,STATE_RUN)
         mycwd = os.getcwd()
@@ -134,8 +131,7 @@ class Scheduler(object):
     def _set_state(self,jid,state):
         """update state of job"""
         self.mutex.acquire()
-        db = DAL(config.uri, auto_import=True, migrate=False,
-                 folder=config.dbdir)
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
         db.jobs[jid] = dict(state=state)
         db.commit()
         db.close()
