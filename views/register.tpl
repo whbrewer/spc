@@ -14,6 +14,10 @@ function fixUsername(user) {
 function checkUser(user) {
    if (user.length == 0) { 
       $("#user_div").toggleClass('has-success', false)
+      $("#user_div").toggleClass('has-error', false)
+      $("#user_feedback").removeClass('glyphicon-ok')
+      $("#user_feedback").removeClass('glyphicon-remove')
+      document.getElementById("user_comments").innerText = ""
       return false
    } else if (user.length > 20) {
       $("#user_div").toggleClass('has-error', true)
@@ -29,10 +33,10 @@ function checkUser(user) {
       url:  "/check_user", 
       data: { user: user },
       complete: function(xhr){
-         var response = eval(xhr.responseText);
+         var response = eval(xhr.responseText)
          if (response) {
-            $("#user_div").toggleClass('has-error', true);
-            $("#user_div").toggleClass('has-success', false);
+            $("#user_div").toggleClass('has-error', true)
+            $("#user_div").toggleClass('has-success', false)
             $("#user").select()
             $("#submit").prop('disabled', true)
             $("#user_feedback").addClass('glyphicon-remove')
@@ -46,6 +50,7 @@ function checkUser(user) {
             $("#user_feedback").removeClass('glyphicon-remove')
             $("#submit").prop('disabled', false)
             document.getElementById("user_comments").innerText = "";
+            document.getElementById("warning").style.display = "none"
          }
       }
    })
@@ -55,54 +60,71 @@ function checkPassword(pw) {
   var msg = "";
   var nerrors = 0;
 
-  if (pw.length == 0) { return false }
+  if (pw.length == 0) {
+    $("#pw1_div").toggleClass('has-success', false)
+    $("#pw1_div").toggleClass('has-error', false)
+    $("#pw1_feedback").removeClass('glyphicon-ok')
+    $("#pw1_feedback").removeClass('glyphicon-remove')
+    document.getElementById("user_comments").innerText = ""    
+    return false
+  }
 
   if (pw.length < 7) {
-    msg += "password must be at least 7 characters. ";
-    nerrors += 1;  
+    msg += "password must be at least 7 characters. "
+    nerrors += 1
   } else if (pw === pw.toLowerCase()) {
-    msg += "password doesn't contain any uppercase characters. ";
-    nerrors += 1;
+    msg += "password doesn't contain any uppercase characters. "
+    nerrors += 1
   } else if (pw.search(/[0-9]/) < 0) {
-    msg += "password must have at least one digit (e.g. 0-9). ";
-    nerrors += 1;
+    msg += "password must have at least one digit (e.g. 0-9). "
+    nerrors += 1
   }
 
   if (nerrors > 0) {
-    $("#pw1_div").toggleClass('has-error', true);
-    $("#pw1_div").toggleClass('has-success', false);
+    $("#pw1_div").toggleClass('has-error', true)
+    $("#pw1_div").toggleClass('has-success', false)
     $("#submit").prop('disabled', true)
     $("#pw1_feedback").addClass('glyphicon-remove')
     $("#pw1_feedback").removeClass('glyphicon-ok')
   } else {
-    $("#pw1_div").toggleClass('has-error', false);
-    $("#pw1_div").toggleClass('has-success', true);
+    $("#pw1_div").toggleClass('has-error', false)
+    $("#pw1_div").toggleClass('has-success', true)
     $("#submit").prop('disabled', false)
     $("#pw1_feedback").addClass('glyphicon-ok')
     $("#pw1_feedback").removeClass('glyphicon-remove')
+    document.getElementById("warning").style.display = "none"
   }
 
-  document.getElementById("pw1_comments").innerText = msg;
+  document.getElementById("pw1_comments").innerText = msg
 }
 
 function checkPasswordMatch() {
-    if($("#password1").val() == $("#password2").val()) {
-        $("#pw2_div").toggleClass('has-error', false);
-        $("#pw2_div").toggleClass('has-success', true); 
-        $("#submit").prop('disabled', false)
-        $("#pw2_feedback").addClass('glyphicon-ok')
-        $("#pw2_feedback").removeClass('glyphicon-remove')
-        document.getElementById("pw2_comments").innerText = "";
-        return true;
-    } else {
-        $("#pw2_div").toggleClass('has-error', true);
-        $("#pw2_div").toggleClass('has-success', false);
-        $("#submit").prop('disabled', true)
-        $("#pw2_feedback").addClass('glyphicon-remove')
-        $("#pw2_feedback").removeClass('glyphicon-ok')
-        document.getElementById("pw2_comments").innerText = "passwords do not match";
-        return false;
-    }
+  if(document.getElementById("password2").value.length == 0) {
+    $("#pw2_div").toggleClass('has-error', false)
+    $("#pw2_div").toggleClass('has-ok', false)    
+    $("#pw2_feedback").removeClass('glyphicon-remove')
+    $("#pw2_feedback").removeClass('glyphicon-ok')   
+    return false 
+  }
+
+  if($("#password1").val() == $("#password2").val()) {
+      $("#pw2_div").toggleClass('has-error', false)
+      $("#pw2_div").toggleClass('has-success', true)
+      $("#submit").prop('disabled', false)
+      $("#pw2_feedback").addClass('glyphicon-ok')
+      $("#pw2_feedback").removeClass('glyphicon-remove')
+      document.getElementById("pw2_comments").innerText = ""
+      document.getElementById("warning").style.display = "none"
+      return true
+  } else {
+      $("#pw2_div").toggleClass('has-error', true)
+      $("#pw2_div").toggleClass('has-success', false)
+      $("#submit").prop('disabled', true)
+      $("#pw2_feedback").addClass('glyphicon-remove')
+      $("#pw2_feedback").removeClass('glyphicon-ok')
+      document.getElementById("pw2_comments").innerText = "passwords do not match";
+      return false;
+  }
 }
 
 function checkEmail(email) {
@@ -131,6 +153,7 @@ function checkEmail(email) {
       $("#submit").prop('disabled', false)
       $("#email_feedback").addClass('glyphicon-ok')
       $("#email_feedback").removeClass('glyphicon-remove')
+      document.getElementById("warning").style.display = "none"
     }
 }
 
@@ -138,7 +161,8 @@ function validateForm() {
     if( $("#user_div" ).hasClass( "has-success" ) && $("#pw1_div").hasClass("has-success") && $("$pw2_div").hasClass("has-success") && $("#email_div").hasClass("has-success") && ($("#password1").val() == $("#password2").val())) {
         return true;
     } else {
-        document.getElementById("warning").innerText = "ERROR: correct errors and/or blanks and try again";
+        document.getElementById("warning").innerHTML = "ERROR: correct blanks and/or errors and try again";
+        document.getElementById("warning").style.display = "block"
         return false;
     }
 
@@ -159,7 +183,6 @@ function validateForm() {
 </style>
 
 <body>
-<div id="warning" align="center" class="alert-danger"></div>
 
 <div class="container">
   <div class="main left">
@@ -189,7 +212,7 @@ function validateForm() {
         <div id="pw2_div" class="form-group has-feedback">
           <label for="password2" class="control-label col-xs-12 col-sm-offset-1 col-sm-3">Retype Password:</label>
           <div class="col-xs-12 col-sm-4">
-            <input class="form-control" type="password" name="password2" id="password2" onkeyup="checkPasswordMatch()">
+            <input class="form-control" type="password" name="password2" id="password2" onkeyup="checkPasswordMatch()" onblur="checkPasswordMatch()">
             <span id="pw2_feedback" style="right:20px" class="glyphicon form-control-feedback"></span>
             <span id="pw2_comments" class="text-danger"></span>
           </div>
@@ -203,6 +226,8 @@ function validateForm() {
             <span id="email_comments" class="text-danger"></span>
           </div>
         </div>
+
+        <div id="warning" align="center" style="display:none; border:1px solid #A94442" class="alert-danger col-xs-12 col-sm-offset-2 col-sm-8"></div><br><br>
 
         <input class="btn btn-primary col-xs-12 col-sm-offset-5 col-sm-2" style="align:center" type="submit" id="submit" value="Register" class="btn">
 
