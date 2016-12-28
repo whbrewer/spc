@@ -338,8 +338,10 @@ def tail(app, cid):
             myoutput = output[len(output)-num_lines:]
             xoutput = ''.join(myoutput)
             f.close()
-        else:
+        elif os.path.exists(os.path.join(run_dir, myapps[app].simfn)):
             xoutput = 'waiting to start...'
+        else:
+            xoutput = 'Oops! It appears that the directory does not exist.  Possibly it has been deleted'
 
     params = { 'cid': cid, 'contents': xoutput, 'app': app,
                'user': user, 'fn': ofn, 'apps': myapps.keys(),
