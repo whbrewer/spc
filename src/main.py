@@ -194,7 +194,8 @@ def case():
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid or -1
-    
+    state = jobs(id=jid).state
+
     if re.search("/", cid):
         (u, c) = cid.split("/")
         sid = request.query.sid # id of item in shared
@@ -204,7 +205,7 @@ def case():
 
         params = { 'cid': cid, 'app': app, 'jid': jid, 'contents': output,
                    'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys(),
-                   'sched': config.sched }
+                   'sched': config.sched, 'state': state }
         return template('case_public', params)
 
     else:
@@ -213,10 +214,11 @@ def case():
         result = db(jobs.cid==cid).select().first()
         desc = result['description']
         shared = result['shared']
+
         params = { 'cid': cid, 'app': app, 'jid': jid,
                    'user': user, 'fn': fn, 'apps': myapps.keys(),
                    'description': desc, 'shared': shared,
-                   'sched': config.sched  }
+                   'sched': config.sched, 'state': state }
         return template('case', params)
 
 @get('/output')

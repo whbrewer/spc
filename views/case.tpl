@@ -62,15 +62,18 @@ function show(update_interval) {
           setTimeout(showOutput, update_interval);
           // slow down updates over time to relieve burden on server
           if (update_interval < 10000) {
-              update_interval+=500;
+              update_interval += 500;
           }
        })
     }
     //$("#selector").hide()
     showOutput();
-}
-% if not sched == "ws":
-  show(1000); // comment out if using websocket
+} 
+
+% if state == "C" or state == "X":
+  show(2**31-1) // don't page reload unless in Run or Queue state
+% elif not sched == "ws":
+  show(1000) // comment out if using websocket
 % end
 </script>
 
