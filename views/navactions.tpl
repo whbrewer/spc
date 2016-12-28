@@ -30,13 +30,13 @@
                     <span class="glyphicon glyphicon-stats"></span> Plot
                 </button>
             </form>
-            <form class="btn-group hidden-xs" action="/zipcase" method="get">
+            <form class="btn-group hidden-xs hidden-sm" action="/zipcase" method="get">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-cloud-download"></span> Download</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
-            <form class="btn-group hidden-xs" action="/zipget" method="get">
+            <form class="btn-group hidden-xs hidden-sm" action="/zipget" method="get">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-transfer"></span> Fetch</button>
                 <input type="hidden" name="cid" value="{{cid}}">
@@ -63,7 +63,7 @@
             %end            
             %if defined('jid'):
             %if jid > 0:
-                <button type="button" class="btn btn-default hidden-xs" data-toggle="modal" 
+                <button type="button" class="btn btn-default hidden-xs hidden-sm" data-toggle="modal" 
                         data-target="#myModal">
                         <span class="glyphicon glyphicon-comment"></span> Label</button>
                 <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">

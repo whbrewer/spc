@@ -91,7 +91,7 @@
   <div class="col-xs-6">
     <form role="form" action="/jobs">
       <input name="q" type="text" class="form-control input-lg"
-           onchange="show(this.value)" placeholder="Search..." value="{{q}}">
+           onchange="show(this.value)" style="background-color:#faffbd" placeholder="Search..." value="{{q}}">
     </form>
   </div>
 

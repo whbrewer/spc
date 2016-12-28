@@ -194,7 +194,7 @@ def case():
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid or -1
-    state = jobs(id=jid).state
+    state = jobs(cid=cid).state
 
     if re.search("/", cid):
         (u, c) = cid.split("/")
@@ -459,6 +459,10 @@ def show_jobs():
     params['status'] = "showing " + str(len(result)) + " cases"
     params['num_rows'] = config.jobs_num_rows
     return template('jobs', params, rows=result)
+
+@get('/docker')
+def get_docker():
+    return template("error", err="This feature not enabled. To enable: sudo pip install docker-py")
 
 @get('/aws')
 def get_aws():

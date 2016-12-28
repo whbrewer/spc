@@ -1,5 +1,5 @@
 <nav class="navbar navbar-default navbar-fixed-top" style="white-space:nowrap" role="navigation">
-<!-- <nav class="navbar navbar-default navbar-static-top" role="navigation"> -->
+
 <form class="navbar-form">
 <div class="container-fluid">
     <div class="row" style="white-space:nowrap">
@@ -8,10 +8,10 @@
                 <button type="submit" class="btn btn-default" formaction="/myapps">
                     <span class="glyphicon glyphicon-th-large"></span> Apps </button>
                 %if defined('app'):
-                %if app != '':
-                <button type="submit" class="btn btn-default" formaction="/start">
-                    <span class="glyphicon glyphicon-play-circle"></span> Start </button>
-                %end
+                    %if app != '':
+                        <button type="submit" class="btn btn-default" formaction="/start">
+                            <span class="glyphicon glyphicon-play-circle"></span> Start </button>
+                    %end
                 %end
                 <button type="submit" class="btn btn-default" formaction="/jobs">
                     <span class="glyphicon glyphicon-tasks"></span> Jobs </button>

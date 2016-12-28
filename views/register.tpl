@@ -176,10 +176,10 @@ function validateForm() {
 </script>
 
 <style>
-    input[type="text"], input[type="password"] { 
-      background-color: #faffbd; 
-      /*width: 200px;*/
-    }
+  input[type="text"], input[type="password"] { 
+    background-color: #faffbd; 
+    /*width: 200px;*/
+  }
 </style>
 
 <body>
