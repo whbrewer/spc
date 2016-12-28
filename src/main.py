@@ -373,9 +373,9 @@ def show_jobs():
 
             if len(query_array[0]) == 1: # for general case search 3 main fields: cid, app, labels
                 result = db((jobs.uid==uid) & \
-                           ((db.jobs.cid.contains(q, case_sensitive=False)) |
-                            (db.jobs.app.contains(q, case_sensitive=False)) |
-                            (db.jobs.description.contains(q, case_sensitive=False)))).select(orderby=~jobs.id)
+                           ((db.jobs.cid.contains(q.encode('utf8'), case_sensitive=False)) |
+                            (db.jobs.app.contains(q.encode('utf8'), case_sensitive=False)) |
+                            (db.jobs.description.contains(q.encode('utf8'), case_sensitive=False)))).select(orderby=~jobs.id)
 
             else: # in the case of specific tag searching, e.g. app:mendel
                 key = query_array[0][0]
