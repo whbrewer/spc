@@ -155,17 +155,17 @@
       <!-- <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a> -->
       <a href="{{url}}"> </a>
     </td>
-  %if row['shared']=="True":
-    <td>
-      <a href="javascript:unshare({{row['id']}})" title="unshare this case">
-        <span id="shared{{row['id']}}" class="glyphicon glyphicon-pushpin"></span></a>
-    </td>
-  %else:
-    <td>
-      <a href="javascript:share({{row['id']}})" title="share this case with other users">
-        <span id="shared{{row['id']}}"  class="glyphicon glyphicon-share-alt"></span></a>
-    </td>
-  %end
+    %if row['shared']=="True":
+      <td>
+        <a href="javascript:unshare({{row['id']}})" title="unshare this case">
+          <span id="shared{{row['id']}}" class="glyphicon glyphicon-pushpin"></span></a>
+      </td>
+    %else:
+      <td>
+        <a href="javascript:share({{row['id']}})" title="share this case with other users">
+          <span id="shared{{row['id']}}"  class="glyphicon glyphicon-share-alt"></span></a>
+      </td>
+    %end
 </tr> 
 %end
 </tbody>

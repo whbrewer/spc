@@ -49,10 +49,10 @@ def execute():
     user = request.forms['user']
     cid = request.forms['cid']
     desc = request.forms['desc']
+    np = request.forms['np']
     appmod = pickle.loads(request.forms['appmod'])
     # remove the appmod key
     del request.forms['appmod']
-    print request.forms
     
     appmod.write_params(request.forms, user)
 
@@ -70,7 +70,7 @@ def execute():
     try:
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
-        jid = sched.qsub(app, cid, uid, config.np, priority, desc)
+        jid = sched.qsub(app, cid, uid, np, priority, desc)
         return str(jid)
         #redirect("http://localhost:"+str(config.port)+"/case?app="+str(app)+"&cid="+str(cid)+"&jid="+str(jid))
     except OSError, e:
@@ -78,6 +78,10 @@ def execute():
 
 @get('/output')
 def output():
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+
     app = request.query.app
     cid = request.query.cid
     user = request.query.user
@@ -129,9 +133,4 @@ def user_data(filepath):
 
 if __name__ == "__main__":
     sched.poll()
-    # run the app
-    try:
-        run(server=config.server, app=app, host='0.0.0.0', \
-            port=config.port, debug=False)
-    except:
-        run(host='0.0.0.0', port=config.port+1, debug=False)
+    run(host='0.0.0.0', port=config.port+1, debug=False)

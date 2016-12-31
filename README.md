@@ -73,6 +73,7 @@
 * gevent-websocket >= 0.9.3 (optional-used for websocket monitoring)
 * pika > 0.10.0 and RabbitMQ (optionally-required when using RabbitMQ for scheduling)
 * PyYAML >= 3.11 (optional-required for supporting YAML input files)
+* requests >= 2.9.1 (optional-required if using remote worker nodes)
 
 ## Questions
 
