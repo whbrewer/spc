@@ -12,13 +12,14 @@ url = 'https://s3-us-west-1.amazonaws.com/scihub'
 def usage():
     buf =  "usage: spc <command> [<args>]\n\n"
     buf += "available commands:\n"
-    buf += "init       initialize database and create basic config.py file\n"
-    buf += "list       list installed or available apps\n"
-    buf += "migrate    migrate new database changes\n"
-    buf += "install    install an app\n"
-    buf += "run        start the server\n"
-    buf += "runworker  start a worker\n"
-    buf += "uninstall  uninstall an app\n"
+    buf += "init          initialize database and create basic config.py file\n"
+    buf += "list          list installed or available apps\n"
+    buf += "migrate       migrate new database changes\n"
+    buf += "install       install an app\n"
+    buf += "run           start the server\n"
+    buf += "runworker     start a worker\n"
+    buf += "runsslworker  start a SSL worker\n"
+    buf += "uninstall     uninstall an app\n"
     #buf += "search   search for available apps\n"
     #buf += "test     run unit tests\n"
     return buf
@@ -165,6 +166,8 @@ if __name__ == "__main__":
         os.system("python src/main.py")
     elif (sys.argv[1] == "runworker"):
         os.system("python src/worker.py")
+    elif (sys.argv[1] == "runsslworker"):
+        os.system("python src/worker_ssl.py")
     elif (sys.argv[1] == "search"):
         print notyet 
     elif (sys.argv[1] == "test"):
