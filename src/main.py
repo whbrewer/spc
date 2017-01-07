@@ -205,7 +205,7 @@ def case():
         output = slurp_file(fn)
 
         params = { 'cid': cid, 'app': app, 'jid': jid, 'contents': output,
-                   'sid': sid, 'user': u, 'fn': fn, 'apps': myapps.keys(),
+                   'sid': sid, 'user': user, 'fn': fn, 'apps': myapps.keys(),
                    'sched': config.sched, 'state': state }
         return template('case_public', params)
 
@@ -1037,10 +1037,8 @@ def getstart():
     if config.auth and not authorized(): redirect('/login')
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
-    if re.search("/", cid):
-        (u, cid) = cid.split("/")
-    else:
-        u = user
+    if re.search("/", cid): u, cid = cid.split("/")
+
     params = myapps[app].params
     # if no valid casename read default parameters
     if not re.search("[a-z]", cid):
@@ -1049,7 +1047,7 @@ def getstart():
         params, _, _ = myapps[app].read_params(u, cid)
     params['cid'] = cid
     params['app'] = app
-    params['user'] = u
+    params['user'] = user
     params['apps'] = myapps.keys()
     return template('apps/' + myapps[app].appname, params)
 
