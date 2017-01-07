@@ -6,6 +6,7 @@
 var trace1 = {
   x: {{!data}},
   type: 'histogram',
+  nbinsx: 100,
   marker: {
     color: 'rgb(158,202,225)',
     opacity: 0.6,
