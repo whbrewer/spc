@@ -96,12 +96,13 @@ def confirm_form():
 
     if config.worker == 'remote':
 
+        request.forms['np'] = 1
         request.forms['desc'] = desc
         request.forms['appmod'] = pickle.dumps(myapps[app])
 
         try:
             print config.remote_worker_url + '/execute'
-            resp = requests.post(config.remote_worker_url +'/execute', data=dict(request.forms))
+            resp = requests.post(config.remote_worker_url +'/execute', data=dict(request.forms), verify=False)
 
         except:
             return template('error', err="failed to submit job to SPC worker. " + \
@@ -194,10 +195,10 @@ def case():
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid or -1
-    state = jobs(cid=cid).state
 
     if re.search("/", cid):
         (u, c) = cid.split("/")
+        state = jobs(cid=c).state
         sid = request.query.sid # id of item in shared
         run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
         fn = os.path.join(run_dir, myapps[app].outfn)
@@ -209,6 +210,7 @@ def case():
         return template('case_public', params)
 
     else:
+        state = jobs(cid=cid).state
         run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
         fn = os.path.join(run_dir, myapps[app].outfn)
         result = db(jobs.cid==cid).select().first()

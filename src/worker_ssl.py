@@ -1,4 +1,6 @@
 # This is an SSL worker for submitting jobs remotely
+# with some code borrowed from: 
+# https://github.com/nickbabcock/bottle-ssl/blob/master/main.py
 
 # to use this must install the following package using apt-get or yum:
 #   python-dev
