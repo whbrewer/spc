@@ -1037,7 +1037,10 @@ def getstart():
     if config.auth and not authorized(): redirect('/login')
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
-    if re.search("/", cid): u, cid = cid.split("/")
+    if re.search("/", cid):
+        u, cid = cid.split("/")
+    else:
+        u = user
 
     params = myapps[app].params
     # if no valid casename read default parameters
@@ -1058,7 +1061,7 @@ def list_files():
     app = request.query.app
     path = request.query.path
     if re.search("/", cid):
-        (u, cid) = cid.split("/")
+        u, cid = cid.split("/")
     else:
         u = user
     if not path:
