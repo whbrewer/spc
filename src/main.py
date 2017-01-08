@@ -675,15 +675,15 @@ def delete_job(jid):
     user = authorized()
     app = request.forms.app
     cid = request.forms.cid
-    #try:
-    if True:
-        # this will fail if the app has been removed
+    state = jobs(jid).state
+
+    if state != "R":
         path = os.path.join(myapps[app].user_dir, user, app, cid)
         if os.path.isdir(path): shutil.rmtree(path)
         sched.stop(jid)
         sched.qdel(jid)
-    #except:
-    #    return "there was an error!"
+    else:
+        return template("error", err="cannot delete while job is still running")
     redirect("/jobs")
 
 @post('/jobs/delete_selected_cases')
