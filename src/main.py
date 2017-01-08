@@ -1069,7 +1069,7 @@ def list_files():
     params = dict()
     params['cid'] = cid
     params['app'] = app
-    params['user'] = u
+    params['user'] = user
     params['apps'] = myapps.keys()
     params['path'] = path
     params['files'] = os.listdir(path)
@@ -1180,7 +1180,7 @@ def plot_interface(pltid):
 
     # if plot not in DB return error
     if plottype is None:
-        params = { 'cid': cid, 'app': app, 'user': u }
+        params = { 'cid': cid, 'app': app, 'user': user }
         params['err'] = "Sorry! This app does not support plotting capability"
         return template('error', params)
 
@@ -1284,7 +1284,7 @@ def plot_interface(pltid):
 
     stats = compute_stats(plotpath)
 
-    params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': u,
+    params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': user,
                'ticks': ticks, 'title': title, 'plotpath': plotpath,
                'rows': list_of_plots, 'options': options, 'datadef': datadef,
                'apps': myapps.keys(), 'stats': stats }
