@@ -3,7 +3,7 @@
 
 <script>
 function verifyInstance(itype) {
-    re = /i-\d{8}/
+    re = /i-\w{8}/
     if (itype.search(re) < 0) {
         alert("Wrong instance type. Format should be like: i-01234567")
     }

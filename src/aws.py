@@ -25,12 +25,13 @@ class EC2(object):
         status = {}
         for r in reservations:
             for inst in r.instances:
-                status['id:'] = inst.id
-                status['type'] = inst.instance_type
-                status['state'] = inst.state
-                status['ip'] = inst.ip_address
-                status['public_dns_name'] = inst.public_dns_name
-                status['launch_time'] = inst.launch_time
+                if inst.id == self.instance:
+                    status['id:'] = inst.id
+                    status['type'] = inst.instance_type
+                    status['state'] = inst.state
+                    status['ip'] = inst.ip_address
+                    status['public_dns_name'] = inst.public_dns_name
+                    status['launch_time'] = inst.launch_time
         return status
 
     def uptime(self,launch_time):
