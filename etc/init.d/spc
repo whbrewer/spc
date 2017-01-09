@@ -1,0 +1,51 @@
+#!/bin/sh 
+
+# Source function library.
+. /etc/init.d/functions
+
+dir=/home/ec2-user/spc
+prog=./spc
+options=run
+lockfile=/var/lock/subsys/$prog
+
+start () {
+    # Start daemon.
+    echo -n $"Starting $prog: "
+    cd $dir && daemon nohup $prog run -u ec2-user:ec2-user -p /var/run/spc.pid &
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop () {
+    [ "$EUID" != "0" ] && exit 4
+    echo -n $"Shutting down $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+
+    start|stop)
+        ${1}
+        ;;
+
+    restart|reload|force-reload)
+        stop
+        start
+        ;;
+
+    status)
+        status_of_proc "$DAEMON_NAME" "$DAEMON" && exit 0 || exit $?
+        ;;
+    *)
+        echo "Usage: /etc/init.d/$DAEMON_NAME {start|stop|restart|status}"
+        exit 1
+        ;;
+
+esac
+exit 0
