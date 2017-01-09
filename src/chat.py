@@ -8,6 +8,7 @@ from gevent.event import Event
 from beaker.middleware import SessionMiddleware
 import bottle
 from bottle import route, request, static_file, template, redirect
+import argparse as ap
 import config
 
 cache_size = 200
@@ -15,7 +16,6 @@ cache = []
 new_message_event = Event()
 
 app = bottle.app()
-#chatMod.install(BeakerPlugin())
 
 session_opts = {
     'session.type': 'file',
@@ -26,46 +26,28 @@ session_opts = {
 
 chatMod = SessionMiddleware(app, session_opts)
 
-class BeakerPlugin(object):
-    name = 'beaker'
+root = 0
 
-    def setup(self, app):
-        ''' Make sure that other installed plugins don't affect the same
-            keyword argument.'''
-        for other in app.plugins:
-            if not isinstance(other, BeakerPlugin): continue
-            if other.keyword == self.keyword:
-                raise PluginError("Found another beaker session plugin "\
-                "with conflicting settings (non-unique keyword).")
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
 
-    def apply(self, callback, context):
-        args = inspect.getargspec(context['callback'])[0]
-        keyword = 'session'
-        if keyword not in args:
-            return callback
-        def wrapper(*a, **ka):
-            session = request.environ.get('beaker.session')
-            ka[keyword] = session
-            rv = callback(*a, **ka)
-            session.save()
-            return rv
-        return wrapper
-
-
-@app.route('/chat') #, template='chat')
+@app.route('/chat')
 def main():
-    global cache
+    global cache, root
+    user = root.authorized()
     session = request.environ.get('beaker.session')
     if cache: session['cursor'] = cache[-1]['id']
-    #return {'messages': cache}
     return template('chat', messages=cache)
 
 @route('/a/message/new', method='POST', template='chat')
 def message_new():
+    user = root.authorized()
     global cache
     global cache_size
     global new_message_event
     name = request.environ.get('REMOTE_ADDR') or 'Anonymous'
+    name = user
     forwarded_for = request.environ.get('HTTP_X_FORWARDED_FOR')
     if forwarded_for and name == '127.0.0.1':
         name = forwarded_for
@@ -105,7 +87,6 @@ def create_message(from_, body):
     data = {'id': str(uuid.uuid4()), 'from': from_, 'body': body}
     data['html'] = template('message', message=data)
     return data
-
 
 if __name__ == '__main__':
     bottle.debug(True)
