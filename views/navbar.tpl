@@ -17,6 +17,8 @@
                     <span class="glyphicon glyphicon-tasks"></span> Jobs </button>
                 <button type="submit" class="btn btn-default" formaction="/jobs/shared">
                     <span class="glyphicon glyphicon-pushpin"></span> Shared </button>
+                <button type="submit" class="btn btn-default" formaction="/chat">
+                    <span class="glyphicon glyphicon-comment"></span> Chat </button>
             </div>
         </div>
 

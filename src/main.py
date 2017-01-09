@@ -28,6 +28,7 @@ except ImportError:
 # requires gevent and gevent-websocket
 try:
     import scheduler_ws
+    import chat
 except ImportError:
     print "INFO: scheduler_ws not imported because gevent and/or gevent-websocket not installed"
 
@@ -1801,12 +1802,21 @@ if __name__ == "__main__":
     sched.poll()
 
     if config.sched == "ws": sched.start_data_server()
+
     # attempt to mix in docker functionality
     try:
         dockermod.bind(globals())
         app.app.merge(dockermod.dockerMod)
     except Exception, e:
         pass
+
+    # attempt to mix in chat functionality
+    try:
+        chat.bind(globals())
+        app.app.merge(chat.chatMod)
+    except Exception, e:
+        pass
+
     # run the app
     try:
         run(server=config.server, app=app, host='0.0.0.0', \

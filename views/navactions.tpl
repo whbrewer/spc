@@ -65,7 +65,7 @@
             %if jid > 0:
                 <button type="button" class="btn btn-default hidden-xs hidden-sm" data-toggle="modal" 
                         data-target="#myModal">
-                        <span class="glyphicon glyphicon-comment"></span> Label</button>
+                        <span class="glyphicon glyphicon-tags"></span> Label</button>
                 <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
