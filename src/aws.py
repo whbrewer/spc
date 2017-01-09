@@ -1,6 +1,6 @@
 import boto, sys
 import boto.ec2
-import datetime
+from datetime import datetime, timedelta
 import math
 
 class EC2(object):
@@ -32,16 +32,15 @@ class EC2(object):
                     status['ip'] = inst.ip_address
                     status['public_dns_name'] = inst.public_dns_name
                     status['launch_time'] = inst.launch_time
+                    self.launch_time = inst.launch_time
         return status
 
     def uptime(self,launch_time):
         """given launch time return uptime"""
-        lt_datetime = datetime.datetime.strptime(launch_time[:-5], '%Y-%m-%dT%H:%M:%S')
-        lt_delta = datetime.datetime.utcnow() - lt_datetime
-        return str(lt_delta)
+        lt_datetime = datetime.strptime(launch_time[:-5], '%Y-%m-%dT%H:%M:%S')
+        lt_delta = datetime.utcnow() - lt_datetime
+        return lt_delta.total_seconds()
 
     def charge(self,uptime):
-        (hour,minute,second) = uptime.split(':')
-        # add ability to handle "1 day, 13:11:30.159864"
-        #return (int(hour)+1)*self.rate
-        return True
+        cost = self.uptime(self.launch_time)/3600.*self.rate
+        return '${:,.2f}'.format(cost)
