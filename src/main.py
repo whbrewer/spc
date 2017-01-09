@@ -465,7 +465,7 @@ def show_jobs():
 
 @get('/docker')
 def get_docker():
-    return template("error", err="This feature not enabled. To enable: sudo pip install docker-py")
+    return template("error", err="This feature not enabled. Install docker-py to activate.")
 
 @get('/aws')
 def get_aws():
