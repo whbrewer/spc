@@ -14,14 +14,14 @@
 
 <div class="row">
 
-  <div class="col-xs-4" align="left">  
+  <div class="col-xs-12 col-md-4" align="left">  
     <div class="btn-group">
       <a class="btn btn-default" href="/myapps">Activated</a>
       <a class="btn btn-default active" href="/apps">Installed</a>
     </div>
   </div>
 
-  <div class="col-xs-4">
+  <div class="hidden-xs col-md-4">
     <form role="form" action="/apps">
       <input name="q" type="text" class="form-control input-mg"
              onchange="show(this.value)" placeholder="Search for apps...">
@@ -29,7 +29,7 @@
   </div>
 
   %if configurable:
-  <div class="col-xs-4" align="right">
+  <div class="xs-hidden col-md-4" align="right">
     <a href="/addapp" class="btn btn-primary">
       <span class="glyphicon glyphicon-plus"></span> Add
     </a>

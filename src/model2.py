@@ -12,6 +12,7 @@ class dal(object):
                                          Field('user', 'string'),
                                          Field('passwd','string'),
                                          Field('email','string'),
+                                         Field('unread_messages','integer'),
                                          Field('priority','integer'))
 
         self.apps = self.db.define_table('apps', Field('id','integer'),

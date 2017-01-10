@@ -1,4 +1,15 @@
 #!/bin/sh 
+#
+# spc          SPC is the Scientific Platform for the Cloud
+#              https://bitbucket.org/whbrewer/spc
+#
+# chkconfig: 2345 90 60
+# description: The Scientific Platform for the Cloud (SPC) is an integrated 
+#              cloud platform for rapid interface generation, job scheduling, 
+#              case management, plotting, and monitoring of scientific applications.
+#
+# instructions: copy this file to /etc/init.d on Redhat/Fedora/CentOS/SuSE/Amazon machines
+# run the following command to auto-start on boot: sudo chkconfig --add spc
 
 # Source function library.
 . /etc/init.d/functions
@@ -40,7 +51,7 @@ case "$1" in
         ;;
 
     status)
-        status_of_proc "$DAEMON_NAME" "$DAEMON" && exit 0 || exit $?
+        status $prog
         ;;
     *)
         echo "Usage: /etc/init.d/$DAEMON_NAME {start|stop|restart|status}"

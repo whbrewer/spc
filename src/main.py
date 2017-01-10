@@ -30,7 +30,7 @@ try:
     import scheduler_ws
     import chat
 except ImportError:
-    print "INFO: scheduler_ws not imported because gevent and/or gevent-websocket not installed"
+    print "INFO: scheduler_ws and chat not imported because gevent and/or gevent-websocket not installed"
 
 # requires boto
 try:
@@ -1824,12 +1824,13 @@ if __name__ == "__main__":
     except Exception, e:
         pass
 
-    # attempt to mix in chat functionality
-    try:
-        chat.bind(globals())
-        app.app.merge(chat.chatMod)
-    except Exception, e:
-        pass
+    # attempt to mix in chat functionality, currently only works with SP scheduler
+    if config.sched == "sp": 
+        try:
+            chat.bind(globals())
+            app.app.merge(chat.chatMod)
+        except Exception, e:
+            pass
 
     # run the app
     try:

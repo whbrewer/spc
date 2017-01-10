@@ -21,6 +21,7 @@ users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),
                                  Field('passwd','string'),
                                  Field('email','string'),
+                                 Field('unread_messages','integer'),
                                  Field('priority','integer'))
 
 jobs = db.define_table('jobs', Field('id','integer'),

@@ -9,6 +9,7 @@ users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),
                                  Field('passwd','string'),
                                  Field('email','string'),
+                                 Field('unread_messages','integer'),
                                  Field('priority','integer'))
 
 # this is also defined in scheduler.py
