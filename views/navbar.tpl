@@ -9,7 +9,8 @@
                     <span class="glyphicon glyphicon-th-large"></span> Apps </button>
                 %if defined('app'):
                     %if app != '':
-                        <button type="submit" class="btn btn-default" formaction="/start">
+                        <button type="submit" class="btn btn-default hidden-xs" 
+                                formaction="/start">
                             <span class="glyphicon glyphicon-play-circle"></span> Start </button>
                     %end
                 %end
