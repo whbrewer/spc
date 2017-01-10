@@ -39,8 +39,14 @@ class EC2(object):
         """given launch time return uptime"""
         lt_datetime = datetime.strptime(launch_time[:-5], '%Y-%m-%dT%H:%M:%S')
         lt_delta = datetime.utcnow() - lt_datetime
+        return lt_delta
+
+    def uptime_seconds(self,launch_time):
+        """given launch time return uptime"""
+        lt_datetime = datetime.strptime(launch_time[:-5], '%Y-%m-%dT%H:%M:%S')
+        lt_delta = datetime.utcnow() - lt_datetime
         return lt_delta.total_seconds()
 
     def charge(self,uptime):
-        cost = self.uptime(self.launch_time)/3600.*self.rate
+        cost = self.uptime_seconds(self.launch_time)/3600.*self.rate
         return '${:,.2f}'.format(cost)

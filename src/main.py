@@ -548,8 +548,9 @@ def aws_status(aid):
         return template('error', err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
     try:
         astatus = a.status()
-        astatus['uptime'] = a.uptime(astatus['launch_time'])
-        astatus['charge since last boot'] = a.charge(astatus['uptime'])
+        if astatus['state'] == "running":
+            astatus['uptime'] = a.uptime(astatus['launch_time'])
+            astatus['charge since last boot'] = a.charge(astatus['uptime'])
         return template('aws_status', params, astatus=astatus)
     except:
         return template('error', err="There was a problem connecting to the AWS machine. Check the credentials and make sure the machine is running.")
@@ -1407,36 +1408,49 @@ def zipget():
     user = authorized()
     cid = request.query.cid
     app = request.query.app
+    try:
+        worker = config.remote_worker_url
+    except:
+        worker = request.query.url
 
-    if config.worker != "remote" or config.remote_worker_url is None:
+    # if config.worker != "remote" or config.remote_worker_url is None:
+    if worker is None:
         params = { 'app': app, 'apps': myapps.keys(),
                    'err': "worker and remote_worker_url parameters must be set " +
                           " in config.py for this feature to work" }
         return template('error', params)        
 
-    try:
-        requests.get(config.remote_worker_url + "/zipcase", 
-             params={'app': app, 'cid': cid, 'user': user})
+    # try:
+    requests.get(worker + "/zipcase", 
+         params={'app': app, 'cid': cid, 'user': user})
 
-        path = os.path.join(config.user_dir, user, app, cid)
-        file_path = path+".zip"
-        url = os.path.join(config.remote_worker_url, file_path)
-        print "url is:", url
-        if not os.path.exists(path):
-            os.makedirs(path)
+    path = os.path.join(config.user_dir, user, app, cid)
+    file_path = path+".zip"
+    url = os.path.join(worker, file_path)
+    print "url is:", url
+    if not os.path.exists(path):
+        os.makedirs(path)
 
-        print "downloading " + url
-        fh, _ = urllib.urlretrieve(url)
-        z = zipfile.ZipFile(fh, 'r')
-        z.extractall()
+    print "downloading " + url
+    fh, _ = urllib.urlretrieve(url)
+    z = zipfile.ZipFile(fh, 'r')
+    z.extractall()
 
-        status = "file downloaded"
-        redirect(request.headers.get('Referer')+"&status="+status)
+    # add case to database
+    uid = users(user=user).id
+    jid = db.jobs.insert(uid=uid, app=app, cid=cid, state="REMOTE",
+                          description="", time_submit=time.asctime(),
+                          walltime="", np="", priority="")
+    db.commit()
 
-    except:
-        params = { 'app': app, 'apps': myapps.keys(),
-                   'err': "Configuration not setup with remote worker." }
-        return template('error', params)
+    # status = "file_downloaded"
+    # redirect(request.headers.get('Referer')) #+ "&status=" + status)
+    redirect("/jobs")
+
+    # except:
+    #     params = { 'app': app, 'apps': myapps.keys(),
+    #                'err': "Configuration not setup with remote worker." }
+    #     return template('error', params)
 
 
 @post('/useapp')

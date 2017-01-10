@@ -81,6 +81,7 @@ function verifyInstance(itype) {
 <option value="m3.large">m3.large
 <option value="m3.xlarge">m3.xlarge
 <option value="m3.2xlarge">m3.2xlarge
+
 <option disabled role=separator>Compute optimized:
 <option value="c3.large">c3.large
 <option value="c3.xlarge">c3.xlarge
