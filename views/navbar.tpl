@@ -18,8 +18,10 @@
                     <span class="glyphicon glyphicon-tasks"></span> Jobs </button>
                 <button type="submit" class="btn btn-default" formaction="/jobs/shared">
                     <span class="glyphicon glyphicon-pushpin"></span> Shared </button>
-                <button type="submit" class="btn btn-default hidden-xs" formaction="/chat">
-                    <span class="glyphicon glyphicon-comment"></span> Chat </button>
+                <button type="submit" class="btn btn-default" formaction="/chat">
+                    <span class="glyphicon glyphicon-comment"></span> Chat 
+                    <span id="unread_messages"></span>
+                </button>
             </div>
         </div>
 
@@ -79,6 +81,19 @@
     <input type="hidden" name="app" value="{{app}}">
 %end
 </form>
+
+<script>
+$(document).ready(function () {
+    $.get( "/chat/unread_messages", function( data ) {
+        if (eval(data) > 0) {
+            $("#unread_messages").text("(" + data + ")")
+        } else {
+            $("#unread_messages").text("")
+        }
+    });
+});
+</script>
+
 </nav>
 
 

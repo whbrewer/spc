@@ -11,6 +11,8 @@ from bottle import route, request, static_file, template, redirect
 import argparse as ap
 import config
 
+from model import *
+
 cache_size = 200
 cache = []
 new_message_event = Event()
@@ -38,15 +40,21 @@ def main():
     user = root.authorized()
     session = request.environ.get('beaker.session')
     if cache: session['cursor'] = cache[-1]['id']
+    # clear number of unread messages for current user
+    users(user=user).update_record(unread_messages=0)
+    db.commit()
     return template('chat', messages=cache)
+
+@app.route('/chat/unread_messages')
+def get_unread_messages():
+    user = root.authorized()
+    return str(users(user=user).unread_messages)
 
 @route('/a/message/new', method='POST', template='chat')
 def message_new():
     user = root.authorized()
-    global cache
-    global cache_size
-    global new_message_event
-    name = request.environ.get('REMOTE_ADDR') or 'Anonymous'
+    global cache, cache_size, new_message_event
+    # name = request.environ.get('REMOTE_ADDR') or 'Anonymous'
     name = user
     forwarded_for = request.environ.get('HTTP_X_FORWARDED_FOR')
     if forwarded_for and name == '127.0.0.1':
@@ -57,7 +65,13 @@ def message_new():
         cache = cache[-cache_size:]
     new_message_event.set()
     new_message_event.clear()
-    #return msg
+
+    # increase count in database for every user
+    for u in db().select(users.ALL):
+        nmsg = users(user=u.user).unread_messages or 0
+        users(user=u.user).update_record(unread_messages=nmsg+1)
+    db.commit()
+
     redirect("/chat")
 
 @route('/a/message/updates', method='POST', template='chat')

@@ -935,12 +935,15 @@ def showapps():
 def showapps():
     user = authorized()
     uid = users(user=user).id
+    unread_messages = users(user=user).unread_messages or 0
+
     result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select() 
     if user == "admin":
         configurable = True
     else:
         configurable = False
-    params = { 'myapps': myapps.keys(), 'configurable': configurable, 'user': user }
+    params = { 'myapps': myapps.keys(), 'configurable': configurable, 'user': user, 
+               'unread_messages': unread_messages }
     return template('myapps', params, rows=result)
 
 @get('/apps/load')
