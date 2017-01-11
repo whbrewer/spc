@@ -499,15 +499,26 @@ def post_aws_creds():
     redirect('/aws')
 
 @post('/aws/instance')
-def post_instance():
+def create_instance():
+    """create instance"""
     user = authorized()
-    i = request.forms.instance
-    t = request.forms.itype
-    r = request.forms.region
+    instance = request.forms.instance
+    itype = request.forms.itype
+    region = request.forms.region
+    rate = request.forms.rate
     uid = users(user=user).id
-    db.aws_instances.insert(instance=i, itype=t, region=r, uid=uid)
+    db.aws_instances.insert(instance=instance, itype=itype, region=region, rate=rate, uid=uid)
     db.commit()
     redirect('/aws')
+
+@delete('/aws/instance/<aid>')
+def del_instance(aid):
+    try:
+        del aws_instances[aid]
+        db.commit()
+        return "true"
+    except:
+        return "false"
 
 @post('/aws/cred/delete')
 def aws_cred_del():

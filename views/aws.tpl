@@ -3,10 +3,17 @@
 
 <script>
 function verifyInstance(itype) {
-    re = /i-\w{8}/
+    re = /^i-(\w{8}|\w{17})$/
     if (itype.search(re) < 0) {
-        alert("Wrong instance type. Format should be like: i-01234567")
+        $("#feedback").html("Format should be like: i-012345678 or longer type i-1234567890abcdefg")
+    } else {
+        $("#feedback").html("")
     }
+}
+
+function del_instance(aid) {
+    $.ajax({ url: "/aws/instance/"+aid, type: "DELETE" })
+    location.reload(true)
 }
 </script>
 
@@ -52,6 +59,8 @@ function verifyInstance(itype) {
 <fieldset>
 <legend>EC2 instances</legend>
 
+<span id="feedback" class="text-danger"></span>
+
 <table class="table table-striped">
     <thead><tr><th>Intance id</th><th>Type</th><th>Region</th><th>Rate</th><th>Actions</th></thead>
     %for i in instances:
@@ -61,7 +70,15 @@ function verifyInstance(itype) {
             <td>{{i['region']}}</td> 
             <td>{{i['rate']}}</td> 
             <td>
+                <!-- <select class="form-control" name="action">
+                    <option "status"><span class="glyphicon glyphicon-info-sign"></span> status</option>
+                    <option "start"><span class="glyphicon glyphicon-play"></span> start</option>
+                    <option "stop"><span class="glyphicon glyphicon-stop"></span> stop</option>
+                    <option "delete"><span class="glyphicon glyphicon-delete"></span> delete</option>
+                </select> -->
                 <a class="btn btn-default" href="/aws/status/{{i['id']}}"><span class="glyphicon glyphicon-info-sign"></span> status</a> 
+                <a onclick="del_instance({{i['id']}})"><span class="glyphicon glyphicon-remove"></span></a>
+
                 <!--<a href="/aws/start/{{i['id']}}">start</a> -->
                 <!--<a href="/aws/stop/{{i['id']}}">stop</a> -->
             </td>
@@ -69,7 +86,7 @@ function verifyInstance(itype) {
     %end
 
 <form method="POST" action="/aws/instance">
-<td><input class="form-control" type="text" size=10 name="instance" onchange="verifyInstance(this.value)"></td>
+<td><input class="form-control" type="text" size=10 name="instance" onkeyup="verifyInstance(this.value)"></td>
 <td>
 <select class="form-control" name="itype">
 <option disabled role=separator>General purpose:
@@ -127,6 +144,8 @@ function verifyInstance(itype) {
 </option>
 </select>
 </td>
+
+<td> <input type="number" min="0" step="any" class="form-control" style="width:100px" name="rate"> </td>
 
 <td> <input type="submit" class="btn btn-default" value="Add"> </td>
 </table>
