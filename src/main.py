@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # web framework
-from bottle import Bottle, template, static_file, request, redirect, app, get, post, run
+from bottle import Bottle, template, static_file, request, redirect, app, get, post, run, delete
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
@@ -555,43 +555,24 @@ def aws_status(aid):
     except:
         return template('error', err="There was a problem connecting to the AWS machine. Check the credentials and make sure the machine is running.")
 
-@get('/aws/start/<aid>')
+@post('/aws/<aid>')
 def aws_start(aid):
     user = authorized()
-    cid = request.query.cid
-    app = request.query.app
-    params = {}
-    params['aid'] = aid
-    params['cid'] = cid
-    params['app'] = app
-    params['user'] = user
-    params['apps'] = myapps.keys()
-    if awsmod:
-        a = aws_conn(aid)
-    else:
-        return template('error', err="To use this feature, you need to install the Python boto libs see <a href=\"https://pypi.python.org/pypi/boto/\">https://pypi.python.org/pypi/boto/</a>")
+    a = aws_conn(aid)
     a.start()
     # takes a few seconds for the status to change on the Amazon end
-    time.sleep(5)
+    time.sleep(10)
     astatus = a.status()
-    return template('aws_status', params, astatus=astatus)
+    return True
 
-@get('/aws/stop/<aid>')
+@delete('/aws/<aid>')
 def aws_stop(aid):
     user = authorized()
-    cid = request.query.cid
-    app = request.query.app
-    params = {}
-    params['aid'] = aid
-    params['cid'] = cid
-    params['app'] = app
-    params['user'] = user
-    params['apps'] = myapps.keys()
     a = aws_conn(aid)
     a.stop()
     # takes a few seconds for the status to change on the Amazon end
-    time.sleep(5)
-    return template('aws_status', params, astatus=a.status())
+    time.sleep(10)
+    return True
 
 @get('/account')
 def get_account():

@@ -53,14 +53,15 @@ function verifyInstance(itype) {
 <legend>EC2 instances</legend>
 
 <table class="table table-striped">
-    <thead><tr><th>Intance id</th><th>Type</th><th>Region</th><th>Actions</th></thead>
+    <thead><tr><th>Intance id</th><th>Type</th><th>Region</th><th>Rate</th><th>Actions</th></thead>
     %for i in instances:
         <tr>
             <td>{{i['instance']}}</td> 
             <td>{{i['itype']}}</td> 
             <td>{{i['region']}}</td> 
+            <td>{{i['rate']}}</td> 
             <td>
-                <a href="/aws/status/{{i['id']}}">status</a> 
+                <a class="btn btn-default" href="/aws/status/{{i['id']}}"><span class="glyphicon glyphicon-info-sign"></span> status</a> 
                 <!--<a href="/aws/start/{{i['id']}}">start</a> -->
                 <!--<a href="/aws/stop/{{i['id']}}">stop</a> -->
             </td>
@@ -81,7 +82,7 @@ function verifyInstance(itype) {
 <option value="m3.large">m3.large
 <option value="m3.xlarge">m3.xlarge
 <option value="m3.2xlarge">m3.2xlarge
-
+<option value="m4.4xlarge">m4.4xlarge
 <option disabled role=separator>Compute optimized:
 <option value="c3.large">c3.large
 <option value="c3.xlarge">c3.xlarge
