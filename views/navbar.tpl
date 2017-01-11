@@ -20,7 +20,7 @@
                     <span class="glyphicon glyphicon-pushpin"></span> Shared </button>
                 <button type="submit" class="btn btn-default" formaction="/chat">
                     <span class="glyphicon glyphicon-comment"></span> Chat 
-                    <span id="unread_messages"></span>
+                    <span class="badge" style="background-color:tomato" id="unread_messages"></span>
                 </button>
             </div>
         </div>
@@ -84,14 +84,18 @@
 
 <script>
 $(document).ready(function () {
+    setInterval("check_for_messages()", 5000);
+});
+
+function check_for_messages() {
     $.get( "/chat/unread_messages", function( data ) {
         if (eval(data) > 0) {
-            $("#unread_messages").text("(" + data + ")")
+            $("#unread_messages").text(data)
         } else {
             $("#unread_messages").text("")
         }
     });
-});
+}
 </script>
 
 </nav>
