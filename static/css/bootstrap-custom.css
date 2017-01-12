@@ -1,0 +1,27 @@
+/* based on: https://bootstrapbay.com/blog/bootstrap-button-styles */
+
+.btn {
+    padding: 14px 24px;
+    border: 0 none;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+ 
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
+}
+ 
+.btn-default {
+    background: #0099cc;
+    color: #ffffff;
+}
+ 
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open > .dropdown-toggle.btn-default {
+    background: #33a6cc;
+}
+ 
+.btn-default:active, .btn-default.active {
+    background: #007299;
+    box-shadow: none;
+}

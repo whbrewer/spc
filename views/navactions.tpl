@@ -1,6 +1,6 @@
 <div class="visible-xs" style="height:10px"></div>
 
-<div class="container-fluid" style="padding-left:0px"> <!-- navbar-fixed-bottom -->
+<div id="navaction" class="container-fluid navbar navbar-default navbar-fixed-bottom" style="padding-left:0px">
     <div class="col-xs-12">
         <div class="btn-group">
             <form class="btn-group" action="/start" method="get">
@@ -32,16 +32,17 @@
             </form>
             <form class="btn-group hidden-xs hidden-sm" action="/zipcase" method="get">
                 <button class="btn btn-default">
-                    <span class="glyphicon glyphicon-cloud-download"></span> Download</button>
+                    <span class="glyphicon glyphicon-cloud-download"></span> Download
+                </button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
-            <form class="btn-group hidden-xs hidden-sm" action="/zipget" method="get">
+            <!-- <form class="btn-group hidden-xs hidden-sm" action="/zipget" method="get">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-transfer"></span> Fetch</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
-            </form>
+            </form> -->
             <form class="btn-group hidden-xs" method="get" action="/inputs?cid={{cid}}&app={{app}}">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-wrench"></span> Inputs</button>
@@ -99,7 +100,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Delete</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
                 </div>
             </form>
         </div>
@@ -127,7 +128,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-default">Save changes</button>
                 </div>
             </form>
         </div>

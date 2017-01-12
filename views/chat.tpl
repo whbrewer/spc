@@ -1,6 +1,8 @@
 %include('header.tpl')
 %include('navbar.tpl')
 
+<body onload="document.getElementById('#message').focus()">
+
 <div style="font-size:12pt; position:absolute; bottom:0px; left:10px; right:10px">
 <div id="inbox" style="font-size:12pt">
   %for message in messages:

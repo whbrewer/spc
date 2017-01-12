@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-fixed-top" style="white-space:nowrap" role="navigation">
+<nav class="navbar navbar-inverse navbar-fixed-top" style="white-space:nowrap" role="navigation">
 
 <form class="navbar-form">
 <div class="container-fluid">
@@ -51,7 +51,7 @@
 
         <div class="navbar-right hidden-xs" style="margin-right: 5px;">
             %if defined('user'):
-                <label class="control-label hidden-xs">{{user.capitalize()}}</label>
+                <label class="navbar-brand hidden-xs">{{user}}</label>
             %end
             <div class="btn-group">
                 <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">

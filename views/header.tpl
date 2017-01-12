@@ -10,17 +10,17 @@
 
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-custom.css">
     <link rel="stylesheet" href="/static/css/bootstrap-tagsinput.css">
     <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/bootstrap-social/bootstrap-social.css">
-
 
     <title>spc</title>
 
     <style>
 
 		body { 
-		    padding-top: 65px; 
+		    padding-top: 75px; 
 		    /* If fixing the navactions bar use 100px */
 		    /*padding-top: 100px;*/ 
 		}
