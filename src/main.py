@@ -128,13 +128,19 @@ def confirm_form():
         inputs = slurp_file(fn)
         # convert html tags to entities (e.g. < to &lt;)
         inputs = cgi.escape(inputs)
+        # attempt to get number of procs from forms inputs
+        if 'num_procs' in request.forms: 
+            np = request.forms.num_procs
+        else: 
+            np = 1
+
         params = { 'cid': cid, 'inputs': inputs, 'app': app,
-                   'user': user, 'apps': myapps.keys(), 'np': config.np,
-                   'desc': desc }
-        try:
-            return template('confirm', params)
-        except:
-            return 'ERROR: failed to write parameters to file'
+                   'user': user, 'apps': myapps.keys(), 'nap': config.np,
+                   'np': np, 'desc': desc }
+        # try:
+        return template('confirm', params)
+        # except:
+        #     return 'ERROR: failed to write parameters to file'
 
 @post('/execute')
 def execute():

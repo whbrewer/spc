@@ -32,9 +32,14 @@
 		}
         
 		.navbar-default {
-    		border-bottom-color: #5FB0E4;
+            border-bottom-color: #5FB0E4;
 		    background-color: #F8F8F8; opacity: 0.9; 
 		}
+
+        .navbar-inverse {
+            border-bottom-color: #0099CC;
+            background-color: #0f0f0f; opacity: 0.9; 
+        }       
 
     </style>
 

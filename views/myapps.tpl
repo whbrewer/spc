@@ -14,7 +14,7 @@
 
 <div class="row">
 
-  <div class="col-xs-12 col-md-3" align="left">
+  <div class="col-xs-12 col-md-4" align="left">
     <div class="btn-group">
       <a class="btn btn-default active" href="/myapps">Activated</a>
       <a class="btn btn-default" href="/apps">Installed</a>

@@ -7,13 +7,6 @@
             <div class="btn-group">
                 <button type="submit" class="btn btn-default" formaction="/myapps">
                     <span class="glyphicon glyphicon-th-large"></span> Apps </button>
-                %if defined('app'):
-                    %if app != '':
-                        <button type="submit" class="btn btn-default hidden-xs" 
-                                formaction="/start">
-                            <span class="glyphicon glyphicon-play-circle"></span> Start </button>
-                    %end
-                %end
                 <button type="submit" class="btn btn-default" formaction="/jobs">
                     <span class="glyphicon glyphicon-tasks"></span> Jobs </button>
                 <button type="submit" class="btn btn-default" formaction="/jobs/shared">
@@ -22,6 +15,13 @@
                     <span class="glyphicon glyphicon-comment"></span> Chat 
                     <span class="badge" style="background-color:tomato" id="unread_messages"></span>
                 </button>
+                %if defined('app'):
+                    %if app != '':
+                        <button type="submit" class="btn btn-success hidden-xs" 
+                                formaction="/start">
+                            <span class="glyphicon glyphicon-play-circle"></span> Start </button>
+                    %end
+                %end
             </div>
         </div>
 

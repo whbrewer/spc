@@ -27,13 +27,12 @@ function toggle_np_visibility() {
 
     <div class="form-group">
         <div class="col-sm-1">
-            <input type="hidden" name="np" value="1">
             <button type="submit" class="btn btn-success"> <!-- pull-right -->
                 Execute <em class="glyphicon glyphicon-play"></em>
             </button>
         </div>
 
-        %if np > 1:
+        %if nap > 1:
             <!-- <label for="par_system" class="control-label col-xs-12 col-sm-2">Parallel:</label>
             <div class="col-xs-12 col-sm-2">
                 <select class="form-control" name="par_system" id="par_system" onchange="toggle_np_visibility()">
@@ -45,14 +44,21 @@ function toggle_np_visibility() {
                 </select>
             </div> -->
 
-            <label for="np" class="control-label col-xs-12 col-sm-2"># Processors:</label>
+            <label for="np" class="control-label col-xs-12 col-sm-3"># Processors:</label>
             <div class="col-xs-12 col-sm-1">
                 <select name="np" id="np" class="btn-group form-control" title="Number of processors to use">
-                    %for i in range(1, np+1):
-                        <option value="{{i}}">{{i}}</option>
+                    %for i in range(1, nap+1):
+                        i: {{i}} {{np}}
+                        %if int(i) == int(np):
+                            <option value="{{i}}" selected>{{i}}</option>
+                        %else:
+                            <option value="{{i}}">{{i}}</option>
+                        %end
                     %end
                 </select>
             </div>
+        %else:
+            <input type="hidden" name="np" value="1">
         %end
 
         <label for="walltime" class="control-label col-xs-12 col-sm-2">Max run time:</label>

@@ -71,7 +71,7 @@
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="jid" value="{{jid}}">
-                    <button class="btn btn-danger"><span class="glyphicon glyphicon-stop"></span> Stop</button>
+                    <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
                 </form>  
                 <button type="button" class="btn btn-danger" data-toggle="modal" 
                         data-target="#dModal">
