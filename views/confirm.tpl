@@ -59,9 +59,9 @@ function toggle_np_visibility() {
         <div class="col-xs-12 col-sm-2">
             <select class="form-control" name="walltime" id="walltime">
                 <option value="60">1 min<!-- GAE front-end --></option>
-                <option value="300" selected>5 min <!-- AWS Lambda --></option>
+                <option value="300">5 min <!-- AWS Lambda --></option>
                 <option value="600">10 min <!-- GAE back-end --></option>
-                <option value="3600">60 min <!-- iron.io --></option>
+                <option value="3600" selected>60 min <!-- iron.io --></option>
                 <option value="43200">12 hrs</option>
                 <option value="86400">24 hrs</option>
                 <option value="259200">96 hrs</option>

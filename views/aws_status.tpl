@@ -39,9 +39,9 @@
     <p> LINK: <a target="_blank" href="http://{{astatus['public_dns_name']}}:{{port}}/">http://{{astatus['public_dns_name']}}:{{port}}</a> <span class="glyphicon glyphicon-new-window"></span></p>
 
     <form class="form-horizontal" action="/zipget">
-        <div class="col-xs-offset-3 col-xs-6 col-xs-offset-3">
+        <div class="col-xs-4 center-block">
             <div class="input-group">
-                <input type="text" class="form-control" size="35" name="cid">
+                <input type="text" class="form-control input-lg" name="cid">
                 <span class="input-group-btn">
                     <input type="submit" class="btn btn-default" value="get case">
                 </span>
@@ -52,7 +52,10 @@
     </form>
     <br><br>
 
-    <button class="btn btn-danger" onclick="stop_ec2()" id="stop_button"> <span class="glyphicon glyphicon-stop"></span> stop machine</button>
+    <div class="col-xs-12 center-block">
+        <button class="btn btn-danger" onclick="stop_ec2()" id="stop_button"> <span class="glyphicon glyphicon-stop"></span> stop machine</button>
+    </div>
+
 %else:
     <meta http-equiv="refresh" content="5">
 %end

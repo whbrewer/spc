@@ -12,7 +12,7 @@ function verifyInstance(itype) {
 }
 
 function del_instance(aid) {
-    $.ajax({ url: "/aws/instance/"+aid, type: "DELETE" })
+    $.ajax({ url: "/aws/instance/" + aid, type: "DELETE" })
     location.reload(true)
 }
 </script>
@@ -62,9 +62,10 @@ function del_instance(aid) {
 <span id="feedback" class="text-danger"></span>
 
 <table class="table table-striped">
-    <thead><tr><th>Intance id</th><th>Type</th><th>Region</th><th>Rate</th><th>Actions</th></thead>
+    <thead><tr><th></th><th>Intance id</th><th>Type</th><th>Region</th><th>Rate</th><th>Actions</th></thead>
     %for i in instances:
         <tr>
+            <td><a onclick="del_instance({{i['id']}})"><span class="glyphicon glyphicon-remove"></span></a></td>
             <td>{{i['instance']}}</td> 
             <td>{{i['itype']}}</td> 
             <td>{{i['region']}}</td> 
@@ -77,8 +78,7 @@ function del_instance(aid) {
                     <option "delete"><span class="glyphicon glyphicon-delete"></span> delete</option>
                 </select> -->
                 <a class="btn btn-default" href="/aws/status/{{i['id']}}"><span class="glyphicon glyphicon-info-sign"></span> status</a> 
-                <a onclick="del_instance({{i['id']}})"><span class="glyphicon glyphicon-remove"></span></a>
-
+  
                 <!--<a href="/aws/start/{{i['id']}}">start</a> -->
                 <!--<a href="/aws/stop/{{i['id']}}">stop</a> -->
             </td>

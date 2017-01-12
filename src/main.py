@@ -309,10 +309,10 @@ def compute_stats(path):
 def tail(app, cid):
     user = authorized()
     # submit num_lines as form parameter
-    # num_lines = int(request.query.num_lines)
+    num_lines = int(request.query.num_lines) or 24
     # if not num_lines or num_lines < 10:
     #     num_lines = 24
-    num_lines = config.tail_num_lines
+    # num_lines = config.tail_num_lines
     progress = 0
     complete = 0
     if config.worker == 'remote':
@@ -705,6 +705,9 @@ def stop_job():
     cid = request.forms.cid
     jid = request.forms.jid
     sched.stop(jid)
+    time.sleep(0.1)
+    jobs(jid).update_record(state="X")
+    db.commit()
     redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
 
 @get('/<app>')

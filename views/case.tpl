@@ -54,10 +54,12 @@
 </form> -->
 
 <script>
+
+num_lines = parseInt(window.innerHeight/25)
+
 function show(update_interval) {
     showOutput = function() {
-       // num_lines = document.nl.num_lines.value;
-       url = '/{{app}}/{{cid}}/tail' //?num_lines='+num_lines
+       url = '/{{app}}/{{cid}}/tail?num_lines='+num_lines
        jQuery('#output').load(url, function(){
           setTimeout(showOutput, update_interval);
           // slow down updates over time to relieve burden on server
