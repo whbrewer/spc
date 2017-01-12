@@ -86,9 +86,10 @@ function del_instance(aid) {
     %end
 
 <form method="POST" action="/aws/instance">
+<td></td>
 <td><input class="form-control" type="text" size=10 name="instance" onkeyup="verifyInstance(this.value)"></td>
 <td>
-<select class="form-control" name="itype">
+<select class="form-control btn-lg" name="itype">
 <option disabled role=separator>General purpose:
 <option value="t1.micro">t1.micro
 <option value="t2.micro">t2.micro
@@ -131,7 +132,7 @@ function del_instance(aid) {
 </td>
 
 <td>
-<select class="form-control" name="region">
+<select class="form-control btn-lg" name="region">
 <option value="ap-northeast-1">  Asia Pacific (Tokyo)
 <option value="ap-southeast-2">  Asia Pacific (Sydney)
 <option value="ap-southeast-1">  Asia Pacific (Singapore)
@@ -147,7 +148,7 @@ function del_instance(aid) {
 
 <td> <input type="number" min="0" step="any" class="form-control" style="width:100px" name="rate"> </td>
 
-<td> <input type="submit" class="btn btn-default" value="Add"> </td>
+<td> <input type="submit" class="btn btn-primary" value="Add"> </td>
 </table>
 </form>
 </fieldset>
