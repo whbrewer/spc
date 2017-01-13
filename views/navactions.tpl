@@ -10,6 +10,27 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
+
+            %if defined('jid'):
+                %if jid > 0:
+                    <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">
+                        <input type="hidden" name="cid" value="{{cid}}">
+                        <input type="hidden" name="app" value="{{app}}">
+                        <input type="hidden" name="jid" value="{{jid}}">
+                        <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
+                    </form>  
+
+                    <button type="button" class="btn btn-danger" 
+                            data-toggle="modal" data-target="#dModal">
+                            <span class="glyphicon glyphicon-trash"></span> Delete
+                    </button>                        
+
+                    <button type="button" class="btn btn-default hidden-xs hidden-sm" data-toggle="modal" 
+                            data-target="#myModal">
+                            <span class="glyphicon glyphicon-tags"></span> Label</button>
+                %end
+            %end
+
             <form class="btn-group hidden-xs" action="/case" method="get">
                 <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
                 </span> Monitor</button>
@@ -63,24 +84,6 @@
                     <button class="btn btn-default"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
                 </form>    
             %end   
-
-            %if defined('jid'):
-                %if jid > 0:
-                    <button type="button" class="btn btn-default hidden-xs hidden-sm" data-toggle="modal" 
-                            data-target="#myModal">
-                            <span class="glyphicon glyphicon-tags"></span> Label</button>
-                    <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">
-                        <input type="hidden" name="cid" value="{{cid}}">
-                        <input type="hidden" name="app" value="{{app}}">
-                        <input type="hidden" name="jid" value="{{jid}}">
-                        <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
-                    </form>  
-                    <button type="button" class="btn btn-danger" 
-                            data-toggle="modal" data-target="#dModal">
-                            <span class="glyphicon glyphicon-trash"></span> Delete
-                    </button>                        
-                %end
-            %end
         </div>
     </div>
 </div>
