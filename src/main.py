@@ -579,8 +579,6 @@ def aws_start(aid):
     a.start()
     # takes a few seconds for the status to change on the Amazon end
     time.sleep(10)
-    astatus = a.status()
-    return True
 
 @delete('/aws/<aid>')
 def aws_stop(aid):
@@ -589,7 +587,6 @@ def aws_stop(aid):
     a.stop()
     # takes a few seconds for the status to change on the Amazon end
     time.sleep(10)
-    return True
 
 @get('/account')
 def get_account():
@@ -748,7 +745,6 @@ def logout():
 
 @get('/static/<filepath:path>')
 def server_static(filepath):
-    user = authorized()
     return static_file(filepath, root='static')
 
 @get('/user_data/<filepath:path>')

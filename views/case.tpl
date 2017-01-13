@@ -73,7 +73,7 @@ function show(update_interval) {
 } 
 
 % if state == "C" or state == "X":
-  show(2**31-1) // don't page reload unless in Run or Queue state
+  show(2147483647) // don't page reload unless in Run or Queue state
 % elif not sched == "ws":
   show(1000) // comment out if using websocket
 % end

@@ -62,6 +62,7 @@
     <div class="col-xs-12 center-block">
         <button class="btn btn-danger" onclick="stop_ec2()" id="stop_button"> <span class="glyphicon glyphicon-stop"></span> stop machine</button>
     </div>
+    <meta http-equiv="refresh" content="10">
 
 %else:
     <meta http-equiv="refresh" content="2">
