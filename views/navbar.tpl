@@ -9,7 +9,7 @@
                     <span class="glyphicon glyphicon-th-large"></span> Apps </button>
                 <button type="submit" class="btn btn-default" formaction="/jobs">
                     <span class="glyphicon glyphicon-tasks"></span> Jobs </button>
-                <button type="submit" class="btn btn-default" formaction="/jobs/shared">
+                <button type="submit" class="btn btn-default hidden-xs" formaction="/jobs/shared">
                     <span class="glyphicon glyphicon-pushpin"></span> Shared </button>
                 <button type="submit" class="btn btn-default" formaction="/chat">
                     <span class="glyphicon glyphicon-comment"></span> Chat 
@@ -25,33 +25,33 @@
             </div>
         </div>
 
-        <div class="hidden-xs">
-        %if defined('app'):
-            %if app != '':
-                <a class="navbar-brand" href="/">
-                    <a href="/static/apps/{{app}}/about.html" 
-                        class="navbar-brand" data-toggle="modal" 
-                        data-target="#footModal">app: {{app}}</a>              
-                </a>
+        <div class="hidden-xs hidden-sm">
+            %if defined('app'):
+                %if app != '':
+                    <a class="navbar-brand" href="/">
+                        <a href="/static/apps/{{app}}/about.html" 
+                            class="navbar-brand" data-toggle="modal" 
+                            data-target="#footModal">app: {{app}}</a>              
+                    </a>
+                %end
+            %end    
+                
+            %if defined("cid"):
+                %if cid != '':
+                    <span class="navbar-brand">case: {{cid}}</span>
+                %end
             %end
-        %end    
-            
-        %if defined("cid"):
-            %if cid != '':
-                <span class="navbar-brand">case: {{cid}}</span>
-            %end
-        %end
 
-        %if defined('status'):
-            <span class="navbar-brand">{{!status}}</span>
-        %end
+            %if defined('status'):
+                <span class="navbar-brand">{{!status}}</span>
+            %end
         </div>
 
         %if True:
 
         <div class="navbar-right hidden-xs" style="margin-right: 5px;">
             %if defined('user'):
-                <label class="navbar-brand hidden-xs">{{user}}</label>
+                <label class="navbar-brand hidden-sm">{{user}}</label>
             %end
             <div class="btn-group">
                 <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">

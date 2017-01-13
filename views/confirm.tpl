@@ -1,18 +1,6 @@
 %include('header')
-<body onload="toggle_np_visibility()">
+<body>
 %include('navbar')
-
-<script>
-function toggle_np_visibility() {
-    var par_system = document.getElementById("par_system").value
-
-    if (par_system == "none") {
-        document.getElementById("np").disabled = true
-    } else {
-        document.getElementById("np").disabled = false
-    }
-}
-</script>
 
 <div class="container-fluid">
 <div class="col-xs-12" style="height:5px"></div>
@@ -26,24 +14,13 @@ function toggle_np_visibility() {
     <div style="height:5px"></div>
 
     <div class="form-group">
-        <div class="col-sm-1">
+        <div class="col-xs-12 col-sm-1">
             <button type="submit" class="btn btn-success"> <!-- pull-right -->
                 Execute <em class="glyphicon glyphicon-play"></em>
             </button>
         </div>
 
         %if nap > 1:
-            <!-- <label for="par_system" class="control-label col-xs-12 col-sm-2">Parallel:</label>
-            <div class="col-xs-12 col-sm-2">
-                <select class="form-control" name="par_system" id="par_system" onchange="toggle_np_visibility()">
-                    <option value="none" selected>None</option>
-                    <option value="mpich">MPICH</option>
-                    <option value="openmp">OpenMP</option>
-                    <option value="hadoop">Hadoop</option>
-                    <option value="spark">Spark</option>
-                </select>
-            </div> -->
-
             <label for="np" class="control-label col-xs-12 col-sm-3"># Processors:</label>
             <div class="col-xs-12 col-sm-1">
                 <select name="np" id="np" class="btn-group form-control" title="Number of processors to use">

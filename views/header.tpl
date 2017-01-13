@@ -38,7 +38,8 @@
 
         .navbar-inverse {
             border-bottom-color: #0099CC;
-            background-color: #0f0f0f; opacity: 0.9; 
+            background-color: #202020; opacity: 0.9; 
+            border-bottom-width: 2px;
         }       
 
     </style>

@@ -26,11 +26,12 @@
     position: fixed;
     top: 50%;
     left: -15px;
+    width: 10px;
     z-index: 10;
-      transform: rotate(-90deg);
+/*      transform: rotate(-90deg);
       -webkit-transform: rotate(-90deg); 
       -moz-transform: rotate(-90deg); 
-      -o-transform: rotate(-90deg); 
+      -o-transform: rotate(-90deg); */
 }
 
 textarea {
@@ -108,4 +109,8 @@ border-color: #f0ad4e;
 .bs-callout-info {
 background-color: #f0f7fd;
 border-color: #5bc0de;
+}
+
+input[type=text] {
+background-color:#faffbd
 }
