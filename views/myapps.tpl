@@ -41,20 +41,26 @@
     <div class="row">
       % for row in rows:
         <div class="panel panel-primary">
-          <div class="panel-heading"><h2>{{row['apps.name']}}</h2></div>
-          <a style="text-decoration:none" href="/{{row['apps.name']}}">
+            <button type="button" class="btn btn-link pull-right" onclick="removeapp('{{row['apps.name']}}')" style="color:white"><span class="glyphicon glyphicon-remove"</span></button>
+
+          <div class="panel-heading"><h2>{{row['apps.name']}}</h2>
+            <a style="text-decoration:none" href="/{{row['apps.name']}}">
+          </div>
+
           <div class="panel-body"><h4>{{row['apps.description']}}</h4></div>
-          <div class="panel-footer">category: {{row['apps.category']}}</div></a>
-          <button type="button" class="btn btn-warning" onclick="removeapp('{{row['apps.name']}}')">Deactivate</button>
-          <!-- <a href="javascript:removeapp('{{row['apps.name']}}')"><span class="glyphicon glyphicon-minus-sign"></span></a> -->
-          %if configurable:
-            <a href="/app/{{row['apps.name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog"></span></a>
-          %end
+
+          <div class="panel-footer">category: {{row['apps.category']}}</a>
+            <!-- <a href="javascript:removeapp('{{row['apps.name']}}')"><span class="glyphicon glyphicon-minus-sign"></span></a> -->
+            %if configurable:
+              <a href="/app/{{row['apps.name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog"></span></a>
+            %end
+          </div>
+
         </div>
-      <br>
       %end
     </div>
   </div>
+
 </div>
 
 <script>
