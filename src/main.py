@@ -359,8 +359,7 @@ def tail(app, cid):
 
 @get('/')
 def root():
-    if config.auth and not authorized(): redirect('/login')
-    #return template('overview')
+    user = authorized()
     redirect('/myapps')
 
 @get('/jobs')
@@ -504,6 +503,13 @@ def post_aws_creds():
     db.commit()
     redirect('/aws')
 
+@delete('/aws/creds/<id>')
+def aws_cred_del(id):
+    user = authorized()
+    del db.aws_creds[id]
+    db.commit()
+    redirect('/aws')
+
 @post('/aws/instance')
 def create_instance():
     """create instance"""
@@ -519,19 +525,13 @@ def create_instance():
 
 @delete('/aws/instance/<aid>')
 def del_instance(aid):
+    user = authorized()
     try:
         del aws_instances[aid]
         db.commit()
         return "true"
     except:
         return "false"
-
-@post('/aws/cred/delete')
-def aws_cred_del():
-    id = request.forms.id
-    del db.aws_creds[id]
-    db.commit()
-    redirect('/aws')
 
 def aws_conn(id):
     """create a connection to the EC2 machine and return the handle"""
@@ -615,6 +615,7 @@ def annotate_job():
 
 @post('/jobs/star')
 def star_case():
+    user = authorized()
     jid = request.forms.jid
     jobs(id=jid).update_record(starred="True")
     db.commit()
@@ -622,6 +623,7 @@ def star_case():
 
 @post('/jobs/unstar')
 def unstar_case():
+    user = authorized()
     jid = request.forms.jid
     jobs(id=jid).update_record(starred="False")
     db.commit()
@@ -746,14 +748,17 @@ def logout():
 
 @get('/static/<filepath:path>')
 def server_static(filepath):
+    user = authorized()
     return static_file(filepath, root='static')
 
 @get('/user_data/<filepath:path>')
 def user_data(filepath):
+    user = authorized()
     return static_file(filepath, root='user_data')
 
 @get('/download/<filepath:path>')
 def download(filepath):
+    user = authorized()
     return static_file(filepath, root='download', download=filepath)
 
 @get('/favicon.ico')
@@ -985,6 +990,7 @@ def app_edit(appid):
 
 @post('/app/save/<appid>')
 def app_save(appid):
+    user = authorized()
     app = request.forms.app
     cmd = request.forms.command
     lang = request.forms.language
@@ -1097,6 +1103,7 @@ def editplot():
 
 @get('/plots/delete/<pltid>')
 def delete_plot(pltid):
+    user = authorized()
     app = request.query.app
     cid = request.query.cid
     del db.plots[pltid]
@@ -1117,6 +1124,7 @@ def get_datasource(pltid):
 
 @post('/plots/datasource_add')
 def add_datasource():
+    user = authorized()
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     pltid = request.forms.get('pltid')
@@ -1128,6 +1136,7 @@ def add_datasource():
 
 @post('/plots/datasource_delete')
 def delete_plot():
+    user = authorized()
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     pltid = request.forms.get('pltid')
@@ -1138,6 +1147,7 @@ def delete_plot():
 
 @post('/plots/create')
 def create_plot():
+    user = authorized()
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
@@ -1515,6 +1525,7 @@ def addapp():
 
 @get('/appconfig/status')
 def appconfig_status():
+    user = authorized()
     status = dict()
     app = request.query.app
     # check db file
