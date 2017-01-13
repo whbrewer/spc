@@ -20,6 +20,12 @@
     } 
 </script>
 
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/aws">AWS</a></li>
+  <li class="active">Status</li>
+</ol>
+
 <h1>Status of EC2 machine</h1>
 
 <pre>

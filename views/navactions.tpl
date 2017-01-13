@@ -4,7 +4,7 @@
     <div class="col-xs-12">
         <div class="btn-group">
             <form class="btn-group" action="/start" method="get">
-                <button class="btn btn-default">
+                <button class="btn btn-success">
                     <span class="glyphicon glyphicon-repeat"></span> Restart
                 </button>
                 <input type="hidden" name="cid" value="{{cid}}">
@@ -30,7 +30,7 @@
                     <span class="glyphicon glyphicon-stats"></span> Plot
                 </button>
             </form>
-            <form class="btn-group hidden-xs hidden-sm" action="/zipcase" method="get">
+            <form class="btn-group hidden-xs hidden-sm hidden-md" action="/zipcase" method="get">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-cloud-download"></span> Download
                 </button>
@@ -43,40 +43,43 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form> -->
-            <form class="btn-group hidden-xs" method="get" action="/inputs?cid={{cid}}&app={{app}}">
+            <form class="btn-group hidden-xs hidden-sm hidden-md" method="get" action="/inputs?cid={{cid}}&app={{app}}">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-wrench"></span> Inputs</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
-            <form class="btn-group hidden-xs" method="get" action="/output?cid={{cid}}&app={{app}}">
+            <form class="btn-group hidden-xs hidden-sm hidden-md" method="get" action="/output?cid={{cid}}&app={{app}}">
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
                 <button class="btn btn-default"><span class="glyphicon glyphicon-file"></span> Output</button>
             </form>
+
             %if defined('plotpath'):  
-            <form class="btn-group" role="form" action="/more" method="get">
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-                <input type="hidden" name="filepath" value="{{plotpath}}">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
-            </form>    
-            %end            
-            %if defined('jid'):
-            %if jid > 0:
-                <button type="button" class="btn btn-default hidden-xs hidden-sm" data-toggle="modal" 
-                        data-target="#myModal">
-                        <span class="glyphicon glyphicon-tags"></span> Label</button>
-                <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">
+                <form class="btn-group" role="form" action="/more" method="get">
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
-                    <input type="hidden" name="jid" value="{{jid}}">
-                    <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
-                </form>  
-                <button type="button" class="btn btn-danger" data-toggle="modal" 
-                        data-target="#dModal">
-                        <span class="glyphicon glyphicon-trash"></span> Delete</button>                        
-            %end
+                    <input type="hidden" name="filepath" value="{{plotpath}}">
+                    <button class="btn btn-default"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
+                </form>    
+            %end   
+
+            %if defined('jid'):
+                %if jid > 0:
+                    <button type="button" class="btn btn-default hidden-xs hidden-sm" data-toggle="modal" 
+                            data-target="#myModal">
+                            <span class="glyphicon glyphicon-tags"></span> Label</button>
+                    <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">
+                        <input type="hidden" name="cid" value="{{cid}}">
+                        <input type="hidden" name="app" value="{{app}}">
+                        <input type="hidden" name="jid" value="{{jid}}">
+                        <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
+                    </form>  
+                    <button type="button" class="btn btn-danger" 
+                            data-toggle="modal" data-target="#dModal">
+                            <span class="glyphicon glyphicon-trash"></span> Delete
+                    </button>                        
+                %end
             %end
         </div>
     </div>
