@@ -37,11 +37,17 @@
 		    background-color: #F8F8F8; opacity: 0.9; 
 		}
 
-        .navbar-inverse {
+        #navbar {
             border-bottom-color: #0099CC;
+            border-bottom-width: 2px; 
             background-color: #202020; opacity: 0.9; 
-            border-bottom-width: 2px;
-        }       
+        }  
+
+        #navaction {
+            border-top-color: #0099CC; /*#CC7400;*/
+            border-top-width: 2px;
+            background-color: #404040; opacity: 0.9; 
+        }
 
     </style>
 

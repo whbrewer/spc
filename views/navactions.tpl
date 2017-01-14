@@ -1,6 +1,8 @@
-<div class="visible-xs" style="height:10px"></div>
 
-<div id="navaction" class="container-fluid navbar navbar-default navbar-fixed-bottom" style="padding-left:0px">
+<div id="navaction" class="container-fluid navbar navbar-inverse navbar-fixed-bottom" style="padding-left:0px;padding-top:10px">
+
+    <div class="visible-xs" style="height:10px"></div>
+
     <div class="col-xs-12">
         <div class="btn-group">
             <form class="btn-group" action="/start" method="get">
@@ -31,19 +33,6 @@
                 %end
             %end
 
-            <form class="btn-group hidden-xs" action="/case" method="get">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
-                </span> Monitor</button>
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-            </form>
-            <form class="btn-group hidden-xs" action="/files" method="get">
-                <button class="btn btn-default">
-                    <span class="glyphicon glyphicon-folder-open"></span> Files
-                </button>
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-            </form>
             <form class="btn-group" action="/plot/0" method="get">
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
@@ -51,6 +40,22 @@
                     <span class="glyphicon glyphicon-stats"></span> Plot
                 </button>
             </form>
+            
+            <form class="btn-group hidden-xs" action="/case" method="get">
+                <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
+                </span> Monitor</button>
+                <input type="hidden" name="cid" value="{{cid}}">
+                <input type="hidden" name="app" value="{{app}}">
+            </form>
+
+            <form class="btn-group hidden-xs" action="/files" method="get">
+                <button class="btn btn-default">
+                    <span class="glyphicon glyphicon-folder-open"></span> Files
+                </button>
+                <input type="hidden" name="cid" value="{{cid}}">
+                <input type="hidden" name="app" value="{{app}}">
+            </form>
+
             <form class="btn-group hidden-xs hidden-sm hidden-md" action="/zipcase" method="get">
                 <button class="btn btn-default">
                     <span class="glyphicon glyphicon-cloud-download"></span> Download
