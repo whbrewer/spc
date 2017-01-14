@@ -45,7 +45,6 @@ function toggleAddInstance() {
     <th>account_id</th>
     <th>secret</th>
     <th>key</th>
-    <th>action</th>
 </tr>
 </thead>
 %if creds:

@@ -40,46 +40,6 @@
                     <span class="glyphicon glyphicon-stats"></span> Plot
                 </button>
             </form>
-            
-            <form class="btn-group hidden-xs" action="/case" method="get">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
-                </span> Monitor</button>
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-            </form>
-
-            <form class="btn-group hidden-xs" action="/files" method="get">
-                <button class="btn btn-default">
-                    <span class="glyphicon glyphicon-folder-open"></span> Files
-                </button>
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-            </form>
-
-            <form class="btn-group hidden-xs hidden-sm hidden-md" action="/zipcase" method="get">
-                <button class="btn btn-default">
-                    <span class="glyphicon glyphicon-cloud-download"></span> Download
-                </button>
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-            </form>
-            <!-- <form class="btn-group hidden-xs hidden-sm" action="/zipget" method="get">
-                <button class="btn btn-default">
-                    <span class="glyphicon glyphicon-transfer"></span> Fetch</button>
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-            </form> -->
-            <form class="btn-group hidden-xs hidden-sm hidden-md" method="get" action="/inputs?cid={{cid}}&app={{app}}">
-                <button class="btn btn-default">
-                    <span class="glyphicon glyphicon-wrench"></span> Inputs</button>
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-            </form>
-            <form class="btn-group hidden-xs hidden-sm hidden-md" method="get" action="/output?cid={{cid}}&app={{app}}">
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-file"></span> Output</button>
-            </form>
 
             %if defined('plotpath'):  
                 <form class="btn-group" role="form" action="/more" method="get">
@@ -88,7 +48,70 @@
                     <input type="hidden" name="filepath" value="{{plotpath}}">
                     <button class="btn btn-default"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
                 </form>    
-            %end   
+            %end  
+            
+            <form class="btn-group hidden-xs" action="/case" method="get">
+                <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
+                </span> Monitor</button>
+                <input type="hidden" name="cid" value="{{cid}}">
+                <input type="hidden" name="app" value="{{app}}">
+            </form>
+
+            <div class="btn-group dropdown">
+
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-folder-open"></span> Files <span class="glyphicon glyphicon-chevron-up"></span>
+                </button>
+
+                <ul class="dropdown-menu" style="background-color:#404040;opacity:0.9;padding:10px">
+                    <li> 
+                        <form class="btn-group" action="/files" method="get">
+                            <button class="btn btn-default" style="width:200px">
+                                <span class="glyphicon glyphicon-folder-open"></span> Browse Files</span>
+                            </button>
+                            <input type="hidden" name="cid" value="{{cid}}">
+                            <input type="hidden" name="app" value="{{app}}">
+                        </form>
+                    </li>
+
+                    <li>
+                        <form class="btn-group" action="/zipcase" method="get">
+                            <button class="btn btn-default" style="width:200px">
+                                <span class="glyphicon glyphicon-cloud-download"></span> Download
+                            </button>
+                            <input type="hidden" name="cid" value="{{cid}}">
+                            <input type="hidden" name="app" value="{{app}}">
+                        </form>
+                    </li>
+
+                    <li>
+                        <form class="btn-group" method="get" action="/inputs?cid={{cid}}&app={{app}}">
+                            <button class="btn btn-default" style="width:200px">
+                                <span class="glyphicon glyphicon-wrench"></span> Inputs</button>
+                            <input type="hidden" name="cid" value="{{cid}}">
+                            <input type="hidden" name="app" value="{{app}}">
+                        </form>
+                    </li>
+
+                    <li>
+                        <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
+                            <button class="btn btn-default" style="width:200px"><span class="glyphicon glyphicon-file"></span> Output</button>
+                            <input type="hidden" name="cid" value="{{cid}}">
+                            <input type="hidden" name="app" value="{{app}}">
+                        </form>       
+                    </li>      
+
+                </ul>
+
+            </div>
+
+            <!-- <form class="btn-group hidden-xs hidden-sm" action="/zipget" method="get">
+                <button class="btn btn-default">
+                    <span class="glyphicon glyphicon-transfer"></span> Fetch</button>
+                <input type="hidden" name="cid" value="{{cid}}">
+                <input type="hidden" name="app" value="{{app}}">
+            </form> -->
+ 
         </div>
     </div>
 </div>
@@ -148,6 +171,17 @@
 %end
 %end
 %end
+
+<script>
+// Dropdown Menu Fade    
+jQuery(document).ready(function(){
+    $(".dropdown").hover(
+        function() { $('.dropdown-menu', this).fadeIn("fast");
+        },
+        function() { $('.dropdown-menu', this).fadeOut("fast");
+    });
+});
+</script>
 
 
 

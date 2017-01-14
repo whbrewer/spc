@@ -39,6 +39,7 @@
 
 %if astatus['state']=="stopped":
     <button class="btn btn-success" onclick="start_ec2()" id="start_button"> <span class="glyphicon glyphicon-play"></span> start machine</button>
+    <meta http-equiv="refresh" content="10">
 
 %elif astatus['state']=="running":
 
