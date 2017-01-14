@@ -31,6 +31,11 @@ class Scheduler(object):
 
     def assignTask(self):
         global myjobs
+        # set time zone
+        try:
+            os.environ['TZ'] = config.time_zone
+            time.tzset()
+        except: pass
         manager = Manager()
         myjobs = manager.dict()
         while(True):
