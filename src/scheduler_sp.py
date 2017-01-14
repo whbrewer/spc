@@ -45,6 +45,11 @@ class Scheduler(object):
         myset = db(db.jobs.state == 'R')
         myset.update(state='X')
         db.commit()
+        # set time zone
+        try:
+            os.environ['TZ'] = config.time_zone
+            time.tzset()
+        except: pass
 
     def poll(self):
         # start polling thread

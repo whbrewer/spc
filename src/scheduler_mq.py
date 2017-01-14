@@ -50,6 +50,11 @@ class Scheduler(object):
         myset = db(db.jobs.state == 'R')
         myset.update(state='X')
         db.commit()
+        # set time zone
+        try:
+            os.environ['TZ'] = config.time_zone
+            time.tzset()
+        except: pass
 
     def callback(self, ch, method, properties, body):
         print(" [x] Received %r" % body)

@@ -23,6 +23,11 @@ class Scheduler(object):
         db.commit()
         self.sem = BoundedSemaphore(config.np)
         self.mutex = Lock()
+        # set time zone
+        try:
+            os.environ['TZ'] = config.time_zone
+            time.tzset()
+        except: pass
 
     def poll(self):
         """start polling thread which checks queue status every second"""
@@ -31,11 +36,6 @@ class Scheduler(object):
 
     def assignTask(self):
         global myjobs
-        # set time zone
-        try:
-            os.environ['TZ'] = config.time_zone
-            time.tzset()
-        except: pass
         manager = Manager()
         myjobs = manager.dict()
         while(True):

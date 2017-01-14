@@ -28,7 +28,7 @@ except ImportError:
 # requires gevent and gevent-websocket
 try:
     import scheduler_ws
-    import chat
+    if sched == "sp": import chat
 except ImportError:
     print "INFO: scheduler_ws and chat not imported because gevent and/or gevent-websocket not installed"
 
