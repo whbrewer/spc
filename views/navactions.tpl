@@ -26,10 +26,6 @@
                             data-toggle="modal" data-target="#dModal">
                             <span class="glyphicon glyphicon-trash"></span> Delete
                     </button>                        
-
-                    <button type="button" class="btn btn-default hidden-xs hidden-sm" data-toggle="modal" 
-                            data-target="#myModal">
-                            <span class="glyphicon glyphicon-tags"></span> Label</button>
                 %end
             %end
 
@@ -63,7 +59,7 @@
                         <span class="glyphicon glyphicon-folder-open"></span> Files <span class="glyphicon glyphicon-chevron-up"></span>
                 </button>
 
-                <ul class="dropdown-menu" style="background-color:#404040;opacity:0.9;padding:10px">
+                <ul class="dropdown-menu" style="background-color:#404040;padding:10px">
                     <li> 
                         <form class="btn-group" action="/files" method="get">
                             <button class="btn btn-default" style="width:200px">

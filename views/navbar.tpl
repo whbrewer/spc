@@ -26,28 +26,30 @@
         </div>
 
         <div class="hidden-xs hidden-sm">
-            %if defined('app'):
+            %if defined('app') and defined('cid'):
+                %if app != '' and cid != '':
+                    <a href="/static/apps/{{app}}/about.html" 
+                        class="navbar-brand" data-toggle="modal" 
+                        data-target="#footModal">{{app}}/{{cid}}</a>              
+                %end
+            %elif defined('app'):
                 %if app != '':
-                    <a class="navbar-brand" href="/">
-                        <a href="/static/apps/{{app}}/about.html" 
-                            class="navbar-brand" data-toggle="modal" 
-                            data-target="#footModal">app: {{app}}</a>              
-                    </a>
+                    <a href="/static/apps/{{app}}/about.html" 
+                        class="navbar-brand" data-toggle="modal" 
+                        data-target="#footModal">{{app}}</a>              
                 %end
             %end    
-                
-            %if defined("cid"):
-                %if cid != '':
-                    <span class="navbar-brand">case: {{cid}}</span>
-                %end
-            %end
 
             %if defined('status'):
                 <span class="navbar-brand">{{!status}}</span>
             %end
+
+            %if defined('description'):
+                <a class="navbar-brand" data-toggle="modal" data-target="#myModal">
+                {{description}}</a>
+            %end
         </div>
 
-        %if True:
 
         <div class="navbar-right hidden-xs" style="margin-right: 5px;">
             %if defined('user'):
@@ -72,7 +74,6 @@
                 </ul>
             </div>
         </div>
-        %end
 
     </div>
 </div>
