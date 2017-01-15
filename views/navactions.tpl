@@ -25,7 +25,7 @@
                     <button type="button" class="btn btn-danger" 
                             data-toggle="modal" data-target="#dModal">
                             <span class="glyphicon glyphicon-trash"></span> Delete
-                    </button>                        
+                    </button>
                 %end
             %end
 
@@ -157,8 +157,7 @@
                     name="description" value="{{description}}">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-default">Save changes</button>
+                    <button type="submit" class="btn btn-success center-block">Save changes</button>
                 </div>
             </form>
         </div>
