@@ -36,13 +36,19 @@ except ImportError:
 try:
     import aws as awsmod
 except ImportError:
-    print "INFO: disabling AWS menu because boto not installed"
+    print "INFO: disabling AWS menu because boto module not installed"
 
 # requires docker-py
 try:
     import container as dockermod
 except ImportError:
-    print "INFO: docker options disabled because docker-py is not installed"
+    print "INFO: docker options disabled because docker-py module not installed"
+
+#
+try:
+    import psutil
+except ImportError:
+    print "INFO: /stats page disabed because psutil module not installed"
 
 # data access layer
 #from gluino import DAL, Field
@@ -587,6 +593,22 @@ def aws_stop(aid):
     a.stop()
     # takes a few seconds for the status to change on the Amazon end
     time.sleep(10)
+
+@get('/stats')
+def get_stats():
+    user = authorized()
+
+    params = {}
+
+    # number of jobs in queued, running, and completed states
+    params['nq'] = db(jobs.state=='Q').count()
+    params['nr'] = db(jobs.state=='R').count()
+    params['nc'] = db(jobs.state=='C').count()
+
+    params['cpu'] = psutil.cpu_percent()
+    params['vm'] = psutil.virtual_memory()
+
+    return template("stats", params)
 
 @get('/account')
 def get_account():
