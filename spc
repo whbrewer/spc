@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys, os, shutil, urllib2, time
 if os.path.exists("src/config.py"):
-    from src import config, model2
+    from src import config, migrate
 import xml.etree.ElementTree as ET
 import hashlib, re
 
@@ -73,7 +73,7 @@ def create_config_file():
 
 def initdb():
     """Initializes database file"""
-    from src import config, model2
+    from src import config, migrate
 
     # create db directory if it doesn't exist
     if not os.path.exists(config.dbdir):
@@ -95,7 +95,7 @@ def initdb():
     dbpath = os.path.join(config.dbdir, config.db)
     if os.path.isfile(dbpath): os.remove(dbpath)
     # create db
-    dal = model2.dal(uri=config.uri, migrate=True)
+    dal = migrate.dal(uri=config.uri, migrate=True)
 
     # add guest and admin user
     hashpw = hashlib.sha256("guest").hexdigest()
@@ -129,8 +129,8 @@ def initdb():
 
 def migrate():
     """Migrate DB schema changes"""
-    from src import model2
-    dal = model2.dal(uri=config.uri, migrate=True)
+    from src import migrate
+    dal = migrate.dal(uri=config.uri, migrate=True)
 
 notyet = "this feature not yet working"
 
@@ -187,7 +187,7 @@ if __name__ == "__main__":
             app = sys.argv[2]
             a = appmod.App(app)
             # connect to db
-            dal = model2.dal(uri=config.uri)
+            dal = migrate.dal(uri=config.uri)
             result = dal.db(dal.db.apps.name==app).select()
             if result:
                 appid = dal.db(dal.db.apps.name==app).select().first()["id"]
@@ -245,7 +245,7 @@ if __name__ == "__main__":
 
             # read the json app config file and insert info into db
             import json
-            from src import model2
+            from src import migrate
             path = app_dir_name + os.sep + "spc.json"
             with open(path,'r') as f: 
                 data = f.read()
@@ -259,7 +259,7 @@ if __name__ == "__main__":
             shutil.move(app_dir_name,app_path)
 
             # connect to db
-            dal = model2.dal(uri=config.uri) 
+            dal = migrate.dal(uri=config.uri) 
 
             # check if app already exists before preceding
             result = dal.db(dal.db.apps.name==parsed['name']).select().first()
@@ -324,7 +324,7 @@ if __name__ == "__main__":
         list_usage = "usage: spc list [available|installed]"
         if (len(sys.argv) == 3):
             if (sys.argv[2] == "installed"):
-                dal = model2.dal(uri=config.uri)
+                dal = migrate.dal(uri=config.uri)
                 result = dal.db().select(dal.db.apps.ALL)
                 for r in result: print r.name 
             elif (sys.argv[2] == "available"):

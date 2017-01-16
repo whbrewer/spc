@@ -4,7 +4,6 @@ import config
 class dal(object):
     def __init__(self, uri=config.uri, migrate=False):
 
-        #self.db = DAL(uri, auto_import=True, migrate=migrate, folder=config.dbdir)
         self.db = DAL(uri, migrate=migrate, folder=config.dbdir)
 
         # must define these here because need to use the db instance
