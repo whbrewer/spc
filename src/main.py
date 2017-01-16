@@ -610,6 +610,13 @@ def get_stats():
 
     return template("stats", params)
 
+@get('/stats/mem')
+def get_stats_mem():
+    res = {}
+    res['mem'] = psutil.virtual_memory().percent
+    res['cpu'] = psutil.cpu_percent()
+    return json.dumps(res)
+
 @get('/account')
 def get_account():
     user = authorized()

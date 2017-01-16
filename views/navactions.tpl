@@ -107,8 +107,11 @@
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form> -->
- 
+
         </div>
+
+        <span id="stats" class="navbar-brand navbar-right"></span>
+
     </div>
 </div>
 
@@ -175,6 +178,16 @@ jQuery(document).ready(function(){
         },
         function() { $('.dropdown-menu', this).fadeOut("fast");
     });
+
+    function pollStats(){
+        $.get('stats/mem', function(data) {
+            var obj = $.parseJSON(data)
+            $('#stats').html("<tt>CPU: " + obj.cpu + "% MEM: " + obj.mem + "%</tt>");  
+            setTimeout(pollStats,5000);
+        });
+    }
+    pollStats()
+
 });
 </script>
 
