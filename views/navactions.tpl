@@ -22,7 +22,7 @@
                         <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
                     </form>  
 
-                    <button type="button" class="btn btn-danger" 
+                    <button type="button" class="btn btn-danger hidden-xs" 
                             data-toggle="modal" data-target="#dModal">
                             <span class="glyphicon glyphicon-trash"></span> Delete
                     </button>
@@ -42,7 +42,7 @@
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="filepath" value="{{plotpath}}">
-                    <button class="btn btn-default"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
+                    <button class="btn btn-default hidden-xs"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
                 </form>    
             %end  
             
@@ -53,7 +53,7 @@
                 <input type="hidden" name="app" value="{{app}}">
             </form>
 
-            <div class="btn-group dropdown">
+            <div class="btn-group dropdown hidden-xs">
 
                 <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                         <span class="glyphicon glyphicon-folder-open"></span> Files <span class="glyphicon glyphicon-chevron-up"></span>
@@ -110,7 +110,7 @@
 
         </div>
 
-        <span id="stats" class="navbar-brand navbar-right"></span>
+        <span id="stats" class="navbar-brand navbar-right hidden-xs hidden-sm"></span>
 
     </div>
 </div>
@@ -186,7 +186,10 @@ jQuery(document).ready(function(){
             setTimeout(pollStats,5000);
         });
     }
-    pollStats()
+
+    if ($(window).width() >= 768) {
+        pollStats()
+    }
 
 });
 </script>
