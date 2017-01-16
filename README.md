@@ -64,7 +64,7 @@
 
           `> docker run -d -P willscott/spc`
 
-## Dependencies
+## Optional Dependencies
 
 * matplotlib >= 1.3.1 (optional-used to support matplotlib plotting)
 * docker-py >= 1.1.0 (optional-used to support containers)
@@ -74,6 +74,7 @@
 * pika > 0.10.0 and RabbitMQ (optionally-required when using RabbitMQ for scheduling)
 * PyYAML >= 3.11 (optional-required for supporting YAML input files)
 * requests >= 2.9.1 (optional-required if using remote worker nodes)
+* psutil >= 5.0.1 (optional-required for monitoring CPU and Memory useage during runs)
 
 ## Questions
 
