@@ -48,6 +48,7 @@
                 <option value="43200">12 hrs</option>
                 <option value="86400">24 hrs</option>
                 <option value="259200">96 hrs</option>
+                <option value="2147483647">Unlimited</option>
             </select>
         </div>
 
