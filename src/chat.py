@@ -43,7 +43,8 @@ def main():
     # clear number of unread messages for current user
     users(user=user).update_record(unread_messages=0)
     db.commit()
-    return template('chat', messages=cache)
+    params = {'user': user}
+    return template('chat', params, messages=cache)
 
 @app.route('/chat/get_messages')
 def get_messages():

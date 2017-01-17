@@ -1,7 +1,7 @@
 %include('header.tpl')
 %include('navbar.tpl')
 
-<body>
+<body id="chat_page">
 
 <div style="font-size:12pt; position:absolute; bottom:0px; left:10px; right:10px">
 <div id="inbox" style="font-size:12pt">
@@ -21,7 +21,6 @@
 %from bottle import url
 
 <script src="{{ url("static", filename='jquery-2.1.4.min.js') }}" type="text/javascript"></script>
-<script src="/static/js/chat.js" type="text/javascript"></script>
 
 <script>
 $("body").onload = "document.getElementById('#message').focus()"

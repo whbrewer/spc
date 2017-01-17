@@ -11,7 +11,7 @@
 
                         <button type="submit" class="btn btn-default" formaction="/jobs"><span class="glyphicon glyphicon-tasks"></span> Jobs </button>
 
-                        <button type="submit" class="btn btn-default hidden-xs" formaction="/jobs/shared"><span class="glyphicon glyphicon-pushpin"></span> Shared </button>
+                        <button type="submit" class="btn btn-default hidden-xs" formaction="/jobs/shared"><span class="glyphicon glyphicon-pushpin"></span> Shared <span class="badge" style="background-color:tomato" id="new_shared_jobs"></span></button>
 
                         <button type="submit" class="btn btn-default" formaction="/chat">
                             <span class="glyphicon glyphicon-comment"></span> Chat 
@@ -97,33 +97,33 @@
 
 <script>
 $(document).ready(function () {
-    setInterval(checkForMessages, 5000);
-    //setInterval("checkForNewSharedCases()", 12000)
+    setInterval(checkForNotifications, 5000);
 });
 
-function checkForMessages() {
-    $.get( "/chat/unread_messages", function( data ) {
-        if (eval(data) > 0) {
-            if ( $( "#inbox" ).length ) {
+function checkForNotifications() {
+    $.get( "/notifications", function( data ) {
+        var obj = $.parseJSON(data)
+
+        if (eval(obj.unread_messages) > 0) {
+            if ( $( "#chat_page" ).length ) {
                 location.reload()
             } else {
-                $("#unread_messages").text(data)
+                $("#unread_messages").html(obj.unread_messages)
             }
         } else {
-            $("#unread_messages").text("")
+            $("#unread_messages").html("")
+        }
+
+        if (eval(obj.new_shared_jobs) > 0) {
+            $("#new_shared_jobs").html(obj.new_shared_jobs)
+            if ( $( "#shared_page" ).length ) {
+                location.reload()
+            }
+        } else {
+            $("#new_shared_jobs").html("")
         }
     });
 }
-
-// function checkForNewSharedCases() {
-//     $.get( "/jobs/shared/update", function( data ) {
-//         if (eval(data) > 0) {
-//             $("#unread_messages").text(data)
-//         } else {
-//             $("#unread_messages").text("")
-//         }
-//     });
-// }
 
 function toggleChatBox() {
     id = "#chatbox"

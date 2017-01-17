@@ -666,6 +666,11 @@ def share_case():
     jid = request.forms.jid
     jobs(id=jid).update_record(shared="True")
     db.commit()
+    # increase count in database for every user
+    for u in db().select(users.ALL):
+        nmsg = users(user=u.user).new_shared_jobs or 0
+        users(user=u.user).update_record(new_shared_jobs=nmsg+1)
+    db.commit()    
     redirect('/jobs')
 
 @post('/jobs/unshare')
@@ -691,6 +696,10 @@ def get_shared():
         n = int(n)
     # sort by descending order of jobs.id
     result = db((db.jobs.shared=="True") & (db.jobs.uid==users.id)).select(orderby=~jobs.id)[:n]
+
+    # clear notifications
+    users(user=user).update_record(new_shared_jobs=0)
+    db.commit()
 
     params = {}
     params['cid'] = cid
@@ -1777,6 +1786,14 @@ def edit_inputs(step):
 #    path = os.path.join(config.apps_dir, appname, fn)
 #    params = {'fn': fn, 'contents': slurp_file(path), 'appname': appname }
 #    return template('appconfig/step3', params)
+
+@get('/notifications')
+def get_notifications():
+    user = authorized()
+    response = dict()
+    response['unread_messages'] = users(user=user).unread_messages
+    response['new_shared_jobs'] = users(user=user).new_shared_jobs
+    return json.dumps(response)
 
 @post('/upload')
 def upload_data():

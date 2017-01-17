@@ -10,7 +10,7 @@
 </style>
 </head>
 
-<body onload="init()">
+<body id="shared_page">
 %include('navbar')
 
 <h1 align=center>Shared Cases</h1>

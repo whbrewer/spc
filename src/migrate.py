@@ -12,6 +12,7 @@ class dal(object):
                                          Field('passwd','string'),
                                          Field('email','string'),
                                          Field('unread_messages','integer'),
+                                         Field('new_shared_jobs','integer'),
                                          Field('priority','integer'))
 
         self.apps = self.db.define_table('apps', Field('id','integer'),

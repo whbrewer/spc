@@ -10,6 +10,7 @@ users = db.define_table('users', Field('id','integer'),
                                  Field('passwd','string'),
                                  Field('email','string'),
                                  Field('unread_messages','integer'),
+                                 Field('new_shared_jobs','integer'),
                                  Field('priority','integer'))
 
 # this is also defined in scheduler.py
