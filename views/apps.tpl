@@ -23,7 +23,7 @@
 
   <div class="hidden-xs col-md-4">
     <form role="form" action="/apps">
-      <input name="q" type="text" class="form-control input-mg"
+      <input name="q" type="text" class="form-control input-lg"
              onchange="show(this.value)" placeholder="Search for apps...">
     </form>
   </div>

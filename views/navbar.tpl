@@ -49,7 +49,7 @@
 
                     %if defined('description'):
                         <a class="navbar-brand" data-toggle="modal" data-target="#myModal">
-                        {{description}}</a>
+                        Tags: {{description}}</a>
                     %end
                 </div>
 

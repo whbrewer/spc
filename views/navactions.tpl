@@ -29,6 +29,13 @@
                 %end
             %end
 
+            <form class="btn-group hidden-xs" action="/case" method="get">
+                <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
+                </span> Monitor</button>
+                <input type="hidden" name="cid" value="{{cid}}">
+                <input type="hidden" name="app" value="{{app}}">
+            </form>
+
             <form class="btn-group" action="/plot/0" method="get">
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
@@ -42,16 +49,17 @@
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="filepath" value="{{plotpath}}">
-                    <button class="btn btn-default hidden-xs"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
+                    <button class="btn btn-warning hidden-xs"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
                 </form>    
             %end  
             
-            <form class="btn-group hidden-xs" action="/case" method="get">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
-                </span> Monitor</button>
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="app" value="{{app}}">
-            </form>
+            <li>
+                <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
+                    <button class="btn btn-default" style="width:200px"><span class="glyphicon glyphicon-file"></span> Output</button>
+                    <input type="hidden" name="cid" value="{{cid}}">
+                    <input type="hidden" name="app" value="{{app}}">
+                </form>       
+            </li>      
 
             <div class="btn-group dropdown hidden-xs">
 
@@ -88,14 +96,6 @@
                             <input type="hidden" name="app" value="{{app}}">
                         </form>
                     </li>
-
-                    <li>
-                        <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
-                            <button class="btn btn-default" style="width:200px"><span class="glyphicon glyphicon-file"></span> Output</button>
-                            <input type="hidden" name="cid" value="{{cid}}">
-                            <input type="hidden" name="app" value="{{app}}">
-                        </form>       
-                    </li>      
 
                 </ul>
 
