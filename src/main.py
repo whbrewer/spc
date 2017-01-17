@@ -1082,13 +1082,14 @@ def getstart():
     else:
         u = user
 
+    # read default params... this ensures no 500 error when restarting
+    # in case params are missing
     params = myapps[app].params
-    # if no valid casename read default parameters
-    if not re.search("[a-z]", cid):
-        params = myapps[app].params
-    else: # read parameters from file
+
+    # if restarting from old case
+    if re.search("[a-z]", cid):
         params, _, _ = myapps[app].read_params(u, cid)
-        
+
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
