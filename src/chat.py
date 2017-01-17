@@ -39,11 +39,17 @@ def main():
     global cache, root
     user = root.authorized()
     session = request.environ.get('beaker.session')
-    if cache: session['cursor'] = cache[-1]['id']
+    if cache: session['cursor'] = cache[-1] #['id']
     # clear number of unread messages for current user
     users(user=user).update_record(unread_messages=0)
     db.commit()
     return template('chat', messages=cache)
+
+@app.route('/chat/get_messages')
+def get_messages():
+    global cache
+    user = root.authorized()
+    return cache
 
 @app.route('/chat/unread_messages')
 def get_unread_messages():
@@ -74,25 +80,6 @@ def message_new():
 
     redirect("/chat")
 
-@route('/a/message/updates', method='POST', template='chat')
-def message_updates(session):
-    global cache
-    global new_message_event
-    cursor = session.get('cursor')
-    if not cache or cursor == cache[-1]['id']:
-         new_message_event.wait()
-    assert cursor != cache[-1]['id'], cursor
-    try:
-        for index, m in enumerate(cache):
-           if m['id'] == cursor:
-               return {'messages': cache[index + 1:]}
-        return {'messages': cache}
-    finally:
-        if cache:
-            session['cursor'] = cache[-1]['id']
-        else:
-            session.pop('cursor', None)
-
 @route('/static/:filename', name='static')
 def static_files(filename):
     return static_file(filename, root='./static/')
@@ -103,5 +90,8 @@ def create_message(from_, body):
     return data
 
 if __name__ == '__main__':
-    bottle.debug(True)
+    # on server restart clear number of unread messages since the
+    # messages will be lost
+    users(user.ALL).update_record(unread_messages=0)
+    db.commit()
     bottle.run(app=app, server='gevent')

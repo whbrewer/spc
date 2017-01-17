@@ -613,9 +613,12 @@ def get_stats():
 @get('/stats/mem')
 def get_stats_mem():
     res = {}
-    res['mem'] = psutil.virtual_memory().percent
-    res['cpu'] = psutil.cpu_percent()
-    return json.dumps(res)
+    try:
+        res['mem'] = psutil.virtual_memory().percent
+        res['cpu'] = psutil.cpu_percent()
+        return json.dumps(res)
+    except:
+        pass
 
 @get('/account')
 def get_account():
@@ -1085,6 +1088,7 @@ def getstart():
         params = myapps[app].params
     else: # read parameters from file
         params, _, _ = myapps[app].read_params(u, cid)
+        
     params['cid'] = cid
     params['app'] = app
     params['user'] = user

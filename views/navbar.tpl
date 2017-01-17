@@ -89,25 +89,6 @@
 
 </nav>
 
-<!-- Google: BootStrap chat code examples -->
-<div id="chatbox" style="height:90%;width:300px;position:fixed;right:0px;bottom:0px;z-index:10000;background-color:white;border:black;border-style:solid;border-top-width:20px;background-color:white; display:none">
-
-    <div style="font-size:12pt; position:absolute; bottom:0px; left:10px; right:10px">
-
-        <div id="inbox" style="font-size:12pt">
-        </div>
-
-        <form class="form-horizontal" action="/a/message/new" method="post" id="messageform">
-          <div class="input-group col-xs-12">
-              <input type="text" class="form-control input-lg" style="background-color:#faffbd;margin-top:10px" placeholder="enter message..." name="body" id="message">
-              <!-- <input class="btn btn-success" type="submit" value="Post"/> -->
-          </div>
-        </form>
-
-    </div>
-
-</div>
-
 <!-- <div style="position:fixed; bottom:0px; right:0px">
     <button class="btn btn-default" onclick="toggleChatBox()">
         <span class="glyphicon glyphicon-comment"></span>
@@ -116,18 +97,33 @@
 
 <script>
 $(document).ready(function () {
-    setInterval("checkForMessages()", 5000);
+    setInterval(checkForMessages, 5000);
+    //setInterval("checkForNewSharedCases()", 12000)
 });
 
 function checkForMessages() {
     $.get( "/chat/unread_messages", function( data ) {
         if (eval(data) > 0) {
-            $("#unread_messages").text(data)
+            if ( $( "#inbox" ).length ) {
+                location.reload()
+            } else {
+                $("#unread_messages").text(data)
+            }
         } else {
             $("#unread_messages").text("")
         }
     });
 }
+
+// function checkForNewSharedCases() {
+//     $.get( "/jobs/shared/update", function( data ) {
+//         if (eval(data) > 0) {
+//             $("#unread_messages").text(data)
+//         } else {
+//             $("#unread_messages").text("")
+//         }
+//     });
+// }
 
 function toggleChatBox() {
     id = "#chatbox"
