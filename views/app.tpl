@@ -88,30 +88,30 @@ tr:hover {
 <div class="btn-group">
     <!-- <span class="glyphicon glyphicon-trash"></span> -->
     <form class="btn-group" method="post" action="/app/edit/{{rows['id']}}">
-        <input type="submit" class="btn btn-default" value="Edit {{app}}">
+        <input type="submit" class="btn btn-default" value="Edit">
         <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="hidden" name="edit" value="True">
     </form>
     <form class="btn-group" method="post" action="/appconfig/inputs/upload">
-        <input type="submit" class="btn btn-default" value="Configure Inputs">
+        <input type="submit" class="btn btn-default" value="Inputs">
         <input type="hidden" name="appname" value="{{rows['name']}}">
         <input type="hidden" name="input_format" value="{{rows['input_format']}}">
     </form>
     <form class="btn-group" method="post" action="/appconfig/exe/upload">
         <input type="hidden" name="appname" value="{{rows['name']}}">
-        <input type="submit" class="btn btn-default" value="Configure Executable">
+        <input type="submit" class="btn btn-default" value="Executable">
     </form>
     <form class="btn-group" method="get" action="/plots/edit">
         <input type="hidden" name="app" value="{{rows['name']}}">
-        <input type="submit" class="btn btn-default" value="Configure Plots">
+        <input type="submit" class="btn btn-default" value="Plots">
     </form>
     <form class="btn-group" method="post" action="/appconfig/export">
         <input type="hidden" name="app" value="{{rows['name']}}">
-        <input type="submit" class="btn btn-default" value="Export Config">
+        <input type="submit" class="btn btn-default" value="Export">
     </form>
     <button type="button" class="btn btn-danger" data-toggle="modal" 
             data-target="#dModal">
-            <span class="glyphicon glyphicon-trash"></span> Delete {{app}}</button>
+            <span class="glyphicon glyphicon-trash"></span> Delete</button>
 </div>
 
 <form>
