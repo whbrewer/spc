@@ -48,7 +48,7 @@ except ImportError:
 try:
     import psutil
 except ImportError:
-    print "INFO: /stats page disabed because psutil module not installed"
+    print "INFO: /stats page disabled because psutil module not installed"
 
 # data access layer
 #from gluino import DAL, Field
@@ -1050,16 +1050,21 @@ def delete_app(appid):
     appname = request.forms.app
     del_app_dir = request.forms.del_app_dir
     del_app_cases = request.forms.del_app_cases
-    if user == 'admin':
-        # delete entry in DB
-        a = appmod.App()
-        if del_app_dir == "on":
-            del_files = True
+
+    try:
+        if user == 'admin':
+            # delete entry in DB
+            a = appmod.App()
+            if del_app_dir == "on":
+                del_files = True
+            else:
+                del_files = False
+            myapps[appname].delete(appid, del_files)
         else:
-            del_files = False
-        myapps[appname].delete(appid, del_files)
-    else:
-        return template("error", err="must be admin")
+            return template("error", err="must be admin")
+    except:
+        return template("error", err="failed to delete app... did the app load properly?")
+
     redirect("/apps")
 
 @get('/app/<app>')

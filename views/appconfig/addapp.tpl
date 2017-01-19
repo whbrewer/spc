@@ -1,15 +1,4 @@
-<html>
-<head>
-    <script src="/static/jquery-2.1.4.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/js/jquery.highlight.js"></script>
-    <script src="/static/js/bootstrap-tagsinput.min.js"></script>
-
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/bootstrap-tagsinput.css">
-
-    <title>sixpac</title>
+%include('header')
 
 <script>
 $(document).ready(function () {
@@ -278,7 +267,7 @@ span.round-tab:hover {
                     <div id="appname" class="form-group has-feedback">
                         <label for="appname" style="text-align:right" class="control-label col-xs-6">Name of app:</label>
                         <div class="col-xs-6">
-                            <input type="text" class="form-control"  
+                            <input type="text" class="form-control input-lg"  
                                    name="appname" onchange="checkApp(this.value)"><br>
                             <span id="feedback" style="right:20px" class="glyphicon form-control-feedback"></span>
                             <span id="helper" class="help-block hidden">App name is already taken. Try another name.</span>
@@ -335,14 +324,10 @@ span.round-tab:hover {
 
                     <tr>
                     <td><font size="+1">Input format:</font></td>
-                    <td><select class="form-control" name="input_format"
-                                style="width:auto">
-                        <option value="ini">INI
-                        <option value="json">JSON
-                        <option value="namelist">Namelist
-                        <option value="xml">XML
-                        <option value="yaml">YAML                        
-                    </select></td>
+                    <td>
+                        %input_format = "INI"
+                        %include('appconfig/input_opts')
+                    </td>
                     </tr>
 
                     <tr>

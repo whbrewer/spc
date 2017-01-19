@@ -133,7 +133,7 @@ tr:hover {
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"> 
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="deleteModal">Delete App {{rows['name']}}?</h4>
+                    <h4 class="modal-title" id="deleteModal">Delete App?</h4>
                     <div class="modal-body">
                       <div class="form-group">
                         <label for="del_app_dir">
@@ -153,7 +153,7 @@ tr:hover {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Delete</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
                 </div>
             </form>
         </div>

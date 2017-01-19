@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
-</head>
-
-<body>
+%include("header")
 
 <div class="container-fluid">
 <h3>Finished!</h3>

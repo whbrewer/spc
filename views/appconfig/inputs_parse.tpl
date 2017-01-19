@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
-</head>
-<body>
+%include("header")
 
 <div class="container-fluid">
 <h3>Configure inputs: step 2 of 3</h3><br>
@@ -13,20 +8,8 @@
 <p>Choose how to parse this file:</p>
 
 <form method="post" action="/appconfig/inputs/create_view">
-    <select class="form-control" style="width:auto" name="input_format">
-        %opts = {'namelist': 'namelist.input', 'ini': 'INI file', 'xml': 'XML file', 'json': 'JSON file', 'yaml': 'YAML file'}
-        %for key, value in opts.iteritems():
-            %if key == input_format:
-                <option selected value="{{key}}">{{value}}
-            %else:
-                <option value="{{key}}">{{value}}
-            %end
-        %end
-        <!--<option value="namelist">namelist.input
-        <option value="ini">INI file
-        <option value="xml">xml file-->
-    </select><br>
-    
+    %include('appconfig/input_opts')
+    <br>
     <input type="hidden" name="appname" value="{{appname}}">
     <input type="submit" class="btn btn-primary" value="Parse">
 </form>

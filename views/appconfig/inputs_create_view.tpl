@@ -1,7 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
+%include("header")
+
 <script>
 function add_option_row(x) {
     sel = document.getElementById("html_tags")
@@ -25,7 +23,6 @@ function add_option_row(x) {
     }  
 }
 </script>
-</head>
 
 <body>
 

@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<link rel="Stylesheet" href="/static/css/bootstrap.min.css"   />
-</head>
-<body>
+%include('header')
 
-<div class="container-fluid">
 <h1>ERROR</h1>
 <h2> {{!err}} </h2>
 </div>

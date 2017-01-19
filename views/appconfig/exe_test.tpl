@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
-</head>
-<body>
+%include('header')
 
-<div class="container-fluid">
 <h3>Configure Executable: step 2 of 2</h3><br>
 
 <h4>Success!</h4>

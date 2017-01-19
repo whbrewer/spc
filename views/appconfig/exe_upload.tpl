@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<link rel="Stylesheet" href="/static/css/bootstrap.min.css" />
-<script src="/static/jquery-2.1.4.min.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
-</head>
-<body>
+%include("header")
 
-<div class="container-fluid">
 <h3>Configure Executable: step 1 of 2</h3>
 
 <br>
