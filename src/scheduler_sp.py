@@ -3,6 +3,7 @@ import threading, time, os
 import config
 from gluino import DAL, Field
 import subprocess, signal
+from bottle import template
 
 #inspired from:
 #http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
@@ -82,7 +83,7 @@ class Scheduler(object):
         if row: return row.id
         else: return None
 
-    def qdel(self,jid):
+    def qdel(self, jid):
         del db.jobs[jid]
         db.commit()
         return 1
@@ -90,7 +91,7 @@ class Scheduler(object):
     def qstat(self):
         return db(db.jobs.state=='Q').count()
 
-    def start(self,jid):
+    def start(self, jid):
         db.jobs[jid] = dict(state='R')
         db.commit()
 
@@ -109,12 +110,12 @@ class Scheduler(object):
         outfn = app + ".out"
         cmd = command + ' > ' + outfn + ' 2>&1 '
 
-        run_dir = os.path.join(config.user_dir,user,app,cid)
-        thread = threading.Thread(target = self.start_job(run_dir,cmd,app,jid))
+        run_dir = os.path.join(config.user_dir, user, app, cid)
+        thread = threading.Thread(target = self.start_job(run_dir, cmd, app, jid))
         thread.start()
 
-    def start_job(self,run_dir,cmd,app,jid):
-        print 'starting thread to run job:',run_dir, cmd
+    def start_job(self, run_dir, cmd, app, jid):
+        print 'starting thread to run job:', run_dir, cmd
         global popen
         # The os.setsid() is passed in the argument preexec_fn so
         # it's run after the fork() and before  exec() to run the shell.
@@ -124,14 +125,14 @@ class Scheduler(object):
 
         # let user know job has ended
         outfn = app + ".out"
-        with open(os.path.join(run_dir,outfn),"a") as f:
+        with open(os.path.join(run_dir, outfn), "a") as f:
             f.write("FINISHED EXECUTION")
 
         # update state to completed
         db.jobs[jid] = dict(state='C')
         db.commit()
 
-    def stop(self,jid):
+    def stop(self, jid):
         # Send the signal to all the process groups
         try: # if running
             os.killpg(popen.pid, signal.SIGTERM)
