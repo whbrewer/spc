@@ -52,7 +52,7 @@
           <div class="panel-footer">category: {{row['apps.category']}}</a>
             <!-- <a href="javascript:removeapp('{{row['apps.name']}}')"><span class="glyphicon glyphicon-minus-sign"></span></a> -->
             %if configurable:
-              <a href="/app/{{row['apps.name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog"></span></a>
+              <a href="/app/{{row['apps.name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog pull-right"></span></a>
             %end
           </div>
 

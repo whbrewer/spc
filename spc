@@ -187,6 +187,7 @@ if __name__ == "__main__":
             app = sys.argv[2]
             a = appmod.App(app)
             # connect to db
+            from src import migrate
             dal = migrate.dal(uri=config.uri)
             result = dal.db(dal.db.apps.name==app).select()
             if result:
@@ -274,7 +275,8 @@ if __name__ == "__main__":
             shutil.copy(src,dst)
 
             # turn on executable bit
-            os.chmod(config.apps_dir + os.sep + app + os.sep + app, 0700)
+            path = os.path.join(config.apps_dir, app, app)
+            if os.path.exists(path): os.chmod(path, 0700)
 
             # add app to database
             appid = dal.db.apps.insert(name=app,

@@ -27,9 +27,6 @@ def handle_websocket():
         except WebSocketError:
             break
 
-#inspired from:
-#http://taher-zadeh.com/a-simple-and-dirty-batch-job-scheduler-daemon-in-python/
-
 db = DAL(config.uri, auto_import=False, migrate=False, folder=config.dbdir)
 
 apps = db.define_table('apps', Field('id','integer'),
@@ -52,6 +49,7 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('uid',db.users),
                                Field('app','string'),
                                Field('cid','string'),
+                               Field('command', 'string'),
                                Field('state','string'),
                                Field('time_submit','string'),
                                Field('walltime','string'),
@@ -125,9 +123,9 @@ class Scheduler(object):
                 self.start(j)
             time.sleep(1)
 
-    def qsub(self, app, cid, uid, np, pry, walltime, desc=""):
+    def qsub(self, app, cid, uid, cmd, np, pry, walltime, desc=""):
         state = 'Q'
-        jid = jobs.insert(uid=uid, app=app, cid=cid, state=state, description=desc,
+        jid = jobs.insert(uid=uid, app=app, cid=cid, command=cmd, state=state, description=desc,
                           walltime=walltime, time_submit=time.asctime(), np=np, priority=pry)
         db.commit()
         return str(jid)
@@ -163,7 +161,6 @@ class Scheduler(object):
         else: # dont use mpi
             command = apps(name=app).command
 
-        exe = os.path.join(config.apps_dir,app,app)
         outfn = app + ".out"
         # cmd = command + ' >& ' + outfn
         cmd = command

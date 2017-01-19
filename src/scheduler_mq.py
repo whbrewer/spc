@@ -27,6 +27,7 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('uid',db.users),
                                Field('app','string'),
                                Field('cid','string'),
+                               Field('command', 'string'),
                                Field('state','string'),
                                Field('time_submit','string'),
                                Field('walltime','string'), 
@@ -84,9 +85,9 @@ class Scheduler(object):
         channel.start_consuming()
 
     # producer
-    def qsub(self, app, cid, uid, np, pry, walltime, desc=""):
+    def qsub(self, app, cid, uid, cmd, np, pry, walltime, desc=""):
         state = 'Q'
-        jid = jobs.insert(uid=uid, app=app, cid=cid, state=state, description=desc,
+        jid = jobs.insert(uid=uid, app=app, cid=cid, command=cid, state=state, description=desc,
                           walltime=walltime, time_submit=time.asctime(), np=np, priority=pry)
         db.commit()
 
@@ -139,7 +140,6 @@ class Scheduler(object):
         else: # dont use mpi
             command = apps(name=app).command
 
-        exe = os.path.join(config.apps_dir,app,app)
         outfn = app + ".out"
         cmd = command + ' > ' + outfn + ' 2>&1 '
 

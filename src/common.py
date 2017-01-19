@@ -1,3 +1,15 @@
+def replace_tags(mystr, mydict):
+    # search for special <placeholders> in filename and replace
+    # with inputs set in user interface
+    import re
+    matches = re.findall(r"<(\w+)>", mystr)
+
+    for m in matches:
+        replacement = mydict[m]
+        mystr = re.sub(r"<"+m+">", replacement, mystr)
+
+    return mystr
+
 def slurp_file(path):
     """read file given by path and return the contents of the file
        as a single string datatype"""

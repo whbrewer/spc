@@ -8,7 +8,7 @@ class Schedule_base(object):
     def __init__(self): pass
     def poll(self): pass
     def assignTask(self): pass
-    def qsub(self, app, cid, uid, np, pry, walltime, desc=""): pass
+    def qsub(self, app, cid, cmd, uid, np, pry, walltime, desc=""): pass
     def qfront(self): pass
     def qdel(self,jid): pass
     def qstat(self): pass

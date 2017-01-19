@@ -140,7 +140,7 @@ def confirm_form():
         else: 
             np = 1
 
-        params = { 'cid': cid, 'inputs': inputs, 'app': app,
+        params = { 'cid': cid, 'inputs': inputs, 'app': app, 
                    'user': user, 'apps': myapps.keys(), 'nap': config.np,
                    'np': np, 'desc': desc }
         # try:
@@ -153,7 +153,7 @@ def execute():
     user = authorized()
     app = request.forms.app
     cid = request.forms.cid
-    np = request.forms.np
+    np = int(request.forms.np) or 1
     par_system = request.forms.par_system
     walltime = request.forms.walltime
     desc = request.forms.desc
@@ -161,16 +161,33 @@ def execute():
     params = {}
     base_dir = os.path.join(myapps[app].user_dir, user, app, cid)
 
+    inputs, _, _ = myapps[app].read_params(user, cid)
+    # in addition to supporting input params, also support case id
+    if "cid" not in inputs: inputs["cid"] = cid
+
     # if preprocess is set run the preprocessor
     # try:
     if myapps[app].preprocess:
-        run_params, _, _ = myapps[app].read_params(user, cid)
-        processed_inputs = process.preprocess(run_params,
+        processed_inputs = process.preprocess(inputs,
                                    myapps[app].preprocess,base_dir)
+
     if myapps[app].preprocess == "terra.in":
-        myapps[app].outfn = "out"+run_params['casenum']+".00"
+        myapps[app].outfn = "out"+inputs['casenum']+".00"
     # except:
     #     return template('error', err="There was an error with the preprocessor")
+
+    print "np:", np
+    cmd = apps(name=app).command
+
+    # for parallel runs
+    if np > 1: cmd = config.mpirun + " -np " + str(np) + " " + cmd
+
+    # replace placeholder tags in the command line, e.g. <cid> with appropriate params
+    cmd = replace_tags(cmd, inputs)
+
+    outfn = app + ".out"
+    cmd = cmd + ' > ' + outfn + ' 2>&1 '
+    print "cmd:", cmd
 
     # submit job to queue
     try:
@@ -179,7 +196,7 @@ def execute():
         params['user'] = user
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
-        jid = sched.qsub(app, cid, uid, np, priority, walltime, desc)
+        jid = sched.qsub(app, cid, uid, cmd, np, priority, walltime, desc)
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >> sys.stderr, "Execution failed:", e
@@ -1008,7 +1025,7 @@ def load_apps():
         try:
             print 'loading: %s (id: %s)' % (name, appid)
             myapps[name] = app_instance(input_format, name, preprocess, postprocess)
-            myapps[name].appid = app
+            myapps[name].appid = appid
             myapps[name].input_format = input_format
         except:
             print 'ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name, appid)
@@ -1197,8 +1214,6 @@ def create_plot():
     app = request.forms.get('app')
     cid = request.forms.get('cid')
     r = request
-    print "app:", app, "cid:", cid
-    print myapps
     plots.insert(appid=myapps[app].appid, ptype=r.forms['ptype'],
                  title=r.forms['title'], options=r.forms['options'])
     db.commit()
@@ -1280,20 +1295,10 @@ def plot_interface(pltid):
         except:
             datadef = ""
 
-        # search for special <placeholders> in filename and replace
-        # with inputs set in user interface
-        matches = re.findall(r"<(\w+)>", plotfn)
         inputs, _, _ = myapps[app].read_params(u, c)
-        
         # in addition to supporting input params, also support case id
         if "cid" not in inputs: inputs["cid"] = c
-
-        try:
-            for m in matches:
-                replacement = inputs[m]
-                plotfn = re.sub(r"<"+m+">", replacement, plotfn)
-        except:
-            print "ERROR: there is a problem with your data filename", plotfn
+        plotfn = replace_tags(plotfn, inputs)
 
         plotpath = os.path.join(sim_dir, plotfn)
 

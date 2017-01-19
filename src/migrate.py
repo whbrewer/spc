@@ -33,6 +33,7 @@ class dal(object):
                                        Field('uid',self.db.users),
                                        Field('app','string'),
                                        Field('cid','string'),
+                                       Field('command', 'string'),
                                        Field('state','string'),
                                        Field('time_submit','string'),
                                        Field('walltime','string'),

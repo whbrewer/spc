@@ -45,11 +45,11 @@ class Scheduler(object):
                 self.start(j)
             time.sleep(1)
 
-    def qsub(self, app, cid, uid, np, pry, walltime, desc=""):
+    def qsub(self, app, cid, cmd, uid, np, pry, walltime, desc=""):
         """queue job ... really just set state to 'Q'."""
         db = DAL(config.uri, auto_import=True, migrate=False,
                  folder=config.dbdir)
-        jid = db.jobs.insert(uid=uid, app=app, cid=cid, state=STATE_QUEUED,
+        jid = db.jobs.insert(uid=uid, app=app, cid=cid, command=cmd, state=STATE_QUEUED,
                               description=desc, time_submit=time.asctime(),
                               walltime=walltime, np=np, priority=pry)
         db.commit()
@@ -94,7 +94,6 @@ class Scheduler(object):
         else: # dont use mpi
             command = db.apps(name=app).command
 
-        exe = os.path.join(config.apps_dir,app,app)
         outfn = app + ".out"
         cmd = command + ' > ' + outfn + ' 2>&1 '
 
