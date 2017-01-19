@@ -11,7 +11,6 @@
 
 <meta http-equiv="refresh" content="1; url=/app/{{appname}}">
 
-
 </font>
 
 </div>

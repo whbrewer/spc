@@ -1008,7 +1008,8 @@ def load_apps():
         try:
             print 'loading: %s (id: %s)' % (name, appid)
             myapps[name] = app_instance(input_format, name, preprocess, postprocess)
-            myapps[name].appid = appid
+            myapps[name].appid = app
+            myapps[name].input_format = input_format
         except:
             print 'ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name, appid)
     default_app = name # simple soln - use last app read from DB
@@ -1032,11 +1033,12 @@ def app_save(appid):
     cmd = request.forms.command
     lang = request.forms.language
     info = request.forms.input_format
+    category = request.forms.category
     preprocess = request.forms.preprocess
     postprocess = request.forms.postprocess    
     desc = request.forms.description
     row = db(db.apps.id==appid).select().first()
-    row.update_record(language=lang, description=desc, input_format=info,
+    row.update_record(language=lang, category=category, description=desc, input_format=info,
                       preprocess=preprocess, postprocess=postprocess, command=cmd)
     db.commit()
     redirect("/app/"+app)
@@ -1572,31 +1574,33 @@ def appconfig_status():
     user = authorized()
     status = dict()
     app = request.query.app
+
     # check db file
     command = apps(name=app).command
     if command:
         status['command'] = 1
     else:
         status['command'] = 0
+
     # check template file
     if os.path.exists("views/apps/"+app+".tpl"):
         status['template'] = 1
     else:
         status['template'] = 0
+
     # check inputs file
-    if os.path.exists(os.path.join(config.apps_dir, app, app+".in")):
-        status['inputs'] = 1
-    elif os.path.exists(os.path.join(config.apps_dir, app, app+".xml")):
-        status['inputs'] = 1
-    elif os.path.exists(os.path.join(config.apps_dir, app, app+".ini")):
+    if os.path.exists(os.path.join(config.apps_dir, app, 
+                      app + "." + myapps[app].input_format)):
         status['inputs'] = 1
     else:
         status['inputs'] = 0
+
     # check app binary
     if os.path.exists(os.path.join(config.apps_dir, app, app)):
         status['binary'] = 1
     else:
         status['binary'] = 0
+
     # check plots
     appid = apps(name=app).id
     result = db(plots.appid==appid).select().first()

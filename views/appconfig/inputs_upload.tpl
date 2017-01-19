@@ -38,7 +38,7 @@ the input parameters.</p>
   	<br>
   <input type="hidden" name="appname" value="{{appname}}">
   <input type="hidden" name="input_format" value="{{input_format}}">
-  <input type="submit" value="Next >>" class="btn btn-primary"/>
+  <input type="submit" value="Next >>" class="btn btn-success"/>
 </form>
 </div>
 

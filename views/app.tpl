@@ -53,10 +53,10 @@ tr:hover {
       <td>Name:</td> 
       <td><a href="/app/{{rows['name']}}"></a>{{rows['name']}}</td></tr>
   </tr>
-  <!-- <tr>
+  <tr>
       <td>Category:</td>
       <td>{{rows['category']}}</td>
-  </tr> -->
+  </tr>
   <tr>
       <td>Description:</th>
       <td>{{rows['description']}}</td>

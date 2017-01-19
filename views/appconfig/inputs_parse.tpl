@@ -11,7 +11,7 @@
     %include('appconfig/input_opts')
     <br>
     <input type="hidden" name="appname" value="{{appname}}">
-    <input type="submit" class="btn btn-primary" value="Parse">
+    <input type="submit" class="btn btn-success" value="Parse">
 </form>
 
 <hr>

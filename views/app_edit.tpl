@@ -8,11 +8,11 @@
 
 <table>
   </tr>
-  <!-- <tr>
+  <tr>
       <td>Category:</td>
-      <td><input class="form-control" type="text" name="category"
+      <td><input class="form-control input-lg" type="text" name="category"
                  value="{{rows['category']}}"></td>
-  </tr> -->
+  </tr>
   <tr>
       <td>Description:</th>
       <td><textarea class="form-control" name="description" cols="60" rows="4">{{rows['description']}}</textarea></td>

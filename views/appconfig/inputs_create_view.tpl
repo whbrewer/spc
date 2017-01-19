@@ -33,7 +33,7 @@ function add_option_row(x) {
 <h4>Parsed inputs &ndash; assign html input types</h4>
 
 <form method="post" action="/appconfig/inputs/end">
-<input type="submit" class="btn btn-primary" value="Next >>">
+<input type="submit" class="btn btn-success" value="Next >>">
 <hr>
 How to represent a true Boolean value (e.g. T, True, true, 1)?
 <input class="form-control" type="text" style="width:100px" name="bool_rep">

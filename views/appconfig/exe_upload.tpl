@@ -17,7 +17,7 @@
 
   <input type="file" class="btn btn-default btn-file" name="upload"><br>
   <input type="hidden" name="appname" value="{{appname}}">
-  <input type="submit" value="Next >>" class="btn btn-primary"/>
+  <input type="submit" class="btn btn-success" value="Next >>"/>
 </form>
 </div>
 
