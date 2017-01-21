@@ -73,7 +73,7 @@
 
     <hr>
     <p align="center">Don't have an account?
-    <a class="btn btn-default" href="/register">Sign up</a></p>
+    <a class="btn btn-link" href="/register">Sign up</a></p>
 
 </div>
 

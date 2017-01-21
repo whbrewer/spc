@@ -111,6 +111,7 @@ background-color: #f0f7fd;
 border-color: #5bc0de;
 }
 
-input[type=text] {
-background-color:#faffbd
+input:not([type=submit]):not([type=file]) {
+   background-color:#faffbd !important
 }
+

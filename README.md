@@ -20,7 +20,9 @@
 
       - Login with default username/password: guest/guest
 
-      - Click "Show Apps" to show a list of installed apps 
+      - Click "Apps" and then click "installed"
+
+      - Activate the DNA app, then click "Activated" again
 
       - Click on "dna" the default installed app
 
@@ -45,6 +47,10 @@
       - Linux version:
 
       `> ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip`
+
+* To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc.git" 
+  you can just do "git pull" within the spc directory.  Before starting, also make sure
+  to run "./spc migrate" to migrate the new changes to the database.
 
 * For more information, see user's manual in the docs/ folder
 

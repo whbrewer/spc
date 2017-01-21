@@ -12,12 +12,14 @@
 <body>
 %include('navbar')
 
+<div style="height:15px"></div>
+
 <div class="row">
 
   <div class="col-xs-12 col-md-4" align="left">
     <div class="btn-group">
-      <a class="btn btn-default active" href="/myapps">Activated</a>
-      <a class="btn btn-default" href="/apps">Installed</a>
+      <a class="btn btn-warning active" href="/myapps">Activated</a>
+      <a class="btn btn-warning" href="/apps">Installed</a>
     </div>
   </div>
 
@@ -43,7 +45,7 @@
         <div class="panel panel-primary">
             <button type="button" class="btn btn-link pull-right" onclick="removeapp('{{row['apps.name']}}')" style="color:white"><span class="glyphicon glyphicon-remove"</span></button>
 
-          <div class="panel-heading"><h2>{{row['apps.name']}}</h2>
+          <div class="panel-heading"><h2><a href="/{{row['apps.name']}}" style="text-decoration:none; color:white">{{row['apps.name']}}</a></h2>
             <a style="text-decoration:none" href="/{{row['apps.name']}}">
           </div>
 

@@ -237,7 +237,7 @@ function validateForm() {
   <br><br>
   <hr>
     <p align="center">Already have an account?
-    <a class="btn btn-default" href="/login">Login</a></p>
+    <a class="btn btn-link" href="/login">Login</a></p>
 
 </div>
 

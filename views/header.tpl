@@ -8,10 +8,10 @@
     <script src="/static/js/jquery.validate.min.js"></script>    
     <script src="/static/js/bootstrap-tagsinput.min.js"></script>
 
-    <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/bootstrap-custom.css">
     <link rel="stylesheet" href="/static/css/bootstrap-tagsinput.css">
+    <link rel="stylesheet" href="/static/css/style.css">
     <!-- <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css"> -->
     <!-- <link rel="stylesheet" href="/static/bootstrap-social/bootstrap-social.css"> -->
 
