@@ -130,13 +130,13 @@
                     <input type="hidden" name="cid" value="{{cid}}">
                 </div>
                 <div class="modal-footer">
-                    <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> -->
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-danger center-block">Delete</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 %if defined('description'):
 <!-- Label Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" 
