@@ -326,6 +326,7 @@ if __name__ == "__main__":
         list_usage = "usage: spc list [available|installed]"
         if (len(sys.argv) == 3):
             if (sys.argv[2] == "installed"):
+                from src import migrate
                 dal = migrate.dal(uri=config.uri)
                 result = dal.db().select(dal.db.apps.ALL)
                 for r in result: print r.name 

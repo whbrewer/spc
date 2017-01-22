@@ -61,7 +61,7 @@
           % end
 
           %if configurable:
-            <a href="/app/{{row['name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog"></span></a>
+            <a href="/app/{{row['name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog pull-right"></span></a>
           %end
         </div>
       <br>

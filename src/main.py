@@ -1147,7 +1147,7 @@ def list_files():
     params['user'] = user
     params['apps'] = myapps.keys()
     params['path'] = path
-    params['files'] = os.listdir(path)
+    params['files'] = sorted(os.listdir(path))
     return template('files', params)
 
 @get('/plots/edit')

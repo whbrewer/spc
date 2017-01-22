@@ -196,7 +196,6 @@
                     <h4 class="modal-title" id="deleteModal">Delete Selected Cases?</h4>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-danger center-block">Delete</button>
                 </div>
             </form>
