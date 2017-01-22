@@ -1131,23 +1131,34 @@ def getstart():
 
 @get('/files')
 def list_files():
+    import glob
     user = authorized()
     cid = request.query.cid
     app = request.query.app
     path = request.query.path
+    q = request.query.q
+    if "." not in q or q == "*.*": q = ""
+
     if re.search("/", cid):
         u, cid = cid.split("/")
     else:
         u = user
     if not path:
         path = os.path.join(myapps[app].user_dir, u, app, cid)
+
     params = dict()
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
     params['path'] = path
-    params['files'] = sorted(os.listdir(path))
+    if q: 
+        _, ext = q.split('.')
+        params['files'] = sorted([ fn for fn in os.listdir(path) if fn.endswith(ext) ])
+    else: 
+        q = ""
+        params['files'] = sorted(os.listdir(path))
+    params['q'] = q
     return template('files', params)
 
 @get('/plots/edit')

@@ -8,6 +8,15 @@
 %include('navbar')
 %include('navactions')
 
+<div class="hidden-xs col-md-4">
+	<form id="search_form" role="form" action="/files">
+		<input type="hidden" name="cid" value="{{cid}}"/>
+		<input type="hidden" name="app" value="{{app}}"/>
+		<input name="q" type="text" value="{{q}}" class="form-control input-lg" 
+		       placeholder="File filter... e.g. *.dat">
+	</form>
+</div>
+
 <table id="clickable" class="table table-striped">
 	<tr>
 		<th>Filename</th>
