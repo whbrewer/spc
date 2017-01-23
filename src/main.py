@@ -282,8 +282,10 @@ def output():
             # this is needed so that XML input files will show paramters labels
             output = cgi.escape(output)
 
+        desc = jobs(cid=cid).description
+
         params = { 'cid': cid, 'contents': output, 'app': app,
-                   'user': u, 'fn': fn, 'apps': myapps.keys() }
+                   'user': u, 'fn': fn, 'apps': myapps.keys(), 'description': desc }
 
         return template('more', params)
 
@@ -311,8 +313,10 @@ def inputs():
         # this is needed so that XML input files will show paramters labels
         inputs = cgi.escape(inputs)
 
+        desc = jobs(cid=cid).description
+
         params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u,
-                   'fn': fn, 'apps': myapps.keys() }
+                   'fn': fn, 'apps': myapps.keys(), 'description': desc }
         return template('more', params)
     except:
         params = { 'app': app, 'apps': myapps.keys(),
@@ -653,9 +657,9 @@ def annotate_job():
     user = authorized()
     app = request.forms.app
     cid = request.forms.cid
-    jid = request.forms.jid
+    # jid = request.forms.jid
     desc = request.forms.description
-    jobs(id=jid).update_record(description=desc)
+    jobs(cid=cid).update_record(description=desc)
     db.commit()
     redirect('/jobs')
 
@@ -1159,6 +1163,9 @@ def list_files():
         q = ""
         params['files'] = sorted(os.listdir(path))
     params['q'] = q
+
+    params['description'] = jobs(cid=cid).description
+
     return template('files', params)
 
 @get('/plots/edit')
@@ -1362,10 +1369,12 @@ def plot_interface(pltid):
 
     stats = compute_stats(plotpath)
 
+    desc = jobs(cid=cid).description
+
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': user,
                'ticks': ticks, 'title': title, 'plotpath': plotpath,
                'rows': list_of_plots, 'options': options, 'datadef': datadef,
-               'apps': myapps.keys(), 'stats': stats }
+               'apps': myapps.keys(), 'stats': stats, 'description': desc }
     return template(tfn, params)
 
 @get('/mpl/<pltid>')

@@ -66,15 +66,6 @@
                 </button>
 
                 <ul class="dropdown-menu" style="background-color:#404040;padding:10px">
-                    <li> 
-                        <form class="btn-group" action="/files" method="get">
-                            <button class="btn btn-default" style="width:200px">
-                                <span class="glyphicon glyphicon-folder-open"></span> Browse Files</span>
-                            </button>
-                            <input type="hidden" name="cid" value="{{cid}}">
-                            <input type="hidden" name="app" value="{{app}}">
-                        </form>
-                    </li>
 
                     <li>
                         <form class="btn-group" action="/zipcase" method="get">
@@ -90,6 +81,16 @@
                         <form class="btn-group" method="get" action="/inputs?cid={{cid}}&app={{app}}">
                             <button class="btn btn-default" style="width:200px">
                                 <span class="glyphicon glyphicon-wrench"></span> Inputs</button>
+                            <input type="hidden" name="cid" value="{{cid}}">
+                            <input type="hidden" name="app" value="{{app}}">
+                        </form>
+                    </li>
+
+                    <li> 
+                        <form class="btn-group" action="/files" method="get">
+                            <button class="btn btn-default" style="width:200px">
+                                <span class="glyphicon glyphicon-folder-open"></span> Browse Files</span>
+                            </button>
                             <input type="hidden" name="cid" value="{{cid}}">
                             <input type="hidden" name="app" value="{{app}}">
                         </form>
@@ -136,6 +137,8 @@
         </div>
     </div>
 </div>
+%end
+%end
 
 %if defined('description'):
 <!-- Label Modal -->
@@ -153,8 +156,7 @@
                 <div class="modal-body">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="cid" value="{{cid}}">
-                    <input type="hidden" name="jid" value="{{jid}}">
-                    <input type="text" class="form-control" data-role="tagsinput"
+                    <input type="text" class="form-control input-lg" data-role="tagsinput"
                     name="description" value="{{description}}">
                 </div>
                 <div class="modal-footer">
@@ -164,8 +166,6 @@
         </div>
     </div>
 </div>
-%end
-%end
 %end
 
 <script>
@@ -178,7 +178,7 @@ jQuery(document).ready(function(){
     });
 
     function pollStats(){
-        $.get('stats/mem', function(data) {
+        $.get('/stats/mem', function(data) {
             var obj = $.parseJSON(data)
             $('#stats').html("<tt>CPU: " + obj.cpu + "% MEM: " + obj.mem + "%</tt>");  
             setTimeout(pollStats,5000);
