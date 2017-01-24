@@ -45,7 +45,7 @@ class Scheduler(object):
                 self.start(j)
             time.sleep(1)
 
-    def qsub(self, app, cid, cmd, uid, np, pry, walltime, desc=""):
+    def qsub(self, app, cid, uid, cmd, np, pry, walltime, desc=""):
         """queue job ... really just set state to 'Q'."""
         db = DAL(config.uri, auto_import=True, migrate=False,
                  folder=config.dbdir)

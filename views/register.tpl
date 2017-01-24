@@ -221,7 +221,7 @@ function validateForm() {
         <div id="email_div" class="form-group has-feedback">
           <label for="email" class="control-label col-xs-12 col-sm-offset-2 col-sm-2">Email:</label>
           <div class="col-xs-12 col-sm-4">
-            <input class="form-control" type="text" name="email" id="email" onkeyup="checkEmail(this.value)" onchange="checkEmail(this.value)">
+            <input class="form-control" type="text" name="email" id="email" onkeyup="checkEmail(this.value)">
             <span id="email_feedback" style="right:20px" class="glyphicon form-control-feedback"></span>
             <span id="email_comments" class="text-danger"></span>
           </div>
