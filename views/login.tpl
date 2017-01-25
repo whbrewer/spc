@@ -1,10 +1,23 @@
 %include('header')
 
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<meta name="google-signin-client_id" content="{{oauth_client_id}}">
+
 <body>
 
-<!--
-<h4>Sign in with existing account</h4>
+<center>
 
+<h3>Sign in with existing account</h3>
+
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+<hr>
+
+</center>
+
+
+
+<!--
 <div class="row">
 
     <div class="col-xs-12 col-sm-6 col-md-3">
@@ -30,8 +43,8 @@
 
 <div class="main left">
 
-    <!-- <h3 align="center">Sign in with SPC account</h3> -->
-    <h2 align="center">Sign in</h2>
+    <h3 align="center">Sign in with SPC account</h3>
+    <!-- <h2 align="center">Sign in</h2> -->
 
     <div style="height:10px"></div>
 

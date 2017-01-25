@@ -57,7 +57,7 @@ def get_unread_messages():
     user = root.authorized()
     return str(users(user=user).unread_messages)
 
-@route('/a/message/new', method='POST', template='chat')
+@route('/chat/message/new', method='POST', template='chat')
 def message_new():
     user = root.authorized()
     global cache, cache_size, new_message_event

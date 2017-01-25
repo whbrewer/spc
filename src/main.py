@@ -797,7 +797,8 @@ def show_app(app):
 @get('/login')
 @get('/login/<referrer>')
 def get_login(referrer=''):
-    return template('login', {'referrer': referrer})
+    return template('login', {'referrer': referrer, 
+                              'oauth_client_id': config.oauth_client_id})
 
 @get('/logout')
 def logout():
