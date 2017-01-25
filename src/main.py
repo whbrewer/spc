@@ -1369,7 +1369,7 @@ def plot_interface(pltid):
 
     stats = compute_stats(plotpath)
 
-    desc = jobs(cid=cid).description
+    desc = jobs(cid=c).description
 
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': user,
                'ticks': ticks, 'title': title, 'plotpath': plotpath,
