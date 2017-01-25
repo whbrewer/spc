@@ -10,6 +10,16 @@ function onSignIn(googleUser) {
   console.log('Name: ' + profile.getName());
   console.log('Image URL: ' + profile.getImageUrl());
   console.log('Email: ' + profile.getEmail());
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/tokensignin');
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.onload = function() {
+    console.log('Signed in as: ' + xhr.responseText);
+  };
+
+  xhr.send('idtoken=' + id_token);
+  window.location.href = "http://example.com/new_url"
 }
 </script>
 
@@ -17,7 +27,7 @@ function onSignIn(googleUser) {
 
 <center>
 
-<h3>Sign in with existing account</h3>
+<h3>Sign in with Google account</h3>
 
 <div class="g-signin2" data-onsuccess="onSignIn"></div>
 
