@@ -11,17 +11,34 @@ function onSignIn(googleUser) {
   console.log('Image URL: ' + profile.getImageUrl());
   console.log('Email: ' + profile.getEmail());
 
+  var id_token = profile.id_token;
+
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/tokensignin');
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   xhr.onload = function() {
     console.log('Signed in as: ' + xhr.responseText);
+    if (xhr.responseText == "oauth") {
+       //window.location.href = "/apps"
+       continue
+    }
   };
 
   xhr.send('idtoken=' + id_token);
-  window.location.href = "http://example.com/new_url"
+  //window.location.href = "/apps"
 }
 </script>
+
+<a href="#" onclick="signOut();">Sign out</a>
+<script>
+  function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+  }
+</script>
+
 
 <body>
 
