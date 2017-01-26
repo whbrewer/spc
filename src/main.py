@@ -873,8 +873,18 @@ def post_login():
 @post('/tokensignin')
 def tokensignin():
     token = request.forms.get('idtoken')
+    email = request.forms.get('email')
     s = request.environ.get('beaker.session')
-    user = s[USER_ID_SESSION_KEY] = "oauth"
+    user, _ = email.split('@')
+    s[USER_ID_SESSION_KEY] = user
+    # insert a random password that nobody will be able to guess
+    hashpw = _hash_pass(str(uuid.uuid4())[:8])
+
+    if not users(user=user.lower()):
+       users.insert(user=user.lower(), email=email, passwd=hashpw, 
+                    priority=config.default_priority, unread_messages=0,
+                    new_shared_jobs=0)
+       db.commit()
     print "oauth token is:", token
     return user
 
@@ -945,7 +955,8 @@ def post_register():
 
         # insert into database
         users.insert(user=user.lower(), passwd=hashpw, email=email,
-                     priority=config.default_priority)
+                     priority=config.default_priority, unread_messages=0,
+                     new_shared_jobs=0)
         db.commit()
         # email admin user
         try:

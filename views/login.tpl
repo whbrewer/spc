@@ -5,25 +5,26 @@
 
 <script>
 function onSignIn(googleUser) {
-  var profile = googleUser.getBasicProfile();
-  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-  console.log('Name: ' + profile.getName());
-  console.log('Image URL: ' + profile.getImageUrl());
-  console.log('Email: ' + profile.getEmail());
+  var profile = googleUser.getBasicProfile()
+  console.log('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
+  console.log('Name: ' + profile.getName())
+  console.log('Image URL: ' + profile.getImageUrl())
+  console.log('Email: ' + profile.getEmail())
 
-  var id_token = profile.id_token;
+  var id_token = profile.id_token
+  var email = profile.getEmail()
 
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/tokensignin');
-  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  var xhr = new XMLHttpRequest()
+  xhr.open('POST', '/tokensignin')
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
   xhr.onload = function() {
-    console.log('Signed in as: ' + xhr.responseText);
-    if (xhr.responseText == "oauth") {
+    console.log('Signed in as: ' + xhr.responseText)
+    if (xhr.responseText) {
        window.location.href = "/apps"
     }
-  };
+  }
 
-  xhr.send('idtoken=' + id_token);
+  xhr.send('idtoken=' + id_token + '&email=' + email);
 }
 </script>
 

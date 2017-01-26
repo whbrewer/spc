@@ -1,6 +1,6 @@
 %include('header')
 
-<body onload="init()">
+<body>
 
 <style>
   .table {
