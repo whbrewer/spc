@@ -40,14 +40,20 @@ function endis() {
   td,th {text-align: center}
 </style>
 
-<div class="btn-group">
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/app/{{app}}">Configure App</a></li>
+  <li class="active">Add Plot</li>
+</ol>
+
+<!-- <div class="btn-group">
   <form class="btn-group" method="get" action="/app/{{app}}">
     <button class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Configure App</button>
     <input type="hidden" name="appname" value="{{app}}">
   </form>
   <button type="button" class="btn btn-default" data-toggle="collapse" 
           data-target="#addplot">Add Plot</button>
-</div>
+</div> -->
 
 <div class="container-fluid">
 

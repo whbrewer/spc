@@ -1,6 +1,12 @@
 %include('header')
 %include('navbar')
 
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/app/{{app}}">Configure App</a></li>
+  <li class="active">Edit App</li>
+</ol>
+
 <h1>{{app}} app</h1>
 
 <div class="container-fluid">
@@ -56,9 +62,7 @@
     <div class="col-md-12 col-md-offset-2">
         <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="submit" class="btn btn-success" value="Save changes">
-        <a href="/app/{{app}}">
-            <input type="button" class="btn btn-link" value="Cancel">
-        </a>
+        <a class="btn btn-link" href="/app/{{app}}">Cancel</a>
     </div>
 </div>
 </form>

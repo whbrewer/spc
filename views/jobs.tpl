@@ -140,7 +140,7 @@
       </td>
     %end
     %url="/case?cid="+row['cid']+"&app="+row['app']+"&jid="+str(row['id'])
-    <td class="case"><tt>{{row['cid']}}</tt></td>
+    <td class="case"><tt>{{row['cid']}}</tt> <a href="{{url}}"></a></td>
     <td class="case">{{row['app']}} <a href="{{url}}"></a></td>
     <td class="case"><tt><a id="job-{{row['state']}}" onclick="get_remote_job_status({{row['state']}})">{{row['state']}}</a></tt> <a href="{{url}}"></a></td>
     %if np > 1:

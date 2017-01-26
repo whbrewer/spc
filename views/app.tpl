@@ -46,6 +46,11 @@ tr:hover {
 
 %include('navbar')
 
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">Configure App</li>
+</ol>
+
 <h1>{{app}} app</h1>
 
 <table class="table table-striped">

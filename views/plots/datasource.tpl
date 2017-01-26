@@ -23,27 +23,12 @@ function ddef() {
 
 <div id="warning" align="center" class="alert-warning"></div>
 
-<div align="left" class="container-fluid">
-    <div class="row">
-        <div class="btn-group align-center">
-            <form class="btn-group" method="get" action="/plots/edit">
-                    <button class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Edit Plots</button>
-                    <input type="hidden" name="app" value="{{app}}">
-                    <input type="hidden" name="cid" value="{{cid}}">
-                </form>
-            <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#editsource">Add Data Source</button>
-            %if defined('cid'):
-            %if not cid=='':
-            <form class="btn-group" method="get" action="/plot/{{pltid}}">
-                <input type="hidden" name="app" value="{{app}}">
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="submit" class="btn btn-default" value="Plot">
-            </form>
-            %end
-            %end
-        </div>
-    </div>
-</div>
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/app/{{app}}">Configure App</a></li>
+  <li><a href="/plots/edit?app={{app}}&cid={{cid}}">Add Plot</a></li>
+  <li class="active">Add Datasource</li>
+</ol>
 
 <div id="editsource" class="collapse">
 
