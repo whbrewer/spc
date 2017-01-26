@@ -803,31 +803,10 @@ def get_login(referrer=''):
     except:
         return template('login', {'referrer': referrer})       
 
-@get('/signout')
-def signout():
-    return template('logout',  {'oauth_client_id': config.oauth_client_id})
-
 @get('/logout')
 def logout():
     s = request.environ.get('beaker.session')
-
-    # http://stackoverflow.com/questions/11087240/server-side-removal-of-oauth-token/11093149#11093149
-    # for oauth1:
-    # https://www.google.com/accounts/AuthSubRevokeToken
-    # for oauth2:
-    # https://accounts.google.com/o/oauth2/revoke?token={refresh_token}
-
-    #cred = client.GoogleCredentials(s[USER_ID_SESSION_KEY])
-    #cred.revoke()
-    #credentials.revoke(httplib2.Http())
-    # Delete the user's profile and the credentials stored by oauth2.
-    #del session['profile']
-    #session.modified = True
-    #oauth2.storage.delete()
-    #return redirect(request.referrer or '/')
-
     s.delete()
-
     try:
         return template('logout',  {'oauth_client_id': config.oauth_client_id})
     except:
@@ -878,20 +857,19 @@ def post_login():
 
 @post('/tokensignin')
 def tokensignin():
-    token = request.forms.get('idtoken')
     email = request.forms.get('email')
     s = request.environ.get('beaker.session')
     user, _ = email.split('@')
     s[USER_ID_SESSION_KEY] = user
-    # insert a random password that nobody will be able to guess
-    hashpw = _hash_pass(str(uuid.uuid4())[:8])
 
     if not users(user=user.lower()):
+       # insert a random password that nobody will be able to guess
+       hashpw = _hash_pass(str(uuid.uuid4())[:8])
        users.insert(user=user.lower(), email=email, passwd=hashpw, 
                     priority=config.default_priority, unread_messages=0,
                     new_shared_jobs=0)
        db.commit()
-    print "oauth token is:", token
+
     return user
 
 @post('/account/change_password')

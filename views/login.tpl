@@ -13,20 +13,19 @@ function onSignIn(googleUser) {
   console.log('Image URL: ' + profile.getImageUrl())
   console.log('Email: ' + profile.getEmail())
 
-  var id_token = profile.id_token
   var email = profile.getEmail()
 
   var xhr = new XMLHttpRequest()
   xhr.open('POST', '/tokensignin')
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
   xhr.onload = function() {
-    console.log('Signed in as: ' + xhr.responseText)
-    if (xhr.responseText) {
-       window.location.href = "/apps"
-    }
+     console.log('Signed in as: ' + xhr.responseText)
+     if (xhr.responseText) {
+        window.location.href = "/myapps"
+     }
   }
 
-  xhr.send('idtoken=' + id_token + '&email=' + email);
+  xhr.send('email=' + email);
 }
 </script>
 
@@ -35,48 +34,22 @@ function onSignIn(googleUser) {
 
 %if defined('oauth_client_id'):
 
-<center>
+   <center>
 
-<h3>Sign in with Google account</h3>
+   <h3>Sign in with Google</h3>
 
-<div class="g-signin2" data-onsuccess="onSignIn"></div>
-<br>
+   <div class="g-signin2" data-onsuccess="onSignIn"></div>
+   <br>
 
-<hr>
+   <hr>
 
-</center>
+   </center>
 
 %end
 
-
-<!--
-<div class="row">
-
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <a class="btn btn-block btn-social btn-twitter">
-            <span class="fa fa-twitter"></span> Sign in with Twitter
-        </a>
-
-        <a class="btn btn-block btn-social btn-facebook">
-            <span class="fa fa-facebook"></span> Sign in with Facebook
-        </a>
-
-        <a class="btn btn-block btn-social btn-google">
-            <span class="fa fa-google"></span> Sign in with Google
-        </a>
-    </div>
-
-    <div class="col-sm-6 col-md-9"></div>
-
-</div>
-
-<hr>
--->
-
 <div class="main left">
 
-    <h3 align="center">Sign in with SPC account</h3>
-    <!-- <h2 align="center">Sign in</h2> -->
+    <h3 align="center">Sign in with SPC</h3>
 
     <div style="height:10px"></div>
 
