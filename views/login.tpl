@@ -19,24 +19,12 @@ function onSignIn(googleUser) {
   xhr.onload = function() {
     console.log('Signed in as: ' + xhr.responseText);
     if (xhr.responseText == "oauth") {
-       //window.location.href = "/apps"
-       continue
+       window.location.href = "/apps"
     }
   };
 
   xhr.send('idtoken=' + id_token);
-  //window.location.href = "/apps"
 }
-</script>
-
-<a href="#" onclick="signOut();">Sign out</a>
-<script>
-  function signOut() {
-    var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-      console.log('User signed out.');
-    });
-  }
 </script>
 
 
@@ -47,6 +35,7 @@ function onSignIn(googleUser) {
 <h3>Sign in with Google account</h3>
 
 <div class="g-signin2" data-onsuccess="onSignIn"></div>
+<br>
 
 <hr>
 

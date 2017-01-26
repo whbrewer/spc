@@ -800,9 +800,12 @@ def get_login(referrer=''):
     return template('login', {'referrer': referrer, 
                               'oauth_client_id': config.oauth_client_id})
 
+@get('/signout')
+def signout():
+    return template('logout',  {'oauth_client_id': config.oauth_client_id})
+
 @get('/logout')
 def logout():
-    from oauth2client import client
     s = request.environ.get('beaker.session')
 
     # http://stackoverflow.com/questions/11087240/server-side-removal-of-oauth-token/11093149#11093149
@@ -813,7 +816,7 @@ def logout():
 
     #cred = client.GoogleCredentials(s[USER_ID_SESSION_KEY])
     #cred.revoke()
-    credentials.revoke(httplib2.Http())
+    #credentials.revoke(httplib2.Http())
     # Delete the user's profile and the credentials stored by oauth2.
     #del session['profile']
     #session.modified = True
@@ -821,7 +824,8 @@ def logout():
     #return redirect(request.referrer or '/')
 
     s.delete()
-    redirect('/login')
+    #redirect('/login')
+    return template('logout',  {'oauth_client_id': config.oauth_client_id})
 
 @get('/static/<filepath:path>')
 def server_static(filepath):
@@ -870,8 +874,7 @@ def post_login():
 def tokensignin():
     token = request.forms.get('idtoken')
     s = request.environ.get('beaker.session')
-    s[USER_ID_SESSION_KEY] = token
-    user = "oauth"
+    user = s[USER_ID_SESSION_KEY] = "oauth"
     print "oauth token is:", token
     return user
 
