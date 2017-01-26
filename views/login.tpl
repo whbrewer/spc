@@ -1,7 +1,9 @@
 %include('header')
 
-<script src="https://apis.google.com/js/platform.js" async defer></script>
-<meta name="google-signin-client_id" content="{{oauth_client_id}}">
+%if defined('oauth_client_id'):
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="{{oauth_client_id}}">
+%end
 
 <script>
 function onSignIn(googleUser) {
@@ -31,6 +33,8 @@ function onSignIn(googleUser) {
 
 <body>
 
+%if defined('oauth_client_id'):
+
 <center>
 
 <h3>Sign in with Google account</h3>
@@ -42,6 +46,7 @@ function onSignIn(googleUser) {
 
 </center>
 
+%end
 
 
 <!--

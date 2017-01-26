@@ -797,8 +797,11 @@ def show_app(app):
 @get('/login')
 @get('/login/<referrer>')
 def get_login(referrer=''):
-    return template('login', {'referrer': referrer, 
-                              'oauth_client_id': config.oauth_client_id})
+    try: 
+        return template('login', {'referrer': referrer, 
+                                  'oauth_client_id': config.oauth_client_id})
+    except:
+        return template('login', {'referrer': referrer})       
 
 @get('/signout')
 def signout():
@@ -824,8 +827,11 @@ def logout():
     #return redirect(request.referrer or '/')
 
     s.delete()
-    #redirect('/login')
-    return template('logout',  {'oauth_client_id': config.oauth_client_id})
+
+    try:
+        return template('logout',  {'oauth_client_id': config.oauth_client_id})
+    except:
+        redirect('/login')
 
 @get('/static/<filepath:path>')
 def server_static(filepath):
