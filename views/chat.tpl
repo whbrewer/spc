@@ -10,7 +10,7 @@
   %end
 </div>
 
-<form class="form-horizontal" action="/a/message/new" method="post" id="messageform">
+<form class="form-horizontal" action="/chat/message/new" method="post" id="messageform">
   <div class="input-group col-xs-12">
       <input type="text" id="message" class="form-control input-lg" style="background-color:#faffbd;margin-top:10px" placeholder="enter message..." name="body"/>
       <!-- <input class="btn btn-success" type="submit" value="Post"/> -->

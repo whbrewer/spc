@@ -1,37 +1,55 @@
 %include('header')
 
+%if defined('oauth_client_id'):
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="{{oauth_client_id}}">
+%end
+
+<script>
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile()
+  console.log('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
+  console.log('Name: ' + profile.getName())
+  console.log('Image URL: ' + profile.getImageUrl())
+  console.log('Email: ' + profile.getEmail())
+
+  var email = profile.getEmail()
+
+  var xhr = new XMLHttpRequest()
+  xhr.open('POST', '/tokensignin')
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+  xhr.onload = function() {
+     console.log('Signed in as: ' + xhr.responseText)
+     if (xhr.responseText) {
+        window.location.href = "/myapps"
+     }
+  }
+
+  xhr.send('email=' + email);
+}
+</script>
+
+
 <body>
 
-<!--
-<h4>Sign in with existing account</h4>
+%if defined('oauth_client_id'):
 
-<div class="row">
+   <center>
 
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <a class="btn btn-block btn-social btn-twitter">
-            <span class="fa fa-twitter"></span> Sign in with Twitter
-        </a>
+   <h3>Sign in with Google</h3>
 
-        <a class="btn btn-block btn-social btn-facebook">
-            <span class="fa fa-facebook"></span> Sign in with Facebook
-        </a>
+   <div class="g-signin2" data-onsuccess="onSignIn"></div>
+   <br>
 
-        <a class="btn btn-block btn-social btn-google">
-            <span class="fa fa-google"></span> Sign in with Google
-        </a>
-    </div>
+   <hr>
 
-    <div class="col-sm-6 col-md-9"></div>
+   </center>
 
-</div>
-
-<hr>
--->
+%end
 
 <div class="main left">
 
-    <!-- <h3 align="center">Sign in with SPC account</h3> -->
-    <h2 align="center">Sign in</h2>
+    <h3 align="center">Sign in with SPC</h3>
 
     <div style="height:10px"></div>
 

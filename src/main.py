@@ -797,13 +797,20 @@ def show_app(app):
 @get('/login')
 @get('/login/<referrer>')
 def get_login(referrer=''):
-    return template('login', {'referrer': referrer})
+    try: 
+        return template('login', {'referrer': referrer, 
+                                  'oauth_client_id': config.oauth_client_id})
+    except:
+        return template('login', {'referrer': referrer})       
 
 @get('/logout')
 def logout():
     s = request.environ.get('beaker.session')
     s.delete()
-    redirect('/login')
+    try:
+        return template('logout',  {'oauth_client_id': config.oauth_client_id})
+    except:
+        redirect('/login')
 
 @get('/static/<filepath:path>')
 def server_static(filepath):
@@ -847,6 +854,23 @@ def post_login():
     referrer = request.forms.referrer
     if referrer: redirect('/'+referrer)
     else: redirect('/myapps')
+
+@post('/tokensignin')
+def tokensignin():
+    email = request.forms.get('email')
+    s = request.environ.get('beaker.session')
+    user, _ = email.split('@')
+    s[USER_ID_SESSION_KEY] = user
+
+    if not users(user=user.lower()):
+       # insert a random password that nobody will be able to guess
+       hashpw = _hash_pass(str(uuid.uuid4())[:8])
+       users.insert(user=user.lower(), email=email, passwd=hashpw, 
+                    priority=config.default_priority, unread_messages=0,
+                    new_shared_jobs=0)
+       db.commit()
+
+    return user
 
 @post('/account/change_password')
 def change_password():
@@ -915,7 +939,8 @@ def post_register():
 
         # insert into database
         users.insert(user=user.lower(), passwd=hashpw, email=email,
-                     priority=config.default_priority)
+                     priority=config.default_priority, unread_messages=0,
+                     new_shared_jobs=0)
         db.commit()
         # email admin user
         try:
