@@ -96,6 +96,7 @@ class App(object):
         f.write("\t\t\tdata-role=\"tagsinput\" title=\"e.g. v2.5.1,bottleneck\">\n")
         f.write("\t</div>\n")
         f.write("</div>\n")
+
         # f.write("<input class=\"btn btn-success\" type=\"submit\"" + \
         #         " value=\"confirm\" />\n\n")
         f.write("<div class=\"col-xs-12\" style=\"height:5px\"></div>\n")
@@ -122,7 +123,7 @@ class App(object):
             for param in self.blockmap[block]:
                 f.write("\t<div class=\"form-group\">\n")
                 # label
-                if not html_tags[param] == "hidden":
+                if not html_tags[param] == "hidden" and not html_tags[param] == "video":
                     buf = "\t\t<label for=\"" + param + "\" class=\"control-label col-xs-6\">"
                     if desc: # description
                         buf += "\n\t\t\t" + desc[param]
@@ -160,6 +161,8 @@ class App(object):
                 elif html_tags[param] == "number":
                     buf += "\t\t\t<input type=\"number\" class=\"form-control\" name=\"" \
                                 + param + "\" value=\"{{" + param + "}}\"/>\n"
+                elif html_tags[param] == "video":
+                    buf += "\t\t\t<iframe src=\"{{" + param + "}}\" width=\"560\" height=\"315\" frameborder=\"0\" allowfullscreen></iframe>"
                 else: 
                     buf += "\t\t\t<input type=\"text\" class=\"form-control\" name=\"" \
                                 + param + "\" value=\"{{" + param + "}}\"/>\n"

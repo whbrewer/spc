@@ -275,7 +275,7 @@ span.round-tab:hover {
                     </div>
 
                     <ul class="list-inline pull-right">
-                        <li><button type="button" class="btn btn-primary next-step">Save and continue</button></li>
+                        <li><button type="button" class="btn btn-success next-step">Save and continue</button></li>
                     </ul>
                 </div>
 
@@ -357,8 +357,8 @@ span.round-tab:hover {
                     </form>
 
                     <ul class="list-inline pull-right">
-                        <li><button type="button" class="btn btn-default prev-step">Previous</button></li>
-                        <li><button type="button" class="btn btn-primary next-step">Save and continue</button></li>
+                        <li><button type="button" class="btn btn-link prev-step"><span class="glyphicon glyphicon-chevron-left"></span> Previous</button></li>
+                        <li><button type="button" class="btn btn-success next-step">Save and continue</button></li>
                     </ul>
                 </div>
 
@@ -367,8 +367,8 @@ span.round-tab:hover {
                     <p>Now we will submit this information to the server.</p>
 
                     <ul class="list-inline pull-right">
-                        <li><button type="button" class="btn btn-default prev-step">Previous</button></li>
-                        <input type="submit" class="btn btn-primary btn-info-full next-step" value="Submit">
+                        <li><button type="button" class="btn btn-link prev-step"><span class="glyphicon glyphicon-chevron-left"></span> Previous</button></li>
+                        <input type="submit" class="btn btn-success btn-info-full next-step" value="Submit">
                     </ul>
 
                 </div>

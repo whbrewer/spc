@@ -70,6 +70,7 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
             <option value="hidden">hidden
             <option value="select">select
             <option value="textarea">textarea
+            <option value="video">video
         </select></td>
         <!--
         <td><select name="data_type">
