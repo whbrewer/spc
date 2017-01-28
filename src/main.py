@@ -226,20 +226,22 @@ def case():
     cid = request.query.cid
     jid = request.query.jid or -1
 
+    # note: eventually need to merge the following two into one
     if re.search("/", cid):
-        (u, c) = cid.split("/")
+        (owner, c) = cid.split("/")
         state = jobs(cid=c).state
         sid = request.query.sid # id of item in shared
-        run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+        run_dir = os.path.join(myapps[app].user_dir, owner, myapps[app].appname, c)
         fn = os.path.join(run_dir, myapps[app].outfn)
         output = slurp_file(fn)
 
         params = { 'cid': cid, 'app': app, 'jid': jid, 'contents': output,
                    'sid': sid, 'user': user, 'fn': fn, 'apps': myapps.keys(),
-                   'sched': config.sched, 'state': state, 'owner': u }
+                   'sched': config.sched, 'state': state, 'owner': owner }
         return template('case_public', params)
 
     else:
+        owner = user
         state = jobs(cid=cid).state
         run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
         fn = os.path.join(run_dir, myapps[app].outfn)
@@ -250,7 +252,7 @@ def case():
         params = { 'cid': cid, 'app': app, 'jid': jid,
                    'user': user, 'fn': fn, 'apps': myapps.keys(),
                    'description': desc, 'shared': shared,
-                   'sched': config.sched, 'state': state, 'owner': user }
+                   'sched': config.sched, 'state': state, 'owner': owner }
         return template('case', params)
 
 @get('/output')
@@ -261,12 +263,12 @@ def output():
 
     try:
         if re.search("/", cid):
-            (u, c) = cid.split("/")
+            (owner, c) = cid.split("/")
         else:
-            u = user
+            owner = user
             c = cid
 
-        run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+        run_dir = os.path.join(myapps[app].user_dir, owner, myapps[app].appname, c)
         fn = os.path.join(run_dir, myapps[app].outfn)
 
         if config.worker == 'remote': 
@@ -285,7 +287,7 @@ def output():
         desc = jobs(cid=c).description
 
         params = { 'cid': cid, 'contents': output, 'app': app,
-                   'user': u, 'fn': fn, 'apps': myapps.keys(), 'description': desc }
+                   'user': owner, 'fn': fn, 'apps': myapps.keys(), 'description': desc }
 
         return template('more', params)
 
@@ -302,11 +304,11 @@ def inputs():
     cid = request.query.cid
     try:
         if re.search("/", cid):
-            (u, c) = cid.split("/")
+            (owner, c) = cid.split("/")
         else:
-            u = user
+            owner = user
             c = cid
-        run_dir = os.path.join(myapps[app].user_dir, u, myapps[app].appname, c)
+        run_dir = os.path.join(myapps[app].user_dir, owner, myapps[app].appname, c)
         fn = os.path.join(run_dir, myapps[app].simfn)
         inputs = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
@@ -315,7 +317,7 @@ def inputs():
 
         desc = jobs(cid=c).description
 
-        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u,
+        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': owner,
                    'fn': fn, 'apps': myapps.keys(), 'description': desc }
         return template('more', params)
     except:
@@ -1186,11 +1188,11 @@ def list_files():
     if "." not in q or q == "*.*": q = ""
 
     if re.search("/", cid):
-        u, cid = cid.split("/")
+        owner, cid = cid.split("/")
     else:
-        u = user
+        owner = user
     if not path:
-        path = os.path.join(myapps[app].user_dir, u, app, cid)
+        path = os.path.join(myapps[app].user_dir, owner, app, cid)
 
     params['apps'] = myapps.keys()
     params['path'] = path
@@ -1287,12 +1289,12 @@ def plot_interface(pltid):
         return template('error', params)
 
     if re.search("/", cid):
-        (u, c) = cid.split("/")
+        (owner, c) = cid.split("/")
     else:
-        u = user
+        owner = user
         c = cid
 
-    sim_dir = os.path.join(myapps[app].user_dir, u, app, c)
+    sim_dir = os.path.join(myapps[app].user_dir, owner, app, c)
 
     # use pltid of 0 to trigger finding the first pltid for the current app
     if int(pltid) == 0:
@@ -1351,7 +1353,7 @@ def plot_interface(pltid):
         except:
             datadef = ""
 
-        inputs, _, _ = myapps[app].read_params(u, c)
+        inputs, _, _ = myapps[app].read_params(owner, c)
         # in addition to supporting input params, also support case id
         if "cid" not in inputs: inputs["cid"] = c
         plotfn = replace_tags(plotfn, inputs)
