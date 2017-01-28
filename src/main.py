@@ -282,7 +282,7 @@ def output():
             # this is needed so that XML input files will show paramters labels
             output = cgi.escape(output)
 
-        desc = jobs(cid=cid).description
+        desc = jobs(cid=c).description
 
         params = { 'cid': cid, 'contents': output, 'app': app,
                    'user': u, 'fn': fn, 'apps': myapps.keys(), 'description': desc }
@@ -313,7 +313,7 @@ def inputs():
         # this is needed so that XML input files will show paramters labels
         inputs = cgi.escape(inputs)
 
-        desc = jobs(cid=cid).description
+        desc = jobs(cid=c).description
 
         params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': u,
                    'fn': fn, 'apps': myapps.keys(), 'description': desc }
@@ -1165,6 +1165,12 @@ def list_files():
     cid = request.query.cid
     app = request.query.app
     path = request.query.path
+
+    params = dict()
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+
     q = request.query.q
     if "." not in q or q == "*.*": q = ""
 
@@ -1175,10 +1181,6 @@ def list_files():
     if not path:
         path = os.path.join(myapps[app].user_dir, u, app, cid)
 
-    params = dict()
-    params['cid'] = cid
-    params['app'] = app
-    params['user'] = user
     params['apps'] = myapps.keys()
     params['path'] = path
     if q: 
