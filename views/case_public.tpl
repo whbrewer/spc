@@ -5,7 +5,9 @@
     Status: {{status}}
 %end
 
-<div class="container-fluid">
+%include("navactions")
+
+<!-- <div class="container-fluid">
     <div class="col-md-offset-4">
         <font size="+2">case: {{cid}}</font>
         <div class="btn-group">
@@ -30,15 +32,9 @@
                     <span class="glyphicon glyphicon-stats"></span> Plot
                 </button>
             </form>
-            <!-- <form class="btn-group" method="post" action="/jobs/unshare">
-                <input type="hidden" name="app" value="{{app}}">
-                <input type="hidden" name="cid" value="{{cid}}">
-                <input type="hidden" name="jid" value="{{jid}}">
-                <input type="submit" class="btn btn-default" value="unstar">
-            </form> -->
         </div>
     </div>
-</div>
+</div> -->
 
 <!--
 <table id="clickable">
