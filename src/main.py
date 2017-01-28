@@ -236,7 +236,7 @@ def case():
 
         params = { 'cid': cid, 'app': app, 'jid': jid, 'contents': output,
                    'sid': sid, 'user': user, 'fn': fn, 'apps': myapps.keys(),
-                   'sched': config.sched, 'state': state }
+                   'sched': config.sched, 'state': state, 'owner': u }
         return template('case_public', params)
 
     else:
@@ -250,7 +250,7 @@ def case():
         params = { 'cid': cid, 'app': app, 'jid': jid,
                    'user': user, 'fn': fn, 'apps': myapps.keys(),
                    'description': desc, 'shared': shared,
-                   'sched': config.sched, 'state': state }
+                   'sched': config.sched, 'state': state, 'owner': user }
         return template('case', params)
 
 @get('/output')
@@ -738,6 +738,9 @@ def delete_job(jid):
     cid = request.forms.cid
     state = jobs(jid).state
 
+    if re.search("/", cid):
+        return template("error", err="only possible to delete cases that you own")
+
     if state != "R":
         path = os.path.join(myapps[app].user_dir, user, app, cid)
         if os.path.isdir(path): shutil.rmtree(path)
@@ -771,6 +774,10 @@ def stop_job():
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid
+
+    if re.search("/", cid):
+        return template("error", err="only possible to stop cases that you own")
+
     sched.stop(jid)
     time.sleep(0.1)
     jobs(jid).update_record(state="X")
@@ -1140,9 +1147,9 @@ def getstart():
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
     if re.search("/", cid):
-        u, cid = cid.split("/")
+        owner, cid = cid.split("/")
     else:
-        u = user
+        owner = user
 
     # read default params... this ensures no 500 error when restarting
     # in case params are missing
@@ -1150,7 +1157,11 @@ def getstart():
 
     # if restarting from old case
     if re.search("[a-z]", cid):
-        params, _, _ = myapps[app].read_params(u, cid)
+        params, _, _ = myapps[app].read_params(owner, cid)
+        if user == owner:
+            params['tags'] = cid
+        else:
+            params['tags'] = os.path.join(owner,cid)
 
     params['cid'] = cid
     params['app'] = app

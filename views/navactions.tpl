@@ -13,7 +13,7 @@
                 <input type="hidden" name="app" value="{{app}}">
             </form>
 
-            %if defined('jid'):
+            %if defined('jid') and owner == user:
                 %if jid > 0:
                     <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">
                         <input type="hidden" name="cid" value="{{cid}}">
