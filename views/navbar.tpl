@@ -33,7 +33,7 @@
                         %if app != '' and cid != '':
                             <a href="/static/apps/{{app}}/about.html" 
                                 class="navbar-brand" data-toggle="modal" 
-                                data-target="#footModal">{{app}}/{{cid}}</a>              
+                                data-target="#footModal">{{app}} :: {{cid}}</a>              
                         %end
                     %elif defined('app'):
                         %if app != '':
@@ -48,7 +48,8 @@
                     %end
 
                     %if defined('description'):
-                        <a class="navbar-brand" data-toggle="modal" data-target="#myModal">
+                        <a href="#" class="navbar-brand" 
+                           data-toggle="modal" data-target="#myModal">
                         <span class="glyphicon glyphicon-tag"></span> {{description}}</a>
                     %end
                 </div>
