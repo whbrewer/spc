@@ -48,9 +48,11 @@
                     %end
 
                     %if defined('description'):
-                        <a href="#" class="navbar-brand" 
-                           data-toggle="modal" data-target="#myModal">
-                        <span class="glyphicon glyphicon-tag"></span> {{description}}</a>
+                        <div class="hidden-md">
+                            <a href="#" class="navbar-brand" style="width:300px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap" 
+                               data-toggle="modal" data-target="#myModal">
+                            <span class="glyphicon glyphicon-tag"></span> {{description}}</a>
+                        </div>
                     %end
                 </div>
 
