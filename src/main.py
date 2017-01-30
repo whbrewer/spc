@@ -1294,6 +1294,7 @@ def plot_interface(pltid):
         owner = user
         c = cid
 
+    inputs, _, _ = myapps[app].read_params(owner, c)
     sim_dir = os.path.join(myapps[app].user_dir, owner, app, c)
 
     # use pltid of 0 to trigger finding the first pltid for the current app
@@ -1308,7 +1309,7 @@ def plot_interface(pltid):
     try:
         result = db(plots.id==pltid).select().first()
         plottype = result['ptype']
-        options = result['options']
+        options = replace_tags(result['options'], inputs)
         title = result['title']
     except:
         redirect ('/plots/edit?app='+app+'&cid='+cid)
@@ -1353,7 +1354,6 @@ def plot_interface(pltid):
         except:
             datadef = ""
 
-        inputs, _, _ = myapps[app].read_params(owner, c)
         # in addition to supporting input params, also support case id
         if "cid" not in inputs: inputs["cid"] = c
         plotfn = replace_tags(plotfn, inputs)
