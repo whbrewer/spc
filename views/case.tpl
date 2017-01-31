@@ -22,9 +22,10 @@
 </form>
 -->
 
-
 % if sched == "ws":
+
   <style>
+
     .preformatted {
       font-family: monospace;
       white-space: pre;
@@ -41,17 +42,16 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-  </style>
-  <div id="output" class="preformatted"></div>
-% else:
-  <div id="output"></div>
-% end
 
-<!-- <form name="nl" role="form">
-  <div class="input-group col-xs-6" style="width:300px; padding-left:15px">
-  <span class="input-group-addon">Number of lines to display</span>
-  <input class="form-control" type="number" id="num_lines" min="10" max="100" value="24">
-</form> -->
+  </style>
+
+  <div id="output" class="preformatted"></div>
+
+% else:
+
+  <div id="output"></div>
+
+% end
 
 <script>
 

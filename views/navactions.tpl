@@ -117,7 +117,7 @@
 %if defined('jid'):
 %if jid > 0: 
 <!-- Delete Modal -->
-<div class="modal fade" id="dModal" tabindex="-1" role="dialog" 
+<div class="modal fade" style="top:35%" id="dModal" tabindex="-1" role="dialog" 
      aria-labelledby="deleteModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
