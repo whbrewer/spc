@@ -19,10 +19,13 @@
   <div class="col-xs-12 col-md-4" align="left">
     <div class="btn-group">
       <a class="btn btn-warning active" href="/myapps">Activated</a>
-      <a class="btn btn-warning" href="/apps">Installed</a>
+      <a data-step="2" data-intro="By clicking here you can find apps to run" class="btn btn-warning" href="/apps">Installed</a>
     </div>
   </div>
 
+  <div class="hidden-xs col-md-8">
+     <a class="btn btn-success pull-right" href="javascript:void(0)" onclick="introJs().start()"><span class="glyphicon glyphicon-plane"></span> Take Tour</a>
+  </div>
 </div>
 
 <div style="height:15px"></div>
@@ -33,7 +36,7 @@
 <div class="container-fluid">
 
   % if not rows:
-    <div class="bs-callout bs-callout-warning">
+    <div data-step="1" data-intro="Welcome to SPC! You'll first need to activate an app to use." class="bs-callout bs-callout-warning">
       <h4>No active apps</h4>
       <p>To activate an app, click "Installed" and activate an app.</p>
     </div>
@@ -70,6 +73,11 @@ function removeapp(app) {
     $.post('/removeapp', {'app': app});
     location.reload();
 }
+
+// $(function() {
+//   introJs().start();
+// })
+
 </script>
 
 %include('footer')
