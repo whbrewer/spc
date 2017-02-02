@@ -54,7 +54,7 @@
             %end  
             
             <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-file"></span> Output</button>
+                <button class="btn btn-default hidden-xs"><span class="glyphicon glyphicon-file"></span> Output</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>       
@@ -157,7 +157,7 @@
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="text" class="form-control input-lg" data-role="tagsinput"
-                    name="description" value="{{description}}">
+                    name="description" placeholder="enter tag..." value="{{description}}">
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success center-block">Save changes</button>

@@ -115,5 +115,8 @@ input:not([type=submit]):not([type=file]) {
    background-color:#faffbd !important
 }
 
+.bootstrap-tagsinput {
+   background-color: #faffbd !important;
+}
 
 

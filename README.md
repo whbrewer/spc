@@ -2,7 +2,11 @@
 
 ## Intro
 
-* The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.
+* The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.  It is described in more detail in the following paper:
+
+  > W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24
+
+* If you need a copy of this paper, please send an e-mail request to the address at the bottom of this file.
 
 ## Quickstart
 
