@@ -76,6 +76,9 @@
 
 ## Optional Dependencies
 
+SPC can run without any dependencies except Python 2.7 standard libs.  It
+is extensible in various ways by including other libs listed here:
+
 * matplotlib >= 1.3.1 (optional-used to support matplotlib plotting)
 * docker-py >= 1.1.0 (optional-used to support containers)
 * boto >= 2.6.0 (optional-used to support AWS management)
