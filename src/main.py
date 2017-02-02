@@ -1332,7 +1332,7 @@ def plot_interface(pltid):
     elif plottype == 'mpl-line' or plottype == 'mpl-bar':
         redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
     else:
-        tfn = 'plots/plot-line'
+        return template("error", err="plot type not supported: " + plottype)
 
     # get list of all plots for this app
     query = (apps.id==plots.appid) & (apps.name==app)
