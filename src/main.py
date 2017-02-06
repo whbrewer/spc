@@ -1557,7 +1557,7 @@ def zip_case():
 
     base_dir = os.path.join(myapps[app].user_dir, user, app)
     path = os.path.join(base_dir, cid+".zip")
-    zf = zipfile.ZipFile(path, mode='w')
+    zf = zipfile.ZipFile(path, mode='w', compression=zipfile.ZIP_DEFLATED)
     sim_dir = os.path.join(base_dir, cid)
     for fn in os.listdir(sim_dir):
         zf.write(os.path.join(sim_dir, fn))
@@ -1599,7 +1599,7 @@ def zipget():
 
     print "downloading " + url
     fh, _ = urllib.urlretrieve(url)
-    z = zipfile.ZipFile(fh, 'r')
+    z = zipfile.ZipFile(fh, 'r', compression=zipfile.ZIP_DEFLATED)
     z.extractall()
 
     # add case to database
