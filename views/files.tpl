@@ -5,20 +5,89 @@
   a { font-size: 120% }
 </style>
 
+<script>
+    function toggle(source) {
+      checkboxes = document.getElementsByName('selected_files');
+      for(var i=0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = source.checked;
+      }
+    }
+
+    function toggle_delete_button_visibility() {
+      var checkboxes = document.getElementsByName('selected_files');
+      var show = false;
+      var values = "";
+      for(var i=0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+          show = true;
+          values += checkboxes[i].value;
+        }
+      }
+
+      var dom = document.getElementById("actions")
+      if (show) {
+        dom.style.display = "block";
+      } else {
+        dom.style.display = "none";
+      }
+
+      var input = document.getElementById("selected_files")
+      if(input) { // if user has already checked some cases just modify the cases to be deleted
+        input.value = values;
+      } else { // otherwise create a new hidden input element
+        var theForm = document.getElementById("delete_modal");
+
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'selected_files';
+        input.id = 'selected_files';
+        input.value = values;
+        theForm.appendChild(input);
+      }
+
+      // add selected files to Zip form
+  	  var theForm = document.getElementById("zipform");
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'selected_files';
+      input.id = 'selected_files';
+      input.value = values;
+      theForm.appendChild(input);
+
+    }
+</script>
+
 %include('navbar')
 %include('navactions')
 
-<div class="hidden-xs col-md-4">
-	<form id="search_form" role="form" action="/files">
-		<input type="hidden" name="cid" value="{{cid}}"/>
-		<input type="hidden" name="app" value="{{app}}"/>
-		<input name="q" type="text" value="{{q}}" class="form-control input-lg" 
-		       placeholder="File filter... e.g. *.dat">
-	</form>
+
+<div class="row">
+
+	<div class="hidden-xs col-md-4">
+		<form id="search_form" role="form" action="/files">
+			<input type="hidden" name="cid" value="{{cid}}"/>
+			<input type="hidden" name="app" value="{{app}}"/>
+			<input name="q" type="text" value="{{q}}" class="form-control input-lg" 
+			       placeholder="File filter... e.g. *.dat">
+		</form>
+	</div>
+
+	<div class="btn-group col-xs-12 col-md-8" id="actions" style="display:none">	
+	    <button id="delete_button" type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+	    <form id="zipform" method="post" action="/files/zip_selected">
+	    	<input type="hidden" name="app" value="{{app}}">
+	    	<input type="hidden" name="cid" value="{{cid}}"> 
+	    	<input type="hidden" name="selected_files">
+	    	<button id="zip_button" type="submit" class="btn btn-warning"><span class="glyphicon glyphicon-compressed"></span> Zip</button>
+	    </form>
+	</div>
+
 </div>
+
 
 <table id="clickable" class="table table-striped">
 	<tr>
+		<th><input type="checkbox" onchange="toggle(this); toggle_delete_button_visibility()"></th>
 		<th>Filename</th>
 		<th>Size (Bytes)</th>
 		<th>Timestamp</th>
@@ -27,7 +96,9 @@
 	% binary_extensions = ['.bz2','.gz','.xz','.zip']
 	% image_extensions = ['.png','.gif','.jpg']
 	% for file in files:
-		<tr><td>
+		<tr>
+		<td><input type="checkbox" name="selected_files" value="{{file}}:" onchange="toggle_delete_button_visibility()"></td>
+		<td>
 		% _, ext = os.path.splitext(file)
 		% stat = os.stat(os.path.join(path,file))
 		% if os.path.isdir(os.path.join(path,file)):
@@ -47,14 +118,26 @@
 	% end
 </table>
 
-<script>
-$(document).ready(function() {
-    $('#clickable tr').click(function(e) {
-        var href = $(this).find("a").attr("href");
-        if(href) { window.location = href; }
-        e.stopPropagation();
-    });
-});
-</script>
+<!-- Delete Modal -->
+<div class="modal fade" id="dModal" tabindex="-1" role="dialog" 
+     aria-labelledby="deleteModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="delete_modal" class="form-horizontal" method="post" action="/files/delete_selected">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="deleteModal">Delete Selected Files?</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger center-block">Delete</button>
+                    <input type="hidden" name="app" value="{{app}}"/>
+                    <input type="hidden" name="cid" value="{{cid}}"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 %include('footer')

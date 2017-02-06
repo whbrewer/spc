@@ -1208,6 +1208,47 @@ def list_files():
 
     return template('files', params)
 
+@post('/files/delete_selected')
+def delete_f():
+    user = authorized()
+    app = request.forms.app
+    cid = request.forms.cid
+    selected_files = request.forms.selected_files
+    files = selected_files.rstrip(':').split(':')
+    for file in files:
+        path = os.path.join(myapps[app].user_dir, user, app, cid, file)
+        if cid is not None:
+            if os.path.isfile(path): 
+                print "removing file:", path
+                os.remove(path)
+            elif os.path.isdir(path): 
+                print "removing path:", path                
+                shutil.rmtree(path)
+        else:
+            print "ERROR: not removing path:", path, "because cid missing"
+    redirect("/files?cid="+cid+"&app="+app)
+
+@post('/files/zip_selected')
+def zip_selected_files():
+    user = authorized()
+    import zipfile
+    app = request.forms.app
+    cid = request.forms.cid
+
+    selected_files = request.forms.selected_files
+    files = selected_files.rstrip(':').split(':')
+
+    for file in files:
+        path = os.path.join(myapps[app].user_dir, user, app, cid, file)
+        print "attempting to zip:", path
+        zf = zipfile.ZipFile(path+".zip", mode='w', compression=zipfile.ZIP_DEFLATED)
+        zf.write(path)
+        zf.close()
+        # remove the original file if the zipfile now exists
+        if os.path.isfile(path+".zip"): os.remove(path)
+
+    redirect("/files?cid="+cid+"&app="+app)
+
 @get('/plots/edit')
 def editplot():
     user = authorized()
@@ -1507,7 +1548,7 @@ def matplotlib(pltid):
     return template('plots/matplotlib', params)
 
 @get('/zipcase')
-def zipcase():
+def zip_case():
     """zip case on machine to prepare for download"""
     user = authorized()
     import zipfile
