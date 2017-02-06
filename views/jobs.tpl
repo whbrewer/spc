@@ -95,7 +95,6 @@
     </form>
   </div>
 
-  <form>
   <div class="col-xs-6">
   <button id="delete_button" type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal" style="display:none"><span class="glyphicon glyphicon-trash"></span> Delete</button>
   </div>
