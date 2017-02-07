@@ -36,6 +36,7 @@ def get_docker():
         params['status'] = "there was a problem talking to the Docker daemon..."
 
     params['user'] = user
+    params['app'] = root.active_app()
 
     if root.request.query.status:
         params['status'] = root.request.query.status

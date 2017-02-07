@@ -84,10 +84,6 @@
             </div>
         </div>
 
-        %if defined('app'):
-            <input type="hidden" name="app" value="{{app}}">
-        %end
-
     </form>
 
 </nav>

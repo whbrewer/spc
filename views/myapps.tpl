@@ -54,7 +54,11 @@
 
   <div class="list-group">
   % for row in rows:
-    <a class="list-group-item" href="/{{row['apps.name']}}">
+    % if row['apps.name'] == app:
+      <a class="list-group-item active" href="/{{row['apps.name']}}">
+    % else:
+      <a class="list-group-item" href="/{{row['apps.name']}}">
+    % end
       {{row['apps.name']}}
     </a>
   % end

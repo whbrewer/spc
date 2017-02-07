@@ -223,6 +223,7 @@ def more():
 def case():
     user = authorized()
     app = request.query.app
+    set_active(app)
     cid = request.query.cid
     jid = request.query.jid or -1
 
@@ -396,7 +397,7 @@ def show_jobs():
     user = authorized()
     #if app not in myapps: redirect('/apps')
     cid = request.query.cid
-    app = request.query.app
+    app = request.query.app or active_app()
     n = int(request.query.n or config.jobs_num_rows)
     q = request.query.q
     starred = request.query.starred
@@ -505,7 +506,7 @@ def get_docker():
 def get_aws():
     user = authorized()
     cid = request.query.cid
-    app = request.query.app
+    app = request.query.app or active_app()
     uid = db(users.user==user).select(users.id).first()
     #creds = db().select(db.aws_creds.ALL)
     creds = db(aws_creds.uid==uid).select()
@@ -646,7 +647,7 @@ def get_stats_mem():
 @get('/account')
 def get_account():
     user = authorized()
-    app = request.query.app
+    app = request.query.app or active_app()
     params = {}
     params['app'] = app
     params['user'] = user
@@ -711,7 +712,7 @@ def get_shared():
     """Return the records from the shared table."""
     user = authorized()
     cid = request.query.cid
-    app = request.query.app
+    app = request.query.app or active_app()
     n = request.query.n
     if not n:
         n = config.jobs_num_rows
@@ -789,9 +790,7 @@ def stop_job():
 @get('/<app>')
 def show_app(app):
     user = authorized()
-    # set a session variable to keep track of the current app
-    s = request.environ.get('beaker.session')
-    s[APP_SESSION_KEY] = app
+    set_active(app)
     # parameters for return template
     try:
         params = myapps[app].params
@@ -972,7 +971,7 @@ def admin_show_users():
     if not user == "admin":
         return template("error", err="must be admin to delete")
     result = db().select(users.ALL)
-    params = {'user': user}
+    params = { 'user': user, 'app': active_app() } 
     return template('admin/users', params, rows=result)
 
 @post('/admin/delete_user')
@@ -1033,6 +1032,7 @@ def showapps():
 def showapps():
     user = authorized()
     uid = users(user=user).id
+    app = active_app()
     unread_messages = users(user=user).unread_messages or 0
 
     result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select() 
@@ -1041,7 +1041,7 @@ def showapps():
     else:
         configurable = False
     params = { 'myapps': myapps.keys(), 'configurable': configurable, 'user': user, 
-               'unread_messages': unread_messages }
+               'unread_messages': unread_messages, 'app': app }
     return template('myapps', params, rows=result)
 
 @get('/apps/load')
@@ -1144,7 +1144,9 @@ def view_app(app):
 @get('/start')
 def getstart():
     user = authorized()
-    app = request.query.app
+    app = request.query.app or active_app()
+    set_active(app)
+
     if config.auth and not authorized(): redirect('/login')
     if myapps[app].appname not in myapps: redirect('/apps')
     cid = request.query.cid
@@ -1593,7 +1595,7 @@ def zipget():
     path = os.path.join(config.user_dir, user, app, cid)
     file_path = path+".zip"
     url = os.path.join(worker, file_path)
-    
+
     print "url is:", url
     if not os.path.exists(path):
         os.makedirs(path)
@@ -1957,6 +1959,15 @@ def authorized():
             return s[USER_ID_SESSION_KEY]
     else:
         return NOAUTH_USER
+
+def active_app():
+    s = request.environ.get('beaker.session')
+    return s[APP_SESSION_KEY]
+
+def set_active(app):
+    # set a session variable to keep track of the current app
+    s = request.environ.get('beaker.session')
+    s[APP_SESSION_KEY] = app
 
 def init_config_options():
     try: config.worker
