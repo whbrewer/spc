@@ -1032,7 +1032,7 @@ def showapps():
 def showapps():
     user = authorized()
     uid = users(user=user).id
-    app = active_app()
+    app = active_app() or ''h
     unread_messages = users(user=user).unread_messages or 0
 
     result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select() 
@@ -1962,7 +1962,8 @@ def authorized():
 
 def active_app():
     s = request.environ.get('beaker.session')
-    return s[APP_SESSION_KEY]
+    try: return s[APP_SESSION_KEY]
+    except: return ''
 
 def set_active(app):
     # set a session variable to keep track of the current app
