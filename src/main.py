@@ -1593,6 +1593,7 @@ def zipget():
     path = os.path.join(config.user_dir, user, app, cid)
     file_path = path+".zip"
     url = os.path.join(worker, file_path)
+    
     print "url is:", url
     if not os.path.exists(path):
         os.makedirs(path)

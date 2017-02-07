@@ -54,7 +54,7 @@
           <div class="panel-footer">category: {{row['category']}}</div>
 
           % if row['id'] in activated:
-            <button type="button" class="btn btn-info" disabled="true">Activated</button>
+            <button type="button" class="btn btn-info" onclick="removeapp('{{row['name']}}')">De-activate</button>
           % else:
             <button type="button" class="btn btn-success" onclick="useapp('{{row['name']}}')">Activate</button>
           % end
@@ -73,6 +73,10 @@
 function useapp(app) {
   $.post('/useapp', {'app': app})
   location.reload();
+}
+function removeapp(app) {
+    $.post('/removeapp', {'app': app});
+    location.reload();
 }
 </script>
 
