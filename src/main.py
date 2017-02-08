@@ -1032,7 +1032,7 @@ def showapps():
 def showapps():
     user = authorized()
     uid = users(user=user).id
-    app = active_app() or ''h
+    app = active_app()
     unread_messages = users(user=user).unread_messages or 0
 
     result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select() 
