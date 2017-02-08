@@ -1145,7 +1145,9 @@ def view_app(app):
 def getstart():
     user = authorized()
     app = request.query.app or active_app()
-    set_active(app)
+
+    if app: set_active(app)
+    else: redirect('/myapps')
 
     if config.auth and not authorized(): redirect('/login')
     if myapps[app].appname not in myapps: redirect('/apps')

@@ -7,6 +7,9 @@
     text-decoration: none;
     color: #5f5f5f;
   }
+  body {
+    background: #f5f5f5 !important;
+  }
 </style>
 
 <body>
