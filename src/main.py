@@ -662,6 +662,7 @@ def annotate_job():
     cid = request.forms.cid
     # jid = request.forms.jid
     desc = request.forms.description
+    desc = desc.replace(',', ', ')
     jobs(cid=cid).update_record(description=desc)
     db.commit()
     redirect('/jobs')
