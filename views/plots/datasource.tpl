@@ -26,9 +26,17 @@ function ddef() {
 <ol class="breadcrumb">
   <li><a href="/">Home</a></li>
   <li><a href="/app/{{app}}">Configure App</a></li>
-  <li><a href="/plots/edit?app={{app}}&cid={{cid}}">Add Plot</a></li>
-  <li class="active">Add Datasource</li>
+  <li><a href="/plots/edit?app={{app}}&cid={{cid}}">Plots</a></li>
+  <li class="active">Datasources</li>
 </ol>
+
+<div class="row">
+
+  <div class="col-xs-12 col-sm-10"><h1 style="vertical-align:top">Data Sources for Plot {{pltid}}</h1></div>
+
+  <div class="col-xs-12 col-sm-2"><button type="button" class="btn btn-default pull-right" data-toggle="collapse" data-target="#editsource"><span class="glyphicon glyphicon-plus"></span> Add Datasource</button></div>
+
+</div>
 
 <div id="editsource" class="collapse">
 
@@ -83,14 +91,12 @@ function ddef() {
         <label for="line_range" class="control-label col-md-3">Line range (e.g. 3:53):</label>
         <div class="col-md-6"><input type="text" class="form-control" id="line_range" name="line_range" pattern="\d+:\d+" required></div>
     </div>
-    <button class="btn btn-primary">Submit</button>
+    <button class="btn btn-success center-block">Submit</button>
     <input type="hidden" name="pltid" value="{{pltid}}"> 
     <input type="hidden" name="app" value="{{app}}">
     <input type="hidden" name="cid" value="{{cid}}">
 </form>
 </div>
-
-<h1 align="center">Data Sources for Plot {{pltid}}</h1>
 
 <table class="table table-striped">
     <thead><tr><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition (JSON)</th><th>actions</th></tr></thead>
@@ -101,11 +107,12 @@ function ddef() {
         <td>{{row['line_range']}}</td>
         <td>{{row['data_def']}}</td>
         <td><form method="post" action="/plots/datasource_delete">
-            <input type="hidden" name="dsid" value="{{row['id']}}">
-            <input type="hidden" name="pltid" value="{{pltid}}">
-            <input type="hidden" name="app" value="{{app}}">
-            <input type="hidden" name="cid" value="{{cid}}">
-            <input type="submit" class="btn btn-default" value="delete" onclick="if(confirm('confirm')) return true; return false"></form>
+              <input type="hidden" name="dsid" value="{{row['id']}}">
+              <input type="hidden" name="pltid" value="{{pltid}}">
+              <input type="hidden" name="app" value="{{app}}">
+              <input type="hidden" name="cid" value="{{cid}}">
+              <button type="submit" class="btn btn-link" style="color:#d9302c; font-size:150%" value="delete" onclick="if(confirm('confirm')) return true; return false"><span class="glyphicon glyphicon-remove"></span></button>
+            </form>
     </tr>
     %end 
 </table>
