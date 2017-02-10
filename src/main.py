@@ -1444,7 +1444,7 @@ def plot_interface(pltid):
                                          "Is filename correct in datasource setup?")
         elif dat == -2:
             return template('error', 
-                err="Data file exists there was problems parsing its data." + \
+                err="Data file exists but there was problems parsing its data. " + \
                     "Are the column and line ranges setup properly?")
 
         # clean data
