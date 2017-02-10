@@ -10,6 +10,6 @@
 <pre>
 {{!contents}}
 </pre>
-<span>file is: {{fn}}</span>
+<span>file: {{fn}}</span>
 
 %include('footer')
