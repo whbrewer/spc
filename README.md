@@ -2,11 +2,11 @@
 
 ## Intro
 
-* The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.  It is described in more detail in the following paper:
+The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.  It is described in more detail in the following paper:
 
   > W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24 http://ieeexplore.ieee.org/document/7421906/
 
-* If you need a copy of this paper, please send an e-mail request to the address at the bottom of this file.
+If you need a copy of this paper, please send an e-mail request to the address at the bottom of this file.
 
 ## Quickstart
 
@@ -42,7 +42,9 @@
 
       - Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  
 
-* To install another SPC packaged app, e.g. Mendel's Accountant:
+## Install packaged apps
+
+To install another SPC packaged app, e.g. Mendel's Accountant:
 
       - Mac OS X version:
 
@@ -52,15 +54,21 @@
 
       `> ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip`
 
-* To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc.git" 
-  you can just do "git pull" within the spc directory.  Before starting, also make sure
-  to run "./spc migrate" to migrate the new changes to the database.
+## Updating SPC
 
-* For more information, see user's manual in the docs/ folder
+To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc.git" 
+you can just do "git pull" within the spc directory.  Before starting, also make sure
+to run "./spc migrate" to migrate the new changes to the database.  
+
+Note that cloning the latest version of the repo may result in an unstable.  So, it is 
+better to download one of the releases (click on "Branch: master" and then click "Tags" 
+and select one of the releases).
+
+For more information, see user's manual in the docs/ folder
 
 ## Docker
 
-* To start a docker SPC instance:
+To start a docker SPC instance:
 
       - Either use the published image
 
