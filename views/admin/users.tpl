@@ -27,7 +27,11 @@
      <td> <form method="post" action="/admin/delete_user" 
                 onclick="if(confirm('confirm')) return true; return false">
           <input type="hidden" name="uid" value="{{row['id']}}">
-          <input class="btn btn-default" type="submit" value="delete"></form></td>
+          <button class="btn btn-link" style="color:#d9302c; font-size:150%" type="submit">
+            <span class="glyphicon glyphicon-remove-sign"></span>
+          </button>          
+          <!-- <input class="btn btn-danger" type="submit" value="delete"></form> -->
+      </td>
   </tr> 
 %end
 </tbody>
