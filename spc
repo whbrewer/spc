@@ -120,6 +120,11 @@ def initdb():
     dal.db.datasource.insert(filename="din.out",cols="1:2",pltid=1)
     dal.db.datasource.insert(filename="nucs.out",cols="1:2",pltid=2)
     dal.db.datasource.insert(filename="codons.out",cols="1:2",pltid=3)
+
+    # activate the default app for admin and guest
+    dal.db.app_user.insert(appid=1, uid=1)
+    dal.db.app_user.insert(appid=1, uid=2)
+
     #dal.db.disciplines.insert(name="Chemistry")
     #dal.db.disciplines.insert(name="Linguistics")
     #dal.db.disciplines.insert(name="Finance")
