@@ -3,13 +3,15 @@ import os
 from bottle import template
 
 def preprocess(params,fn,base_dir=""):
+    """in the future these need to be generalized or hooked in"""
     buf = ''
     if fn == 'fpg.in':  
         # convert input key/value params to command-line style args
+        if 'cid' in params: del params['cid']        
         for key, value in (params.iteritems()):
             if key == 't_pseudo_data':
-               if value=='true': value = ''
-               else: continue # don't output anything when this param is false
+                if value=='true': value = ''
+                else: continue # don't output anything when this param is false
             option = '-' + key.split('_')[0] # extract first letter
             buf += option + value + ' ' 
         sim_dir = os.path.join(base_dir, fn)
@@ -38,7 +40,6 @@ def preprocess(params,fn,base_dir=""):
 
 def _write_file(data, path):
     try:
-        #with open(path,'w') as f: f.write(data)
         open(path,'w').write(data)
         return True
     except IOError:
