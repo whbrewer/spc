@@ -137,6 +137,21 @@ def migrate():
     from src import migrate
     dal = migrate.dal(uri=config.uri, migrate=True)
 
+    # add default groups
+    # future: see http://stackoverflow.com/questions/21522014/web2py-check-if-exist-in-db-insert-or-update
+    # try update_or_insert() instead
+    dal.db.groups.insert(name="admin")
+    dal.db.groups.insert(name="genetics")    
+
+    # need to get this working in the future
+    # default = 1
+    # update all group ids to be 1 for now
+    # dal.db.jobs(dal.db.jobs.id > 0).update_record(gid=default)
+    # dal.db.apps(dal.db.apps.id > 0).update_record(gid=default)
+    # dal.db.users(dal.db.users.id > 0).update_record(gid=default)
+
+    dal.db.commit()
+
 notyet = "this feature not yet working"
 
 # ref: http://stackoverflow.com/questions/4028697
