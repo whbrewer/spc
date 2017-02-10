@@ -5,13 +5,17 @@ import config
 #db = DAL(config.uri, migrate=True, migrate_enabled=True, fake_migrate=True, folder=config.dbdir)
 db = DAL(config.uri, migrate=False, folder=config.dbdir)
 
+groups =  db.define_table('groups', Field('id', 'integer'),
+                                    Field('name', 'string'))
+
 users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),
                                  Field('passwd','string'),
                                  Field('email','string'),
                                  Field('unread_messages','integer'),
                                  Field('new_shared_jobs','integer'),
-                                 Field('priority','integer'))
+                                 Field('priority','integer'),
+                                 Field('gid', db.groups, ondelete="SET NULL"))
 
 # this is also defined in scheduler.py
 # need to fix in the future
@@ -23,7 +27,8 @@ apps = db.define_table('apps', Field('id','integer'),
                                Field('input_format','string'),
                                Field('command','string'),
                                Field('preprocess','string'),
-                               Field('postprocess','string'))
+                               Field('postprocess','string'),
+                               Field('gid', db.groups, ondelete="SET NULL"))
 
 app_user = db.define_table('app_user', Field('id', 'integer'), 
                                        Field('appid', 'integer'),
@@ -35,6 +40,7 @@ jobs = db.define_table('jobs', Field('id','integer'),
                                Field('uid',db.users),
                                Field('app','string'),
                                Field('cid','string'),
+                               Field('gid', db.groups),
                                Field('command', 'string'),
                                Field('state','string'),
                                Field('time_submit','string'),

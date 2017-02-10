@@ -720,7 +720,8 @@ def get_shared():
     else:
         n = int(n)
     # sort by descending order of jobs.id
-    result = db((db.jobs.shared=="True") & (db.jobs.uid==users.id)).select(orderby=~jobs.id)[:n]
+    result = db((db.jobs.shared=="True") &
+                (jobs.gid == users.gid)).select(orderby=~jobs.id)[:n]
 
     # clear notifications
     users(user=user).update_record(new_shared_jobs=0)

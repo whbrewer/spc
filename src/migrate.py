@@ -7,13 +7,17 @@ class dal(object):
         self.db = DAL(uri, migrate=migrate, folder=config.dbdir)
 
         # must define these here because need to use the db instance
+        self.groups =  self.db.define_table('groups', Field('id', 'integer'),
+                                         Field('name', 'string'))
+
         self.users = self.db.define_table('users', Field('id','integer'),
                                          Field('user', 'string'),
                                          Field('passwd','string'),
                                          Field('email','string'),
                                          Field('unread_messages','integer'),
                                          Field('new_shared_jobs','integer'),
-                                         Field('priority','integer'))
+                                         Field('priority','integer'),
+                                         Field('gid', self.db.groups, ondelete="SET NULL"))
 
         self.apps = self.db.define_table('apps', Field('id','integer'),
                                        Field('name','string'),
@@ -23,7 +27,8 @@ class dal(object):
                                        Field('input_format','string'),
                                        Field('command','string'),
                                        Field('preprocess','string'),
-                                       Field('postprocess','string'))
+                                       Field('postprocess','string'),
+                                       Field('gid', self.db.groups, ondelete="SET NULL"))
 
         self.app_user = self.db.define_table('app_user', Field('id', 'integer'), 
                                        Field('appid', 'integer'),
@@ -33,6 +38,7 @@ class dal(object):
                                        Field('uid',self.db.users),
                                        Field('app','string'),
                                        Field('cid','string'),
+                                       Field('gid', self.db.groups),
                                        Field('command', 'string'),
                                        Field('state','string'),
                                        Field('time_submit','string'),

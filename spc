@@ -97,18 +97,23 @@ def initdb():
     # create db
     dal = migrate.dal(uri=config.uri, migrate=True)
 
-    # add guest and admin user
-    hashpw = hashlib.sha256("guest").hexdigest()
-    dal.db.users.insert(user="guest",passwd=hashpw)
+    # add default groups
+    dal.db.groups.insert(name="admin")
+    dal.db.groups.insert(name="genetics")
+
+    # add admin and guest user
     hashpw = hashlib.sha256("admin").hexdigest()
-    dal.db.users.insert(user="admin",passwd=hashpw)
+    dal.db.users.insert(user="admin", passwd=hashpw, gid=0)
+    hashpw = hashlib.sha256("guest").hexdigest()
+    dal.db.users.insert(user="guest", passwd=hashpw, gid=1)
+
     # add default app
     dal.db.apps.insert(name="dna",description="Compute reverse complement," +\
                        "GC content, and codon analysis of given DNA string.", 
                        category="bioinformatics",
                        language="python",  
                        input_format="namelist", 
-                       command="../../../../apps/dna/dna")
+                       command="../../../../apps/dna/dna", gid=1)
     dal.db.plots.insert(id=1,appid=1,ptype="flot-cat",title="Dinucleotides")
     dal.db.plots.insert(id=2,appid=1,ptype="flot-cat",title="Nucleotides")
     dal.db.plots.insert(id=3,appid=1,ptype="flot-cat",title="Codons")

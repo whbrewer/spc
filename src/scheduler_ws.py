@@ -29,13 +29,17 @@ def handle_websocket():
 
 db = DAL(config.uri, auto_import=False, migrate=False, folder=config.dbdir)
 
+groups =  db.define_table('groups', Field('id', 'integer'),
+                                    Field('name', 'string'))
+
 apps = db.define_table('apps', Field('id','integer'),
                                Field('name','string'),
                                Field('description','string'),
                                Field('category','string'),
                                Field('language','string'),
                                Field('input_format','string'),
-                               Field('command','string'))
+                               Field('command','string'),
+                               Field('gid', db.groups, ondelete="SET NULL"))
 
 users = db.define_table('users', Field('id','integer'),
                                  Field('user', 'string'),
@@ -43,12 +47,14 @@ users = db.define_table('users', Field('id','integer'),
                                  Field('email','string'),
                                  Field('unread_messages','integer'),
                                  Field('new_shared_jobs','integer'),
-                                 Field('priority','integer'))
+                                 Field('priority','integer'),
+                                 Field('gid', db.groups, ondelete="SET NULL"))
 
 jobs = db.define_table('jobs', Field('id','integer'),
-                               Field('uid',db.users),
+                               Field('uid', db.users),
                                Field('app','string'),
                                Field('cid','string'),
+                               Field('gid', db.groups),                            
                                Field('command', 'string'),
                                Field('state','string'),
                                Field('time_submit','string'),
