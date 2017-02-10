@@ -12,11 +12,11 @@ If you need a copy of this paper, please send an e-mail request to the address a
 
 * To create and initialize the database which SPC uses: 
 
-      `> ./spc init`
+    > ./spc init
 
 * To start running the web server: 
 
-      `> ./spc run`
+    > ./spc run
 
 * Open browser to http://0.0.0.0:8580/
 
@@ -48,11 +48,11 @@ To install another SPC packaged app, e.g. Mendel's Accountant:
 
 * Mac OS X version:
 
-    `> ./spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip`
+    > ./spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip
 
 * Linux version:
 
-    `> ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip`
+    > ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip
 
 ## Updating SPC
 

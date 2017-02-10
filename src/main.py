@@ -844,7 +844,7 @@ def get_favicon():
 @post('/login')
 def post_login():
     if not config.auth: 
-        return "ERROR: authorization disabled. Modify config.py to change setting"
+        return "ERROR: authorization disabled. Change auth setting in config.py to enable"
 
     s = request.environ.get('beaker.session')
     row = users(user=request.forms.get('user').lower())
