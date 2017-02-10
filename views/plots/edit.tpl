@@ -43,17 +43,16 @@ function endis() {
 <ol class="breadcrumb">
   <li><a href="/">Home</a></li>
   <li><a href="/app/{{app}}">Configure App</a></li>
-  <li class="active">Add Plot</li>
+  <li class="active">Plots</li>
 </ol>
 
-<!-- <div class="btn-group">
-  <form class="btn-group" method="get" action="/app/{{app}}">
-    <button class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Configure App</button>
-    <input type="hidden" name="appname" value="{{app}}">
-  </form>
-  <button type="button" class="btn btn-default" data-toggle="collapse" 
-          data-target="#addplot">Add Plot</button>
-</div> -->
+<div class="row">
+
+  <div class="col-xs-12 col-sm-10"><h1 style="vertical-align:top">Plot definitions for {{app}} app</h1></div>
+
+  <div class="col-xs-12 col-sm-2"><button type="button" class="btn btn-default pull-right" data-toggle="collapse" data-target="#addplot"><span class="glyphicon glyphicon-plus"></span> Add Plot</button></div>
+
+</div>
 
 <div class="container-fluid">
 
@@ -87,11 +86,19 @@ function endis() {
     </fieldset>
     -->
 
-    <label class="control-label">xaxis label:</label>
-    <input type="text" class="form-control" name="xaxis_label" id="xaxis_label" onchange="opt()">
+    <div class="form-group">
+      <label class="control-label col-md-3">xaxis label:</label>
+      <div class="col-md-6">
+        <input type="text" class="form-control" name="xaxis_label" id="xaxis_label" onchange="opt()">
+      </div>
+    </div>
 
-    <label class="control-label">yaxis label:</label>
-    <input type="text" class="form-control" name="yaxis_label" id="yaxis_label" onchange="opt()">
+    <div class="form-group">
+      <label class="control-label col-md-3">yaxis label:</label>
+      <div class="col-md-6">
+        <input type="text" class="form-control" name="yaxis_label" id="yaxis_label" onchange="opt()">
+      </div>
+    </div>
 
     <div class="form-group">
         <label for="options" class="control-label col-md-3">Options (JSON):</label>
@@ -100,14 +107,12 @@ function endis() {
         </div>
     </div>
 
-    <input type="submit" class="btn btn-primary" value="Submit">
+    <input type="submit" class="btn btn-success center-block" value="Submit">
     <input type="hidden" name="app" value="{{app}}">
     <input type="hidden" name="cid" value="{{cid}}">
 </form>
 </div>
 </div>
-
-<h1 align=center>Plot definitions for {{app}} app</h1>
 
 <table class="table table-striped">
 <thead>

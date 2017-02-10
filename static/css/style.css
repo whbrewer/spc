@@ -34,10 +34,6 @@
       -o-transform: rotate(-90deg); */
 }
 
-textarea {
-  background-color : #d1d1d1;
-}
-
 table {
     margin:10px 0pt 15px;
     font-size: 10pt;
@@ -115,8 +111,12 @@ input:not([type=submit]):not([type=file]) {
    background-color:#faffbd !important
 }
 
+textarea {
+  background-color : #faffbd !important
+}
+
 .bootstrap-tagsinput {
-   background-color: #faffbd !important;
+   background-color: #faffbd !important
 }
 
 .table-striped tbody tr:hover td, .table-striped tbody tr:hover th {
