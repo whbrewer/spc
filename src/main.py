@@ -1356,7 +1356,10 @@ def plot_interface(pltid):
     try:
         result = db(plots.id==pltid).select().first()
         plottype = result['ptype']
-        options = replace_tags(result['options'], inputs)
+        if result['options']: 
+            options = replace_tags(result['options'], inputs)
+        else:
+            options = ''            
         title = result['title']
     except:
         redirect ('/plots/edit?app='+app+'&cid='+cid)
