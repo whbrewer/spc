@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-sm-8">
             <h3 align="center">{{title}}</h3>
-            <div id="myplot" style="width:100%; height:75%;"></div> <br>
+            <div id="myplot" style="width:100%; height:70%;"></div> <br>
         </div>
         <div class="col-sm-4 sidebar">
             <h4>Available Plots:</h4>
