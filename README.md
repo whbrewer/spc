@@ -46,13 +46,13 @@ If you need a copy of this paper, please send an e-mail request to the address a
 
 To install another SPC packaged app, e.g. Mendel's Accountant:
 
-      - Mac OS X version:
+* Mac OS X version:
 
-      `> ./spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip`
+    `> ./spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip`
 
-      - Linux version:
+* Linux version:
 
-      `> ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip`
+    `> ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip`
 
 ## Updating SPC
 
@@ -60,7 +60,7 @@ To update SPC: if you got the code using "git clone https://github.com/whbrewer/
 you can just do "git pull" within the spc directory.  Before starting, also make sure
 to run "./spc migrate" to migrate the new changes to the database.  
 
-Note that cloning the latest version of the repo may result in an unstable.  So, it is 
+Note that cloning the latest version of the repo may be unstable.  So, it is 
 better to download one of the releases (click on "Branch: master" and then click "Tags" 
 and select one of the releases).
 
@@ -70,17 +70,17 @@ For more information, see user's manual in the docs/ folder
 
 To start a docker SPC instance:
 
-      - Either use the published image
+* Either use the published image
 
-          `> docker pull willscott/spc`
+  `> docker pull willscott/spc`
 
-      - Or build your own
+* Or build your own
 
-          `> docker build -t spc .`
+  `> docker build -t spc .`
 
-      - then run an instance of the loaded image.
+* then run an instance of the loaded image.
 
-          `> docker run -d -P willscott/spc`
+  `> docker run -d -P willscott/spc`
 
 ## Optional Dependencies
 
