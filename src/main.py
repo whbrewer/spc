@@ -19,12 +19,6 @@ import apps as appmod
 import plots as plotmod
 from datetime import datetime, timedelta
 
-# requires gevent and gevent-websocket
-try:
-    if config.sched == "sp": import chat
-except ImportError:
-    print "INFO: chat not imported because gevent and/or gevent-websocket not installed"
-
 # requires boto
 try:
     import aws as awsmod
@@ -866,8 +860,7 @@ def tokensignin():
        # insert a random password that nobody will be able to guess
        hashpw = _hash_pass(str(uuid.uuid4())[:8])
        users.insert(user=user.lower(), email=email, passwd=hashpw, 
-                    priority=config.default_priority, unread_messages=0,
-                    new_shared_jobs=0)
+                    priority=config.default_priority, new_shared_jobs=0)
        db.commit()
 
     return user
@@ -939,8 +932,7 @@ def post_register():
 
         # insert into database
         users.insert(user=user.lower(), passwd=hashpw, email=email,
-                     priority=config.default_priority, unread_messages=0,
-                     new_shared_jobs=0)
+                     priority=config.default_priority, new_shared_jobs=0)
         db.commit()
         # email admin user
         try:
@@ -1025,15 +1017,13 @@ def showapps():
     user = authorized()
     uid = users(user=user).id
     app = active_app()
-    unread_messages = users(user=user).unread_messages or 0
 
     result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select() 
     if user == "admin":
         configurable = True
     else:
         configurable = False
-    params = { 'myapps': myapps.keys(), 'configurable': configurable, 'user': user, 
-               'unread_messages': unread_messages, 'app': app }
+    params = { 'myapps': myapps.keys(), 'configurable': configurable, 'user': user, 'app': app }
     return template('myapps', params, rows=result)
 
 @get('/apps/load')
@@ -1908,7 +1898,6 @@ def edit_inputs(step):
 def get_notifications():
     user = authorized()
     response = dict()
-    response['unread_messages'] = users(user=user).unread_messages
     response['new_shared_jobs'] = users(user=user).new_shared_jobs
     return json.dumps(response)
 
@@ -2012,14 +2001,6 @@ if __name__ == "__main__":
         app.app.merge(dockermod.dockerMod)
     except Exception, e:
         pass
-
-    # attempt to mix in chat functionality, currently only works with SP scheduler
-    if config.sched == "sp": 
-        try:
-            chat.bind(globals())
-            app.app.merge(chat.chatMod)
-        except Exception, e:
-            pass
 
     # run the app
     try:

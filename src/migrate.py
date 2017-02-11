@@ -14,7 +14,6 @@ class dal(object):
                                          Field('user', 'string'),
                                          Field('passwd','string'),
                                          Field('email','string'),
-                                         Field('unread_messages','integer'),
                                          Field('new_shared_jobs','integer'),
                                          Field('priority','integer'),
                                          Field('gid', self.db.groups, ondelete="SET NULL"))

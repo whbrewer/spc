@@ -13,11 +13,6 @@
 
                         <button data-step="5" data-intro="You can find other user's shared runs here" type="submit" class="btn btn-default hidden-xs" formaction="/jobs/shared"><span class="glyphicon glyphicon-pushpin"></span> Shared <span class="badge" style="background-color:tomato" id="new_shared_jobs"></span></button>
 
-                        <button data-step="6" data-intro="Group chats happen here" type="submit" class="btn btn-default" formaction="/chat">
-                            <span class="glyphicon glyphicon-comment"></span> Chat 
-                            <span class="badge" style="background-color:tomato" id="unread_messages"></span>
-                        </button>
-
                         %if defined('app'):
                             %if app != '':
                                 <button type="submit" class="btn btn-success hidden-xs" 
@@ -56,11 +51,7 @@
                     %end
                 </div>
 
-
                 <div class="navbar-right hidden-xs" style="margin-right: 5px;">
-                    %if defined('user'):
-                        <a onclick="toggleChatBox()"><label class="navbar-brand hidden-sm">{{user}}</label></a>
-                    %end
                     <div data-step="7" data-intro="Change your password or use advanced features here" class="btn-group">
                         <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
                             <span class="glyphicon glyphicon-menu-hamburger"></span></a>
@@ -88,11 +79,6 @@
 
 </nav>
 
-<!-- <div style="position:fixed; bottom:0px; right:0px">
-    <button class="btn btn-default" onclick="toggleChatBox()">
-        <span class="glyphicon glyphicon-comment"></span>
-    </button>
-</div> -->
 
 <script>
 $(document).ready(function () {
@@ -102,16 +88,6 @@ $(document).ready(function () {
 function checkForNotifications() {
     $.get( "/notifications", function( data ) {
         var obj = $.parseJSON(data)
-
-        if (eval(obj.unread_messages) > 0) {
-            if ( $( "#chat_page" ).length ) {
-                location.reload()
-            } else {
-                $("#unread_messages").html(obj.unread_messages)
-            }
-        } else {
-            $("#unread_messages").html("")
-        }
 
         if (eval(obj.new_shared_jobs) > 0) {
             $("#new_shared_jobs").html(obj.new_shared_jobs)
@@ -124,13 +100,4 @@ function checkForNotifications() {
     });
 }
 
-function toggleChatBox() {
-    id = "#chatbox"
-    time = 250
-    if($(id).is(':visible')) {
-        $(id).hide(time)
-    } else {
-        $(id).show(time)
-    }
-}
 </script>
