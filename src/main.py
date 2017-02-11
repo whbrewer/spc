@@ -1436,6 +1436,8 @@ def plot_interface(pltid):
                     dat = p.get_data(plotpath, col1, col2, line1)
                 else: # single column of data
                     dat = p.get_data(plotpath, col1)
+            if app == "fpg":
+                dat = process.postprocess(plotpath, line1, line2)
         else:
             dat = p.get_data(plotpath, col1, col2)
 
