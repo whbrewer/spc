@@ -23,7 +23,7 @@ def preprocess(params,fn,base_dir=""):
         return _write_file(buf, sim_dir)
     elif fn == 'simple.sim':
         # use a template based approach 
-        buf = template('simple.sim', params) 
+        buf = template('apps/simple.sim', params) 
         sim_dir = os.path.join(base_dir, fn)
         return _write_file(buf, sim_dir)
     elif fn == 'terra.in':
