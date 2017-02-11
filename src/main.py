@@ -19,18 +19,11 @@ import apps as appmod
 import plots as plotmod
 from datetime import datetime, timedelta
 
-# requires pika
-try:
-    import scheduler_mq
-except ImportError:
-    print "INFO: scheduler_mq not imported because pika not installed"
-
 # requires gevent and gevent-websocket
 try:
-    import scheduler_ws
     if config.sched == "sp": import chat
 except ImportError:
-    print "INFO: scheduler_ws and chat not imported because gevent and/or gevent-websocket not installed"
+    print "INFO: chat not imported because gevent and/or gevent-websocket not installed"
 
 # requires boto
 try:
@@ -74,10 +67,6 @@ app = SessionMiddleware(app(), session_opts)
 # create instance of scheduler
 if config.sched == "mp":
     sched = scheduler_mp.Scheduler()
-elif config.sched == "ws":
-    sched = scheduler_ws.Scheduler()
-elif config.sched == "mq":
-    sched = scheduler_mq.Scheduler()
 else:
     sched = scheduler_sp.Scheduler()
 
