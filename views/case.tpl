@@ -22,36 +22,7 @@
 </form>
 -->
 
-% if sched == "ws":
-
-  <style>
-
-    .preformatted {
-      font-family: monospace;
-      white-space: pre;
-      display: block;
-      padding: 9.5px;
-      margin: 0 0 10px;
-      margin-bottom: 55px;
-      font-size: 13px;
-      line-height: 1.42857143;
-      color: #333;
-      word-break: break-all;
-      word-wrap: break-word;
-      background-color: #f5f5f5;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-  </style>
-
-  <div id="output" class="preformatted"></div>
-
-% else:
-
-  <div id="output"></div>
-
-% end
+<div id="output"></div>
 
 <script>
 
@@ -74,7 +45,7 @@ function show(update_interval) {
 
 % if state == "C" or state == "X":
   show(2147483647) // don't page reload unless in Run or Queue state
-% elif not sched == "ws":
+% else:
   show(1000) // comment out if using websocket
 % end
 </script>

@@ -14,7 +14,7 @@ except:
 # other local modules
 from common  import *
 import config, process
-import scheduler_sp, scheduler_mp
+import scheduler
 import apps as appmod
 import plots as plotmod
 from datetime import datetime, timedelta
@@ -59,10 +59,7 @@ app = SessionMiddleware(app(), session_opts)
 ### end session management configuration ###
 
 # create instance of scheduler
-if config.sched == "mp":
-    sched = scheduler_mp.Scheduler()
-else:
-    sched = scheduler_sp.Scheduler()
+sched = scheduler.Scheduler()
 
 pbuffer = ''
 
@@ -221,7 +218,7 @@ def case():
 
         params = { 'cid': cid, 'app': app, 'jid': jid, 'contents': output,
                    'sid': sid, 'user': user, 'fn': fn, 'apps': myapps.keys(),
-                   'sched': config.sched, 'state': state, 'owner': owner }
+                   'state': state, 'owner': owner }
         return template('case_public', params)
 
     else:
@@ -236,7 +233,7 @@ def case():
         params = { 'cid': cid, 'app': app, 'jid': jid,
                    'user': user, 'fn': fn, 'apps': myapps.keys(),
                    'description': desc, 'shared': shared,
-                   'sched': config.sched, 'state': state, 'owner': owner }
+                   'state': state, 'owner': owner }
         return template('case', params)
 
 @get('/output')
@@ -471,7 +468,6 @@ def show_jobs():
     params['app'] = app
     params['user'] = user
     params['apps'] = myapps.keys()
-    params['sched'] = config.sched
     params['np'] = config.np
     params['nq'] = nq
     params['nr'] = nr
@@ -1965,9 +1961,6 @@ def init_config_options():
     try: config.auth
     except: config.auth = False
 
-    try: config.sched
-    except: config.sched = "sp"
-
     try: config.np
     except: config.np = 1
 
@@ -1992,8 +1985,6 @@ if __name__ == "__main__":
     # for local workers, start a polling thread to continuously check for queued jobs
     # if worker == "local": sched.poll()
     sched.poll()
-
-    if config.sched == "ws": sched.start_data_server()
 
     # attempt to mix in docker functionality
     try:
