@@ -104,8 +104,14 @@ class App(object):
         # tabs
         f.write("<ul class=\"nav nav-pills\" role=\"tablist\">\n")
         #f.write("<ul class=\"nav nav-tabs\" role=\"tablist\">\n")
+        first_tab = True
+
         for block in self.blockorder:
-            f.write("\t<li role=\"presentation\">\n")
+            if first_tab:
+                f.write("\t<li role=\"presentation\" class=\"active\">\n")
+                first_tab = False
+            else:
+                f.write("\t<li role=\"presentation\">\n")
             f.write("\t\t<a href=\"#" + block.replace(" ", "_") + "\" aria-controls=\"home\" role=\"tab\"")
             f.write(" data-toggle=\"tab\">" + block + "</a>\n")
             f.write("\t</li>\n")
