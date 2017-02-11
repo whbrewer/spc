@@ -99,5 +99,5 @@ is extensible in various ways by including other libs listed here:
 
 ## Questions
 
-* send email to: wes@fluidphysics.com
+Send email to: wes@fluidphysics.com
 
