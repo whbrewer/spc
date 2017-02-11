@@ -113,7 +113,7 @@
   %if np > 1: 
     <th class="hidden-xs hidden-sm hidden-md">np</th>
   %end 
-  <th class="hidden-xs hidden-sm hidden-md">priority</th> 
+  <!-- <th class="hidden-xs hidden-sm hidden-md">priority</th> --> 
   <th class="hidden-xs">date/time submitted</th> 
   <th class="hidden-xs hidden-sm hidden-md">walltime (s)</th>
   <th class="hidden-xs">labels</th>
@@ -143,7 +143,7 @@
     %if np > 1:
       <td class="case hidden-xs hidden-sm hidden-md">{{row['np']}} <a href="{{url}}"></a></td>
     %end
-    <td class="case hidden-xs hidden-sm hidden-md"><tt>{{row['priority']}}</tt> <a href="{{url}}"></a></td>
+    <!-- <td class="case hidden-xs hidden-sm hidden-md"><tt>{{row['priority']}}</tt> <a href="{{url}}"></a></td> -->
     <td class="case hidden-xs"><tt>{{row['time_submit']}}</tt> <a href="{{url}}"></a></td>
     <td class="case hidden-xs hidden-sm hidden-md"><tt>{{row['walltime']}}</tt> <a href="{{url}}"></a></td>
     <td class="case hidden-xs"> {{row['description']}}
