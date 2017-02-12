@@ -109,7 +109,6 @@ function endis() {
 
     <input type="submit" class="btn btn-success center-block" value="Submit">
     <input type="hidden" name="app" value="{{app}}">
-    <input type="hidden" name="cid" value="{{cid}}">
 </form>
 </div>
 </div>
@@ -131,12 +130,14 @@ function endis() {
      <td width="50">{{row['plots']['ptype']}}</td>
      <td>{{row['plots']['options']}}</td>
      <td width="100">
-        %if not cid == '':
-            <a href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">plot</a> <br><br>
-        %end
-        <a href="/plots/delete/{{row['plots']['id']}}?app={{app}}&cid={{cid}}" 
-           onclick="if(confirm('confirm')) return true; return false">delete</a> <br><br>
-        <a href="/plots/datasource/{{row['plots']['id']}}?app={{app}}&cid={{cid}}">datasource</a>
+        <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}" 
+           onclick="if(confirm('confirm')) return true; return false">delete</a> <br>
+        <a class="btn btn-link" href="/plots/datasource/{{row['plots']['id']}}?app={{app}}">datasource</a> <br>
+        <form method="post" action="/plots/edit">
+          <input type="hidden" name="app" value="{{app}}">
+          <input type="hidden" name="pltid" value="{{row['plots']['id']}}">
+          <button class="btn btn-link" type="submit">edit</button>
+        </form>
      </td>
   </tr> 
 %end

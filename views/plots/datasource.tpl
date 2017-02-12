@@ -26,7 +26,7 @@ function ddef() {
 <ol class="breadcrumb">
   <li><a href="/">Home</a></li>
   <li><a href="/app/{{app}}">Configure App</a></li>
-  <li><a href="/plots/edit?app={{app}}&cid={{cid}}">Plots</a></li>
+  <li><a href="/plots/edit?app={{app}}">Plots</a></li>
   <li class="active">Datasources</li>
 </ol>
 
@@ -94,7 +94,6 @@ function ddef() {
     <button class="btn btn-success center-block">Submit</button>
     <input type="hidden" name="pltid" value="{{pltid}}"> 
     <input type="hidden" name="app" value="{{app}}">
-    <input type="hidden" name="cid" value="{{cid}}">
 </form>
 </div>
 
@@ -110,7 +109,6 @@ function ddef() {
               <input type="hidden" name="dsid" value="{{row['id']}}">
               <input type="hidden" name="pltid" value="{{pltid}}">
               <input type="hidden" name="app" value="{{app}}">
-              <input type="hidden" name="cid" value="{{cid}}">
               <button type="submit" class="btn btn-link" style="color:#d9302c; font-size:150%" value="delete" onclick="if(confirm('confirm')) return true; return false"><span class="glyphicon glyphicon-remove"></span></button>
             </form>
     </tr>

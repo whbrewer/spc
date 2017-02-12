@@ -1232,27 +1232,47 @@ def zip_selected_files():
     redirect("/files?cid="+cid+"&app="+app)
 
 @get('/plots/edit')
-def editplot():
+def editplotdefs():
     user = authorized()
     if user != 'admin':
         return template('error', err="must be admin to edit plots")
     app = request.query.app
-    cid = request.query.cid
     if config.auth and not authorized(): redirect('/login')
     if app not in myapps: redirect('/apps')
     query = (apps.id==plots.appid) & (apps.name==app)
     result = db(query).select()
-    params = { 'app': app, 'cid': cid, 'user': user, 'apps': myapps.keys() }
-    return template('plots/edit', params, rows=result)
+    params = { 'app': app, 'user': user, 'apps': myapps.keys() }
+    return template('plots/plotdefs', params, rows=result)
+
+@post('/plots/edit')
+def editplotdef():
+    user = authorized()
+    app = request.forms.app
+    pltid = request.forms.pltid
+    result = db(plots.id==pltid).select().first()
+    params = { 'app': app, 'user': user }
+    return template('plots/edit_plot', params, row=result)
+
+@post('/plots/edit/<pltid>')
+def editplot(pltid):
+    user = authorized()
+    app = request.forms.app
+    title = request.forms.title
+    ptype = request.forms.ptype
+    options = request.forms.options
+    print "updating plot ", pltid, "for app", app
+    plots(pltid).update_record(title=title, ptype=ptype, options=options)
+    db.commit()
+    redirect('/plots/edit?app='+app)
+
 
 @get('/plots/delete/<pltid>')
 def delete_plot(pltid):
     user = authorized()
     app = request.query.app
-    cid = request.query.cid
     del db.plots[pltid]
     db.commit()
-    redirect ('/plots/edit?app='+app+'&cid='+cid)
+    redirect ('/plots/edit?app='+app)
 
 @get('/plots/datasource/<pltid>')
 def get_datasource(pltid):
@@ -1282,23 +1302,21 @@ def add_datasource():
 def delete_plot():
     user = authorized()
     app = request.forms.get('app')
-    cid = request.forms.get('cid')
     pltid = request.forms.get('pltid')
     dsid = request.forms.get('dsid')
     del db.datasource[dsid]
     db.commit()
-    redirect ('/plots/datasource/'+pltid+'?app='+app+'&cid='+cid)
+    redirect ('/plots/datasource/'+pltid+'?app='+app)
 
 @post('/plots/create')
 def create_plot():
     user = authorized()
     app = request.forms.get('app')
-    cid = request.forms.get('cid')
     r = request
     plots.insert(appid=myapps[app].appid, ptype=r.forms['ptype'],
                  title=r.forms['title'], options=r.forms['options'])
     db.commit()
-    redirect ('/plots/edit?app='+app+'&cid='+cid)
+    redirect ('/plots/edit?app='+app)
 
 @get('/plot/<pltid>')
 def plot_interface(pltid):
