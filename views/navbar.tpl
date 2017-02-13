@@ -52,6 +52,9 @@
                 </div>
 
                 <div class="navbar-right hidden-xs" style="margin-right: 5px;">
+                    %if defined('user'):
+                        <a href="#" class="navbar-brand hidden-xs">{{user}}</a>
+                    %end
                     <div data-step="7" data-intro="Change your password or use advanced features here" class="btn-group">
                         <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
                             <span class="glyphicon glyphicon-menu-hamburger"></span></a>
