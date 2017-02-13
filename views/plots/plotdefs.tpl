@@ -132,7 +132,7 @@ function endis() {
      <td width="100">
         <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}" 
            onclick="if(confirm('confirm')) return true; return false">delete</a> <br>
-        <a class="btn btn-link" href="/plots/datasource/{{row['plots']['id']}}?app={{app}}">datasource</a> <br>
+        <a class="btn btn-link" href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">datasources</a> <br>
         <form method="post" action="/plots/edit">
           <input type="hidden" name="app" value="{{app}}">
           <input type="hidden" name="pltid" value="{{row['plots']['id']}}">

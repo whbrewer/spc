@@ -40,7 +40,7 @@ function ddef() {
 
 <div id="editsource" class="collapse">
 
-<form id="datasourceForm" class="form-horizontal" method="post" action="/plots/datasource_add" onsubmit="return validateForm()">
+<form id="datasourceForm" class="form-horizontal" method="post" action="/plots/{{pltid}}/datasources" onsubmit="return validateForm()">
 
     <div class="form-group">
         <label for="label" class="control-label col-md-3">Label:</label>
@@ -109,8 +109,13 @@ function ddef() {
               <input type="hidden" name="dsid" value="{{row['id']}}">
               <input type="hidden" name="pltid" value="{{pltid}}">
               <input type="hidden" name="app" value="{{app}}">
-              <button type="submit" class="btn btn-link" style="color:#d9302c; font-size:150%" value="delete" onclick="if(confirm('confirm')) return true; return false"><span class="glyphicon glyphicon-remove"></span></button>
+              <button type="submit" class="btn btn-link" value="delete" onclick="if(confirm('confirm')) return true; return false"><span style="color:#d9302c" class="glyphicon glyphicon-remove"></span> delete</button>
             </form>
+            <form method="get" action="/plots/{{pltid}}/datasources/{{row['id']}}">
+              <input type="hidden" name="app" value="{{app}}">
+              <button type="submit" class="btn btn-link"><span style="color:#000" class="glyphicon glyphicon-pencil"></span> edit</button>
+            </form>
+        </td>
     </tr>
     %end 
 </table>

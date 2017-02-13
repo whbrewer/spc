@@ -121,8 +121,7 @@ def confirm_form():
             np = 1
 
         params = { 'cid': cid, 'inputs': inputs, 'app': app, 
-                   'user': user, 'apps': myapps.keys(), 'nap': config.np,
-                   'np': np, 'desc': desc }
+                   'user': user, 'nap': config.np, 'np': np, 'desc': desc }
         # try:
         return template('confirm', params)
         # except:
@@ -180,8 +179,7 @@ def execute():
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
         print >> sys.stderr, "Execution failed:", e
-        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user,
-                   'err': e, 'apps': myapps.keys() }
+        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e }
         return template('error', params)
 
 @get('/more')
@@ -195,8 +193,7 @@ def more():
     contents = slurp_file(filepath)
     # convert html tags to entities (e.g. < to &lt;)
     contents = cgi.escape(contents)
-    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user,
-               'fn': filepath, 'apps': myapps.keys() }
+    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 'fn': filepath }
     return template('more', params)
 
 @get('/case')
@@ -217,8 +214,7 @@ def case():
         output = slurp_file(fn)
 
         params = { 'cid': cid, 'app': app, 'jid': jid, 'contents': output,
-                   'sid': sid, 'user': user, 'fn': fn, 'apps': myapps.keys(),
-                   'state': state, 'owner': owner }
+                   'sid': sid, 'user': user, 'fn': fn, 'state': state, 'owner': owner }
         return template('case_public', params)
 
     else:
@@ -231,8 +227,7 @@ def case():
         shared = result['shared']
 
         params = { 'cid': cid, 'app': app, 'jid': jid,
-                   'user': user, 'fn': fn, 'apps': myapps.keys(),
-                   'description': desc, 'shared': shared,
+                   'user': user, 'fn': fn, 'description': desc, 'shared': shared,
                    'state': state, 'owner': owner }
         return template('case', params)
 
@@ -268,13 +263,12 @@ def output():
         desc = jobs(cid=c).description
 
         params = { 'cid': cid, 'contents': output, 'app': app,
-                   'user': owner, 'fn': fn, 'apps': myapps.keys(), 'description': desc }
+                   'user': owner, 'fn': fn, 'description': desc }
 
         return template('more', params)
 
     except:
-        params = { 'app': app, 'apps': myapps.keys(),
-                   'err': "Couldn't read input file. Check casename." }
+        params = { 'app': app, 'err': "Couldn't read input file. Check casename." }
 
         return template('error', params)
 
@@ -299,11 +293,10 @@ def inputs():
         desc = jobs(cid=c).description
 
         params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': owner,
-                   'fn': fn, 'apps': myapps.keys(), 'description': desc }
+                   'fn': fn, 'description': desc }
         return template('more', params)
     except:
-        params = { 'app': app, 'apps': myapps.keys(),
-                   'err': "Couldn't read input file. Check casename." }
+        params = { 'app': app, 'err': "Couldn't read input file. Check casename." }
         return template('error', params)
 
 def compute_stats(path):
@@ -363,8 +356,7 @@ def tail(app, cid):
             xoutput = 'Oops! It appears that the directory does not exist.  Possibly it has been deleted'
 
     params = { 'cid': cid, 'contents': xoutput, 'app': app,
-               'user': user, 'fn': ofn, 'apps': myapps.keys(),
-               'progress': progress }
+               'user': user, 'fn': ofn, 'progress': progress }
     return template('more_contents', params)
 
 @get('/')
@@ -467,7 +459,6 @@ def show_jobs():
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    params['apps'] = myapps.keys()
     params['np'] = config.np
     params['nq'] = nq
     params['nr'] = nr
@@ -496,7 +487,6 @@ def get_aws():
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    params['apps'] = myapps.keys()
     if request.query.status:
         params['status'] = request.query.status
     return template('aws', params, creds=creds, instances=instances)
@@ -566,7 +556,6 @@ def aws_status(aid):
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    params['apps'] = myapps.keys()
     params['port'] = config.port
     if awsmod:
         a = aws_conn(aid)
@@ -630,7 +619,6 @@ def get_account():
     params = {}
     params['app'] = app
     params['user'] = user
-    params['apps'] = myapps.keys()
     uid = users(user=user).id
     return template('account', params)
 
@@ -711,7 +699,6 @@ def get_shared():
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    params['apps'] = myapps.keys()
     params['n'] = n
     params['num_rows'] = config.jobs_num_rows
     return template('shared', params, rows=result)
@@ -1005,7 +992,7 @@ def showapps():
     else:
         configurable = False
         
-    params = { 'apps': myapps.keys(), 'configurable': configurable, 'user': user }
+    params = { 'configurable': configurable, 'user': user }
     return template('apps', params, rows=result, activated=activated_apps)
 
 @get('/myapps')
@@ -1019,7 +1006,7 @@ def showapps():
         configurable = True
     else:
         configurable = False
-    params = { 'myapps': myapps.keys(), 'configurable': configurable, 'user': user, 'app': app }
+    params = { 'configurable': configurable, 'user': user, 'app': app }
     return template('myapps', params, rows=result)
 
 @get('/apps/load')
@@ -1056,7 +1043,7 @@ def app_edit(appid):
     cid = request.forms.cid
     app = request.forms.app
     result = db(apps.name==app).select().first()
-    params = {'app': app, 'cid': cid, 'apps': myapps.keys()}
+    params = {'app': app, 'cid': cid}
     return template('app_edit', params, rows=result)
 
 @post('/app/save/<appid>')
@@ -1112,7 +1099,6 @@ def view_app(app):
     params = {}
     params['app'] = app
     params['user'] = user
-    params['apps'] = myapps.keys()
     params['cid'] = cid
     #if request.query.edit:
     #    return template('appedit', params, rows=result)
@@ -1150,7 +1136,6 @@ def getstart():
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    params['apps'] = myapps.keys()
     return template('apps/' + myapps[app].appname, params)
 
 @get('/files')
@@ -1176,7 +1161,6 @@ def list_files():
     if not path:
         path = os.path.join(myapps[app].user_dir, owner, app, cid)
 
-    params['apps'] = myapps.keys()
     params['path'] = path
     if q: 
         _, ext = q.split('.')
@@ -1241,7 +1225,7 @@ def editplotdefs():
     if app not in myapps: redirect('/apps')
     query = (apps.id==plots.appid) & (apps.name==app)
     result = db(query).select()
-    params = { 'app': app, 'user': user, 'apps': myapps.keys() }
+    params = { 'app': app, 'user': user }
     return template('plots/plotdefs', params, rows=result)
 
 @post('/plots/edit')
@@ -1274,29 +1258,52 @@ def delete_plot(pltid):
     db.commit()
     redirect ('/plots/edit?app='+app)
 
-@get('/plots/datasource/<pltid>')
+@get('/plots/<pltid>/datasources')
 def get_datasource(pltid):
+    """get list of datasources for given plot"""
     user = authorized()
     app = request.query.app
     cid = request.query.cid
     if myapps[app].appname not in myapps: redirect('/apps')
     if config.auth and not authorized(): redirect('/login')
     result = db(datasource.pltid==pltid).select()
-    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid,
-               'rows': result, 'apps': myapps.keys() }
-    return template('plots/datasource', params, rows=result)
+    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result }
+    return template('plots/datasources', params, rows=result)
 
-@post('/plots/datasource_add')
-def add_datasource():
+@post('/plots/<pltid>/datasources')
+def add_datasource(pltid):
+    """create a new datasource for given plot"""
     user = authorized()
-    app = request.forms.get('app')
-    cid = request.forms.get('cid')
-    pltid = request.forms.get('pltid')
+    app = request.forms.app
     r = request.forms
     datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'],
                       line_range=r['line_range'], data_def=r['data_def'])
     db.commit()
-    redirect ('/plots/datasource/'+pltid+'?app='+app+'&cid='+cid)
+    redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
+
+@get('/plots/<pltid>/datasources/<dsid>')
+def edit_datasource(pltid, dsid):
+    """create a new datasource for given plot"""
+    user = authorized()
+    app = request.query.app
+    query = (datasource.id==dsid)
+    result = db(query).select().first()
+    print result
+    params = {'app': app, 'pltid': pltid, 'dsid': dsid}
+    return template('plots/edit_datasource', params, row=result)
+
+@post('/plots/<pltid>/datasources/<dsid>')
+def edit_datasource_post(pltid, dsid):
+    """create a new datasource for given plot"""
+    user = authorized()
+    app = request.forms.get('app')
+    r = request.forms
+    datasource(id=dsid).update_record(pltid=pltid, filename=r['fn'], cols=r['cols'],
+                                      line_range=r['line_range'], data_def=r['data_def'])
+    db.commit()
+    redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
+    params = {'app': app, 'pltid': pltid, 'dsid': dsid}
+    return template('plots/edit_datasource', params)
 
 @post('/plots/datasource_delete')
 def delete_plot():
@@ -1306,7 +1313,7 @@ def delete_plot():
     dsid = request.forms.get('dsid')
     del db.datasource[dsid]
     db.commit()
-    redirect ('/plots/datasource/'+pltid+'?app='+app)
+    redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
 
 @post('/plots/create')
 def create_plot():
@@ -1460,7 +1467,7 @@ def plot_interface(pltid):
     params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': user,
                'ticks': ticks, 'title': title, 'plotpath': plotpath,
                'rows': list_of_plots, 'options': options, 'datadef': datadef,
-               'apps': myapps.keys(), 'stats': stats, 'description': desc }
+               'stats': stats, 'description': desc }
     return template(tfn, params)
 
 @get('/mpl/<pltid>')
@@ -1549,7 +1556,7 @@ def matplotlib(pltid):
 
     params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid,
               'plotpath': plotpath, 'img_path': img_path, 'title': title,
-              'rows': list_of_plots, 'apps': myapps.keys(), 'stats': stats }
+              'rows': list_of_plots, 'stats': stats }
     return template('plots/matplotlib', params)
 
 @get('/zipcase')
@@ -1586,7 +1593,7 @@ def zipget():
 
     # if config.worker != "remote" or config.remote_worker_url is None:
     if worker is None:
-        params = { 'app': app, 'apps': myapps.keys(),
+        params = { 'app': app, 
                    'err': "worker and remote_worker_url parameters must be set " +
                           " in config.py for this feature to work" }
         return template('error', params)        
@@ -1620,8 +1627,7 @@ def zipget():
     redirect("/jobs")
 
     # except:
-    #     params = { 'app': app, 'apps': myapps.keys(),
-    #                'err': "Configuration not setup with remote worker." }
+    #     params = { 'app': app, 'err': "Configuration not setup with remote worker." }
     #     return template('error', params)
 
 
