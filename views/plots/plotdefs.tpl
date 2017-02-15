@@ -37,7 +37,13 @@ function endis() {
 </script>
 
 <style type="text/css">
-  td,th {text-align: center}
+  td,th {
+    text-align: center
+  }
+  table {
+    font-size: 120%;
+  }
+
 </style>
 
 <ol class="breadcrumb">
@@ -116,31 +122,36 @@ function endis() {
 <table class="table table-striped">
 <thead>
 <tr>
-   <th>id</th>
+   <th>#</th>
    <th>Title</th> 
    <th>Type</th> 
    <th>Options</th> 
    <th>Action</th> 
 </tr>
 </thead>
-%for row in rows:
+% i = 0
+% for row in rows:
   <tr>
-     <td>{{row['plots']['id']}}</td>
-     <td>{{row['plots']['title']}}</td>
+     % i += 1
+     <!-- <td>{{row['plots']['id']}}</td> -->
+     <td>{{i}}</td>
+     <td onhover="toggleActions()">{{row['plots']['title']}}</td>
      <td width="50">{{row['plots']['ptype']}}</td>
      <td>{{row['plots']['options']}}</td>
-     <td width="100">
-        <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}" 
-           onclick="if(confirm('confirm')) return true; return false">delete</a> <br>
-        <a class="btn btn-link" href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">datasources</a> <br>
-        <form method="post" action="/plots/edit">
-          <input type="hidden" name="app" value="{{app}}">
-          <input type="hidden" name="pltid" value="{{row['plots']['id']}}">
-          <button class="btn btn-link" type="submit">edit</button>
-        </form>
-     </td>
+     <div class="form-group" id="actions">
+       <td width="100">
+          <a class="btn btn-link" href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">datasources</a> <br>
+          <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}" 
+             onclick="if(confirm('confirm')) return true; return false"><span style="color:red" class="glyphicon glyphicon-remove"></span> delete</a> <br>
+          <form method="post" action="/plots/edit">
+            <input type="hidden" name="app" value="{{app}}">
+            <input type="hidden" name="pltid" value="{{row['plots']['id']}}">
+            <button class="btn btn-link" type="submit"><span style="color:#000" class="glyphicon glyphicon-pencil"></span> edit</</button>
+          </form>
+       </td>
+     </div>
   </tr> 
-%end
+% end
 </table>
 
 %include('footer')

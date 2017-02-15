@@ -21,6 +21,10 @@ function ddef() {
 }
 </script>
 
+<style>
+  table { font-size: 120%; }
+</style>
+
 <div id="warning" align="center" class="alert-warning"></div>
 
 <ol class="breadcrumb">

@@ -67,6 +67,9 @@
                             %if defined('user'):
                                 %if user=="admin":
                                     <li> <a href="/admin/show_users">Admin</a> </li>
+                                    %if defined('app'):
+                                        <li> <a href="/app/{{app}}">Configure {{app}}</a> </li>
+                                    %end
                                 %end
                             %end
                             <li class="divider"> </li>

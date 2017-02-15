@@ -29,22 +29,22 @@
 
     <div class="form-group">
         <label for="data_def" class="control-label col-md-3">Data definition (JSON):</label>
-        <div class="col-md-6"><textarea class="form-control" name="data_def" id="data_def">{{row['data_def']}}</textarea></div>
+        <div class="col-md-6"><textarea style="font-size:120%" class="form-control" name="data_def" id="data_def">{{row['data_def']}}</textarea></div>
     </div>
 
     <div class="form-group">
         <label for="filename" class="control-label col-md-3">Filename:</label>
-        <div class="col-md-6"><input type="text" class="form-control" name="fn" value="{{row['filename']}}" required></div>
+        <div class="col-md-6"><input type="text" class="form-control input-lg" name="fn" value="{{row['filename']}}" required></div>
     </div>
 
     <div class="form-group">
         <label for="cols" class="control-label col-md-3">Column range (e.g. 1:2):</label>
-        <div class="col-md-6"><input type="text" class="form-control" id="cols" name="cols" value="{{row['cols']}}" pattern="\d+:\d+" required></div>
+        <div class="col-md-6"><input type="text" class="form-control input-lg" id="cols" name="cols" value="{{row['cols']}}" pattern="\d+:\d+" required></div>
     </div>
 
     <div class="form-group">
         <label for="line_range" class="control-label col-md-3">Line range (e.g. 3:53):</label>
-        <div class="col-md-6"><input type="text" class="form-control" id="line_range" name="line_range" value="{{row['line_range']}}" pattern="\d+:\d+" required></div>
+        <div class="col-md-6"><input type="text" class="form-control input-lg" id="line_range" name="line_range" value="{{row['line_range']}}" pattern="\d+:\d+" required></div>
     </div>
     <button class="btn btn-success center-block">Submit</button>
     <input type="hidden" name="pltid" value="{{pltid}}"> 

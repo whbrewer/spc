@@ -1288,7 +1288,6 @@ def edit_datasource(pltid, dsid):
     app = request.query.app
     query = (datasource.id==dsid)
     result = db(query).select().first()
-    print result
     params = {'app': app, 'pltid': pltid, 'dsid': dsid}
     return template('plots/edit_datasource', params, row=result)
 
