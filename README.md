@@ -2,7 +2,7 @@
 
 ## Intro
 
-The Scientific Platform for the Cloud (SPC) is an integrated cloud platform for rapid interface generation, job scheduling, case management, plotting, and monitoring of scientific applications.  It is described in more detail in the following paper:
+The Scientific Platform for the Cloud (SPC) is a cloud platform for easily migrating and running scientific applications in the cloud.  It is described in more detail in the following paper:
 
   > W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24 http://ieeexplore.ieee.org/document/7421906/
 
@@ -10,11 +10,11 @@ If you need a copy of this paper, please send an e-mail request to the address a
 
 ## Quickstart
 
-* To create and initialize the database which SPC uses: 
+* To create and initialize the database which SPC uses:
 
     > ./spc init
 
-* To start running the web server: 
+* To start running the web server:
 
     > ./spc run
 
@@ -56,12 +56,12 @@ To install another SPC packaged app, e.g. Mendel's Accountant:
 
 ## Updating SPC
 
-To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc.git" 
+To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc.git"
 you can just do "git pull" within the spc directory.  Before starting, also make sure
 to run "./spc migrate" to migrate the new changes to the database.  
 
-Note that cloning the latest version of the repo may be unstable.  So, it is 
-better to download one of the releases (click on "Branch: master" and then click "Tags" 
+Note that cloning the latest version of the repo may be unstable.  So, it is
+better to download one of the releases (click on "Branch: master" and then click "Tags"
 and select one of the releases).
 
 For more information, see user's manual in the docs/ folder
@@ -100,4 +100,3 @@ is extensible in various ways by including other libs listed here:
 ## Questions
 
 Send email to: wes@fluidphysics.com
-
