@@ -30,13 +30,11 @@ If you need a copy of this paper, please send an e-mail request to the address a
 
       - Click on "dna" the default installed app
 
-      - Enter a DNA string
+      - Enter a DNA string, or use the default string
 
       - Click confirm to write the datafile to disk
 
-      - Click execute to run the DNA analysis
-
-      - SPC will submit it to the job scheduleer
+      - Click execute to run the DNA analysis.  SPC will submit it to the job scheduler
 
       - Click output (if you see an error message, it most likely means the jobs has not started running yet, so you can just click output several times until you see the result)
 
