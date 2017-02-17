@@ -12,11 +12,11 @@ If you need a copy of this paper, please send an e-mail request to the address a
 
 * To create and initialize the database which SPC uses:
 
-    > ./spc init
+    `./spc init`
 
 * To start running the web server:
 
-    > ./spc run
+    `./spc run`
 
 * Open browser to http://0.0.0.0:8580/
 
@@ -30,7 +30,7 @@ If you need a copy of this paper, please send an e-mail request to the address a
 
       - Click on "dna" the default installed app
 
-      - Enter a DNA string, or use the default string
+      - Enter a DNA string, or use the default
 
       - Click confirm to write the datafile to disk
 
