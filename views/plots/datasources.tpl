@@ -15,8 +15,8 @@ function ddef() {
     ps = "points: { show: true }"
   }
   c = document.getElementById("color").value
-  cs = "color: \"" + c + "\"" 
-  document.getElementById("data_def").value = 
+  cs = "color: \"" + c + "\""
+  document.getElementById("data_def").value =
     "{" + ls + ", " + ds + ", "+ ps + ", " + cs + "}"
 }
 </script>
@@ -96,7 +96,7 @@ function ddef() {
         <div class="col-md-6"><input type="text" class="form-control" id="line_range" name="line_range" pattern="\d+:\d+" required></div>
     </div>
     <button class="btn btn-success center-block">Submit</button>
-    <input type="hidden" name="pltid" value="{{pltid}}"> 
+    <input type="hidden" name="pltid" value="{{pltid}}">
     <input type="hidden" name="app" value="{{app}}">
 </form>
 </div>
@@ -105,7 +105,7 @@ function ddef() {
     <thead><tr><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition (JSON)</th><th>actions</th></tr></thead>
     %for row in rows:
     <tr>
-        <td contenteditable='true'>{{row['filename']}}</td>
+        <td>{{row['filename']}}</td>
         <td>{{row['cols']}}</td>
         <td>{{row['line_range']}}</td>
         <td>{{row['data_def']}}</td>
@@ -121,7 +121,7 @@ function ddef() {
             </form>
         </td>
     </tr>
-    %end 
+    %end
 </table>
 
 %include('footer')
