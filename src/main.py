@@ -1374,6 +1374,7 @@ def plot_interface(pltid):
         tfn = 'plots/flot-cat'
     elif plottype == 'flot-scatter':
         tfn = 'plots/flot-scatter'
+    # for backwards compatability
     elif plottype == 'flot-line':
         tfn = 'plots/flot-scatter'
     elif plottype == 'plotly-hist':
@@ -1705,8 +1706,9 @@ def appconfig_status():
         status['template'] = 0
 
     # check inputs file
+    extension = {'namelist': '.in', 'ini': '.ini', 'xml': '.xml', 'json': '.json', 'yaml': '.yaml'}
     if os.path.exists(os.path.join(config.apps_dir, app,
-                      app + "." + myapps[app].input_format)):
+                      app + extension[myapps[app].input_format])):
         status['inputs'] = 1
     else:
         status['inputs'] = 0
