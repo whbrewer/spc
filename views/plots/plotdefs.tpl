@@ -73,7 +73,7 @@ function endis() {
         <label for="ptype" class="control-label col-md-3">Type of plot:</label>
         <div class="col-md-6">
             <select name="ptype" id="ptype" class="form-control" onchange="endis()">
-                <option VALUE="flot-line">flot/line</option>
+                <option VALUE="flot-scatter">flot/scatter (line, bar, points)</option>
                 <option VALUE="flot-cat">flot/categories</option>
                 <option VALUE="plotly-hist">plotly/histogram</option>
                 <option VALUE="mpl-line">matplotlib/line</option>

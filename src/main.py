@@ -1372,8 +1372,10 @@ def plot_interface(pltid):
         tfn = 'plots/flot-bar'
     elif plottype == 'flot-cat':
         tfn = 'plots/flot-cat'
+    elif plottype == 'flot-scatter':
+        tfn = 'plots/flot-scatter'
     elif plottype == 'flot-line':
-        tfn = 'plots/flot-line'
+        tfn = 'plots/flot-scatter'
     elif plottype == 'plotly-hist':
         tfn = 'plots/plotly-hist'
     elif plottype == 'mpl-line' or plottype == 'mpl-bar':
