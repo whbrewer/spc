@@ -1368,9 +1368,7 @@ def plot_interface(pltid):
         return template('error', params)
 
     # determine which view template to use
-    if plottype == 'flot-bar':
-        tfn = 'plots/flot-bar'
-    elif plottype == 'flot-cat':
+    if plottype == 'flot-cat':
         tfn = 'plots/flot-cat'
     elif plottype == 'flot-scatter':
         tfn = 'plots/flot-scatter'
