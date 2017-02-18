@@ -20,12 +20,13 @@ def usage():
     buf += "runworker     start a worker\n"
     buf += "runsslworker  start a SSL worker\n"
     buf += "uninstall     uninstall an app\n"
+    buf += "update        update an app (in case spc.json was modified)\n"
     #buf += "search   search for available apps\n"
     #buf += "test     run unit tests\n"
     return buf
 
 if (len(sys.argv) == 1):
-    print usage() 
+    print usage()
     sys.exit()
 
 #db = config.db
@@ -74,15 +75,15 @@ def initdb():
 
     # somehow the following doesn't work properly
     # make a backup copy of db file if it exists
-    #if os.path.isfile(db): 
-    #    print "ERROR: a database file already exists, please rename it and rerun" 
+    #if os.path.isfile(db):
+    #    print "ERROR: a database file already exists, please rename it and rerun"
     #    sys.exit()
     #    shutil.copyfile(db, db+".bak")
 
     # get rid of old .table files
     for f in os.listdir(config.dbdir):
         if re.search("\.table", f):
-            print "removing file:", f 
+            print "removing file:", f
             os.remove(os.path.join(config.dbdir, f))
     # delete previous .db file should back first (future)
     dbpath = os.path.join(config.dbdir, config.db)
@@ -102,10 +103,10 @@ def initdb():
 
     # add default app
     dal.db.apps.insert(name="dna",description="Compute reverse complement," +\
-                       "GC content, and codon analysis of given DNA string.", 
+                       "GC content, and codon analysis of given DNA string.",
                        category="bioinformatics",
-                       language="python",  
-                       input_format="namelist", 
+                       language="python",
+                       input_format="namelist",
                        command="../../../../apps/dna/dna", gid=1)
     dal.db.plots.insert(id=1,appid=1,ptype="flot-cat",title="Dinucleotides")
     dal.db.plots.insert(id=2,appid=1,ptype="flot-cat",title="Nucleotides")
@@ -139,7 +140,7 @@ def migrate():
     # future: see http://stackoverflow.com/questions/21522014/web2py-check-if-exist-in-db-insert-or-update
     # try update_or_insert() instead
     dal.db.groups.insert(name="admin")
-    dal.db.groups.insert(name="genetics")    
+    dal.db.groups.insert(name="genetics")
 
     # need to get this working in the future
     # default = 1
@@ -157,24 +158,24 @@ def dlfile(url):
     # Open the url
     try:
         f = urllib2.urlopen(url)
-        print "downloading " + url 
+        print "downloading " + url
         # Open our local file for writing
         with open(os.path.basename(url), "wb") as local_file:
             local_file.write(f.read())
     #handle errors
     except urllib2.HTTPError, e:
-        print "HTTP Error:", e.code, url 
+        print "HTTP Error:", e.code, url
     except urllib2.URLError, e:
-        print "URL Error:", e.reason, url 
+        print "URL Error:", e.reason, url
 
 # process command line options
 if __name__ == "__main__":
     if (sys.argv[1] == "init"):
         create_config_file()
-        print "creating database." 
+        print "creating database."
         initdb()
     elif (sys.argv[1] == "migrate"):
-        print "migrating database schema changes" 
+        print "migrating database schema changes"
         migrate()
     elif (sys.argv[1] == "go"):
         print "\"spc go\" has been deprecated. use \"spc run\" instead"
@@ -187,12 +188,12 @@ if __name__ == "__main__":
     elif (sys.argv[1] == "runsslworker"):
         os.system("python src/worker_ssl.py")
     elif (sys.argv[1] == "search"):
-        print notyet 
+        print notyet
     elif (sys.argv[1] == "test"):
-        os.chdir('tests')  
+        os.chdir('tests')
         if not os.path.exists('db'): os.makedirs('db')
         if not os.path.exists('src'): os.makedirs('src')
-        if not os.path.exists('apps'): os.makedirs('apps')        
+        if not os.path.exists('apps'): os.makedirs('apps')
         os.system("../spc init")
         print "RUNNING UNIT TESTS..."
         os.system("python test_unit.py")
@@ -222,12 +223,12 @@ if __name__ == "__main__":
         #platform.system()  # Darwin, Linux, Windows, or Java
         #platform.machine() # i386, x86_64
         install_usage = "usage: spc install /path/to/file.zip\n    or spc install http://url/to/file.zip"
-                
+
         if len(sys.argv) == 3:
             if re.search(r'http[s]://.*$', sys.argv[2]):
-                dlfile(sys.argv[2]) # download zip file 
+                dlfile(sys.argv[2]) # download zip file
                 # if url is http://website.com/path/to/file.zip
-                # following line extracts out just "file.zip" which should 
+                # following line extracts out just "file.zip" which should
                 # now be in the current directory
                 save_path = os.path.basename(sys.argv[2].split('//')[1])
             else:
@@ -235,7 +236,7 @@ if __name__ == "__main__":
 
             app_dir_name = os.path.basename(save_path).split('.')[0]
             if os.path.isfile(app_dir_name):
-                print 'ERROR: app directory exists already. Please remove first.' 
+                print 'ERROR: app directory exists already. Please remove first.'
                 sys.exit()
             # don't overwrite another directory if it exists
             # instead rename old redirectory with timestamp
@@ -250,7 +251,7 @@ if __name__ == "__main__":
             z.extractall()
             # depending on how file was zipped, the extracted directory
             # may be different than the zip filename, so update the app_dir_name
-            # to the extracted filename 
+            # to the extracted filename
             app_dir_name = z.namelist()[0]
             fh.close()
 
@@ -266,7 +267,7 @@ if __name__ == "__main__":
             import json
             from src import migrate
             path = app_dir_name + os.sep + "spc.json"
-            with open(path,'r') as f: 
+            with open(path,'r') as f:
                 data = f.read()
             parsed = json.loads(data)
 
@@ -278,15 +279,15 @@ if __name__ == "__main__":
             shutil.move(app_dir_name,app_path)
 
             # connect to db
-            dal = migrate.dal(uri=config.uri) 
+            dal = migrate.dal(uri=config.uri)
 
             # check if app already exists before preceding
             result = dal.db(dal.db.apps.name==parsed['name']).select().first()
-            if result: 
-                print "\n*** ERROR: app already exists in database ***" 
+            if result:
+                print "\n*** ERROR: app already exists in database ***"
                 shutil.rmtree(app_path)
                 sys.exit()
-            
+
             # copy tpl file to views/apps folder
             src = config.apps_dir + os.sep + app + os.sep + app + '.tpl'
             dst = 'views' + os.sep + 'apps'
@@ -320,25 +321,25 @@ if __name__ == "__main__":
                 for asset in parsed['assets']:
                     src = os.path.join(config.apps_dir, app, asset)
                     shutil.copy(src, dst)
-     
+
             # add plots and datasources to db
             if 'plots' in parsed.keys():
                 for key in parsed['plots']:
                     pltid = dal.db.plots.insert(appid=appid, ptype=key['ptype'],
-                                                title=key['title'], 
+                                                title=key['title'],
                                                 options=key['options'])
                     for ds in key['datasource']:
-                        dal.db.datasource.insert(pltid=pltid, 
-                                                 filename=ds['filename'], 
-                                                 cols=ds['cols'], 
-                                                 line_range=ds['line_range'], 
+                        dal.db.datasource.insert(pltid=pltid,
+                                                 filename=ds['filename'],
+                                                 cols=ds['cols'],
+                                                 line_range=ds['line_range'],
                                                  data_def=ds['data_def'])
             # commit to db
             dal.db.commit()
-            print "SUCCESS: installed app", app 
+            print "SUCCESS: installed app", app
             print "Note: If SPC is running, you will need to restart"
         else:
-            print install_usage 
+            print install_usage
 
     elif (sys.argv[1] == "list"):
         list_usage = "usage: spc list [available|installed]"
@@ -347,7 +348,7 @@ if __name__ == "__main__":
                 from src import migrate
                 dal = migrate.dal(uri=config.uri)
                 result = dal.db().select(dal.db.apps.ALL)
-                for r in result: print r.name 
+                for r in result: print r.name
             elif (sys.argv[2] == "available"):
                 try:
                     response = urllib2.urlopen(url)
@@ -356,15 +357,92 @@ if __name__ == "__main__":
                     for child in root.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Contents"):
                         for c in child.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Key"):
                             (app,ext) = c.text.split(".")
-                            print app 
+                            print app
                 except:
-                    print "ERROR: problem accessing network" 
+                    print "ERROR: problem accessing network"
                     sys.exit()
             else:
-                print list_usage 
+                print list_usage
         else:
-            print list_usage 
-    else:
-        print "ERROR: option not supported" 
-        sys.exit()
+            print list_usage
 
+    elif (sys.argv[1] == "update"):
+        from src import migrate
+        dal = migrate.dal(uri=config.uri, migrate=True)
+        usage = "usage: spc update appname"
+        if len(sys.argv) == 3:
+            app = sys.argv[2]
+            app_path = config.apps_dir + os.sep + app
+
+            # check if directory exists
+            if not os.path.isdir(app_path):
+                print 'ERROR: app directory does not exist'
+                sys.exit()
+
+            file_path = os.path.join(app_path, "spc.json")
+
+            if not os.path.isfile(os.path.join(app_path, "spc.json")):
+                print 'ERROR: spc.json file does not exist in ' + app_path
+                sys.exit()
+
+            # read the json app config file and insert info into db
+            import json
+            from src import migrate
+
+            with open(file_path,'r') as f:
+                data = f.read()
+            parsed = json.loads(data)
+
+            # check if this is the correct spc.json for the app specified
+            if not app == parsed['name']:
+                print 'ERROR: app name specified in spc.json file different than command line'
+                sys.exit()
+            else:
+                appid = dal.db.apps(name=app).id
+
+            # nrecords = dal.db.apps.update_or_insert(dal.db.apps.name==app, name=app, description=parsed['description'],
+            #                                         category=parsed['category'], language=parsed['language'],
+            #                                         input_format=parsed['input_format'], command=parsed['command'])
+            # if nrecords is not None:
+            #     print "INFO: updated app metadata"
+
+            np = nd = 0
+            # update plots and datasources
+            if 'plots' in parsed.keys():
+                for key in parsed['plots']:
+                    sys.stdout.write('P')
+                    # following is not working but it should be the proper way to implement
+                    nrecords = dal.db.plots.update_or_insert(dal.db.plots.title==key['title'], appid=appid, ptype=key['ptype'],
+                                                             title=key['title'], options=key['options'])
+
+                    if nrecords is not None:
+                        print '\nINFO: inserting plot definition', key['title']
+                        np += 1
+
+                    pltid = dal.db.plots(title=key['title']).id
+
+                    for ds in key['datasource']:
+                        sys.stdout.write('.')
+                        nrecords = dal.db.datasource.update_or_insert(pltid=pltid,
+                                                 filename=ds['filename'],
+                                                 cols=ds['cols'],
+                                                 line_range=ds['line_range'],
+                                                 data_def=ds['data_def'])
+                        if nrecords is not None:
+                            print '\nINFO: inserting datasource for plt', pltid
+                            nd += 1
+
+            # commit changes to db
+            dal.db.commit()
+            print
+            if np > 0: print "SUCCESS: inserted", np, "plot defs"
+            if nd > 0: print "SUCCESS: inserted defs for app", app
+            print
+            print "NOTE: some records may have been updated but currently web2py DAL does not notify about that"
+
+        else:
+            print usage
+
+    else:
+        print "ERROR: option not supported"
+        sys.exit()

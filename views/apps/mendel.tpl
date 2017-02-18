@@ -1,1 +1,0 @@
-../../apps/mendel/mendel.tpl
