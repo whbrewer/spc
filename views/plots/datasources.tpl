@@ -93,7 +93,7 @@ function ddef() {
 
     <div class="form-group">
         <label for="line_range" class="control-label col-md-3">Line range (e.g. 3:53):</label>
-        <div class="col-md-6"><input type="text" class="form-control" id="line_range" name="line_range" pattern="\d+:\d+" required></div>
+        <div class="col-md-6"><input type="text" class="form-control" id="line_range" name="line_range" pattern="-?\d+:\d+" required></div>
     </div>
     <button class="btn btn-success center-block">Submit</button>
     <input type="hidden" name="pltid" value="{{pltid}}">

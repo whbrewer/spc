@@ -16,7 +16,7 @@
 <br>
 
 <form id="datasourceForm" class="form-horizontal" method="post" action="/plots/{{pltid}}/datasources/{{dsid}}" onsubmit="return validateForm()">
-   
+
     <!--
     <div class="form-group">
         <label for="label" class="control-label col-md-3">Label:</label>
@@ -44,11 +44,12 @@
 
     <div class="form-group">
         <label for="line_range" class="control-label col-md-3">Line range (e.g. 3:53):</label>
-        <div class="col-md-6"><input type="text" class="form-control input-lg" id="line_range" name="line_range" value="{{row['line_range']}}" pattern="\d+:\d+" required></div>
+        <div class="col-md-6"><input type="text" class="form-control input-lg" id="line_range" name="line_range" value="{{row['line_range']}}" pattern="-?\d+:\d+"></div>
     </div>
     <button class="btn btn-success center-block">Submit</button>
-    <input type="hidden" name="pltid" value="{{pltid}}"> 
+    <input type="hidden" name="pltid" value="{{pltid}}">
     <input type="hidden" name="app" value="{{app}}">
+
 </form>
 </div>
 
@@ -56,5 +57,3 @@
 </html>
 
 %include('footer')
-
-
