@@ -13,7 +13,7 @@ function opt() {
   var e = document.getElementById("ptype")
   var strUser = e.options[e.selectedIndex].value;
   if (strUser != "flot-cat") {
-    document.getElementById("options").value = 
+    document.getElementById("options").value =
       "legend: { position: \"nw\"}" + ", " + xstr + ", " + ystr;
   }
 }
@@ -119,14 +119,14 @@ function endis() {
 </div>
 </div>
 
-<table class="table table-striped">
+<table id="clickable" class="table table-striped">
 <thead>
 <tr>
    <th>#</th>
-   <th>Title</th> 
-   <th>Type</th> 
-   <th>Options</th> 
-   <th>Action</th> 
+   <th>Title</th>
+   <th>Type</th>
+   <th>Options</th>
+   <th>Action</th>
 </tr>
 </thead>
 % i = 0
@@ -134,14 +134,15 @@ function endis() {
   <tr>
      % i += 1
      <!-- <td>{{row['plots']['id']}}</td> -->
-     <td>{{i}}</td>
-     <td onhover="toggleActions()">{{row['plots']['title']}}</td>
-     <td width="50">{{row['plots']['ptype']}}</td>
-     <td>{{row['plots']['options']}}</td>
+     %url="/plots/"+str(row['plots']['id'])+"/datasources?app="+app
+     <td class="plotdef">{{i}} <a href="{{url}}"></a></td>
+     <td class="plotdef">{{row['plots']['title']}} <a href="{{url}}"></a></td>
+     <td class="plotdef" width="50">{{row['plots']['ptype']}} <a href="{{url}}"></a></td>
+     <td class="plotdef">{{row['plots']['options']}} <a href="{{url}}"></a></td>
      <div class="form-group" id="actions">
        <td width="100">
-          <a class="btn btn-link" href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">datasources</a> <br>
-          <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}" 
+          <!-- <a class="btn btn-link" href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">datasources</a> <br> -->
+          <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}"
              onclick="if(confirm('confirm')) return true; return false"><span style="color:red" class="glyphicon glyphicon-remove"></span> delete</a> <br>
           <form method="post" action="/plots/edit">
             <input type="hidden" name="app" value="{{app}}">
@@ -150,8 +151,18 @@ function endis() {
           </form>
        </td>
      </div>
-  </tr> 
+  </tr>
 % end
 </table>
+
+<script>
+$(document).ready(function() {
+    $('.plotdef').click(function(e) {
+        var href = $(this).find("a").attr("href");
+        if(href) { window.location = href; }
+        e.stopPropagation();
+    });
+});
+</script>
 
 %include('footer')

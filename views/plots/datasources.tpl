@@ -105,10 +105,11 @@ function ddef() {
     <thead><tr><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition (JSON)</th><th>actions</th></tr></thead>
     %for row in rows:
     <tr>
-        <td>{{row['filename']}}</td>
-        <td>{{row['cols']}}</td>
-        <td>{{row['line_range']}}</td>
-        <td>{{row['data_def']}}</td>
+        %url="/plots/"+str(pltid)+"/datasources/"+str(row['id'])+"?app="+app
+        <td class="datasource">{{row['filename']}} <a href="{{url}}"></a></td>
+        <td class="datasource">{{row['cols']}} <a href="{{url}}"></a></td>
+        <td class="datasource">{{row['line_range']}} <a href="{{url}}"></a></td>
+        <td class="datasource">{{row['data_def']}} <a href="{{url}}"></a></td>
         <td><form method="post" action="/plots/datasource_delete">
               <input type="hidden" name="dsid" value="{{row['id']}}">
               <input type="hidden" name="pltid" value="{{pltid}}">
@@ -123,5 +124,15 @@ function ddef() {
     </tr>
     %end
 </table>
+
+<script>
+$(document).ready(function() {
+    $('.datasource').click(function(e) {
+        var href = $(this).find("a").attr("href");
+        if(href) { window.location = href; }
+        e.stopPropagation();
+    });
+});
+</script>
 
 %include('footer')
