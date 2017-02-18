@@ -38,8 +38,6 @@ def create_config_file():
         with open(fn, "w") as f:
             f.write("# USER AUTHENTICATION\n")
             f.write("auth = False\n")
-            f.write("\n# the number of lines to show while monitoring\n")
-            f.write("tail_num_lines = 24\n")
             f.write("\n# the number of rows to show at a time in the jobs table\n")
             f.write("jobs_num_rows = 20\n")
             f.write("\n# DATABASE\n")

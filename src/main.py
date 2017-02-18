@@ -115,12 +115,12 @@ def confirm_form():
         # convert html tags to entities (e.g. < to &lt;)
         inputs = cgi.escape(inputs)
         # attempt to get number of procs from forms inputs
-        if 'num_procs' in request.forms: 
+        if 'num_procs' in request.forms:
             np = request.forms.num_procs
-        else: 
+        else:
             np = 1
 
-        params = { 'cid': cid, 'inputs': inputs, 'app': app, 
+        params = { 'cid': cid, 'inputs': inputs, 'app': app,
                    'user': user, 'nap': config.np, 'np': np, 'desc': desc }
         # try:
         return template('confirm', params)
@@ -247,7 +247,7 @@ def output():
         run_dir = os.path.join(myapps[app].user_dir, owner, myapps[app].appname, c)
         fn = os.path.join(run_dir, myapps[app].outfn)
 
-        if config.worker == 'remote': 
+        if config.worker == 'remote':
 
             params = {'user': user, 'app': app, 'cid': cid}
             resp = requests.get(config.remote_worker_url +'/output', params=params)
@@ -319,15 +319,12 @@ def tail(app, cid):
     user = authorized()
     # submit num_lines as form parameter
     num_lines = int(request.query.num_lines) or 24
-    # if not num_lines or num_lines < 10:
-    #     num_lines = 24
-    # num_lines = config.tail_num_lines
     progress = 0
     complete = 0
     if config.worker == 'remote':
         myparams = {'user': user, 'app': app, 'cid': cid}
         resp = requests.get(config.remote_worker_url +'/output', params=myparams)
-        output = resp.text 
+        output = resp.text
         myoutput = output #[len(output)-num_lines:]
         # xoutput = ''.join(myoutput)
         xoutput = myoutput
@@ -381,7 +378,7 @@ def show_jobs():
     elif shared:
         result = db(jobs.shared=="True").select(orderby=~jobs.id)[:n]
     elif q:
-        query_array = [ tuple(qa.strip().split(":")) for qa in q.strip().split() ] 
+        query_array = [ tuple(qa.strip().split(":")) for qa in q.strip().split() ]
 
         if len(query_array) == 1:
 
@@ -406,17 +403,17 @@ def show_jobs():
                     elif query == "shared":
                         result = db(jobs.shared=="True").select(orderby=~jobs.id)[:n]
                 elif key == "state":
-                    result = db((jobs.uid==uid) & (db.jobs.state==query)).select(orderby=~jobs.id)                    
+                    result = db((jobs.uid==uid) & (db.jobs.state==query)).select(orderby=~jobs.id)
                 elif key == "label":
                     result = db((db.jobs.uid==uid) & (db.jobs.description.contains(
                                  query, case_sensitive=False))).select(orderby=~jobs.id)
                 elif key == "after" or key == "before":
-                    if len(query) != 8: 
-                        return template('error', err="date format must be YY/MM/DD, e.g. after:16/12/01")                        
+                    if len(query) != 8:
+                        return template('error', err="date format must be YY/MM/DD, e.g. after:16/12/01")
                     rows = db(jobs.uid==uid).select(orderby=~jobs.id)
                     result = []
                     for row in rows:
-                        a = datetime.strptime(row.time_submit, "%a %b %d %H:%M:%S %Y") 
+                        a = datetime.strptime(row.time_submit, "%a %b %d %H:%M:%S %Y")
                         b = datetime.strptime(query, "%y/%m/%d")
                         if key == "after":
                             if a-b > timedelta(days=0): result.append(row)
@@ -428,13 +425,13 @@ def show_jobs():
         elif len(query_array) == 2: # the case when user search with both after and before dates
             key1, query1 = query_array[0][0], query_array[0][1]
             key2, query2 = query_array[1][0], query_array[1][1]
-            if len(query1) != 8 or len(query2) != 8: 
-                return template('error', err="date format must be YY/MM/DD, e.g. after:16/12/01")  
+            if len(query1) != 8 or len(query2) != 8:
+                return template('error', err="date format must be YY/MM/DD, e.g. after:16/12/01")
             if key1 == "after" and key2 == "before" or key1 == "before" and key2 == "after":
                 rows = db(jobs.uid==uid).select(orderby=~jobs.id)
                 result = []
                 for row in rows:
-                    a = datetime.strptime(row.time_submit, "%a %b %d %H:%M:%S %Y") 
+                    a = datetime.strptime(row.time_submit, "%a %b %d %H:%M:%S %Y")
                     b = datetime.strptime(query1, "%y/%m/%d")
                     c = datetime.strptime(query2, "%y/%m/%d")
                     if key1 == "after":
@@ -442,10 +439,10 @@ def show_jobs():
                     else:
                         if a-c > timedelta(days=0) and a-b < timedelta(days=0): result.append(row)
             else:
-                return template('error', err="search type not supported") 
-                   
+                return template('error', err="search type not supported")
+
         else:
-            return template('error', err="search type not supported")  
+            return template('error', err="search type not supported")
 
     else:
         result = db(jobs.uid==uid).select(orderby=~jobs.id)[:n]
@@ -662,7 +659,7 @@ def share_case():
     for u in db().select(users.ALL):
         nmsg = users(user=u.user).new_shared_jobs or 0
         users(user=u.user).update_record(new_shared_jobs=nmsg+1)
-    db.commit()    
+    db.commit()
     redirect('/jobs')
 
 @post('/jobs/unshare')
@@ -774,11 +771,11 @@ def show_app(app):
 @get('/login')
 @get('/login/<referrer>')
 def get_login(referrer=''):
-    try: 
-        return template('login', {'referrer': referrer, 
+    try:
+        return template('login', {'referrer': referrer,
                                   'oauth_client_id': config.oauth_client_id})
     except:
-        return template('login', {'referrer': referrer})       
+        return template('login', {'referrer': referrer})
 
 @get('/logout')
 def logout():
@@ -809,7 +806,7 @@ def get_favicon():
 
 @post('/login')
 def post_login():
-    if not config.auth: 
+    if not config.auth:
         return "ERROR: authorization disabled. Change auth setting in config.py to enable"
 
     s = request.environ.get('beaker.session')
@@ -842,7 +839,7 @@ def tokensignin():
     if not users(user=user.lower()):
        # insert a random password that nobody will be able to guess
        hashpw = _hash_pass(str(uuid.uuid4())[:8])
-       users.insert(user=user.lower(), email=email, passwd=hashpw, 
+       users.insert(user=user.lower(), email=email, passwd=hashpw,
                     priority=config.default_priority, new_shared_jobs=0)
        db.commit()
 
@@ -938,7 +935,7 @@ def admin_show_users():
     if not user == "admin":
         return template("error", err="must be admin to delete")
     result = db().select(users.ALL)
-    params = { 'user': user, 'app': active_app() } 
+    params = { 'user': user, 'app': active_app() }
     return template('admin/users', params, rows=result)
 
 @post('/admin/delete_user')
@@ -991,7 +988,7 @@ def showapps():
         configurable = True
     else:
         configurable = False
-        
+
     params = { 'configurable': configurable, 'user': user }
     return template('apps', params, rows=result, activated=activated_apps)
 
@@ -1001,7 +998,7 @@ def showapps():
     uid = users(user=user).id
     app = active_app()
 
-    result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select() 
+    result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select()
     if user == "admin":
         configurable = True
     else:
@@ -1055,7 +1052,7 @@ def app_save(appid):
     info = request.forms.input_format
     category = request.forms.category
     preprocess = request.forms.preprocess
-    postprocess = request.forms.postprocess    
+    postprocess = request.forms.postprocess
     desc = request.forms.description
     row = db(db.apps.id==appid).select().first()
     row.update_record(language=lang, category=category, description=desc, input_format=info,
@@ -1162,10 +1159,10 @@ def list_files():
         path = os.path.join(myapps[app].user_dir, owner, app, cid)
 
     params['path'] = path
-    if q: 
+    if q:
         _, ext = q.split('.')
         params['files'] = sorted([ fn for fn in os.listdir(path) if fn.endswith(ext) ])
-    else: 
+    else:
         q = ""
         params['files'] = sorted(os.listdir(path))
     params['q'] = q
@@ -1184,11 +1181,11 @@ def delete_f():
     for file in files:
         path = os.path.join(myapps[app].user_dir, user, app, cid, file)
         if cid is not None:
-            if os.path.isfile(path): 
+            if os.path.isfile(path):
                 print "removing file:", path
                 os.remove(path)
-            elif os.path.isdir(path): 
-                print "removing path:", path                
+            elif os.path.isdir(path):
+                print "removing path:", path
                 shutil.rmtree(path)
         else:
             print "ERROR: not removing path:", path, "because cid missing"
@@ -1356,10 +1353,10 @@ def plot_interface(pltid):
     try:
         result = db(plots.id==pltid).select().first()
         plottype = result['ptype']
-        if result['options']: 
+        if result['options']:
             options = replace_tags(result['options'], inputs)
         else:
-            options = ''            
+            options = ''
         title = result['title']
     except:
         redirect ('/plots/edit?app='+app+'&cid='+cid)
@@ -1417,7 +1414,7 @@ def plot_interface(pltid):
         else: # single column
             num_fields = 1
             col1 = int(cols)
-        
+
         # do some postprocessing
         if line_range is not None:
             (line1str, line2str) = line_range.split(":")
@@ -1440,11 +1437,11 @@ def plot_interface(pltid):
         else:
             dat = p.get_data(plotpath, col1, col2)
 
-        if dat == -1: 
+        if dat == -1:
             return template('error', err="Could not read data file. " + \
                                          "Is filename correct in datasource setup?")
         elif dat == -2:
-            return template('error', 
+            return template('error',
                 err="Data file exists but there was problems parsing its data. " + \
                     "Are the column and line ranges setup properly?")
 
@@ -1592,13 +1589,13 @@ def zipget():
 
     # if config.worker != "remote" or config.remote_worker_url is None:
     if worker is None:
-        params = { 'app': app, 
+        params = { 'app': app,
                    'err': "worker and remote_worker_url parameters must be set " +
                           " in config.py for this feature to work" }
-        return template('error', params)        
+        return template('error', params)
 
     # try:
-    requests.get(worker + "/zipcase", 
+    requests.get(worker + "/zipcase",
          params={'app': app, 'cid': cid, 'user': user})
 
     path = os.path.join(config.user_dir, user, app, cid)
@@ -1706,7 +1703,7 @@ def appconfig_status():
         status['template'] = 0
 
     # check inputs file
-    if os.path.exists(os.path.join(config.apps_dir, app, 
+    if os.path.exists(os.path.join(config.apps_dir, app,
                       app + "." + myapps[app].input_format)):
         status['inputs'] = 1
     else:
@@ -1733,7 +1730,7 @@ def appconfig_exe(step="upload"):
     user = authorized()
     if user != 'admin':
         return template('error', err="must be admin to configure app")
-    if step == "upload":    
+    if step == "upload":
         appname = request.forms.appname
         params = {'appname': appname}
         return template('appconfig/exe_upload', params)
@@ -1775,7 +1772,7 @@ def export():
         return template('error', err="must be admin to use export function")
     app = request.forms.app
     result = db(apps.name==app).select().first()
-  
+
     data = {}
     data['name'] = result.name
     data['description'] = result.description
@@ -1790,14 +1787,14 @@ def export():
 
     myplots = db(plots.appid==appid).select()
     data['plots'] = list()
-    
+
     for p in myplots:
         thisplot = {}
         thisplot['ptype'] = p.ptype
         thisplot['title'] = p.title
         thisplot['options'] = p.options
         thisplot['datasource'] = list()
-        
+
         myds = db(datasource.pltid==p.id).select()
 
         for ds in myds:
@@ -1806,7 +1803,7 @@ def export():
             thisds['cols'] = ds.cols
             thisds['line_range'] = ds.line_range
             thisds['data_def'] = ds.data_def
-            
+
             thisplot['datasource'].append(thisds)
 
         data['plots'].append(thisplot)
@@ -1904,7 +1901,7 @@ def edit_inputs(step):
             return "ERROR: there was a problem when creating view"
     else:
         return template('error', err="step not supported")
- 
+
 # this shows a listing of all files and allows the user to pick
 # which one to use
 #@get('/upload_contents/<appname>/<fn>')
