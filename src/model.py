@@ -26,8 +26,7 @@ apps = db.define_table('apps', Field('id', 'integer'),
                                Field('input_format', 'string'),
                                Field('command', 'string'),
                                Field('preprocess', 'string'),
-                               Field('postprocess', 'string'),
-                               Field('gid', db.groups, ondelete="SET NULL"))
+                               Field('postprocess', 'string'))
 
 app_user = db.define_table('app_user', Field('id', 'integer'),
                                        Field('appid', 'integer'),
@@ -51,12 +50,15 @@ jobs = db.define_table('jobs', Field('id', 'integer'),
                                Field('shared', 'string'))
 
 plots = db.define_table('plots', Field('id', 'integer'),
-                                 Field('appid', db.apps),
+                                 # need to turn on unique in the future, but will cause migration probs for old DBs
+                                 # this is needed for running "spc update" b/c primary keys are not specified in spc.json
+                                 Field('appid', db.apps), #unique=True),
                                  Field('ptype', 'string'),
                                  Field('title', 'string'),
                                  Field('options', 'string'))
 
 datasource = db.define_table('datasource', Field('id', 'integer'),
+                                           # Field('label', 'string'), # unique=True),
                                            Field('pltid', db.plots),
                                            Field('filename', 'string'),
                                            Field('cols', 'string'),

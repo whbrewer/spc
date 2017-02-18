@@ -26,8 +26,7 @@ class dal(object):
                                        Field('input_format', 'string'),
                                        Field('command', 'string'),
                                        Field('preprocess', 'string'),
-                                       Field('postprocess', 'string'),
-                                       Field('gid', self.db.groups, ondelete="SET NULL"))
+                                       Field('postprocess', 'string'))
 
         self.app_user = self.db.define_table('app_user', Field('id', 'integer'),
                                        Field('appid', 'integer'),
@@ -49,12 +48,15 @@ class dal(object):
                                        Field('shared', 'string'))
 
         self.plots = self.db.define_table('plots', Field('id', 'integer'),
-                                         Field('appid', self.db.apps),
+                                         # need to turn on unique in the future, but will cause migration probs for old DBs
+                                         # this is needed for running "spc update" b/c primary keys are not specified in spc.json
+                                         Field('appid', self.db.apps), # unique=True),
                                          Field('ptype', 'string'),
                                          Field('title', 'string'),
                                          Field('options', 'string'))
 
         self.datasource = self.db.define_table('datasource', Field('id', 'integer'),
+                                                   # Field('label', 'string'), # unique=True),
                                                    Field('pltid', self.db.plots),
                                                    Field('filename', 'string'),
                                                    Field('cols', 'string'),
