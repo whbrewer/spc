@@ -105,7 +105,7 @@ def initdb():
                        category="bioinformatics",
                        language="python",
                        input_format="namelist",
-                       command="../../../../apps/dna/dna", gid=1)
+                       command="../../../../apps/dna/dna")
     dal.db.plots.insert(id=1,appid=1,ptype="flot-cat",title="Dinucleotides")
     dal.db.plots.insert(id=2,appid=1,ptype="flot-cat",title="Nucleotides")
     dal.db.plots.insert(id=3,appid=1,ptype="flot-cat",title="Codons")
