@@ -9,6 +9,11 @@ of the datasource table to add a label column.  This was needed to
 be able to properly support the "spc update" command.  To manually
 fix this on older databases, use:
 
-> alter table datasource add column label text;
+> alter table datasource add column label char(512);
 
-at the sqlite3 command.
+at the sqlite3 command.  You may also have to run to turn on fake migrations by 
+editing src/migrate.py to have the parameter turn on as follows below.,
+
+    self.db = DAL(uri, migrate=migrate, fake_migrate_all=True, folder=config.dbdir)
+
+If you don't do this you may get an error the next time you run "spc migrate" or "spc update":

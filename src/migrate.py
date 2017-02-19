@@ -4,7 +4,7 @@ import config
 class dal(object):
     def __init__(self, uri=config.uri, migrate=False):
 
-        self.db = DAL(uri, migrate=migrate, migrate_enabled=migrate, folder=config.dbdir)
+        self.db = DAL(uri, migrate=migrate, folder=config.dbdir)
 
         # must define these here because need to use the db instance
         self.groups =  self.db.define_table('groups', Field('id', 'integer'),

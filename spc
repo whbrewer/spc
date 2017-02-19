@@ -140,7 +140,7 @@ def migrate():
 
     # need to run:
     # alter table datasource add column label text;
-    
+
     # need to get this working in the future
     # default = 1
     # update all group ids to be 1 for now
@@ -425,7 +425,7 @@ if __name__ == "__main__":
                         sys.stdout.write('.')
                         nrecords = dal.db.datasource.update_or_insert(
                                                  dal.db.datasource.label==ds['label'],
-                                                 label=label, pltid=pltid,
+                                                 label=ds['label'], pltid=pltid,
                                                  filename=ds['filename'],
                                                  cols=ds['cols'],
                                                  line_range=ds['line_range'],
