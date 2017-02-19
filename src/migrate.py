@@ -4,7 +4,7 @@ import config
 class dal(object):
     def __init__(self, uri=config.uri, migrate=False):
 
-        self.db = DAL(uri, migrate=migrate, folder=config.dbdir)
+        self.db = DAL(uri, migrate=migrate, migrate_enabled=migrate, folder=config.dbdir)
 
         # must define these here because need to use the db instance
         self.groups =  self.db.define_table('groups', Field('id', 'integer'),
@@ -57,7 +57,7 @@ class dal(object):
                                          Field('options', 'string'))
 
         self.datasource = self.db.define_table('datasource', Field('id', 'integer'),
-                                                   # Field('label', 'string'), # unique=True),
+                                                   Field('label', 'string'), # unique=True),
                                                    Field('pltid', self.db.plots),
                                                    Field('filename', 'string'),
                                                    Field('cols', 'string'),

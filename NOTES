@@ -1,0 +1,14 @@
+Feb. 19, 2017
+
+Unfortunately I haven't found a good, robust way of handling database
+migrations yet.  Gluino DAL has built-in migrations, but they don't
+work always.  This is what is used when running "spc migration".
+
+The most recent git commit will modify the structure
+of the datasource table to add a label column.  This was needed to
+be able to properly support the "spc update" command.  To manually
+fix this on older databases, use:
+
+> alter table datasource add column label text;
+
+at the sqlite3 command.

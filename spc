@@ -135,11 +135,12 @@ def migrate():
     dal = migrate.dal(uri=config.uri, migrate=True)
 
     # add default groups
-    # future: see http://stackoverflow.com/questions/21522014/web2py-check-if-exist-in-db-insert-or-update
-    # try update_or_insert() instead
-    dal.db.groups.insert(name="admin")
-    dal.db.groups.insert(name="genetics")
+    dal.db.groups.update_or_insert(name="admin")
+    dal.db.groups.update_or_insert(name="default")
 
+    # need to run:
+    # alter table datasource add column label text;
+    
     # need to get this working in the future
     # default = 1
     # update all group ids to be 1 for now
@@ -240,7 +241,7 @@ if __name__ == "__main__":
             # instead rename old redirectory with timestamp
             if os.path.isfile(app_dir_name):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
-                shutil.move(app_dir_name,app_dir_name+"."+timestr)
+                shutil.move(app_dir_name, app_dir_name+"."+timestr)
 
             # unzip file
             import zipfile
@@ -422,7 +423,9 @@ if __name__ == "__main__":
 
                     for ds in key['datasource']:
                         sys.stdout.write('.')
-                        nrecords = dal.db.datasource.update_or_insert(pltid=pltid,
+                        nrecords = dal.db.datasource.update_or_insert(
+                                                 dal.db.datasource.label==ds['label'],
+                                                 label=label, pltid=pltid,
                                                  filename=ds['filename'],
                                                  cols=ds['cols'],
                                                  line_range=ds['line_range'],

@@ -17,15 +17,12 @@
 
 <form id="datasourceForm" class="form-horizontal" method="post" action="/plots/{{pltid}}/datasources/{{dsid}}" onsubmit="return validateForm()">
 
-    <!--
     <div class="form-group">
         <label for="label" class="control-label col-md-3">Label:</label>
         <div class="col-md-6">
-            <input type="text" class="form-control" name="label" id="label" onchange="ddef()">
+            <input type="text" class="form-control input-lg" name="label" id="label" value="{{row['label']}}">
         </div>
     </div>
-    -->
-
 
     <div class="form-group">
         <label for="data_def" class="control-label col-md-3">Data definition (JSON):</label>

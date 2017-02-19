@@ -102,10 +102,11 @@ function ddef() {
 </div>
 
 <table class="table table-striped">
-    <thead><tr><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition (JSON)</th><th>actions</th></tr></thead>
+    <thead><tr><th>Label</th><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition (JSON)</th><th>actions</th></tr></thead>
     %for row in rows:
     <tr>
         %url="/plots/"+str(pltid)+"/datasources/"+str(row['id'])+"?app="+app
+        <td class="datasource">{{row['label']}} <a href="{{url}}"></a></td>
         <td class="datasource">{{row['filename']}} <a href="{{url}}"></a></td>
         <td class="datasource">{{row['cols']}} <a href="{{url}}"></a></td>
         <td class="datasource">{{row['line_range']}} <a href="{{url}}"></a></td>

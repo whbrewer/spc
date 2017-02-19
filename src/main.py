@@ -1310,7 +1310,7 @@ def add_datasource(pltid):
     user = authorized()
     app = request.forms.app
     r = request.forms
-    datasource.insert(pltid=pltid, filename=r['fn'], cols=r['cols'],
+    datasource.insert(pltid=pltid, label=r['label'],  filename=r['fn'], cols=r['cols'],
                       line_range=r['line_range'], data_def=r['data_def'])
     db.commit()
     redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
@@ -1327,11 +1327,11 @@ def edit_datasource(pltid, dsid):
 
 @post('/plots/<pltid>/datasources/<dsid>')
 def edit_datasource_post(pltid, dsid):
-    """create a new datasource for given plot"""
+    """update datasource for given plot"""
     user = authorized()
     app = request.forms.get('app')
     r = request.forms
-    datasource(id=dsid).update_record(pltid=pltid, filename=r['fn'], cols=r['cols'],
+    datasource(id=dsid).update_record(label=r['label'], pltid=pltid, filename=r['fn'], cols=r['cols'],
                                       line_range=r['line_range'], data_def=r['data_def'])
     db.commit()
     redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
@@ -1844,6 +1844,7 @@ def export():
 
         for ds in myds:
             thisds = {}
+            thisds['label'] = ds.label
             thisds['filename'] = ds.filename
             thisds['cols'] = ds.cols
             thisds['line_range'] = ds.line_range

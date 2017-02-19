@@ -59,7 +59,7 @@ plots = db.define_table('plots', Field('id', 'integer'),
                                  Field('options', 'string'))
 
 datasource = db.define_table('datasource', Field('id', 'integer'),
-                                           # Field('label', 'string'), # unique=True),
+                                           Field('label', 'string'), # unique=True),
                                            Field('pltid', db.plots),
                                            Field('filename', 'string'),
                                            Field('cols', 'string'),
