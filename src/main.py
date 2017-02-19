@@ -974,8 +974,15 @@ def admin_delete_user():
     uid = request.forms.uid
     if int(uid) == 0:
         return template("error", err="can't delete admin user")
+
+    if request.forms.del_files == "True":
+        path = os.path.join(config.user_dir, users(uid).user)
+        print "deleting files in path:", path
+        if os.path.isdir(path): shutil.rmtree(path)
+
     del db.users[uid]
     db.commit()
+
     redirect("/admin/show_users")
 
 @post('/check_user')
