@@ -1054,6 +1054,7 @@ def app_save(appid):
     preprocess = request.forms.preprocess
     postprocess = request.forms.postprocess
     assets = request.forms.assets
+    if assets == "None": assets = None
     desc = request.forms.description
     row = db(db.apps.id==appid).select().first()
     row.update_record(language=lang, category=category, description=desc, input_format=info,
