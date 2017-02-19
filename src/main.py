@@ -465,6 +465,34 @@ def show_jobs():
     params['num_rows'] = config.jobs_num_rows
     return template('jobs', params, rows=result)
 
+@get('/jobs/diff')
+def diff_jobs():
+    user = authorized()
+    app = active_app()
+
+    selected_cases = request.query.selected_cases
+    cases = selected_cases.rstrip(':').split(':')
+
+    cids = list()
+    contents = list()
+    for jid in cases:
+        cid = jobs(jid).cid
+        cids.append(cid)
+        app = jobs(jid).app
+        base_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname)
+        fn = os.path.join(base_dir, cid, myapps[app].simfn)
+        content = slurp_file(fn).splitlines(1)
+        contents.append(content)
+
+    inputs = slurp_file(fn)
+    import difflib
+    d = difflib.Differ()
+    result = list(d.compare(contents[0], contents[1]))
+    title = "diff " + cids[0] + " " + cids[1]
+
+    params = { 'cid': cid, 'contents': ' '.join(result), 'app': app, 'user': user, 'fn': title }
+    return template('more', params)
+
 @get('/docker')
 def get_docker():
     return template("error", err="This feature not enabled. Install docker-py to activate.")

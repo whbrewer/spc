@@ -43,39 +43,57 @@
     function toggle(source) {
       checkboxes = document.getElementsByName('selected_cases');
       for(var i=0; i < checkboxes.length; i++) {
-        checkboxes[i].checked = source.checked;
+        checkboxes[i].checked = source.checked
       }
     }
 
-    function toggle_delete_button_visibility() {
-      var checkboxes = document.getElementsByName('selected_cases');
-      var show = false;
-      var values = "";
+    function toggle_action_button_visibility() {
+      var checkboxes = document.getElementsByName('selected_cases')
+      var show = false
+      var values = ""
+      var count = 0
       for(var i=0; i < checkboxes.length; i++) {
         if (checkboxes[i].checked) {
           show = true;
-          values += checkboxes[i].value;
+          values += checkboxes[i].value
+          count += 1
         }
       }
 
-      var dom = document.getElementById("delete_button")
+      var dom = document.getElementById("actions")
       if (show) {
-        dom.style.display = "block";
+        dom.style.display = "block"
       } else {
-        dom.style.display = "none";
+        dom.style.display = "none"
+      }
+
+      var dom2 = document.getElementById("diff_button")
+      if (count == 2) {
+          dom2.style.display = "block"
+      } else {
+          dom2.style.display = "none"
       }
 
       var input = document.getElementById("selected_cases")
       if(input) { // if user has already checked some cases just modify the cases to be deleted
         input.value = values;
       } else { // otherwise create a new hidden input element
-        var theForm = document.getElementById("delete_modal");
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'selected_cases';
-        input.id = 'selected_cases';
-        input.value = values;
-        theForm.appendChild(input);
+        var theForm = document.getElementById("delete_modal")
+        var input = document.createElement('input')
+        input.type = 'hidden'
+        input.name = 'selected_cases'
+        input.id = 'selected_cases'
+        input.value = values
+        theForm.appendChild(input)
+
+        // add selected files to Zip form
+        var theForm = document.getElementById("diff_button")
+        var input = document.createElement('input')
+        input.type = 'hidden'
+        input.name = 'selected_cases'
+        input.id = 'selected_cases'
+        input.value = values
+        theForm.appendChild(input)
       }
 
     }
@@ -95,8 +113,12 @@
     </form>
   </div>
 
-  <div class="col-xs-6">
-  <button id="delete_button" type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal" style="display:none"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+  <div class="btn-group col-xs-6" id="actions" style="display:none">
+      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+
+      <form id="diff_button" class="btn-group" action="/jobs/diff">
+          <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-scale"></span> Diff</button>
+      </form>
   </div>
 
 </div>
@@ -105,16 +127,16 @@
 <table id="clickable" class="table table-striped">
 <thead>
 <tr>
-  <th><input type="checkbox" onchange="toggle(this); toggle_delete_button_visibility()"></th>
+  <th><input type="checkbox" onchange="toggle(this); toggle_action_button_visibility()"></th>
   <th><a href="/jobs?starred=1"><span class="glyphicon glyphicon-star"></span></a></th>
-  <th>cid</th> 
-  <th>app</th> 
+  <th>cid</th>
+  <th>app</th>
   <th>state</th>
-  %if np > 1: 
+  %if np > 1:
     <th class="hidden-xs hidden-sm hidden-md">np</th>
-  %end 
-  <!-- <th class="hidden-xs hidden-sm hidden-md">priority</th> --> 
-  <th class="hidden-xs">date/time submitted</th> 
+  %end
+  <!-- <th class="hidden-xs hidden-sm hidden-md">priority</th> -->
+  <th class="hidden-xs">date/time submitted</th>
   <th class="hidden-xs hidden-sm hidden-md">walltime (s)</th>
   <th class="hidden-xs">labels</th>
   <th><a href="/jobs?shared=1" title="see shared cases"><span class="glyphicon glyphicon-pushpin"></span></a></th>
@@ -124,7 +146,7 @@
 <tbody>
 %for row in rows:
   <tr>
-    <td><input type="checkbox" name="selected_cases" value="{{row['id']}}:" onchange="toggle_delete_button_visibility()"></td>
+    <td><input type="checkbox" name="selected_cases" value="{{row['id']}}:" onchange="toggle_action_button_visibility()"></td>
     %if row['starred']=="True":
       <td>
         <a href="javascript:unstar({{row['id']}})">
@@ -161,7 +183,7 @@
           <span id="shared{{row['id']}}"  class="glyphicon glyphicon-share-alt"></span></a>
       </td>
     %end
-</tr> 
+</tr>
 %end
 </tbody>
 </table>
@@ -179,7 +201,7 @@
 </footer>
 
 <!-- Delete Modal -->
-<div class="modal fade" id="dModal" tabindex="-1" role="dialog" 
+<div class="modal fade" id="dModal" tabindex="-1" role="dialog"
      aria-labelledby="deleteModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
