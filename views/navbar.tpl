@@ -15,7 +15,7 @@
 
                         %if defined('app'):
                             %if app != '':
-                                <button type="submit" class="btn btn-success hidden-xs" 
+                                <button type="submit" class="btn btn-success hidden-xs"
                                         formaction="/start">
                                     <span class="glyphicon glyphicon-play-circle"></span> Start </button>
                             %end
@@ -26,17 +26,17 @@
                 <div class="hidden-xs hidden-sm">
                     %if defined('app') and defined('cid'):
                         %if app != '' and cid != '':
-                            <a href="/static/apps/{{app}}/about.html" 
-                                class="navbar-brand" data-toggle="modal" 
-                                data-target="#footModal">{{app}} :: {{cid}}</a>              
+                            <a href="/static/apps/{{app}}/about.html"
+                                class="navbar-brand" data-toggle="modal"
+                                data-target="#footModal">{{app}} :: {{cid}}</a>
                         %end
                     %elif defined('app'):
                         %if app != '':
-                            <a href="/static/apps/{{app}}/about.html" 
-                                class="navbar-brand" data-toggle="modal" 
-                                data-target="#footModal">{{app}}</a>              
+                            <a href="/static/apps/{{app}}/about.html"
+                                class="navbar-brand" data-toggle="modal"
+                                data-target="#footModal">{{app}}</a>
                         %end
-                    %end    
+                    %end
 
                     %if defined('status'):
                         <span class="navbar-brand">{{!status}}</span>
@@ -44,7 +44,7 @@
 
                     %if defined('description'):
                         <div class="hidden-md">
-                            <a href="#" class="navbar-brand" style="width:250px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap" 
+                            <a href="#" class="navbar-brand" style="width:250px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap"
                                data-toggle="modal" data-target="#myModal">
                             <span class="glyphicon glyphicon-tag"></span> {{description}}</a>
                         </div>
@@ -68,7 +68,9 @@
                                 %if user=="admin":
                                     <li> <a href="/admin/show_users">Admin</a> </li>
                                     %if defined('app'):
+                                        % if app != '':
                                         <li> <a href="/app/{{app}}">Configure {{app}}</a> </li>
+                                        %end
                                     %end
                                 %end
                             %end
