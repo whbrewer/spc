@@ -1848,7 +1848,7 @@ def export():
 
     path = os.path.join(config.apps_dir, app, 'spc.json')
     with open(path, 'w') as outfile:
-        json.dump(data, outfile)
+        json.dump(data, outfile, indent=3)
 
     return "spc.json file written to " + path + "<meta http-equiv='refresh' content='2; url=/app/"+app+"'>"
 
