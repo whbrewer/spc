@@ -25,6 +25,7 @@ class dal(object):
                                        Field('language', 'string'),
                                        Field('input_format', 'string'),
                                        Field('command', 'string'),
+                                       Field('assets', 'string'),
                                        Field('preprocess', 'string'),
                                        Field('postprocess', 'string'))
 

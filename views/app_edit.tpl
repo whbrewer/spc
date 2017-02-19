@@ -21,7 +21,7 @@
   </tr>
   <tr>
       <td>Description:</th>
-      <td><textarea class="form-control" name="description" cols="60" rows="4">{{rows['description']}}</textarea></td>
+      <td><textarea style="font-size:120%" class="form-control" name="description" cols="60" rows="4">{{rows['description']}}</textarea></td>
   </tr>
   <tr>
       <td>Input format:</td>
@@ -39,23 +39,28 @@
   </tr>
   <tr>
       <td>Pre-process:</td>
-      <td><input class="form-control input-lg" type="text" name="preprocess" 
-                 value="{{rows['preprocess']}}"></td> 
-  </tr> 
+      <td><input class="form-control input-lg" type="text" name="preprocess"
+                 value="{{rows['preprocess']}}"></td>
+  </tr>
   <tr>
       <td>Post-process:</td>
-      <td><input class="form-control input-lg" type="text" name="postprocess" 
-                 value="{{rows['postprocess']}}"></td> 
-  </tr> 
+      <td><input class="form-control input-lg" type="text" name="postprocess"
+                 value="{{rows['postprocess']}}"></td>
+  </tr>
   <tr>
       <td>Language:</td>
-      <td><input class="form-control input-lg" type="text" name="language" 
-                 value="{{rows['language']}}"></td> 
-  </tr> 
+      <td><input class="form-control input-lg" type="text" name="language"
+                 value="{{rows['language']}}"></td>
+  </tr>
   <tr>
-      <td>Command:</td> 
+      <td>Command:</td>
       <td><input class="form-control input-lg" type="text" name="command" size="40"
-                 value="{{rows['command']}}"></td> 
+                 value="{{rows['command']}}"></td>
+  </tr>
+  <tr>
+      <td>Static Assets:</td>
+      <td><input class="form-control input-lg" type="text" name="assets" size="40"
+                 value="{{rows['assets']}}"></td>
   </tr>
 </table>
 <div class="row">

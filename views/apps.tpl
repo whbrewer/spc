@@ -19,7 +19,7 @@
 
 <div class="row">
 
-  <div class="col-xs-12 col-md-4" align="left">  
+  <div class="col-xs-12 col-md-4" align="left">
     <div class="btn-group">
       <a class="btn btn-warning" href="/myapps">Activated</a>
       <a class="btn btn-warning active" href="/apps">Installed</a>

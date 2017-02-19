@@ -302,6 +302,7 @@ if __name__ == "__main__":
                                language=parsed['language'],
                                input_format=parsed['input_format'],
                                command=parsed['command'],
+                               assets=', '.join(parsed['assets']),
                                preprocess=parsed['preprocess'],
                                postprocess=parsed['postprocess'])
 

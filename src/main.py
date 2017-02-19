@@ -1053,10 +1053,11 @@ def app_save(appid):
     category = request.forms.category
     preprocess = request.forms.preprocess
     postprocess = request.forms.postprocess
+    assets = request.forms.assets
     desc = request.forms.description
     row = db(db.apps.id==appid).select().first()
     row.update_record(language=lang, category=category, description=desc, input_format=info,
-                      preprocess=preprocess, postprocess=postprocess, command=cmd)
+                      preprocess=preprocess, postprocess=postprocess, command=cmd, assets=assets)
     db.commit()
     redirect("/app/"+app)
 
@@ -1784,6 +1785,12 @@ def export():
     data['command'] = result.command
     data['preprocess'] = result.preprocess
     data['postprocess'] = result.postprocess
+
+    assets = list()
+    if result.assets is not None:
+        for asset in result.assets.split(","):
+            assets.append(asset.strip())
+    data['assets'] = assets
 
     appid = apps(name=app).id
 

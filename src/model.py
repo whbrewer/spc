@@ -25,6 +25,7 @@ apps = db.define_table('apps', Field('id', 'integer'),
                                Field('language', 'string'),
                                Field('input_format', 'string'),
                                Field('command', 'string'),
+                               Field('assets', 'string'),
                                Field('preprocess', 'string'),
                                Field('postprocess', 'string'))
 

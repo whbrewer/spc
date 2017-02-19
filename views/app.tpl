@@ -21,14 +21,14 @@ $(document).ready(function() {
 function toggle(cmd,id) {
    if (cmd == 1) {
       $("#"+id).addClass('glyphicon-ok')
-      $("#"+id).removeClass('glyphicon-remove')   
+      $("#"+id).removeClass('glyphicon-remove')
       $("#"+id+"div").toggleClass('has-error', false);
-      $("#"+id+"div").toggleClass('has-success', true);         
+      $("#"+id+"div").toggleClass('has-success', true);
    } else {
       $("#"+id).removeClass('glyphicon-ok')
       $("#"+id).addClass('glyphicon-remove')
       $("#"+id+"div").toggleClass('has-error', true);
-      $("#"+id+"div").toggleClass('has-success', false);   
+      $("#"+id+"div").toggleClass('has-success', false);
    }
 }
 </script>
@@ -55,7 +55,7 @@ tr:hover {
 
 <table class="table table-striped">
   <tr>
-      <td>Name:</td> 
+      <td>Name:</td>
       <td><a href="/app/{{rows['name']}}"></a>{{rows['name']}}</td></tr>
   </tr>
   <tr>
@@ -68,23 +68,27 @@ tr:hover {
   </tr>
   <tr>
       <td>Input format:</td>
-      <td>{{rows['input_format']}}</td> 
+      <td>{{rows['input_format']}}</td>
   </tr>
   <tr>
       <td>Pre-process:</td>
-      <td>{{rows['preprocess']}}</td> 
+      <td>{{rows['preprocess']}}</td>
   </tr>
   <tr>
       <td>Post-process:</td>
-      <td>{{rows['postprocess']}}</td> 
+      <td>{{rows['postprocess']}}</td>
   </tr>
   <tr>
       <td>Language:</td>
-      <td>{{rows['language']}}</td> 
+      <td>{{rows['language']}}</td>
   </tr>
   <tr>
-      <td>Command:</td> 
-      <td>{{rows['command']}}</td> 
+      <td>Command:</td>
+      <td>{{rows['command']}}</td>
+  </tr>
+  <tr>
+      <td>Static Assets:</td>
+      <td>{{rows['assets']}}</td>
   </tr>
 </table>
 
@@ -114,7 +118,7 @@ tr:hover {
         <input type="hidden" name="app" value="{{rows['name']}}">
         <input type="submit" class="btn btn-default" value="Export">
     </form>
-    <button type="button" class="btn btn-danger" data-toggle="modal" 
+    <button type="button" class="btn btn-danger" data-toggle="modal"
             data-target="#dModal">
             <span class="glyphicon glyphicon-trash"></span> Delete</button>
 </div>
@@ -129,13 +133,13 @@ tr:hover {
 </form>
 
 <!-- Delete Modal -->
-<div class="modal fade" id="dModal" tabindex="-1" role="dialog" 
+<div class="modal fade" id="dModal" tabindex="-1" role="dialog"
      aria-labelledby="deleteModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form class="form-horizontal" method="post" action="/app/delete/{{rows['id']}}">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"> 
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="deleteModal">Delete App?</h4>
