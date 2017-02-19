@@ -43,16 +43,16 @@
         input.id = 'selected_files';
         input.value = values;
         theForm.appendChild(input);
-      }
 
-      // add selected files to Zip form
-  	  var theForm = document.getElementById("zipform");
-      var input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'selected_files';
-      input.id = 'selected_files';
-      input.value = values;
-      theForm.appendChild(input);
+        // add selected files to Zip form
+    	var theForm = document.getElementById("zipform");
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'selected_files';
+        input.id = 'selected_files';
+        input.value = values;
+        theForm.appendChild(input);
+      }
 
     }
 </script>
@@ -67,16 +67,16 @@
 		<form id="search_form" role="form" action="/files">
 			<input type="hidden" name="cid" value="{{cid}}"/>
 			<input type="hidden" name="app" value="{{app}}"/>
-			<input name="q" type="text" value="{{q}}" class="form-control input-lg" 
+			<input name="q" type="text" value="{{q}}" class="form-control input-lg"
 			       placeholder="File filter... e.g. *.dat">
 		</form>
 	</div>
 
-	<div class="btn-group col-xs-12 col-md-8" id="actions" style="display:none">	
-	    <button id="delete_button" type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
-	    <form id="zipform" method="post" action="/files/zip_selected">
+	<div class="btn-group col-xs-12 col-md-8" id="actions" style="display:none">
+	    <button id="delete_button" type="button" class="btn-group btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+	    <form id="zipform" class="btn-group" method="post" action="/files/zip_selected">
 	    	<input type="hidden" name="app" value="{{app}}">
-	    	<input type="hidden" name="cid" value="{{cid}}"> 
+	    	<input type="hidden" name="cid" value="{{cid}}">
 	    	<input type="hidden" name="selected_files">
 	    	<button id="zip_button" type="submit" class="btn btn-warning"><span class="glyphicon glyphicon-compressed"></span> Zip</button>
 	    </form>
@@ -119,7 +119,7 @@
 </table>
 
 <!-- Delete Modal -->
-<div class="modal fade" id="dModal" tabindex="-1" role="dialog" 
+<div class="modal fade" id="dModal" tabindex="-1" role="dialog"
      aria-labelledby="deleteModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
