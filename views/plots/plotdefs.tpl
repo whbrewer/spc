@@ -43,7 +43,18 @@ function endis() {
   table {
     font-size: 120%;
   }
-
+  .actionbox {
+      /*background-color: #fff;*/
+      background-color: rgba(255, 255, 255, 0.9);
+      left:45%;
+      position: absolute;
+      border: thick solid #00f
+      -moz-border-radius: 4px;
+      -webkit-border-radius: 4px;
+      border-radius: 4px;
+      -webkit-box-shadow: 0 2px 2px 0 #C2C2C2;
+      box-shadow: 0 2px 2px 0 #C2C2C2;
+  }
 </style>
 
 <ol class="breadcrumb">
@@ -126,32 +137,30 @@ function endis() {
    <th>Title</th>
    <th>Type</th>
    <th>Options</th>
-   <th>Action</th>
 </tr>
 </thead>
 % i = 0
 % for row in rows:
-  <tr>
-     % i += 1
-     <!-- <td>{{row['plots']['id']}}</td> -->
-     %url="/plots/"+str(row['plots']['id'])+"/datasources?app="+app
-     <td class="plotdef">{{i}} <a href="{{url}}"></a></td>
-     <td class="plotdef">{{row['plots']['title']}} <a href="{{url}}"></a></td>
-     <td class="plotdef" width="50">{{row['plots']['ptype']}} <a href="{{url}}"></a></td>
-     <td class="plotdef">{{row['plots']['options']}} <a href="{{url}}"></a></td>
-     <div class="form-group" id="actions">
-       <td width="100">
-          <!-- <a class="btn btn-link" href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">datasources</a> <br> -->
-          <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}"
-             onclick="if(confirm('confirm')) return true; return false"><span style="color:red" class="glyphicon glyphicon-remove"></span> delete</a> <br>
-          <form method="post" action="/plots/edit">
-            <input type="hidden" name="app" value="{{app}}">
-            <input type="hidden" name="pltid" value="{{row['plots']['id']}}">
-            <button class="btn btn-link" type="submit"><span style="color:#000" class="glyphicon glyphicon-pencil"></span> edit</</button>
-          </form>
-       </td>
-     </div>
-  </tr>
+% i += 1
+<tr onmouseover="getElementById('actions-{{i}}').style.display='block'" onmouseout="getElementById('actions-{{i}}').style.display='none'">
+    <!-- <td>{{row['plots']['id']}}</td> -->
+    %url="/plots/"+str(row['plots']['id'])+"/datasources?app="+app
+    <td class="plotdef">{{i}} <a href="{{url}}"></a></td>
+    <td class="plotdef">{{row['plots']['title']}} <a href="{{url}}"></a></td>
+    <td class="plotdef" width="50">{{row['plots']['ptype']}} <a href="{{url}}"></a></td>
+    <td class="plotdef">{{row['plots']['options']}} <a href="{{url}}"></a>
+        <div class="form-group actionbox" id="actions-{{i}}" style="display:none">
+            <a class="btn btn-link" href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">datasources</a> <br>
+            <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}"
+            onclick="if(confirm('confirm')) return true; return false"><span style="color:red" class="glyphicon glyphicon-remove"></span> delete</a> <br>
+            <form method="post" action="/plots/edit">
+                <input type="hidden" name="app" value="{{app}}">
+                <input type="hidden" name="pltid" value="{{row['plots']['id']}}">
+                <button class="btn btn-link" type="submit"><span style="color:#000" class="glyphicon glyphicon-pencil"></span> edit</</button>
+            </form>
+        </div>
+    </td>
+</tr>
 % end
 </table>
 
