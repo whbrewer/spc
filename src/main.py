@@ -624,6 +624,7 @@ def get_stats():
 
     params['cpu'] = psutil.cpu_percent()
     params['vm'] = psutil.virtual_memory()
+    params['disk'] = psutil.disk_usage('/')
 
     return template("stats", params)
 

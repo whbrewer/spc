@@ -171,3 +171,5 @@ textarea {
 .table-striped tbody tr:hover td, .table-striped tbody tr:hover th {
   background-color: PeachPuff;
 }
+
+a:hover { color:OrangeRed !important }

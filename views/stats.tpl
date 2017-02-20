@@ -15,6 +15,8 @@
 
 <p><b>Memory</b> info: {{vm}}%</p>
 
+<p><b>Disk space:</b> {{disk}}</p>
+
 </div>
 
 %include('footer')

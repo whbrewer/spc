@@ -180,7 +180,7 @@ jQuery(document).ready(function(){
     function pollStats(){
         $.get('/stats/mem', function(data) {
             var obj = $.parseJSON(data)
-            $('#stats').html("<tt>CPU: " + obj.cpu + "% MEM: " + obj.mem + "%</tt>");
+            $('#stats').html("<a style=\"color:white; text-decoration:none\" href=\"/stats\"><tt>CPU: " + obj.cpu + "% MEM: " + obj.mem + "%</tt></a>");
             setTimeout(pollStats,5000);
         });
     }
