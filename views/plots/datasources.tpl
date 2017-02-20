@@ -36,7 +36,7 @@ function ddef() {
 
 <div class="row">
 
-  <div class="col-xs-12 col-sm-10"><h1 style="vertical-align:top">Data Sources for Plot {{pltid}}</h1></div>
+  <div class="col-xs-12 col-sm-10"><h1 style="vertical-align:top">{{title}} Datasources</h1></div>
 
   <div class="col-xs-12 col-sm-2"><button type="button" class="btn btn-default pull-right" data-toggle="collapse" data-target="#editsource"><span class="glyphicon glyphicon-plus"></span> Add Datasource</button></div>
 

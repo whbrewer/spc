@@ -1301,7 +1301,8 @@ def get_datasource(pltid):
     if myapps[app].appname not in myapps: redirect('/apps')
     if config.auth and not authorized(): redirect('/login')
     result = db(datasource.pltid==pltid).select()
-    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result }
+    title = plots(pltid).title
+    params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result, 'title': title}
     return template('plots/datasources', params, rows=result)
 
 @post('/plots/<pltid>/datasources')
