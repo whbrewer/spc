@@ -5,7 +5,7 @@
 <link rel="Stylesheet" type="text/css" href="/static/css/css.css" />
 <title>
 % if defined('title'):
-{{ title }} 
+{{ title }}
 % end
 </title>      
 </head>

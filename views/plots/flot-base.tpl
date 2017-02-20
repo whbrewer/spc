@@ -1,5 +1,5 @@
 %include('header')
-<script src="/static/js/flot/excanvas.min.js"></script> 
+<script src="/static/js/flot/excanvas.min.js"></script>
 <script src="/static/js/flot/jquery.min.js"></script>
 <script src="/static/js/flot/jquery.flot.js"></script>
 <script src="/static/js/flot/jquery.flot.axislabels.min.js"></script>

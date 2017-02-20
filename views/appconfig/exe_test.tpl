@@ -1,5 +1,7 @@
 %include('header')
 
+<body>
+
 <h3>Configure Executable: step 2 of 2</h3><br>
 
 <h4>Success!</h4>
@@ -26,7 +28,7 @@
 <a href="/{{appname}}">Test {{appname}}</a>
 </font>
  -->
- 
+
 <hr>
 
 <pre>

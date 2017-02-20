@@ -1,5 +1,7 @@
 %include("header")
 
+<body>
+
 <div class="container-fluid">
 <h3>Configure inputs: step 2 of 3</h3><br>
 

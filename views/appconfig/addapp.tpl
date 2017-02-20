@@ -4,12 +4,12 @@
 $(document).ready(function () {
     //Initialize tooltips
     $('.nav-tabs > li a[title]').tooltip();
-    
+
     //Wizard
     $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
 
         var $target = $(e.target);
-    
+
         if ($target.parent().hasClass('disabled')) {
             return false;
         }
@@ -126,7 +126,7 @@ span.round-tab i{
 .wizard li.active span.round-tab {
     background: #fff;
     border: 2px solid #5bc0de;
-    
+
 }
 .wizard li.active span.round-tab i{
     color: #5bc0de;
@@ -267,7 +267,7 @@ span.round-tab:hover {
                     <div id="appname" class="form-group has-feedback">
                         <label for="appname" style="text-align:right" class="control-label col-xs-6">Name of app:</label>
                         <div class="col-xs-6">
-                            <input type="text" class="form-control input-lg"  
+                            <input type="text" class="form-control input-lg"
                                    name="appname" onchange="checkApp(this.value)"><br>
                             <span id="feedback" style="right:20px" class="glyphicon form-control-feedback"></span>
                             <span id="helper" class="help-block hidden">App name is already taken. Try another name.</span>
@@ -331,7 +331,7 @@ span.round-tab:hover {
                     </tr>
 
                     <tr>
-                    <td><font size="+1">Command to run app:</font><br> 
+                    <td><font size="+1">Command to run app:</font><br>
                     <font size="-1">Note: this is a relative path from the <tt>user_data/app/user</tt> directory</font></td>
                     <td><input class="form-control" type="text" id="command" name="command"></td>
                     </tr>
@@ -384,5 +384,3 @@ span.round-tab:hover {
 
 </body>
 </html>
-
-

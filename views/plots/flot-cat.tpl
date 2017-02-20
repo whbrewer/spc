@@ -9,10 +9,10 @@
 %include('plots/header')
 
 <div>
-   <script id="source" language="javascript" type="text/javascript"> 
+   <script id="source" language="javascript" type="text/javascript">
       $(function () {
 
-        var placeholder = "#myplot"; 
+        var placeholder = "#myplot";
 
         var data = [{{!data[0]}}];
 

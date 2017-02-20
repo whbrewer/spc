@@ -1,5 +1,7 @@
 %include("header")
 
+<body>
+
 <h3>Configure Executable: step 1 of 2</h3>
 
 <br>
@@ -13,7 +15,7 @@
 </font>
 
 <form action="/appconfig/exe/test" method="post" enctype="multipart/form-data">
-  <font size="+1">Select a file:</font> 
+  <font size="+1">Select a file:</font>
 
   <input type="file" class="btn btn-default btn-file" name="upload"><br>
   <input type="hidden" name="appname" value="{{appname}}">

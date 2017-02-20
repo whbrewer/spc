@@ -1,4 +1,4 @@
-<nav id="navbar" class="navbar navbar-inverse navbar-fixed-top" style="white-space:nowrap" role="navigation">
+<nav id="navbar" class="navbar navbar-default navbar-fixed-top" style="white-space:nowrap" role="navigation">
 
     <form class="navbar-form">
 

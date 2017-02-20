@@ -33,6 +33,8 @@ function toggleAddInstance() {
 }
 </script>
 
+<body>
+
 <h1>Amazon Web Services (AWS)</h1>
 
 <br>
@@ -58,9 +60,9 @@ function toggleAddInstance() {
     %end
 %else:
     <form method="POST" action="/aws/creds">
-    <tr> <td><input class="form-control" type="text" name="account_id" size=12></td> 
-         <td><input class="form-control" type="text" name="secret" size=40></td> 
-         <td><input class="form-control" type="text" name="key" size=20></td> 
+    <tr> <td><input class="form-control" type="text" name="account_id" size=12></td>
+         <td><input class="form-control" type="text" name="secret" size=40></td>
+         <td><input class="form-control" type="text" name="key" size=20></td>
          <td><input class="form-control" type="submit" class="btn btn-primary" value="Add"></td></tr>
     </form>
 %end
@@ -80,10 +82,10 @@ function toggleAddInstance() {
     %for i in instances:
         <tr>
             <td><button class="btn btn-link editable" style="display:none" onclick="delInstance({{i['id']}})"><span class="glyphicon glyphicon-remove"></span></button></td>
-            <td>{{i['instance']}}</td> 
-            <td>{{i['itype']}}</td> 
-            <td>{{i['region']}}</td> 
-            <td>{{i['rate']}}</td> 
+            <td>{{i['instance']}}</td>
+            <td>{{i['itype']}}</td>
+            <td>{{i['region']}}</td>
+            <td>{{i['rate']}}</td>
             <td>
                 <!-- <select class="form-control" name="action">
                     <option "status"><span class="glyphicon glyphicon-info-sign"></span> status</option>
@@ -91,8 +93,8 @@ function toggleAddInstance() {
                     <option "stop"><span class="glyphicon glyphicon-stop"></span> stop</option>
                     <option "delete"><span class="glyphicon glyphicon-delete"></span> delete</option>
                 </select> -->
-                <a class="btn btn-default" href="/aws/status/{{i['id']}}"><span class="glyphicon glyphicon-info-sign"></span> status</a> 
-  
+                <a class="btn btn-default" href="/aws/status/{{i['id']}}"><span class="glyphicon glyphicon-info-sign"></span> status</a>
+
                 <!--<a href="/aws/start/{{i['id']}}">start</a> -->
                 <!--<a href="/aws/stop/{{i['id']}}">stop</a> -->
             </td>
@@ -153,7 +155,7 @@ function toggleAddInstance() {
     <option value="ap-southeast-2">  Asia Pacific (Sydney)
     <option value="ap-southeast-1">  Asia Pacific (Singapore)
     <option value="eu-west-1">       EU (Ireland)
-    <option value="eu-central-1">    EU (Frankfurt) 
+    <option value="eu-central-1">    EU (Frankfurt)
     <option value="sa-east-1">       South America (Sao Paulo)
     <option value="us-east-1">       US East (N. Virginia)
     <option value="us-west-1">       US West (N. California)
@@ -177,7 +179,7 @@ function toggleAddInstance() {
 <a class="btn" onclick="toggleAddInstance()"><span class="glyphicon glyphicon-wrench"></span> Configure</a>
 
 <!-- Delete Modal -->
-<div class="modal fade" id="dModal" tabindex="-1" role="dialog" 
+<div class="modal fade" id="dModal" tabindex="-1" role="dialog"
      aria-labelledby="deleteModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -191,12 +193,12 @@ _cases">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Delete</button>    
-                </div>                                                               
-            </form>                                                                  
-        </div>                                                                      
-    </div>                                                                           
-</div>               
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 %include('footer')

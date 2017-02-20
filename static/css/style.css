@@ -1,17 +1,58 @@
-.navbar {
-    margin-bottom: 0;
+/* based on: https://bootstrapbay.com/blog/bootstrap-button-styles */
+
+.btn {
+    padding: 14px 22px;
+    border: 0 none;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-.navbar-inverse {
-    background-color: rgb(32, 32, 32);
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: 0 none;
+}
+
+.btn-default {
+    background: #0099cc;
+    color: #ffffff;
+}
+
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open > .dropdown-toggle.btn-default {
+    background: #33a6cc;
+}
+
+.btn-default:active, .btn-default.active {
+    background: #007299;
+    box-shadow: none;
+}
+
+/*.navbar {
+    margin-bottom: 0;
+}*/
+
+.navbar {
+    /*background-color: rgb(32, 32, 32);*/
     background-image: linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black), linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black), linear-gradient(to bottom, rgb(8, 8, 8), rgb(32, 32, 32));
     background-size: 10px 10px, 10px 10px, 10px 5px;
     background-position: 0px 0px, 5px 5px, 0px 0px;
-    opacity: 0.9;   
+    opacity: 0.9;
 }
 
+.navbar-default .navbar-brand {
+    color: #f0f8ff
+}
+
+#navbar {
+    border-bottom-color: #0099CC;
+    border-bottom-width: 2px;
+}
+
+#navaction {
+    border-top-color: #0099CC;
+    border-top-width: 2px;
+}
 .tab-content {
-    /*background-color: #dfdfdf;*/ 
+    /*background-color: #dfdfdf;*/
     border: 1px solid #ddd;
     padding: 10px;
 }
@@ -37,8 +78,8 @@
     width: 10px;
     z-index: 10;
 /*      transform: rotate(-90deg);
-      -webkit-transform: rotate(-90deg); 
-      -moz-transform: rotate(-90deg); 
+      -webkit-transform: rotate(-90deg);
+      -moz-transform: rotate(-90deg);
       -o-transform: rotate(-90deg); */
 }
 
@@ -62,7 +103,7 @@ tr:hover {
 th {
     /*background-color: #fff;*/
     font-family: arial;
-    background-color: #d9edf7; 
+    background-color: #d9edf7;
     color: #317098;
 /*
     color: #280671;

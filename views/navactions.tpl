@@ -1,5 +1,5 @@
 
-<div id="navaction" class="container-fluid navbar navbar-inverse navbar-fixed-bottom" style="padding-left:0px;padding-top:10px">
+<div id="navaction" class="container-fluid navbar navbar-default navbar-fixed-bottom" style="display: none; padding-left:0px; padding-top:10px; bottom:0px">
 
     <div class="visible-xs" style="height:10px"></div>
 
@@ -20,9 +20,9 @@
                         <input type="hidden" name="app" value="{{app}}">
                         <input type="hidden" name="jid" value="{{jid}}">
                         <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
-                    </form>  
+                    </form>
 
-                    <button type="button" class="btn btn-danger hidden-xs" 
+                    <button type="button" class="btn btn-danger hidden-xs"
                             data-toggle="modal" data-target="#dModal">
                             <span class="glyphicon glyphicon-trash"></span> Delete
                     </button>
@@ -44,20 +44,20 @@
                 </button>
             </form>
 
-            %if defined('plotpath'):  
+            %if defined('plotpath'):
                 <form class="btn-group" role="form" action="/more" method="get">
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="filepath" value="{{plotpath}}">
                     <button class="btn btn-warning hidden-xs"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
-                </form>    
-            %end  
-            
+                </form>
+            %end
+
             <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
                 <button class="btn btn-default hidden-xs"><span class="glyphicon glyphicon-file"></span> Output</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
-            </form>       
+            </form>
 
             <div class="btn-group dropdown hidden-xs">
 
@@ -86,7 +86,7 @@
                         </form>
                     </li>
 
-                    <li> 
+                    <li>
                         <form class="btn-group" action="/files" method="get">
                             <button class="btn btn-default" style="width:200px">
                                 <span class="glyphicon glyphicon-folder-open"></span> Browse Files</span>
@@ -115,15 +115,15 @@
 </div>
 
 %if defined('jid'):
-%if jid > 0: 
+%if jid > 0:
 <!-- Delete Modal -->
-<div class="modal fade" style="top:35%" id="dModal" tabindex="-1" role="dialog" 
+<div class="modal fade" style="top:35%" id="dModal" tabindex="-1" role="dialog"
      aria-labelledby="deleteModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form class="form-horizontal" method="post" action="/jobs/delete/{{jid}}">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"> 
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="deleteModal">Delete Case {{cid}}?</h4>
@@ -142,13 +142,13 @@
 
 %if defined('description'):
 <!-- Label Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" 
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form class="form-horizontal" method="post" action="/jobs/annotate">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"> 
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="myModalLabel">Enter labels for case separated by commas</h4>
@@ -169,7 +169,7 @@
 %end
 
 <script>
-// Dropdown Menu Fade    
+// Dropdown Menu Fade
 jQuery(document).ready(function(){
     $(".dropdown").hover(
         function() { $('.dropdown-menu', this).fadeIn("fast");
@@ -180,7 +180,7 @@ jQuery(document).ready(function(){
     function pollStats(){
         $.get('/stats/mem', function(data) {
             var obj = $.parseJSON(data)
-            $('#stats').html("<tt>CPU: " + obj.cpu + "% MEM: " + obj.mem + "%</tt>");  
+            $('#stats').html("<tt>CPU: " + obj.cpu + "% MEM: " + obj.mem + "%</tt>");
             setTimeout(pollStats,5000);
         });
     }
@@ -191,7 +191,3 @@ jQuery(document).ready(function(){
 
 });
 </script>
-
-
-
-

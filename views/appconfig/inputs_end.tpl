@@ -1,5 +1,7 @@
 %include("header")
 
+<body>
+
 <div class="container-fluid">
 <h3>Finished!</h3>
 

@@ -1,5 +1,7 @@
 %include("header")
 
+<body>
+
 <h3>Configure inputs: step 1 of 3</h3>
 
 <br>
@@ -7,7 +9,7 @@
 <h4>Upload input file</h4>
 
 <font size="+1" color="blue">
-<p>Upload 
+<p>Upload
 %if input_format == "namelist":
     an input file named <b><tt>{{appname}}.in</tt></b>
 %elif input_format == "ini":
@@ -27,7 +29,7 @@ the input parameters.</p>
 </font>
 
 <form action="/appconfig/inputs/parse" method="post" enctype="multipart/form-data">
-  <font size="+1">Select a file:</font> 
+  <font size="+1">Select a file:</font>
 
   <input type="file" class="btn btn-default btn-file" name="upload"><br>
   <!-- see http://stackoverflow.com/questions/11235206/twitter-bootstrap-form-file-element-upload-button

@@ -1,0 +1,111 @@
+.navbar {
+    margin-bottom: 0;
+}
+
+.tab-content {
+    /*background-color: #dfdfdf;*/
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.abs-bottom-right {
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    z-index: 10;
+}
+
+.abs-top-right {
+    position: fixed;
+    top: 100px;
+    right: 5px;
+    z-index: 10;
+}
+
+.help {
+    position: fixed;
+    top: 50%;
+    left: -15px;
+    z-index: 10;
+      transform: rotate(-90deg);
+      -webkit-transform: rotate(-90deg);
+      -moz-transform: rotate(-90deg);
+      -o-transform: rotate(-90deg);
+}
+
+textarea {
+  background-color : #d1d1d1;
+}
+
+table {
+    margin:10px 0pt 15px;
+    font-size: 10pt;
+    width: 100%;
+    text-align: left;
+}
+
+tr {
+    background-color: #eee;
+    border-top: 1px solid #fff;
+}
+
+tr:hover {
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+th {
+    /*background-color: #fff;*/
+    font-family: arial;
+    background-color: #d9edf7;
+    color: #317098;
+/*
+    color: #280671;
+    background-color: #bbadda;
+*/
+}
+
+th, td {
+    padding: 3px 5px;
+}
+
+/* to fix problems in flot legends */
+
+.legend > table {
+   width: 150px;
+}
+
+td.legendcolorbox {
+   width: 10px;
+}
+
+/* Base styles (regardless of theme) */
+.bs-callout {
+margin: 20px 0;
+padding: 15px 30px 15px 15px;
+border-left: 5px solid #eee;
+}
+.bs-callout h4 {
+margin-top: 0;
+}
+.bs-callout p:last-child {
+margin-bottom: 0;
+}
+.bs-callout code,
+.bs-callout .highlight {
+background-color: #fff;
+}
+
+/* Themes for different contexts */
+.bs-callout-danger {
+background-color: #fcf2f2;
+border-color: #d9534f;
+}
+.bs-callout-warning {
+background-color: #fefbed;
+border-color: #f0ad4e;
+}
+.bs-callout-info {
+background-color: #f0f7fd;
+border-color: #5bc0de;
+}

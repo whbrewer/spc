@@ -6,26 +6,28 @@
     <script src="/static/jquery-2.1.4.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/jquery.highlight.js"></script>
-    <script src="/static/js/jquery.validate.min.js"></script>    
+    <script src="/static/js/jquery.validate.min.js"></script>
     <script src="/static/js/bootstrap-tagsinput.min.js"></script>
     <script src="/static/js/intro.min.js"></script>
+    <script src="/static/js/user_defaults.js"></script>
 
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/bootstrap-custom.css">
     <link rel="stylesheet" href="/static/css/bootstrap-tagsinput.css">
     <link rel="stylesheet" href="/static/css/introjs.min.css">
-    <link rel="stylesheet" href="/static/css/style.css">
-    <!-- <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css"> -->
-    <!-- <link rel="stylesheet" href="/static/bootstrap-social/bootstrap-social.css"> -->
+
+    <link rel="stylesheet" href="/static/css/style.css" title="default">
+    <link rel="alternate stylesheet" href="/static/css/style-simple.css" title="simple">
+
+    <script> user_defaults() </script>
 
     <title>spc</title>
 
     <style>
 
-		body { 
-		    padding-top: 75px; 
+		body {
+		    padding-top: 75px;
 		    /* If fixing the navactions bar use 100px */
-		    /*padding-top: 100px;*/ 
+		    /*padding-top: 100px;*/
             padding-bottom: 75px;
 		}
 
@@ -34,21 +36,6 @@
 		.highlight {
 		    background-color: #FFFF88;
 		}
-        
-		.navbar-default {
-            border-bottom-color: #5FB0E4;
-		    background-color: #F8F8F8; opacity: 0.9; 
-		}
-
-        #navbar {
-            border-bottom-color: #0099CC;
-            border-bottom-width: 2px; 
-        }  
-
-        #navaction {
-            border-top-color: #0099CC;
-            border-top-width: 2px;
-        }
 
     </style>
 

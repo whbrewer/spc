@@ -9,6 +9,7 @@
 </style>
 
 %include('navbar')
+
 <h1 align=center>Users</h1>
 
 <table class="table table-striped">
