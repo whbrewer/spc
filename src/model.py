@@ -16,6 +16,11 @@ users = db.define_table('users', Field('id', 'integer'),
                                  Field('priority', 'integer'),
                                  Field('gid', db.groups, ondelete="SET NULL"))
 
+user_meta = db.define_table('user_meta', Field('id', 'integer'),
+                                         Field('uid', db.users),
+                                         Field('new_shared_jobs', 'integer'),
+                                         Field('theme', 'string'))
+
 # this is also defined in scheduler.py
 # need to fix in the future
 apps = db.define_table('apps', Field('id', 'integer'),

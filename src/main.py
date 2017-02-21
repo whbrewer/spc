@@ -818,6 +818,21 @@ def user_data(filepath):
     user = authorized()
     return static_file(filepath, root='user_data')
 
+@get('/theme')
+def get_theme():
+    user = authorized()
+    uid = users(user=user).id
+    return user_meta(uid=uid).theme
+
+@post('/theme')
+def save_theme():
+    user = authorized()
+    uid = users(user=user).id
+    u = user_meta(uid=uid)
+    print "saving theme:", request.forms.theme
+    user_meta.update_or_insert(user_meta.uid==uid, uid=uid, theme=request.forms.theme)
+    db.commit()
+
 @get('/download/<filepath:path>')
 def download(filepath):
     user = authorized()
@@ -873,7 +888,6 @@ def change_password():
     # this is basically the same coding as the register function
     # needs to be DRY'ed out in the future
     user = authorized()
-    #global user
     if config.auth and not authorized(): redirect('/login')
     opasswd = request.forms.opasswd
     pw1 = request.forms.npasswd1

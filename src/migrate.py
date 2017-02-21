@@ -18,6 +18,11 @@ class dal(object):
                                          Field('priority', 'integer'),
                                          Field('gid', self.db.groups, ondelete="SET NULL"))
 
+        self.user_meta = self.db.define_table('user_meta', Field('id', 'integer'),
+                                         Field('uid', self.db.users),
+                                         Field('new_shared_jobs', 'integer'),
+                                         Field('theme', 'string'))
+
         self.apps = self.db.define_table('apps', Field('id', 'integer'),
                                        Field('name', 'string'),
                                        Field('description', 'string'),

@@ -35,8 +35,8 @@
 <fieldset>
 <legend>Set Theme</legend>
     <form class="btn-group">
-        <input type="submit" class="btn btn-default" onclick="switch_style('default');return false;" name="theme" value="Metro" id="default">
         <input type="submit" class="btn btn-default" onclick="switch_style('simple');return false;" name="theme" value="Simpleton" id="simple">
+        <input type="submit" class="btn btn-default" onclick="switch_style('default');return false;" name="theme" value="Metro" id="default">
     </form>
 </fieldset>
 
