@@ -448,18 +448,12 @@ def show_jobs():
         result = db(jobs.uid==uid).select(orderby=~jobs.id)[:n]
 
     # number of jobs in queued state
-    nq = db(jobs.state=='Q').count()
-    nr = db(jobs.state=='R').count()
-    nc = db(jobs.state=='C').count()
     params = {}
     params['q'] = q
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
     params['np'] = config.np
-    params['nq'] = nq
-    params['nr'] = nr
-    params['nc'] = nc
     params['n'] = n
     params['status'] = "showing " + str(len(result)) + " cases"
     params['num_rows'] = config.jobs_num_rows

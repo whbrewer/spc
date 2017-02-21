@@ -194,12 +194,6 @@
   <input type="submit" class="btn btn-default btn-block" value="Show more">
 </form>
 
-<footer class="footer">
-  <div class="container">
-    <p class="text-muted" align=center>running:{{nr}} queued:{{nq}} completed:{{nc}}</p>
-  </div>
-</footer>
-
 <!-- Delete Modal -->
 <div class="modal fade" id="dModal" tabindex="-1" role="dialog"
      aria-labelledby="deleteModal">

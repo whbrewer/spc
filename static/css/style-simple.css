@@ -2,6 +2,11 @@
     margin-bottom: 0;
 }
 
+.navbar-default {
+    border-bottom-color: #5FB0E4;
+    background-color: #F8F8F8; opacity: 0.9;
+}
+
 .tab-content {
     /*background-color: #dfdfdf;*/
     border: 1px solid #ddd;

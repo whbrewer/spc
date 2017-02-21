@@ -109,7 +109,7 @@
 
         </div>
 
-        <span id="stats" class="navbar-brand navbar-right hidden-xs hidden-sm"></span>
+        <span id="stats" class="navbar-right hidden-xs hidden-sm"></span>
 
     </div>
 </div>
@@ -180,7 +180,7 @@ jQuery(document).ready(function(){
     function pollStats(){
         $.get('/stats/mem', function(data) {
             var obj = $.parseJSON(data)
-            $('#stats').html("<a style=\"color:white; text-decoration:none\" href=\"/stats\"><tt>CPU: " + obj.cpu + "% MEM: " + obj.mem + "%</tt></a>");
+            $('#stats').html("<a class=\"navbar-brand\" href=\"/stats\"><tt>CPU: " + obj.cpu + "% MEM: " + obj.mem + "%</tt></a>");
             setTimeout(pollStats,5000);
         });
     }

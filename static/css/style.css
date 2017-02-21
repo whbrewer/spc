@@ -38,9 +38,11 @@
     opacity: 0.9;
 }
 
-.navbar-default .navbar-brand {
-    color: #f0f8ff
+.navbar-brand {
+    color: #9d9d9d
 }
+
+a.navbar-brand:hover { color:white !important }
 
 #navbar {
     border-bottom-color: #0099CC;
@@ -171,5 +173,3 @@ textarea {
 .table-striped tbody tr:hover td, .table-striped tbody tr:hover th {
   background-color: PeachPuff;
 }
-
-a:hover { color:OrangeRed !important }
