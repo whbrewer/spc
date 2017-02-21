@@ -43,18 +43,6 @@ function endis() {
   table {
     font-size: 120%;
   }
-  .actionbox {
-      /*background-color: #fff;*/
-      background-color: rgba(255, 255, 255, 0.9);
-      left:45%;
-      position: absolute;
-      border: thick solid #00f
-      -moz-border-radius: 4px;
-      -webkit-border-radius: 4px;
-      border-radius: 4px;
-      -webkit-box-shadow: 0 2px 2px 0 #C2C2C2;
-      box-shadow: 0 2px 2px 0 #C2C2C2;
-  }
 </style>
 
 <ol class="breadcrumb">
@@ -137,6 +125,7 @@ function endis() {
    <th>Title</th>
    <th>Type</th>
    <th>Options</th>
+   <th> </th>
 </tr>
 </thead>
 % i = 0
@@ -149,6 +138,7 @@ function endis() {
     <td class="plotdef">{{row['plots']['title']}} <a href="{{url}}"></a></td>
     <td class="plotdef" width="50">{{row['plots']['ptype']}} <a href="{{url}}"></a></td>
     <td class="plotdef">{{row['plots']['options']}} <a href="{{url}}"></a>
+    <td>
         <div class="form-group actionbox" id="actions-{{i}}" style="display:none">
             <a class="btn btn-link" href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">datasources</a> <br>
             <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}"
