@@ -15,8 +15,8 @@
     <link rel="stylesheet" href="/static/css/bootstrap-tagsinput.css">
     <link rel="stylesheet" href="/static/css/introjs.min.css">
 
-    <link rel="stylesheet" href="/static/css/style.css" title="default">
     <link rel="alternate stylesheet" href="/static/css/style-simple.css" title="simple">
+    <link rel="stylesheet" href="/static/css/style.css" title="default">
 
     <script> user_defaults() </script>
 
