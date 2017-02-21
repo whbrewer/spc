@@ -20,7 +20,8 @@ def usage():
     buf += "runworker     start a worker\n"
     buf += "runsslworker  start a SSL worker\n"
     buf += "uninstall     uninstall an app\n"
-    buf += "update        update an app (in case spc.json was modified)\n"
+    # update is currently too buggy, don't release yet
+    # buf += "update        update an app (in case spc.json was modified)\n"
     #buf += "search   search for available apps\n"
     #buf += "test     run unit tests\n"
     return buf
