@@ -1419,7 +1419,8 @@ def plot_interface(pltid):
         tfn = 'plots/flot-cat'
     elif plottype == 'flot-scatter':
         tfn = 'plots/flot-scatter'
-    # for backwards compatability
+    elif plottype == 'flot-scatter-animated':
+        tfn = 'plots/flot-scatter-animated'    # for backwards compatability
     elif plottype == 'flot-line':
         tfn = 'plots/flot-scatter'
     elif plottype == 'plotly-hist':

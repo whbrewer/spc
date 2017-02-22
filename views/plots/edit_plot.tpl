@@ -28,7 +28,7 @@
         <label for="ptype" class="control-label col-md-3">Type of plot:</label>
         <div class="col-md-6">
           <select name="ptype" id="ptype" class="form-control">
-            %opts = {'flot-scatter': 'flot/scatter (line, bar, points)', 'flot-cat': 'flot/categories', 'plotly-hist': 'plotly/histogram', 'mpl-line': 'matplotlib/line', 'mpl-bar': 'matplotlib/bar'}
+            %opts = {'flot-scatter': 'flot/scatter (line, bar, points)', 'flot-scatter-animated': 'flot/scatter animated', 'flot-cat': 'flot/categories', 'plotly-hist': 'plotly/histogram', 'mpl-line': 'matplotlib/line', 'mpl-bar': 'matplotlib/bar'}
             %for key, value in opts.iteritems():
               %if key == row['ptype']:
                 <option selected value="{{key}}">{{value}}

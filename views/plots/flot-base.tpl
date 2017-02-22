@@ -7,6 +7,7 @@
 <script src="/static/js/flot/jquery.flot.fillbetween.min.js"></script>
 <script src="/static/js/flot/jquery.flot.resize.min.js"></script>
 <script src="/static/js/flot/jquery.flot.stack.min.js"></script>
+<script src="/static/js/flot/jquery.flot.animator.min.js"></script>
 <!-- <script src="/static/js/flot/jquery.flot.navigate.min.js"></script> -->
 <!-- <script src="/static/js/canvas2image.js"></script> -->
 

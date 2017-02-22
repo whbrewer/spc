@@ -81,7 +81,7 @@
              var plot = $.plot(placeholder, data, options);
           });
 
-          var plot = $.plot(placeholder, data, options);
+          var plot = $.plotAnimator(placeholder, data, options);
 
           // convert plot to image and display
           var canvas = plot.getCanvas();
