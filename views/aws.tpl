@@ -43,6 +43,7 @@ function toggleAddInstance() {
 <table class="table table-striped">
 <thead>
 <tr>
+    <th></th>
     <th>account_id</th>
     <th>secret</th>
     <th>key</th>
@@ -59,7 +60,8 @@ function toggleAddInstance() {
     %end
 %else:
     <form method="POST" action="/aws/creds">
-    <tr> <td><input class="form-control" type="text" name="account_id" size=12></td>
+    <tr> <td> </td>
+         <td><input class="form-control" type="text" name="account_id" size=12></td>
          <td><input class="form-control" type="text" name="secret" size=40></td>
          <td><input class="form-control" type="text" name="key" size=20></td>
          <td><input class="form-control" type="submit" class="btn btn-primary" value="Add"></td></tr>
