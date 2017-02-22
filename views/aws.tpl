@@ -43,7 +43,6 @@ function toggleAddInstance() {
 <table class="table table-striped">
 <thead>
 <tr>
-    <th></th>
     <th>account_id</th>
     <th>secret</th>
     <th>key</th>
