@@ -1,5 +1,5 @@
 function user_defaults() {
-    set_style()
+    set_style_from_cookie()
 }
 
 var style_cookie_name = "theme" ;
@@ -21,13 +21,44 @@ function switch_style ( css_title )
         link_tag[i].disabled = false ;
       }
     }
-    $.post('/theme', { 'theme': css_title });
+    set_cookie( style_cookie_name, css_title, style_cookie_duration, style_domain );
   }
 }
 
-function set_style()
+function set_style_from_cookie()
 {
-  $.get( "/theme", function( data ) {
-      if (data.length) { switch_style( data ) }
-  });
+  var css_title = get_cookie( style_cookie_name );
+  if (css_title.length) {
+    switch_style( css_title );
+  }
+}
+
+function set_cookie ( cookie_name, cookie_value,
+    lifespan_in_days, valid_domain )
+{
+    // https://www.thesitewizard.com/javascripts/cookies.shtml
+    var domain_string = valid_domain ?
+                       ("; domain=" + valid_domain) : '' ;
+    document.cookie = cookie_name +
+                       "=" + encodeURIComponent( cookie_value ) +
+                       "; max-age=" + 60 * 60 *
+                       24 * lifespan_in_days +
+                       "; path=/" + domain_string ;
+}
+
+// https://www.w3schools.com/js/js_cookies.asp
+function get_cookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
