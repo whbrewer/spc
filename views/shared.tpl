@@ -47,8 +47,6 @@
 <script>
 $(document).ready(function() {
 
-    $('#navaction').fadeIn();
-
     $('#clickable tr').click(function() {
         var href = $(this).find("a").attr("href");
         if(href) {

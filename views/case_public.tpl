@@ -12,4 +12,8 @@
 </pre>
 <span>file: {{fn}}</span>
 
+<script>
+$('#navaction').fadeIn();
+</script>
+
 %include('footer')
