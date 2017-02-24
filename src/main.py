@@ -901,6 +901,7 @@ def change_password():
     else:
         return template('error', err="problem with password")
     params = {}
+    params['user'] = user
     params['status'] = "password changed"
     return template('account', params)
 
