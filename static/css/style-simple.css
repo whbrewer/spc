@@ -3,8 +3,17 @@
 }
 
 .navbar-default {
-    border-bottom-color: #5FB0E4;
     background-color: #F8F8F8; opacity: 0.9;
+}
+
+#navbar {
+    border-bottom-color: #0099CC;
+    border-bottom-width: 2px;
+}
+
+#navaction {
+    border-top-color: #0099CC;
+    border-top-width: 2px;
 }
 
 .tab-content {

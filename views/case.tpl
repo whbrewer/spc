@@ -27,9 +27,11 @@
 <div id="output"></div>
 
 <script>
-$(document).ready(function(){
-    $('#navaction').fadeIn();
-})
+
+$(function() {
+    $('#navaction').hide()
+    $('#navaction').fadeIn()
+});
 
 num_lines = parseInt(window.innerHeight/25)
 

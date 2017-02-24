@@ -13,7 +13,9 @@
 <span>file: {{fn}}</span>
 
 <script>
-$('#navaction').fadeIn();
+$(function() {
+    $('#navaction').hide()
+    $('#navaction').fadeIn()
+});
 </script>
-
 %include('footer')
