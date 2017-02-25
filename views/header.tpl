@@ -39,9 +39,7 @@
     </style>
 
     <script>
-       document.body.onload = function() {
-           document.title = location.host;
-       }
+       window.onload = function() { document.title = location.host }
     </script>
 
 </head>
