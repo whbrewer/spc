@@ -1976,7 +1976,7 @@ def get_notifications():
     return json.dumps(response)
 
 @post('/upload')
-def upload_data():
+def upload_file():
     user = authorized()
     upload = request.files.upload
     if not upload:
@@ -1994,6 +1994,20 @@ def upload_data():
     return "SUCCESS"
     #except:
     #    return "FAILED"
+
+@post('/upload_data')
+def upload_data():
+    user = authorized()
+    save_path_dir = os.path.join(config.user_dir, user, config.upload_dir)
+    if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
+    filename = request.forms.filename
+    # print "filename:", filename
+    if not filename: return template('error', err="file not specified")
+    save_path = os.path.join(save_path_dir, filename)
+    # print "save_path:", save_path
+    # if os.path.isfile(save_path): return template('error', err="file exists")
+    upload_data = request.forms.upload_data
+    with open(save_path, 'w') as f: f.write(upload_data)
 
 def app_instance(input_format, appname, preprocess=0, postprocess=0):
     if(input_format=='namelist'):
