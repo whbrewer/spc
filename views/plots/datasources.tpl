@@ -71,6 +71,7 @@ function ddef() {
                 <option VALUE="rgb(200,0,0)">red</option>
                 <option VALUE="rgb(0,200,0)">green</option>
                 <option VALUE="rgb(0,0,200)">blue</option>
+                <option VALUE="rgb(128,0,128)">purple</option>
                 <option VALUE="rgb(0,0,0)">black</option>
             </select>
         </div>
