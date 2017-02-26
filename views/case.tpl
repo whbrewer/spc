@@ -1,6 +1,10 @@
 %include('header')
 %include('navbar')
 
+<style>
+#navaction { display: none }
+</style>
+
 %if defined('status'):
     Status: {{status}}
 %end
@@ -27,11 +31,7 @@
 <div id="output"></div>
 
 <script>
-
-$(function() {
-    $('#navaction').hide()
-    $('#navaction').fadeIn()
-});
+$(function() { $('#navaction').fadeIn() })
 
 num_lines = parseInt(window.innerHeight/25)
 
