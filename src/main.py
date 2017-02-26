@@ -1016,7 +1016,7 @@ def showapps():
     user = authorized()
     q = request.query.q
     if not q:
-        result = db().select(apps.ALL)
+        result = db().select(apps.ALL, orderby=apps.name)
     else:
         result = db(db.apps.name.contains(q, case_sensitive=False) |
                     db.apps.category.contains(q, case_sensitive=False) |
@@ -1043,7 +1043,7 @@ def showapps():
     uid = users(user=user).id
     app = active_app()
 
-    result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select()
+    result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select(orderby=apps.name)
     if user == "admin":
         configurable = True
     else:
