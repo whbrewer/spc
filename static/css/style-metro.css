@@ -158,7 +158,7 @@ background-color: #f0f7fd;
 border-color: #5bc0de;
 }
 
-input:not([type=submit]):not([type=file]:not([type=reset])) {
+input:not([type=submit]):not([type=file]):not([type=reset]) {
    background-color:#faffbd !important
 }
 
