@@ -90,7 +90,8 @@
 
 <script>
 $(document).ready(function () {
-    setInterval(checkForNotifications, 5000);
+    window.onload = checkForNotifications()
+    // setInterval(checkForNotifications, 5000);
 });
 
 function checkForNotifications() {
