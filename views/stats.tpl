@@ -19,4 +19,6 @@
 
 </div>
 
+%include('navactions')
+
 %include('footer')

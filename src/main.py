@@ -608,7 +608,6 @@ def aws_stop(aid):
 @get('/stats')
 def get_stats():
     user = authorized()
-
     params = {}
 
     # number of jobs in queued, running, and completed states
@@ -619,6 +618,8 @@ def get_stats():
     params['cpu'] = psutil.cpu_percent()
     params['vm'] = psutil.virtual_memory()
     params['disk'] = psutil.disk_usage('/')
+    params['cid'] = request.query.cid
+    params['app'] = request.query.app
 
     return template("stats", params)
 
