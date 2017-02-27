@@ -54,7 +54,7 @@
             %end
 
             <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
-                <button class="btn btn-default hidden-xs"><span class="glyphicon glyphicon-file"></span> Output</button>
+                <button class="btn btn-default hidden-xs hidden-sm hidden-md"><span class="glyphicon glyphicon-file"></span> Output</button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
@@ -87,6 +87,14 @@
                     </li>
 
                     <li>
+                        <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
+                            <button class="btn btn-default" style="width:200px"><span class="glyphicon glyphicon-file"></span> Output</button>
+                            <input type="hidden" name="cid" value="{{cid}}">
+                            <input type="hidden" name="app" value="{{app}}">
+                        </form>
+                    </li>
+
+                    <li>
                         <form class="btn-group" action="/files" method="get">
                             <button class="btn btn-default" style="width:200px">
                                 <span class="glyphicon glyphicon-folder-open"></span> Browse Files</span>
@@ -109,7 +117,7 @@
 
         </div>
 
-        <span id="stats" class="navbar-right hidden-xs hidden-sm hidden-md"></span>
+        <span id="stats" class="navbar-right hidden-xs hidden-sm"></span>
 
     </div>
 </div>
