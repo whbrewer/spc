@@ -1,3 +1,8 @@
+import uuid, string, random
+
+def rand_cid():
+    return random.choice(string.ascii_lowercase) + str(uuid.uuid4())[:5]
+
 def replace_tags(mystr, mydict):
     # search for special <placeholders> in filename and replace
     # with inputs set in user interface
@@ -41,6 +46,3 @@ def type(x):
                 return "bool"
             else:
                 return "str"
-
-
-

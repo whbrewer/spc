@@ -67,9 +67,17 @@ pbuffer = ''
 def confirm_form():
     user = authorized()
     app = request.forms.app
+
+    # generate a random case id
     # force the first string to be a letter so that the case id
     # will be guaranteed to be a string
-    cid = random.choice(string.ascii_lowercase) + str(uuid.uuid4())[:5]
+    # cid = random.choice(string.ascii_lowercase) + str(uuid.uuid4())[:5]
+    while True:
+        cid = rand_cid()
+        run_dir = os.path.join(myapps[app].user_dir, user, app, cid)
+        # check if this case exists or not, if it exists generate a new case id
+        if not os.path.isdir(run_dir): break
+
     # pass the case_id to be used by the program input parameters,
     # if case_id is defined in the input deck it will be used
     # otherwise it is ignored
