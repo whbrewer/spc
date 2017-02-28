@@ -21,12 +21,12 @@
 
     <script> user_defaults() </script>
 
+    <title>{{title}}</title>
+
     <style>
 
 		body {
 		    padding-top: 75px;
-		    /* If fixing the navactions bar use 100px */
-		    /*padding-top: 100px;*/
             padding-bottom: 75px;
 		}
 
@@ -38,13 +38,6 @@
 
     </style>
 
-    <script>
-       window.onload = function() { document.title = location.host }
-    </script>
-
 </head>
-
-<!-- can comment out if using ajax or just ignore which will give unnoticeable JS error -->
-<!-- %include('websocket') -->
 
 <div class="container-fluid">

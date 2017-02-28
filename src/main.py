@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # web framework
-from bottle import Bottle, template, static_file, request, redirect, app, get, post, run, delete
+from bottle import Bottle, template, static_file, request, redirect, app, get, post, run, delete, SimpleTemplate
 # python built-ins
 import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
@@ -56,6 +56,9 @@ session_opts = {
 }
 
 app = SessionMiddleware(app(), session_opts)
+# context processors - send to every template
+try:    SimpleTemplate.defaults["title"] = config.title
+except: SimpleTemplate.defaults["title"] = "SPC"
 ### end session management configuration ###
 
 # create instance of scheduler
