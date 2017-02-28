@@ -51,7 +51,7 @@ def create_container(id):
         config.remote_worker_port:config.remote_worker_port}))
         status = "SUCCESS: container created " + id
     except:
-        status = "ERROR: failed to start container ", id
+        status = "ERROR: failed to start container " + id
     redirect("/docker?status="+status)
 
 @dockerMod.route('/docker/remove_image/<id:path>', method='GET')
@@ -61,7 +61,7 @@ def remove_image(id):
     try:
         msg = cli.remove_image(image=id)
         status = "SUCCESS: image removed " + id
-    except: 
+    except:
         status = "ERROR: unable to remove image " + id + \
                  " Either has dependent child images, or a container is running." + \
                  " Remove the container and retry."
@@ -92,7 +92,7 @@ def stop_container(id):
 def container_status(id):
     print "removing container:", id
     cli = docker.Client(base_url='unix://var/run/docker.sock')
-    try: 
+    try:
         cli.remove_container(id)
         status = "SUCCESS: removed container " + id
     except:
