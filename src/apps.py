@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 from gluino import DAL, Field
 from model import *
 
-# using convention over configuration 
+# using convention over configuration
 # the executable is the name of the app
 # and the input file is the name of the app + '.in'
 apps_dir = config.apps_dir
@@ -29,8 +29,8 @@ class App(object):
         self.appname=name
 
     def create(self, name, desc, cat, lang, info, cmd, pre, post):
-        apps.insert(name=name, description=desc, category=cat, language=lang,  
-                    input_format=info, command=cmd, preprocess=pre, 
+        apps.insert(name=name, description=desc, category=cat, language=lang,
+                    input_format=info, command=cmd, preprocess=pre,
                     postprocess=post)
         db.commit()
 
@@ -69,7 +69,7 @@ class App(object):
     def create_template(self,html_tags=None,bool_rep="T",desc=None):
         # need to output according to blocks
         f = open('views/apps/'+self.appname+'.tpl', 'w')
-        f.write("%include('header',title='confirm')\n")
+        f.write("%include('header')\n")
         f.write("<head>\n")
         f.write("<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>\n")
         f.write("</head>\n")
@@ -134,12 +134,12 @@ class App(object):
                     if desc: # description
                         buf += "\n\t\t\t" + desc[param]
                     else:
-                        buf += param 
+                        buf += param
                     buf += ":</label>\n"
                 else:
                     buf = ""
                 # input box
-                buf += "\t\t<div class=\"col-xs-12 col-sm-6\">\n"               
+                buf += "\t\t<div class=\"col-xs-12 col-sm-6\">\n"
                 if html_tags[param] == "checkbox":
                     buf += "\t\t\t<input type=\"checkbox\" name=\"" \
                             + param + "\" value=\""+ bool_rep + "\"\n"
@@ -151,7 +151,7 @@ class App(object):
                     buf = "\t\t\t<input type=\"hidden\" name=\"" \
                               + param + "\" value=\"{{" + param + "}}\"/>\n"
                 elif html_tags[param] == "select":
-                    buf += "\t\t\t<select class=\"form-control\" name=\""+param+"\">\n" 
+                    buf += "\t\t\t<select class=\"form-control\" name=\""+param+"\">\n"
                     buf += "\t\t\t%opts = {"+param+": "+param+", 'option2': 'option2'}\n"
                     buf += "\t\t\t%for key, value in opts.iteritems():\n"
                     buf += "\t\t\t\t%if key == "+param+":\n" \
@@ -169,7 +169,7 @@ class App(object):
                                 + param + "\" value=\"{{" + param + "}}\"/>\n"
                 elif html_tags[param] == "video":
                     buf += "\t\t\t<iframe src=\"{{" + param + "}}\" width=\"560\" height=\"315\" frameborder=\"0\" allowfullscreen></iframe>"
-                else: 
+                else:
                     buf += "\t\t\t<input type=\"text\" class=\"form-control\" name=\"" \
                                 + param + "\" value=\"{{" + param + "}}\"/>\n"
                 #if not html_tags[param] == "hidden":
@@ -186,7 +186,7 @@ class App(object):
 # user must write their own function for how to write the output file
 class Namelist(App):
     '''Class for reading/writing Fortran namelist.input style files.'''
-    
+
     def __init__(self,appname,preprocess=0,postprocess=0):
         self.appname = appname
         self.appdir = os.path.join(apps_dir,appname)
@@ -203,7 +203,7 @@ class Namelist(App):
 
         cid = form_params['case_id']
         sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
-       
+
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
 
@@ -222,7 +222,7 @@ class Namelist(App):
                 # the checkboxes were not checked, or that the input
                 # has been disabled.  So, add the keys
                 # to the form_params here and set the values to False.
-                # Also, found that when textboxes get disabled e.g. via JS 
+                # Also, found that when textboxes get disabled e.g. via JS
                 # they also don't show up in the dictionary.
                 if key not in form_params:
                     #print "key not found - inserting:", key
@@ -256,10 +256,10 @@ class Namelist(App):
         # append name of input file to end of string
         fn += os.sep + self.simfn
         params = dict()   # a dictionary of parameter keys and default values
-        blockmap = dict() # a dictionary with section headings as keys with 
+        blockmap = dict() # a dictionary with section headings as keys with
                           # values being a list of parameters in that section
         blockorder = []   # a list used to maintain the order of the sections
- 
+
         if not os.path.isfile(fn):
             print "ERROR: input file does not exist: " + fn
 
@@ -267,7 +267,7 @@ class Namelist(App):
             m = re.search(r'&(\w+)',line) # section title
             n = re.search(r'(\w+)\s*=\s*(.*$)',line) # parameter
             if m:
-                section = m.group(1)  
+                section = m.group(1)
                 blockorder += [ m.group(1) ]
             elif n:
                 # Delete apostrophes
@@ -388,12 +388,12 @@ class XML(App):
         self.rootlabel = root.tag
         #for child in root:
         #    print child.tag, child.attrib, child.text
-        params = {} 
-        blockmap = {} 
-        blockorder = [] 
+        params = {}
+        blockmap = {}
+        blockorder = []
 
         # Currently does not support multiple subsections within xml file
-        # but needs to be included in the future 
+        # but needs to be included in the future
         for section in root:
             blockorder += [ section.tag ]
             for child in section.getchildren():
@@ -567,7 +567,7 @@ class YAML(App):
                     except:
                         print("exception on %s!" % option)
                         params[option] = None
-  
+
             # value is a list
             if type(parsed[section]) == type([]):
                 for item in parsed[section]:
@@ -583,7 +583,7 @@ class YAML(App):
 
             else: # value is string, integer, or Boolean
                 # put every variable that is not part of a subtree in the "basic" category
-                if "basic" not in blockorder: 
+                if "basic" not in blockorder:
                     blockorder += [ "basic" ]
                 blockmap.setdefault("basic",[]).append(section)
                 params[section] = str(parsed[section]) # simply a key/value assignment
