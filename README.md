@@ -64,22 +64,6 @@ and select one of the releases).
 
 For more information, see user's manual in the docs/ folder
 
-## Docker
-
-To start a docker SPC instance:
-
-* Either use the published image
-
-  `> docker pull willscott/spc`
-
-* Or build your own
-
-  `> docker build -t spc .`
-
-* then run an instance of the loaded image.
-
-  `> docker run -d -P willscott/spc`
-
 ## Optional Dependencies
 
 SPC can run without any dependencies except Python 2.7 standard libs.  It
@@ -97,4 +81,4 @@ is extensible in various ways by including other libs listed here:
 
 ## Questions
 
-Send email to: wes@fluidphysics.com
+For more info, check out the documentation in the docs folder.  Send questions to: wes@fluidphysics.com
