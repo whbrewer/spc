@@ -1,4 +1,4 @@
 *.pyc
 db/
-scipaas/config.py
+src/config.py
 user_data
