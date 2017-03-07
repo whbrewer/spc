@@ -11,9 +11,9 @@
 
 %include('more_contents')
 
-<a style="position:fixed; bottom:100px; right:-5px" href="javascript:scrollToBottom()" id="bottom_btn" class="cd-top btn btn-primary"><span class="glyphicon glyphicon-menu-down"></span></a>
+<button style="position:fixed; bottom:145px; right:-5px" class="cd-top btn btn-primary" onclick="scrollToTop()"><span class="glyphicon glyphicon-menu-up"></span></button>
 
-<a style="position:fixed; bottom:145px; right:-5px" href="javascript:scrollToTop()" id="top_btn" class="cd-top btn btn-primary"><span class="glyphicon glyphicon-menu-up"></span></a>
+<button style="position:fixed; bottom:100px; right:-5px" class="cd-top btn btn-primary" onclick="scrollToBottom()"><span class="glyphicon glyphicon-menu-down"></span></button>
 
 <div class="col-xs-12" style="height:5px"></div>
 
@@ -25,12 +25,19 @@
 	}
 
 	function scrollToTop() {
-		offset = $('body').offset();
-		$('html, body').animate({scrollTop: offset.top}, 500, 'linear');
+		$('html, body').animate({scrollTop: 0}, 500, 'linear');
 	}
 
 	function scrollToBottom() {
 		$('html, body').animate({scrollTop: $(document).height()}, 500, 'linear');
+	}
+
+	function scrollUp() {
+		$('html, body').animate({scrollTop: '-=100'}, 500, 'linear');
+	}
+
+	function scrollDown() {
+		$('html, body').animate({scrollTop: '+=100'}, 500, 'linear');
 	}
 
 	$(document).ready(function(){
