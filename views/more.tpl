@@ -52,7 +52,7 @@
 
 	    	var KeyID = (window.event) ? event.keyCode : e.keyCode;
 
-	    	if(e.keyCode == 71 && e.ctrlKey) { // ctrl-n next
+	    	if(e.keyCode == 71 && e.ctrlKey) { // ctrl-g cancel highlights
 				$("pre").unhighlight();
 	    	}
 

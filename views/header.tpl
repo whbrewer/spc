@@ -8,6 +8,7 @@
     <script src="/static/js/jquery.highlight.js"></script>
     <script src="/static/js/jquery.validate.min.js"></script>
     <script src="/static/js/bootstrap-tagsinput.min.js"></script>
+    <script src="/static/js/bootstrap-notify.min.js"></script>
     <script src="/static/js/intro.min.js"></script>
     <script src="/static/js/user_defaults.js"></script>
 
