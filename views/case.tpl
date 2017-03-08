@@ -9,6 +9,13 @@
     Status: {{status}}
 %end
 
+<div class = "alert alert-success alert-dismissable hidden-xs hidden-lg">
+    <button type = "button" class = "close" data-dismiss = "alert" aria-hidden = "true">
+    &times;
+    </button>
+    For best experience, increase screen width until this message disappears
+</div>
+
 %include("navactions")
 
 <body>
