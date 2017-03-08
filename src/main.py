@@ -1186,9 +1186,9 @@ def getstart():
     if re.search("[a-z]", cid):
         params, _, _ = myapps[app].read_params(owner, cid)
         if user == owner:
-            params['tags'] = cid + "," + jobs(cid=cid).description
+            params['tags'] = cid
         else:
-            params['tags'] = os.path.join(owner, cid) + "," + jobs(cid=cid).description
+            params['tags'] = os.path.join(owner, cid)
 
     params['cid'] = cid
     params['app'] = app
