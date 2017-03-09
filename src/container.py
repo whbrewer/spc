@@ -42,30 +42,34 @@ def get_docker():
         params['status'] = root.request.query.status
     return root.template('docker', params, images=images, containers=conts)
 
-@dockerMod.route('/docker/create/<id>', method='GET')
+@dockerMod.route('/docker/create/<id>', method='post')
 def create_container(id):
     print "creating container:", id
     cli = docker.Client(base_url='unix://var/run/docker.sock')
+    host_port_number = int(request.forms.host_port_number)
+    container_port_number = int(request.forms.container_port_number)
+    print "port nums:", host_port_number, container_port_number
     try:
-        cli.create_container(image=id, host_config=cli.create_host_config(port_bindings={
-        config.remote_worker_port:config.remote_worker_port}))
+        cli.create_container(image=id, host_config=cli.create_host_config(port_bindings={host_port_number:container_port_number}))
         status = "SUCCESS: container created " + id
-    except:
-        status = "ERROR: failed to start container " + id
+    except Exception as e:
+        status = "ERROR: failed to start container " + str(e)
+
     redirect("/docker?status="+status)
 
-@dockerMod.route('/docker/remove_image/<id:path>', method='GET')
-def remove_image(id):
-    print "removing image:", id
-    cli = docker.Client(base_url='unix://var/run/docker.sock')
-    try:
-        msg = cli.remove_image(image=id)
-        status = "SUCCESS: image removed " + id
-    except:
-        status = "ERROR: unable to remove image " + id + \
-                 " Either has dependent child images, or a container is running." + \
-                 " Remove the container and retry."
-    redirect("/docker?status="+status)
+# don't think we want to have this option
+# @dockerMod.route('/docker/remove_image/<id:path>', method='GET')
+# def remove_image(id):
+#     print "removing image:", id
+#     cli = docker.Client(base_url='unix://var/run/docker.sock')
+#     try:
+#         msg = cli.remove_image(image=id)
+#         status = "SUCCESS: image removed " + id
+#     except:
+#         status = "ERROR: unable to remove image " + id + \
+#                  " Either has dependent child images, or a container is running." + \
+#                  " Remove the container and retry."
+#     redirect("/docker?status="+status)
 
 @dockerMod.route('/docker/start/<id>', method='GET')
 def start_container(id):
