@@ -60,8 +60,10 @@
 }*/
 
 .navbar {
-    background-color: #29090C; /* #383838; */
-    opacity: 0.9;
+    background: repeating-radial-gradient(closest-side at 25px 35px, #000 15%, #303030 40%);
+    background-size:60px 60px;
+    }
+    /*background-image: repeating-linear-gradient(180deg, #ccc, #ccc 3px, #dbdbdb 3px, #dbdbdb 6px);*/
 }
 
 .navbar-brand {
