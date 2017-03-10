@@ -9,6 +9,7 @@ from model import *
 from bottle import Bottle, request, redirect
 
 root = 0
+base_url = 'unix://var/run/docker.sock'
 
 def bind(app):
     global root
@@ -27,7 +28,7 @@ def get_docker():
     params = {}
 
     try:
-        cli = docker.Client(base_url='unix://var/run/docker.sock')
+        cli = docker.Client(base_url=base_url)
         images = cli.images()
         conts = cli.containers(all=True)
     except:
@@ -45,12 +46,11 @@ def get_docker():
 @dockerMod.route('/docker/create/<id>', method='post')
 def create_container(id):
     print "creating container:", id
-    cli = docker.Client(base_url='unix://var/run/docker.sock')
+    cli = docker.Client(base_url=base_url)
     host_port_number = int(request.forms.host_port_number)
     container_port_number = int(request.forms.container_port_number)
-    print "port nums:", host_port_number, container_port_number
     try:
-        cli.create_container(image=id, host_config=cli.create_host_config(port_bindings={host_port_number:container_port_number}))
+        cli.create_container(image=id, ports=[host_port_number], host_config=cli.create_host_config(port_bindings={host_port_number:container_port_number}))
         status = "SUCCESS: container created " + id
     except Exception as e:
         status = "ERROR: failed to start container " + str(e)
@@ -61,7 +61,7 @@ def create_container(id):
 # @dockerMod.route('/docker/remove_image/<id:path>', method='GET')
 # def remove_image(id):
 #     print "removing image:", id
-#     cli = docker.Client(base_url='unix://var/run/docker.sock')
+#     cli = docker.Client(base_url=base_url)
 #     try:
 #         msg = cli.remove_image(image=id)
 #         status = "SUCCESS: image removed " + id
@@ -74,7 +74,7 @@ def create_container(id):
 @dockerMod.route('/docker/start/<id>', method='GET')
 def start_container(id):
     print "starting container:", id
-    cli = docker.Client(base_url='unix://var/run/docker.sock')
+    cli = docker.Client(base_url=base_url)
     try:
         cli.start(container=id)
         status = "SUCCESS: started container " + id
@@ -84,7 +84,7 @@ def start_container(id):
 
 @dockerMod.route('/docker/stop/<id>', method='GET')
 def stop_container(id):
-    cli = docker.Client(base_url='unix://var/run/docker.sock')
+    cli = docker.Client(base_url=base_url)
     try:
         cli.stop(container=id)
         status = "SUCCESS: stopped container " + id
@@ -95,7 +95,7 @@ def stop_container(id):
 @dockerMod.route('/docker/remove/<id>', method='GET')
 def container_status(id):
     print "removing container:", id
-    cli = docker.Client(base_url='unix://var/run/docker.sock')
+    cli = docker.Client(base_url=base_url)
     try:
         cli.remove_container(id)
         status = "SUCCESS: removed container " + id
