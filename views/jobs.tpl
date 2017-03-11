@@ -204,9 +204,9 @@ function toggle_action_button_visibility() {
   // cases to be deleted
   var input = document.getElementById("selected_cases")
 
-  if(input) { // if user has already checked some cases just modify the cases to be deleted
+  if(input) { // if user has already checked some cases modify the cases to be deleted
       input.value = values
-  } else { // otherwise create a new hidden input element
+  } else { // otherwise create a new hidden input element on delete form
       var deleteForm = document.getElementById("delete_modal")
       input = document.createElement('input')
       input.type = 'hidden'
@@ -219,14 +219,13 @@ function toggle_action_button_visibility() {
   // cases to be diffed
   var input = document.getElementById("selected_diff_cases")
 
-  if(input) {
+  if(input) { // if user has already checked some cases modify the cases to be deleted
       input.value = values
-  } else { // otherwise create a new hidden input element
-      // add selected files to Zip form
+  } else { // otherwise create a new hidden input element on diff form
       var diffForm = document.getElementById("diff_button")
       input = document.createElement('input')
       input.type = 'hidden'
-      input.name = 'selected_cases'
+      input.name = 'selected_diff_cases'
       input.id = 'selected_diff_cases'
       input.value = values
       diffForm.appendChild(input)

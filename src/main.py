@@ -476,7 +476,7 @@ def diff_jobs():
     user = authorized()
     app = active_app()
 
-    selected_cases = request.query.selected_cases
+    selected_cases = request.query.selected_diff_cases
     cases = selected_cases.rstrip(':').split(':')
 
     cids = list()

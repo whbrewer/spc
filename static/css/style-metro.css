@@ -38,6 +38,8 @@
     color: #9d9d9d
 }
 
+.navbar-brand:hover { color:yellow !important }
+
 a.navbar-brand:hover { color:white !important }
 
 #navbar {

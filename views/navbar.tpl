@@ -87,11 +87,9 @@
 
 </nav>
 
-
 <script>
 $(document).ready(function () {
     window.onload = checkForNotifications()
-    // setInterval(checkForNotifications, 5000);
 });
 
 function checkForNotifications() {
