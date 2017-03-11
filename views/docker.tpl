@@ -4,7 +4,7 @@
 
 <body>
 
-<h2>Docker Containers</h2>
+<h2>Containers</h2>
 
 <table class="table table-striped">
 <thead><tr><th>CONTAINER ID</th><th>IMAGE</th><th>COMMAND</th><th>CREATED</th><th>STATUS</th><th>NAMES</th><th>ACTIONS</th></tr></thead>
@@ -32,9 +32,7 @@
 %end
 </table>
 
-<hr>
-
-<h2>Docker Images</h2>
+<h2>Images</h2>
 
 <!--  % def sha(x): x.split(":")[1] -->
 <table class="table table-striped">
