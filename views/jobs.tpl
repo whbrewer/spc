@@ -10,93 +10,6 @@
 </style>
 
 <script>
-    function star(jid) {
-      $('#'+jid).toggleClass('glyphicon-star-empty');
-      $('#'+jid).toggleClass('glyphicon-star');
-      $.post('/jobs/star', { 'jid': jid });
-    };
-
-    function unstar(jid) {
-      $('#'+jid).toggleClass('glyphicon-star-empty');
-      $('#'+jid).toggleClass('glyphicon-star');
-      $.post('/jobs/unstar', { 'jid': jid });
-    };
-
-    function share(jid) {
-      $('#shared'+jid).toggleClass('glyphicon-share-alt');
-      $('#shared'+jid).toggleClass('glyphicon-pushpin');
-      $.post('/jobs/share', { 'jid': jid });
-    };
-
-    function unshare(jid) {
-      $('#shared'+jid).toggleClass('glyphicon-share-alt');
-      $('#shared'+jid).toggleClass('glyphicon-pushpin');
-      $.post('/jobs/unshare', { 'jid': jid });
-    };
-
-    function get_remote_job_status(jid) {
-      $.get( "http://localhost:8581/status/"+jid, function (data) {
-        $("#job-"+jid).html(data);
-      });
-    };
-
-    function toggle(source) {
-      checkboxes = document.getElementsByName('selected_cases');
-      for(var i=0; i < checkboxes.length; i++) {
-        checkboxes[i].checked = source.checked
-      }
-    }
-
-    function toggle_action_button_visibility() {
-      var checkboxes = document.getElementsByName('selected_cases')
-      var show = false
-      var values = ""
-      var count = 0
-      for(var i=0; i < checkboxes.length; i++) {
-        if (checkboxes[i].checked) {
-          show = true;
-          values += checkboxes[i].value
-          count += 1
-        }
-      }
-
-      var dom = document.getElementById("actions")
-      if (show) {
-        dom.style.display = "block"
-      } else {
-        dom.style.display = "none"
-      }
-
-      var dom2 = document.getElementById("diff_button")
-      if (count == 2) {
-          dom2.style.display = "block"
-      } else {
-          dom2.style.display = "none"
-      }
-
-      var input = document.getElementById("selected_cases")
-      if(input) { // if user has already checked some cases just modify the cases to be deleted
-        input.value = values;
-      } else { // otherwise create a new hidden input element
-        var theForm = document.getElementById("delete_modal")
-        var input = document.createElement('input')
-        input.type = 'hidden'
-        input.name = 'selected_cases'
-        input.id = 'selected_cases'
-        input.value = values
-        theForm.appendChild(input)
-
-        // add selected files to Zip form
-        var theForm = document.getElementById("diff_button")
-        var input = document.createElement('input')
-        input.type = 'hidden'
-        input.name = 'selected_cases'
-        input.id = 'selected_cases'
-        input.value = values
-        theForm.appendChild(input)
-      }
-
-    }
 
 </script>
 
@@ -223,5 +136,102 @@ $(document).ready(function() {
         e.stopPropagation();
     });
 });
+
+function star(jid) {
+  $('#'+jid).toggleClass('glyphicon-star-empty');
+  $('#'+jid).toggleClass('glyphicon-star');
+  $.post('/jobs/star', { 'jid': jid });
+};
+
+function unstar(jid) {
+  $('#'+jid).toggleClass('glyphicon-star-empty');
+  $('#'+jid).toggleClass('glyphicon-star');
+  $.post('/jobs/unstar', { 'jid': jid });
+};
+
+function share(jid) {
+  $('#shared'+jid).toggleClass('glyphicon-share-alt');
+  $('#shared'+jid).toggleClass('glyphicon-pushpin');
+  $.post('/jobs/share', { 'jid': jid });
+};
+
+function unshare(jid) {
+  $('#shared'+jid).toggleClass('glyphicon-share-alt');
+  $('#shared'+jid).toggleClass('glyphicon-pushpin');
+  $.post('/jobs/unshare', { 'jid': jid });
+};
+
+function get_remote_job_status(jid) {
+  $.get( "http://localhost:8581/status/"+jid, function (data) {
+    $("#job-"+jid).html(data);
+  });
+};
+
+function toggle(source) {
+  checkboxes = document.getElementsByName('selected_cases');
+  for(var i=0; i < checkboxes.length; i++) {
+    checkboxes[i].checked = source.checked
+  }
+}
+
+function toggle_action_button_visibility() {
+  var checkboxes = document.getElementsByName('selected_cases')
+  var show = false
+  var values = ""
+  var count = 0
+  for(var i=0; i < checkboxes.length; i++) {
+    if (checkboxes[i].checked) {
+      show = true;
+      values += checkboxes[i].value
+      count += 1
+    }
+  }
+
+  var dom = document.getElementById("actions")
+  if (show) {
+    dom.style.display = "block"
+  } else {
+    dom.style.display = "none"
+  }
+
+  var dom2 = document.getElementById("diff_button")
+  if (count == 2) {
+      dom2.style.display = "block"
+  } else {
+      dom2.style.display = "none"
+  }
+
+  // cases to be deleted
+  var input = document.getElementById("selected_cases")
+
+  if(input) { // if user has already checked some cases just modify the cases to be deleted
+      input.value = values
+  } else { // otherwise create a new hidden input element
+      var deleteForm = document.getElementById("delete_modal")
+      input = document.createElement('input')
+      input.type = 'hidden'
+      input.name = 'selected_cases'
+      input.id = 'selected_cases'
+      input.value = values
+      deleteForm.appendChild(input)
+  }
+
+  // cases to be diffed
+  var input = document.getElementById("selected_diff_cases")
+
+  if(input) {
+      input.value = values
+  } else { // otherwise create a new hidden input element
+      // add selected files to Zip form
+      var diffForm = document.getElementById("diff_button")
+      input = document.createElement('input')
+      input.type = 'hidden'
+      input.name = 'selected_cases'
+      input.id = 'selected_diff_cases'
+      input.value = values
+      diffForm.appendChild(input)
+  }
+
+}
 </script>
 %include('footer')
