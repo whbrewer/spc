@@ -70,9 +70,6 @@ class App(object):
         # need to output according to blocks
         f = open('views/apps/'+self.appname+'.tpl', 'w')
         f.write("%include('header')\n")
-        f.write("<head>\n")
-        f.write("<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>\n")
-        f.write("</head>\n")
         f.write("<body>\n")
         f.write("%include('navbar')\n")
         f.write("%include('apps/alert')\n")
@@ -143,10 +140,10 @@ class App(object):
                 if html_tags[param] == "checkbox":
                     buf += "\t\t\t<input type=\"checkbox\" name=\"" \
                             + param + "\" value=\""+ bool_rep + "\"\n"
-                    buf += "%if " + param + "== '" + bool_rep + "':\n"
-                    buf += "checked\n"
-                    buf += "%end\n"
-                    buf += "\t\t/>\n"
+                    buf += "\t\t\t\t%if " + param + "== '" + bool_rep + "':\n"
+                    buf += "\t\t\t\t\tchecked\n"
+                    buf += "\t\t\t\t%end\n"
+                    buf += "\t\t\t/>\n"
                 elif html_tags[param] == "hidden":
                     buf = "\t\t\t<input type=\"hidden\" name=\"" \
                               + param + "\" value=\"{{" + param + "}}\"/>\n"
@@ -615,6 +612,6 @@ class YAML(App):
                 if key not in form_params: params[key] = 'false'
                 #print key, form_params[key]
 
-        cfgfile.write(yaml.dump(params))
+        cfgfile.write(yaml.dump(params, default_flow_style=False))
         cfgfile.close()
         return 1
