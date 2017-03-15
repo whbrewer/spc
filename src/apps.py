@@ -505,9 +505,9 @@ class JSON(App):
         for section in self.blockorder:
             params[section] = dict()
             for key in self.blockmap[section]:
-                params[section][key] = form_params[key]
                 # for checkboxes that dont get sent when unchecked
-                if key not in form_params: params[key] = 'false'
+                if key not in form_params: form_params[key] = 'false'
+                params[section][key] = form_params[key]
                 #print key, form_params[key]
 
         cfgfile.write(json.dumps(params))
@@ -607,9 +607,9 @@ class YAML(App):
         for section in self.blockorder:
             params[section] = dict()
             for key in self.blockmap[section]:
-                params[section][key] = form_params[key]
                 # for checkboxes that dont get sent when unchecked
-                if key not in form_params: params[key] = 'false'
+                if key not in form_params: form_params[key] = 'false'
+                params[section][key] = form_params[key]
                 #print key, form_params[key]
 
         cfgfile.write(yaml.dump(params, default_flow_style=False))
