@@ -105,7 +105,7 @@ def initdb():
                        "GC content, and codon analysis of given DNA string.",
                        category="bioinformatics",
                        language="python",
-                       input_format="namelist",
+                       input_format="ini",
                        command="../../../../apps/dna/dna")
     dal.db.plots.insert(id=1,appid=1,ptype="flot-cat",title="Dinucleotides")
     dal.db.plots.insert(id=2,appid=1,ptype="flot-cat",title="Nucleotides")
