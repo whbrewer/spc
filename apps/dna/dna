@@ -10,18 +10,19 @@ config.read('dna.ini')
 for section in config.sections():
     for option in config.options(section):
         params[option] = config.get(section, option)
-s = params["dna"]
+s = params['dna']
 
 ## read and parse JSON file
 #import json
-#with open("dna.json", "r") as f: json = json.loads(f.read())
-#s = json['basic']['dna']
+#with open("dna.json", "r") as f: 
+#   params = json.loads(f.read())
+#s = params['basic']['dna']
 
 ## read and parse YAML file
 #import yaml
-#with open('dna.yaml','r') as f: data = f.read()
-#parsed = yaml.load(data)
-#s = parsed['basic']['dna']
+#with open('dna.yaml','r') as f: 
+#    params = yaml.load(f.read())
+#s = params['basic']['dna']
 
 ## read and parse Namelist.input file
 #for line in open('dna.in', 'rU'):
