@@ -119,13 +119,25 @@ def confirm_form():
 
     else:
 
-        myapps[app].write_params(request.forms, user)
-        # read the file
         run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
         fn = os.path.join(run_dir, myapps[app].simfn)
+
+        # this app-specific code should be removed in future
+        # this writes a customized forsim script needed to run the simulation
+        if app == "forsim":
+            inputs = request.forms.script.decode('utf-8')
+            inputs = inputs.replace(u'\r\n', '\n')
+            if not os.path.exists(run_dir): os.makedirs(run_dir)
+            thisfn = os.path.join(run_dir, "input.sim")
+            with open(thisfn, 'w') as f: f.write(inputs)
+
+        myapps[app].write_params(request.forms, user)
+
+        # read the file
         inputs = slurp_file(fn)
         # convert html tags to entities (e.g. < to &lt;)
         inputs = cgi.escape(inputs)
+
         # attempt to get number of procs from forms inputs
         if 'num_procs' in request.forms:
             np = request.forms.num_procs
@@ -1149,6 +1161,9 @@ def delete_app(appid):
 @get('/app/<app>')
 def view_app(app):
     user = authorized()
+    if app: set_active(app)
+    else: redirect('/myapps')
+
     if user != 'admin':
         return template('error', err="must be admin to edit app")
     cid = request.query.cid
@@ -1227,6 +1242,8 @@ def list_files():
         params['files'] = sorted(os.listdir(path))
     params['q'] = q
 
+    num_files = len(params['files'])
+    params['status'] = "listing " + str(num_files) + " files"
     params['description'] = jobs(cid=cid).description
 
     return template('files', params)
