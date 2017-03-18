@@ -93,8 +93,8 @@
 		<th>Timestamp</th>
 	</tr>
 	% import os, time
-	% binary_extensions = ['.bz2','.gz','.xz','.zip']
-	% image_extensions = ['.png','.gif','.jpg']
+	% binary_extensions = ['.bz2', '.gz', '.xz', '.zip']
+	% image_extensions = ['.png', '.gif', '.jpg', '.svg']
 	% for file in files:
 		<tr>
 		<td><input type="checkbox" name="selected_files" value="{{file}}:" onchange="toggle_delete_button_visibility()"></td>
