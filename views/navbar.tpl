@@ -7,15 +7,15 @@
                 <div class="navbar-left">
                     <div class="btn-group">
 
-                        <button data-step="3" data-intro="Once you've activated your app, click here... You can always get back to this home page by clicking here" type="submit" class="btn btn-default" formaction="/myapps"><span class="glyphicon glyphicon-th-large"></span> Apps </button>
+                        <button data-step="3" data-intro="You can always get back to this page by clicking here" type="submit" class="btn btn-default" formaction="/myapps"><span class="glyphicon glyphicon-th-large"></span> Apps </button>
 
-                        <button data-step="4" data-intro="Whenever you run a simulation, you can find it here" type="submit" class="btn btn-default" formaction="/jobs"><span class="glyphicon glyphicon-tasks"></span> Jobs </button>
+                        <button data-step="4" data-intro="Whenever you run a simulation, you can find the data here" type="submit" class="btn btn-default" formaction="/jobs"><span class="glyphicon glyphicon-tasks"></span> Jobs </button>
 
                         <button data-step="5" data-intro="You can find other user's shared runs here" type="submit" class="btn btn-default hidden-xs" formaction="/jobs/shared"><span class="glyphicon glyphicon-pushpin"></span> Shared <span class="badge" style="background-color:tomato" id="new_shared_jobs"></span></button>
 
                         %if defined('app'):
                             %if app != '':
-                                <button type="submit" class="btn btn-success hidden-xs"
+                                <button data-step="6" data-intro="Click this at any time to start a new run..." type="submit" class="btn btn-success hidden-xs"
                                         formaction="/start">
                                     <span class="glyphicon glyphicon-play-circle"></span> Start </button>
                             %end
@@ -55,7 +55,7 @@
                     %if defined('user'):
                         <a href="#" class="navbar-brand hidden-xs">{{user}}</a>
                     %end
-                    <div data-step="7" data-intro="Change your password or use advanced features here" class="btn-group">
+                    <div data-step="7" data-intro="Change your password or use advanced features (e.g. AWS, Docker integrations) here" class="btn-group">
                         <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
                             <span class="glyphicon glyphicon-menu-hamburger"></span></a>
 

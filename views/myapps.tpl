@@ -24,8 +24,8 @@
 
   <div class="col-xs-12 col-sm-4" align="left">
     <div class="btn-group">
-      <a class="btn btn-warning active" href="/myapps">Activated</a>
-      <a data-step="2" data-intro="By clicking here you can find apps to run" class="btn btn-warning" href="/apps">Installed</a>
+      <a data-step="1" data-intro="These are your activated apps.  Apps must be activated before they can be used..." class="btn btn-warning" class="btn btn-warning active" href="/myapps">Activated</a>
+      <a data-step="2" data-intro="By clicking here you can find apps to activate..." class="btn btn-warning" href="/apps">Installed</a>
     </div>
   </div>
 
