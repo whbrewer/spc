@@ -368,7 +368,11 @@ def tail(app, cid):
                     m = re.match("generation\s=\s*(\d+)", line)
                     if m: progress = int(float(m.group(1))/float(complete)*100)
             # end mendel mods
-            myoutput = output[len(output)-num_lines:]
+            start_position = len(output) - num_lines
+            if start_position > 0:
+                myoutput = output[start_position:]
+            else:
+                myoutput = output
             xoutput = ''.join(myoutput)
             f.close()
         elif os.path.exists(os.path.join(run_dir, myapps[app].simfn)):
@@ -1512,6 +1516,7 @@ def plot_interface(pltid):
                     dat = p.get_data(plotpath, col1, col2, line1)
                 else: # single column of data
                     dat = p.get_data(plotpath, col1)
+            # remove this app-specific code in future
             if app == "fpg":
                 dat = process.postprocess(plotpath, line1, line2)
         else:
