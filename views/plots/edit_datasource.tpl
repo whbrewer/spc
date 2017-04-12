@@ -4,7 +4,7 @@
 <body>
 
 <ol class="breadcrumb">
-  <li><a href="/">Home</a></li>
+  <li><a href="/">Apps</a></li>
   <li><a href="/app/{{app}}">Configure App</a></li>
   <li><a href="/plots/edit?app={{app}}">Plots</a></li>
   <li><a href="/plots/{{pltid}}/datasources?app={{app}}">Datasources</a></li>

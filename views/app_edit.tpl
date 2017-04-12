@@ -2,7 +2,7 @@
 %include('navbar')
 
 <ol class="breadcrumb">
-  <li><a href="/">Home</a></li>
+  <li><a href="/">Apps</a></li>
   <li><a href="/app/{{app}}">Configure App</a></li>
   <li class="active">Edit App</li>
 </ol>

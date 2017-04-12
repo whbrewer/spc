@@ -47,7 +47,7 @@ tr:hover {
 %include('navbar')
 
 <ol class="breadcrumb">
-  <li><a href="/">Home</a></li>
+  <li><a href="/">Apps</a></li>
   <li class="active">Configure App</li>
 </ol>
 

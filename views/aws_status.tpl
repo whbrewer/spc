@@ -21,7 +21,7 @@
 </script>
 
 <ol class="breadcrumb">
-  <li><a href="/">Home</a></li>
+  <li><a href="/">Apps</a></li>
   <li><a href="/aws">AWS</a></li>
   <li class="active">Status</li>
 </ol>
