@@ -334,7 +334,7 @@ class INI(App):
     def write_params(self,form_params,user):
         Config = ConfigParser.ConfigParser()
         cid = form_params['case_id']
-        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
+        sim_dir = os.path.join(self.user_dir,user,self.appname,cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
@@ -348,6 +348,9 @@ class INI(App):
         for section in self.blockorder:
             Config.add_section(section)
             for key in self.blockmap[section]:
+                # Add quotes to case_id for TOML file used by mendel-go
+                if key == "case_id" and self.appname == "mendel-go":
+                    form_params[key] = "\"" + form_params[key]+ "\""
                 # for checkboxes that dont get sent when unchecked
                 if key not in form_params: form_params[key] = 'false'
                 #print key, form_params[key]
