@@ -19,19 +19,26 @@
 <div class="col-xs-12" style="height:10px"></div>
 
 <div class="row">
-  <div class="col-xs-6">
-    <form role="form" action="/jobs">
-      <input name="q" type="text" class="form-control input-lg"
-           onchange="show(this.value)" style="background-color:#faffbd" placeholder="Search..." value="{{q}}">
-    </form>
-  </div>
 
-  <div class="btn-group col-xs-6" id="actions" style="display:none">
-      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+      <div class="col-xs-3">
+        <form role="form" action="/jobs">
+          <input name="q" type="text" class="form-control input-lg"
+               onchange="show(this.value)" style="background-color:#faffbd" placeholder="Search..." value="{{q}}">
+        </form>
+      </div>
 
-      <form id="diff_button" class="btn-group" action="/jobs/diff">
-          <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-scale"></span> Diff</button>
-      </form>
+      <div class="btn-group col-xs-6" id="actions" style="display:none">
+          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+
+          <button type="button" class="btn btn-warning" data-toggle="modal"  data-target="#mergeModal"><span class="glyphicon glyphicon-resize-small"></span> Merge</button>
+      </div>
+
+      <div class="btn-group col-xs-3">
+          <form id="diff_button" class="btn-group" style="display:none" action="/jobs/diff">
+              <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-scale"></span> Diff</button>
+          </form>
+      </div>
+
   </div>
 
 </div>
@@ -127,6 +134,36 @@
     </div>
 </div>
 
+<!-- Merge Modal -->
+<div class="modal fade" id="mergeModal" tabindex="-1" role="dialog"
+     aria-labelledby="mergeModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="merge_modal" class="form-horizontal" method="post" action="/jobs/merge">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="mergeModal">What do you want do with the selected cases?</h4>
+                </div>
+                <div class="modal-footer">
+                    <div class="form-group">
+                        <label class="control-label col-xs-12 col-sm-6">Files to merge:</label>
+                        <div class="col-xs-12 col-sm-6">
+                            <input type="text" name="file_pattern" class="form-control input-lg" value="<cid>.000.plm" />
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" formaction="/jobs/merge/sum" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Sum</button>
+                        <button type="submit" formaction="/jobs/merge/avg" class="btn btn-default"> Average</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
     // $('#clickable tr').click(function(e) {
@@ -214,6 +251,21 @@ function toggle_action_button_visibility() {
       input.id = 'selected_cases'
       input.value = values
       deleteForm.appendChild(input)
+  }
+
+  // cases to be merged
+  var input = document.getElementById("selected_merge_cases")
+
+  if(input) { // if user has already checked some cases modify the cases to be deleted
+      input.value = values
+  } else { // otherwise create a new hidden input element on delete form
+      var mergeForm = document.getElementById("merge_modal")
+      input = document.createElement('input')
+      input.type = 'hidden'
+      input.name = 'selected_merge_cases'
+      input.id = 'selected_merge_cases'
+      input.value = values
+      mergeForm.appendChild(input)
   }
 
   // cases to be diffed

@@ -771,6 +771,85 @@ def delete_job(jid):
         return template("error", err="cannot delete while job is still running")
     redirect("/jobs")
 
+@post('/jobs/merge/<rtype>')
+def merge(rtype):
+    user = authorized()
+    selected_cases = request.forms.selected_merge_cases
+    jids = selected_cases.rstrip(':').split(':')
+    cases = list()
+    output = dict()
+
+    for jid in jids:
+        app = jobs(id=jid).app
+        cid = jobs(id=jid).cid
+        cases.append(cid)
+        relpath = os.path.join(app, cid)
+        fn = replace_tags(request.forms.file_pattern, {'cid': cid})
+        path = os.path.join(myapps[app].user_dir, user, app, cid, fn)
+
+        with open(path, "r") as infile:
+            # Loop over lines in each file
+            for line in infile:
+                line = str(line)
+                # Skip comment lines
+                if not re.search('^#', line):
+                    items = line.split()
+                    # If a line matching this one has been encountered in a previous
+                    # file, add the column values
+                    if len(items) > 0:
+                        currkey = int(items[0])
+                        if currkey in output.keys():
+                            for ii in range(len(output[currkey])):
+                                output[currkey][ii] += float(items[ii+1])
+                        # Otherwise, add a new key to the output and create the columns
+                        else:
+                            output[currkey] = list(map(float, items[1:]))
+
+    # Get total number of files for calculating average
+    if rtype == "sum":
+       nfile = 1
+    elif rtype == "avg":
+       nfile = len(cases)
+    else:
+       raise ValueError(rtype + " operation no supported")
+    print "nfile:", nfile, selected_cases
+
+    # generate new case_id for outputtinging merged files
+    while True:
+        ocid = rand_cid()
+        run_dir = os.path.join(myapps[app].user_dir, user, app, ocid)
+        # check if this case exists or not, if it exists generate a new case id
+        if not os.path.exists(run_dir):
+            os.makedirs(run_dir)
+            break
+
+    # write a default input file b/c SPC requires a file in each job dir
+    myapps[app].params['case_id'] = ocid
+    myapps[app].write_params(myapps[app].params, user)
+
+    # Sort the output keys
+    skey = sorted(output.keys())
+    lines = list()
+    # Loop through sorted keys and print each averaged column to stdout
+    for key in skey:
+        outline = str(int(key))
+        for item in output[key]:
+            outline += ' ' + str("{0:.3e}".format(item/nfile,3))
+        lines.append(outline)
+
+    ofn = replace_tags(request.forms.file_pattern, {'cid': ocid})
+    with open(os.path.join(run_dir, ofn), 'w') as f:
+        f.writelines("%s\n" % l for l in lines)
+
+    # save case to DB
+    uid = users(user=user).id
+    desc = "merge " + rtype + " cases " + str(cases)
+    db.jobs.insert(uid=uid, app=app, cid=ocid, state='C', description=desc,
+                   time_submit=time.asctime(), np=config.np, priority=1)
+    db.commit()
+
+    return "merged file written to " + run_dir + "<meta http-equiv='refresh' content='2; url=/jobs'>"
+
 @post('/jobs/delete_selected_cases')
 def delete_jobs():
     user = authorized()
@@ -1523,12 +1602,11 @@ def plot_interface(pltid):
             dat = p.get_data(plotpath, col1, col2)
 
         if dat == -1:
-            return template('error', err="Could not read data file. " + \
-                                         "Is filename correct in datasource setup?")
+            stats = "ERROR: Could not read data file"
         elif dat == -2:
-            return template('error',
-                err="Data file exists but there was problems parsing its data. " + \
-                    "Are the column and line ranges setup properly?")
+            stats = "ERROR: file exists, but problem parsing data. Are column and line ranges setup properly?"
+        else:
+            stats = compute_stats(plotpath)
 
         # clean data
         #dat = [d.replace('?', '0') for d in dat]
@@ -1540,8 +1618,6 @@ def plot_interface(pltid):
             ticks = p.get_ticks(plotpath, col1, col2)
     #if not result:
     #    return template("error", err="need to specify at least one datasource")
-
-    stats = compute_stats(plotpath)
 
     desc = jobs(cid=c).description
 
