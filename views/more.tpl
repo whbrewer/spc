@@ -11,6 +11,8 @@
 
 %include('more_contents')
 
+<button style="position:fixed; bottom:200px; right:-5px" class="cd-top btn btn-primary" onclick="addLineNumbers()"><span class="glyphicon glyphicon-list"></span></button>
+
 <button style="position:fixed; bottom:145px; right:-5px" class="cd-top btn btn-primary" onclick="scrollToTop()"><span class="glyphicon glyphicon-menu-up"></span></button>
 
 <button style="position:fixed; bottom:100px; right:-5px" class="cd-top btn btn-primary" onclick="scrollToBottom()"><span class="glyphicon glyphicon-menu-down"></span></button>
@@ -38,6 +40,12 @@
 
 	function scrollDown() {
 		$('html, body').animate({scrollTop: '+=100'}, 500, 'linear');
+	}
+
+	function addLineNumbers() {
+		$('pre').html('<table>'+$.map($('pre').text().split('\n'), function(t, i){
+			return '<tr><td style="color:maroon">'+(i+1)+'</td><td>'+t+'</td></tr>';
+		}).join('')+'</table>');
 	}
 
 	$(document).ready(function(){
