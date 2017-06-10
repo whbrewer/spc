@@ -623,7 +623,7 @@ def aws_start(aid):
     a = aws_conn(aid)
     a.start()
     # takes a few seconds for the status to change on the Amazon end
-    time.sleep(10)
+    time.sleep(15)
 
 @delete('/aws/<aid>')
 def aws_stop(aid):
