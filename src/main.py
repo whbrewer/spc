@@ -7,6 +7,7 @@ import uuid, hashlib, shutil, string
 import random, subprocess, sys, os, re
 import cgi, urllib, urllib2, json, smtplib, time
 import pickle
+import traceback
 try:
     import requests
 except:
@@ -104,6 +105,8 @@ def confirm_form():
             resp = requests.post(config.remote_worker_url +'/execute', data=dict(request.forms), verify=False)
 
         except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print traceback.print_exception(exc_type, exc_value, exc_traceback)
             return template('error', err="failed to submit job to SPC worker. " + \
                 "Possible solutions: Is a container running? Is Python requests " + \
                 "package installed? (pip install requests)")
@@ -202,6 +205,8 @@ def execute():
         jid = sched.qsub(app, cid, uid, cmd, np, priority, walltime, desc)
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError, e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         print >> sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e }
         return template('error', params)
@@ -301,6 +306,8 @@ def output():
 
     except:
         params = { 'app': app, 'err': "Couldn't read input file. Check casename." }
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         return template('error', params)
 
 @get('/inputs')
@@ -328,6 +335,8 @@ def inputs():
         return template('more', params)
     except:
         params = { 'app': app, 'err': "Couldn't read input file. Check casename." }
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         return template('error', params)
 
 def compute_stats(path):
@@ -584,6 +593,8 @@ def del_instance(aid):
         db.commit()
         return "true"
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         return "false"
 
 def aws_conn(id):
@@ -622,6 +633,8 @@ def aws_status(aid):
             astatus['charge since last boot'] = a.charge(astatus['uptime'])
         return template('aws_status', params, astatus=astatus)
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         return template('error', err="There was a problem connecting to the AWS machine. Check the credentials and make sure the machine is running.")
 
 @post('/aws/<aid>')
@@ -666,6 +679,8 @@ def get_stats_mem():
         res['cpu'] = psutil.cpu_percent()
         return json.dumps(res)
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         pass
 
 @get('/account')
@@ -904,6 +919,8 @@ def show_app(app):
         params['apps'] = myapps
         return template(os.path.join(config.apps_dir, app),  params)
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         redirect('/app/'+app)
 
 @get('/login')
@@ -913,6 +930,8 @@ def get_login(referrer=''):
         return template('login', {'referrer': referrer,
                                   'oauth_client_id': config.oauth_client_id})
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         return template('login', {'referrer': referrer})
 
 @get('/logout')
@@ -922,6 +941,8 @@ def logout():
     try:
         return template('logout',  {'oauth_client_id': config.oauth_client_id})
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         redirect('/login')
 
 @get('/static/<filepath:path>')
@@ -976,6 +997,8 @@ def post_login():
         else:
             return err
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         return err
     # if referred to login from another page redirect to referring page
     referrer = request.forms.referrer
@@ -1061,6 +1084,8 @@ def post_register():
         try:
             config.default_priority
         except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print traceback.print_exception(exc_type, exc_value, exc_traceback)
             config.default_priority = 3
 
         # insert into database
@@ -1076,6 +1101,8 @@ def post_register():
             server.quit()
             redirect('/login')
         except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print traceback.print_exception(exc_type, exc_value, exc_traceback)
             redirect('/login')
     else:
         return "ERROR: there was a problem registering. Please try again...<p>" \
@@ -1188,6 +1215,8 @@ def load_apps():
             myapps[name].appid = appid
             myapps[name].input_format = input_format
         except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print traceback.print_exception(exc_type, exc_value, exc_traceback)
             print 'ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name, appid)
     default_app = name # simple soln - use last app read from DB
     return True
@@ -1244,6 +1273,8 @@ def delete_app(appid):
         else:
             return template("error", err="must be admin")
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         return template("error", err="failed to delete app... did the app load properly?")
 
     redirect("/apps")
@@ -1528,6 +1559,8 @@ def plot_interface(pltid):
             options = ''
         title = result['title']
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         redirect ('/plots/edit?app='+app+'&cid='+cid)
 
     # if plot not in DB return error
@@ -1570,6 +1603,8 @@ def plot_interface(pltid):
         try:
             datadef += r['data_def'] + ", "
         except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print traceback.print_exception(exc_type, exc_value, exc_traceback)
             datadef = ""
 
         # in addition to supporting input params, also support case id
@@ -1599,6 +1634,8 @@ def plot_interface(pltid):
                 line2 = int(line2str)
                 dat = p.get_data(plotpath, col1, col2, line1, line2)
             except: # if line2 not specified
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print traceback.print_exception(exc_type, exc_value, exc_traceback)
                 if num_fields == 2:
                     dat = p.get_data(plotpath, col1, col2, line1)
                 else: # single column of data
@@ -1758,6 +1795,8 @@ def zipget():
     try:
         worker = config.remote_worker_url
     except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         worker = request.query.url
 
     # if config.worker != "remote" or config.remote_worker_url is None:
@@ -1935,6 +1974,8 @@ def appconfig_exe(step="upload"):
             params = {'appname': appname, 'contents': contents}
             return template('appconfig/exe_test', params)
         except IOError:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print traceback.print_exception(exc_type, exc_value, exc_traceback)
             return "IOerror:", IOError
         else:
             return "ERROR: must be already a file"
@@ -2048,6 +2089,8 @@ def edit_inputs(step):
                       'input_format': input_format }
             return template('appconfig/inputs_parse', params)
         except IOError:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print traceback.print_exception(exc_type, exc_value, exc_traceback)
             return "IOerror:", IOError
         else:
             return "ERROR: must be already a file"
@@ -2161,8 +2204,12 @@ def authorized():
 
 def active_app():
     s = request.environ.get('beaker.session')
-    try: return s[APP_SESSION_KEY]
-    except: return ''
+    try:
+        return s[APP_SESSION_KEY]
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        return ''
 
 def set_active(app):
     # set a session variable to keep track of the current app
