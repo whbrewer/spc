@@ -32,11 +32,17 @@
             <form class="btn-group hidden-xs" action="/case" method="get">
                 <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
                 </span> Monitor</button>
+                % if defined('jid'):
+                   <input type="hidden" name="jid" value="{{jid}}">
+                % end
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
 
             <form class="btn-group" action="/plot/0" method="get">
+                % if defined('jid'):
+                   <input type="hidden" name="jid" value="{{jid}}">
+                % end
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
                 <button class="btn btn-default">
@@ -55,6 +61,9 @@
 
             <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
                 <button class="btn btn-default hidden-xs hidden-sm hidden-md"><span class="glyphicon glyphicon-file"></span> Output</button>
+                % if defined('jid'):
+                   <input type="hidden" name="jid" value="{{jid}}">
+                % end
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
@@ -89,6 +98,9 @@
                     <li>
                         <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
                             <button class="btn btn-default" style="width:200px"><span class="glyphicon glyphicon-file"></span> Output</button>
+                            % if defined('jid'):
+                               <input type="hidden" name="jid" value="{{jid}}">
+                            % end
                             <input type="hidden" name="cid" value="{{cid}}">
                             <input type="hidden" name="app" value="{{app}}">
                         </form>

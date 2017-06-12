@@ -253,6 +253,9 @@ def case():
         params = { 'cid': cid, 'app': app, 'jid': jid,
                    'user': user, 'fn': fn, 'description': desc, 'shared': shared,
                    'state': state, 'owner': owner }
+
+        if jid: params['jid'] = jid
+
         return template('case', params)
 
 @get('/output')
@@ -260,6 +263,9 @@ def output():
     user = authorized()
     app = request.query.app
     cid = request.query.cid
+    jid = request.query.jid
+    print "jid:", jid
+
 
     try:
         if re.search("/", cid):
@@ -287,13 +293,14 @@ def output():
         desc = jobs(cid=c).description
 
         params = { 'cid': cid, 'contents': output, 'app': app,
-                   'user': owner, 'fn': fn, 'description': desc }
+                   'user': owner, 'owner': owner, 'fn': fn, 'description': desc }
+
+        if jid: params['jid'] = jid
 
         return template('more', params)
 
     except:
         params = { 'app': app, 'err': "Couldn't read input file. Check casename." }
-
         return template('error', params)
 
 @get('/inputs')
@@ -1487,6 +1494,7 @@ def plot_interface(pltid):
     user = authorized()
     app = request.query.app
     cid = request.query.cid
+    jid = request.query.jid
     params = dict()
 
     if not cid:
@@ -1604,7 +1612,7 @@ def plot_interface(pltid):
         if dat == -1:
             stats = "ERROR: Could not read data file"
         elif dat == -2:
-            stats = "ERROR: file exists, but problem parsing data. Are column and line ranges setup properly?"
+            stats = "ERROR: file exists, but problem parsing data. Are column and line ranges setup properly? Is all the data there?"
         else:
             stats = compute_stats(plotpath)
 
@@ -1621,10 +1629,14 @@ def plot_interface(pltid):
 
     desc = jobs(cid=c).description
 
-    params = { 'cid': cid, 'pltid': pltid, 'data': data, 'app': app, 'user': user,
+    params = { 'cid': cid, 'pltid': pltid,
+               'data': data, 'app': app, 'user': user, 'owner': owner,
                'ticks': ticks, 'title': title, 'plotpath': plotpath,
                'rows': list_of_plots, 'options': options, 'datadef': datadef,
                'stats': stats, 'description': desc }
+
+    if jid: params['jid'] = jid
+
     return template(tfn, params)
 
 @get('/mpl/<pltid>')
