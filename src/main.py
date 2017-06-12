@@ -246,7 +246,7 @@ def case():
                    'sid': sid, 'user': user, 'fn': fn, 'state': state, 'owner': owner }
 
         if jid: params['jid'] = jid
-                   
+
         return template('case_public', params)
 
     else:
@@ -438,7 +438,14 @@ def show_jobs():
             else: # in the case of specific tag searching, e.g. app:mendel
                 key = query_array[0][0]
                 query = query_array[0][1]
-                if key == "cid":
+
+                if key == "user" and user == "admin":
+                    if query == "all":
+                        result = db().select(jobs.ALL)[:n]
+                    else:
+                        this_id = users(user=query).id
+                        result = db(jobs.uid==this_id).select(orderby=~jobs.id)[:n]
+                elif key == "cid":
                     result = db((jobs.uid==uid) & \
                         (db.jobs.cid.contains(query, case_sensitive=False))).select(orderby=~jobs.id)
                 elif key == "app":
@@ -490,7 +497,6 @@ def show_jobs():
 
         else:
             return template('error', err="search type not supported")
-
     else:
         result = db(jobs.uid==uid).select(orderby=~jobs.id)[:n]
 
