@@ -441,7 +441,7 @@ def show_jobs():
 
                 if key == "user" and user == "admin":
                     if query == "all":
-                        result = db().select(jobs.ALL)[:n]
+                        result = db().select(jobs.ALL, orderby=~jobs.id)[:n]
                     else:
                         this_id = users(user=query).id
                         result = db(jobs.uid==this_id).select(orderby=~jobs.id)[:n]
