@@ -755,6 +755,33 @@ def unshare_case():
     db.commit()
     redirect('/jobs')
 
+@get('/jobs/all')
+def get_all_jobs():
+    user = authorized()
+    if not user == "admin":
+        return template("error", err="must be admin to use this feature")
+    cid = request.query.cid
+    app = request.query.app or active_app()
+    n = request.query.n
+    if not n:
+        n = config.jobs_num_rows
+    else:
+        n = int(n)
+    # sort by descending order of jobs.id
+    result = db((db.jobs.uid==users.id)).select(orderby=~jobs.id)[:n]
+
+    # clear notifications
+    users(user=user).update_record(new_shared_jobs=0)
+    db.commit()
+
+    params = {}
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    params['n'] = n
+    params['num_rows'] = config.jobs_num_rows
+    return template('shared', params, rows=result)
+
 @get('/jobs/shared')
 def get_shared():
     """Return the records from the shared table."""
