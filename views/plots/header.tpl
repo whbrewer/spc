@@ -1,5 +1,5 @@
-<style> 
-    a {text-decoration: none} 
+<style>
+    a {text-decoration: none}
     .tickLabel  { font-size: 120% }
     .legend { font-size: 120% }
 </style>
@@ -19,10 +19,14 @@
                 %i = 0
                 %for row in rows:
                     % i += 1
-                    <li> <a style="text-decoration:none" href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}"><sup>{{i}}</sup> {{row['plots']['title']}}</a> </li>
+                    % if defined('jid'):
+                        <li> <a style="text-decoration:none" href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}&jid={{jid}}"><sup>{{i}}</sup> {{row['plots']['title']}}</a> </li>
+                    % else:
+                        <li> <a style="text-decoration:none" href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}"><sup>{{i}}</sup> {{row['plots']['title']}}</a> </li>
+                    % end
                 %end
-            </ul> 
-        </div>        
+            </ul>
+        </div>
     </div>
 
     <div class="row">
@@ -36,7 +40,3 @@
         </div>
     </div>
 </div>
-
-
-
-
