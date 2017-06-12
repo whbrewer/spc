@@ -231,7 +231,7 @@ def case():
     app = request.query.app
     set_active(app)
     cid = request.query.cid
-    jid = request.query.jid or -1
+    jid = request.query.jid
 
     # note: eventually need to merge the following two into one
     if re.search("/", cid):
@@ -242,8 +242,11 @@ def case():
         fn = os.path.join(run_dir, myapps[app].outfn)
         output = slurp_file(fn)
 
-        params = { 'cid': cid, 'app': app, 'jid': jid, 'contents': output,
+        params = { 'cid': cid, 'app': app, 'contents': output,
                    'sid': sid, 'user': user, 'fn': fn, 'state': state, 'owner': owner }
+
+        if jid: params['jid'] = jid
+                   
         return template('case_public', params)
 
     else:
