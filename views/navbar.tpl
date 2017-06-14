@@ -88,9 +88,7 @@
 </nav>
 
 <script>
-$(document).ready(function () {
-    window.onload = checkForNotifications()
-});
+window.addEventListener('load', checkForNotifications);
 
 function checkForNotifications() {
     $.get( "/notifications", function( data ) {
