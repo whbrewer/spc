@@ -948,7 +948,8 @@ def show_app(app):
     set_active(app)
     # parameters for return template
     try:
-        params = myapps[app].params
+        params = {}
+        params.update(myapps[app].params)
         params['cid'] = ''
         params['app'] = app
         params['user'] = user
