@@ -32,6 +32,7 @@ class Scheduler(object):
     def poll(self):
         """start polling thread which checks queue status every second"""
         t = threading.Thread(target = self.assignTask)
+        t.daemon = True
         t.start()
 
     def assignTask(self):
@@ -114,7 +115,7 @@ class Scheduler(object):
         self._set_state(jid,STATE_RUN)
         mycwd = os.getcwd()
         os.chdir(run_dir) # change to case directory
-        
+
         pro = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
         myjobs[jid] = pro
 
@@ -146,7 +147,7 @@ class Scheduler(object):
         db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
         rows = db(db.jobs.state==STATE_RUN).select()
         for row in rows:
-            if row: 
+            if row:
                 walltime = int(row.walltime)
                 time_submit = time.mktime(datetime.datetime.strptime(
                               row.time_submit, "%a %b %d %H:%M:%S %Y").timetuple())
@@ -161,7 +162,7 @@ class Scheduler(object):
     def stop(self,jid):
         p = myjobs.pop(long(jid),None)
         if p: os.killpg(os.getpgid(p.pid), signal.SIGTERM)
-        
+
         # the following doesn't work because it gets overwritten by line 128 above
         # need a way to feedback to start_job method whether job has been stopped or not
         # db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
