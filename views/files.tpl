@@ -36,20 +36,38 @@
         input.value = values;
       } else { // otherwise create a new hidden input element
         var theForm = document.getElementById("delete_modal");
-
         var input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'selected_files';
         input.id = 'selected_files';
         input.value = values;
         theForm.appendChild(input);
+      }
 
+      var input = document.getElementById("selected_files_zip")
+      if(input) { // if user has already checked some cases just modify the cases to be deleted
+        input.value = values;
+      } else { // otherwise create a new hidden input element
         // add selected files to Zip form
     	var theForm = document.getElementById("zipform");
         var input = document.createElement('input');
         input.type = 'hidden';
-        input.name = 'selected_files';
-        input.id = 'selected_files';
+        input.name = 'selected_files_zip';
+        input.id = 'selected_files_zip';
+        input.value = values;
+        theForm.appendChild(input);
+      }
+
+      var input = document.getElementById("selected_files_mod")
+      if(input) { // if user has already checked some cases just modify the cases to be deleted
+        input.value = values;
+      } else { // otherwise create a new hidden input element
+        // add selected files to Scale form
+    	var theForm = document.getElementById("modform");
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'selected_files_mod';
+        input.id = 'selected_files_mod';
         input.value = values;
         theForm.appendChild(input);
       }
@@ -73,13 +91,18 @@
 	</div>
 
 	<div class="btn-group col-xs-12 col-md-8" id="actions" style="display:none">
+
 	    <button id="delete_button" type="button" class="btn-group btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+
+        <button id="" type="button" class="btn-group btn btn-default" data-toggle="modal" data-target="#modModal"><span class="glyphicon glyphicon-scale"></span> Modify</button>
+
 	    <form id="zipform" class="btn-group" method="post" action="/files/zip_selected">
 	    	<input type="hidden" name="app" value="{{app}}">
 	    	<input type="hidden" name="cid" value="{{cid}}">
 	    	<input type="hidden" name="selected_files">
 	    	<button id="zip_button" type="submit" class="btn btn-warning"><span class="glyphicon glyphicon-compressed"></span> Zip</button>
 	    </form>
+
 	</div>
 
 </div>
@@ -132,6 +155,39 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-danger center-block">Delete</button>
+                    <input type="hidden" name="app" value="{{app}}"/>
+                    <input type="hidden" name="cid" value="{{cid}}"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modify Modal -->
+<div class="modal fade" id="modModal" tabindex="-1" role="dialog"
+     aria-labelledby="modModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="modform" class="form-horizontal" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Modify Selected Files?</h4>
+                </div>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <input type="text" name="factor" class="input-lg form-control" placeholder="factor, e.g. 1000" />
+                            <input type="text" name="column" class="input-lg form-control" placeholder="column, e.g. 5" />
+                        </div>
+                        <div class="btn-group col-xs-6">
+                            <button formaction="/files/modify/add" type="submit" class="btn btn-default"><font size="+2">&plus;</font></button>
+                            <button formaction="/files/modify/sub" type="submit" class="btn btn-default"><font size="+2">&minus;</font></button>
+                            <button formaction="/files/modify/mul" type="submit" class="btn btn-default"><font size="+2">&times;</font></button>
+                            <button formaction="/files/modify/div" type="submit" class="btn btn-default"><font size="+2">&divide;</font></button>
+                        </div>
+                    </div>
                     <input type="hidden" name="app" value="{{app}}"/>
                     <input type="hidden" name="cid" value="{{cid}}"/>
                 </div>

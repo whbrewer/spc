@@ -1426,6 +1426,48 @@ def delete_f():
             print "ERROR: not removing path:", path, "because cid missing"
     redirect("/files?cid="+cid+"&app="+app)
 
+@post('/files/modify/<operation>')
+def modify_selected_files(operation):
+    user = authorized()
+    app = request.forms.app
+    cid = request.forms.cid
+    factor = request.forms.factor or 1.0
+    factor = float(factor)
+    columns = request.forms.column or 2
+    col = int(columns)
+
+    import operator
+    ops = {'add': operator.add, 'sub': operator.sub,
+           'mul': operator.mul, 'div': operator.div}
+    op = ops[operation]
+
+    selected_files = request.forms.selected_files_mod
+    files = selected_files.rstrip(':').split(':')
+
+    for file in files:
+        print file
+        path = os.path.join(myapps[app].user_dir, user, app, cid, file)
+
+        out = list()
+        with open(path, "r") as infile:
+            # Loop over lines in each file
+            for line in infile:
+                line = str(line)
+                # Skip comment lines
+                if not re.search('^#', line):
+                    items = line.split()
+                    if len(items) > 0:
+                        # execute operation
+                        items[col-1] = str(op(float(items[col-1]), factor))
+                    out.append('\t'.join(items)+'\n')
+                else:
+                    out.append(line)
+
+        with open(path, "w") as outfile:
+            outfile.writelines(out)
+
+    redirect("/files?cid="+cid+"&app="+app)
+
 @post('/files/zip_selected')
 def zip_selected_files():
     user = authorized()
@@ -1433,7 +1475,7 @@ def zip_selected_files():
     app = request.forms.app
     cid = request.forms.cid
 
-    selected_files = request.forms.selected_files
+    selected_files = request.forms.selected_files_zip
     files = selected_files.rstrip(':').split(':')
 
     for file in files:
