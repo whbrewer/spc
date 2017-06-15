@@ -1435,7 +1435,6 @@ def modify_selected_files(operation):
     factor = float(factor)
     columns = request.forms.columns or 1
     cols = list(map(int, columns.split(':')))
-    print 'cols:', cols
 
     import operator
     ops = {'add': operator.add, 'sub': operator.sub,
@@ -1467,6 +1466,7 @@ def modify_selected_files(operation):
 
         with open(path, "w") as outfile:
             outfile.writelines(out)
+            outfile.write("# modifications to file: cols = " + str(cols) + ", operation = " + operation + ", factor = " + str(factor) + "\n") 
 
     redirect("/files?cid="+cid+"&app="+app)
 
