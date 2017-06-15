@@ -179,7 +179,7 @@
                     <div class="row">
                         <div class="col-xs-6">
                             <input type="text" name="factor" class="input-lg form-control" placeholder="factor, e.g. 1000" />
-                            <input type="text" name="column" class="input-lg form-control" placeholder="column, e.g. 5" />
+                            <input type="text" name="columns" class="input-lg form-control" placeholder="columns, e.g. 5:6" />
                         </div>
                         <div class="btn-group col-xs-6">
                             <button formaction="/files/modify/add" type="submit" class="btn btn-default"><font size="+2">&plus;</font></button>

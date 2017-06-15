@@ -1433,8 +1433,9 @@ def modify_selected_files(operation):
     cid = request.forms.cid
     factor = request.forms.factor or 1.0
     factor = float(factor)
-    columns = request.forms.column or 2
-    col = int(columns)
+    columns = request.forms.columns or 1
+    cols = list(map(int, columns.split(':')))
+    print 'cols:', cols
 
     import operator
     ops = {'add': operator.add, 'sub': operator.sub,
@@ -1457,8 +1458,9 @@ def modify_selected_files(operation):
                 if not re.search('^#', line):
                     items = line.split()
                     if len(items) > 0:
-                        # execute operation
-                        items[col-1] = str(op(float(items[col-1]), factor))
+                        # execute operation on user-specified columns
+                        for col in cols:
+                            items[col-1] = str(op(float(items[col-1]), factor))
                     out.append('\t'.join(items)+'\n')
                 else:
                     out.append(line)
