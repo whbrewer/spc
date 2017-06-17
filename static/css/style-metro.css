@@ -151,7 +151,7 @@ input:not([type=submit]):not([type=file]):not([type=reset]):not([readonly]) {
    background-color:#faffbd !important
 }
 
-input:read-only {
+input:read-only:not([type=submit]) {
     background-color: #dfdfdf !important;
     color: #888 !important
 }
