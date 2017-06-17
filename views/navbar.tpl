@@ -15,9 +15,9 @@
 
                         %if defined('app'):
                             %if app != '':
-                                <button data-step="6" data-intro="Click this at any time to start a new run..." type="submit" class="btn btn-success hidden-xs"
+                                <button data-step="6" data-intro="Click this at any time to start a new run..." type="submit" class="btn btn-warning hidden-xs"
                                         formaction="/start">
-                                    <span class="glyphicon glyphicon-play-circle"></span> Start </button>
+                                    <span class="glyphicon glyphicon-play-circle"></span> New Case</button>
                             %end
                         %end
                     </div>
