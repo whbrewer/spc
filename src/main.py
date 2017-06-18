@@ -967,8 +967,6 @@ def get_login(referrer=''):
         return template('login', {'referrer': referrer,
                                   'oauth_client_id': config.oauth_client_id})
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         return template('login', {'referrer': referrer})
 
 @get('/logout')
@@ -978,8 +976,6 @@ def logout():
     try:
         return template('logout',  {'oauth_client_id': config.oauth_client_id})
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
         redirect('/login')
 
 @get('/static/<filepath:path>')
@@ -1466,7 +1462,7 @@ def modify_selected_files(operation):
 
         with open(path, "w") as outfile:
             outfile.writelines(out)
-            outfile.write("# modifications to file: cols = " + str(cols) + ", operation = " + operation + ", factor = " + str(factor) + "\n") 
+            outfile.write("# modifications to file: cols = " + str(cols) + ", operation = " + operation + ", factor = " + str(factor) + "\n")
 
     redirect("/files?cid="+cid+"&app="+app)
 
