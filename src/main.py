@@ -1117,8 +1117,6 @@ def post_register():
         try:
             config.default_priority
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
             config.default_priority = 3
 
         # insert into database
@@ -1134,8 +1132,6 @@ def post_register():
             server.quit()
             redirect('/login')
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
             redirect('/login')
     else:
         return "ERROR: there was a problem registering. Please try again...<p>" \
@@ -1329,7 +1325,12 @@ def view_app(app):
     #if request.query.edit:
     #    return template('appedit', params, rows=result)
     #else:
-    return template('app', params, rows=result)
+    try:
+        return template('app', params, rows=result)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        return template('error', err="there was a problem with the template. Check traceback.")
 
 @get('/start')
 def getstart():
@@ -1362,7 +1363,12 @@ def getstart():
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
-    return template('apps/' + myapps[app].appname, params)
+    try:
+        return template('apps/' + myapps[app].appname, params)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        return template('error', err="there was a problem with the template. Check traceback.")
 
 @get('/files')
 def list_files():
