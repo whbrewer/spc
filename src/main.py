@@ -1835,8 +1835,9 @@ def matplotlib(pltid):
     canvas.print_png(png_output)
 
     # save file
-    if not os.path.exists(config.tmp_dir):
-        os.makedirs(config.tmp_dir)
+    tmp_dir = "static/tmp"
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir)
     fn = title+'.png'
     fig.set_size_inches(7, 4)
     img_path = os.path.join(sim_dir, fn)
