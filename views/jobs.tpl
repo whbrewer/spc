@@ -9,10 +9,6 @@
   }
 </style>
 
-<script>
-
-</script>
-
 <body>
 %include('navbar')
 
