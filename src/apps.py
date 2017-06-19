@@ -13,7 +13,7 @@ from model import *
 # using convention over configuration
 # the executable is the name of the app
 # and the input file is the name of the app + '.in'
-apps_dir = config.apps_dir
+apps_dir = 'apps'
 user_dir = config.user_dir
 
 def is_number(value):
@@ -45,7 +45,7 @@ class App(object):
         if del_files:
             # delete app directory
             if not self.appname == '':
-                path = os.path.join(config.apps_dir,self.appname)
+                path = os.path.join(apps_dir,self.appname)
                 print "deleting app dir:", path
                 if os.path.isdir(path):
                    shutil.rmtree(path)

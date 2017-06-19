@@ -2,6 +2,7 @@
 import sys, os, shutil, urllib2, time
 if os.path.exists("src/config.py"):
     from src import config, migrate
+from src import apps as appmod
 import xml.etree.ElementTree as ET
 import hashlib, re
 
@@ -202,7 +203,6 @@ if __name__ == "__main__":
     elif (sys.argv[1] == "uninstall"):
         install_usage = "usage: spc uninstall appname"
         if len(sys.argv) == 3:
-            from src import apps as appmod
             app = sys.argv[2]
             a = appmod.App(app)
             # connect to db
@@ -273,7 +273,7 @@ if __name__ == "__main__":
 
             # get name of app from json data
             app = parsed['name']
-            app_path = config.apps_dir + os.sep + app
+            app_path = appmod.apps_dir + os.sep + app
 
             # move directory to apps folder
             shutil.move(app_dir_name,app_path)
@@ -289,12 +289,12 @@ if __name__ == "__main__":
                 sys.exit()
 
             # copy tpl file to views/apps folder
-            src = config.apps_dir + os.sep + app + os.sep + app + '.tpl'
+            src = appmod.apps_dir + os.sep + app + os.sep + app + '.tpl'
             dst = 'views' + os.sep + 'apps'
             shutil.copy(src,dst)
 
             # turn on executable bit
-            path = os.path.join(config.apps_dir, app, app)
+            path = os.path.join(appmod.apps_dir, app, app)
             if os.path.exists(path): os.chmod(path, 0700)
 
             # add app to database
@@ -320,7 +320,7 @@ if __name__ == "__main__":
             dst = 'static' + os.sep + 'apps' + os.sep + app
             if 'assets' in parsed.keys():
                 for asset in parsed['assets']:
-                    src = os.path.join(config.apps_dir, app, asset)
+                    src = os.path.join(appmod.apps_dir, app, asset)
                     shutil.copy(src, dst)
 
             # add plots and datasources to db
@@ -373,7 +373,7 @@ if __name__ == "__main__":
         usage = "usage: spc update appname"
         if len(sys.argv) == 3:
             app = sys.argv[2]
-            app_path = config.apps_dir + os.sep + app
+            app_path = appmod.apps_dir + os.sep + app
 
             # check if directory exists
             if not os.path.isdir(app_path):

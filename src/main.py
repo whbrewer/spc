@@ -995,7 +995,7 @@ def show_app(app):
         params['app'] = app
         params['user'] = user
         params['apps'] = myapps
-        return template(os.path.join(config.apps_dir, app),  params)
+        return template(os.path.join(appmod.apps_dir, app),  params)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
@@ -2002,14 +2002,14 @@ def appconfig_status():
 
     # check inputs file
     extension = {'namelist': '.in', 'ini': '.ini', 'xml': '.xml', 'json': '.json', 'yaml': '.yaml'}
-    if os.path.exists(os.path.join(config.apps_dir, app,
+    if os.path.exists(os.path.join(appmod.apps_dir, app,
                       app + extension[myapps[app].input_format])):
         status['inputs'] = 1
     else:
         status['inputs'] = 0
 
     # check app binary
-    if os.path.exists(os.path.join(config.apps_dir, app, app)):
+    if os.path.exists(os.path.join(appmod.apps_dir, app, app)):
         status['binary'] = 1
     else:
         status['binary'] = 0
@@ -2116,7 +2116,7 @@ def export():
 
         data['plots'].append(thisplot)
 
-    path = os.path.join(config.apps_dir, app, 'spc.json')
+    path = os.path.join(appmod.apps_dir, app, 'spc.json')
     with open(path, 'w') as outfile:
         json.dump(data, outfile, indent=3)
 
@@ -2168,7 +2168,7 @@ def edit_inputs(step):
                 fn = appname + ".yaml"
             else:
                 return "ERROR: input_format not valid: ", input_format
-            path = os.path.join(config.apps_dir, appname, fn)
+            path = os.path.join(appmod.apps_dir, appname, fn)
             # cgi.escape converts HTML chars like > to entities &gt;
             contents = cgi.escape(slurp_file(path))
             params = {'fn': fn, 'contents': contents, 'appname': appname,
@@ -2216,7 +2216,7 @@ def edit_inputs(step):
 # which one to use
 #@get('/upload_contents/<appname>/<fn>')
 #def select_input_file(appname, fn):
-#    path = os.path.join(config.apps_dir, appname, fn)
+#    path = os.path.join(appmod.apps_dir, appname, fn)
 #    params = {'fn': fn, 'contents': slurp_file(path), 'appname': appname }
 #    return template('appconfig/step3', params)
 
