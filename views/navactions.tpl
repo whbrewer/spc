@@ -5,9 +5,9 @@
 
     <div class="col-xs-12">
         <div class="btn-group">
-            <form class="btn-group" action="/start" method="get">
+            <form class="btn-group" action="/jobs/new" method="get">
                 <button class="btn btn-success">
-                    <span class="glyphicon glyphicon-repeat"></span> Restart
+                    <span class="glyphicon glyphicon-repeat"></span> Rerun
                 </button>
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">

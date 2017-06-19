@@ -512,6 +512,44 @@ def show_jobs():
     params['num_rows'] = config.jobs_num_rows
     return template('jobs', params, rows=result)
 
+@get('/jobs/new')
+def start_new_job():
+    user = authorized()
+    app = request.query.app or active_app()
+
+    if app: set_active(app)
+    else: redirect('/myapps')
+
+    if config.auth and not authorized(): redirect('/login')
+    if myapps[app].appname not in myapps: redirect('/apps')
+    cid = request.query.cid
+    if re.search("/", cid):
+        owner, cid = cid.split("/")
+    else:
+        owner = user
+
+    # read default params... this ensures no 500 error when restarting
+    # in case params are missing
+    params = myapps[app].params
+
+    # if restarting from old case
+    if re.search("[a-z]", cid):
+        params, _, _ = myapps[app].read_params(owner, cid)
+        if user == owner:
+            params['tags'] = cid
+        else:
+            params['tags'] = os.path.join(owner, cid)
+
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    try:
+        return template('apps/' + myapps[app].appname, params)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        return template('error', err="there was a problem with the template. Check traceback.")
+
 @get('/jobs/diff')
 def diff_jobs():
     user = authorized()
@@ -1327,44 +1365,6 @@ def view_app(app):
     #else:
     try:
         return template('app', params, rows=result)
-    except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        return template('error', err="there was a problem with the template. Check traceback.")
-
-@get('/start')
-def getstart():
-    user = authorized()
-    app = request.query.app or active_app()
-
-    if app: set_active(app)
-    else: redirect('/myapps')
-
-    if config.auth and not authorized(): redirect('/login')
-    if myapps[app].appname not in myapps: redirect('/apps')
-    cid = request.query.cid
-    if re.search("/", cid):
-        owner, cid = cid.split("/")
-    else:
-        owner = user
-
-    # read default params... this ensures no 500 error when restarting
-    # in case params are missing
-    params = myapps[app].params
-
-    # if restarting from old case
-    if re.search("[a-z]", cid):
-        params, _, _ = myapps[app].read_params(owner, cid)
-        if user == owner:
-            params['tags'] = cid
-        else:
-            params['tags'] = os.path.join(owner, cid)
-
-    params['cid'] = cid
-    params['app'] = app
-    params['user'] = user
-    try:
-        return template('apps/' + myapps[app].appname, params)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)

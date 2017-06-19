@@ -16,8 +16,8 @@
                         %if defined('app'):
                             %if app != '':
                                 <button data-step="6" data-intro="Click this at any time to start a new run..." type="submit" class="btn btn-warning hidden-xs"
-                                        formaction="/start">
-                                    <span class="glyphicon glyphicon-play-circle"></span> New Case</button>
+                                        formaction="/jobs/new">
+                                    <span class="glyphicon glyphicon-play-circle"></span> New Job</button>
                             %end
                         %end
                     </div>
