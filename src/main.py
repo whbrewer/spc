@@ -451,6 +451,8 @@ def show_jobs():
                         (db.jobs.cid.contains(query, case_sensitive=False))).select(orderby=~jobs.id)
                 elif key == "app":
                     result = db((jobs.uid==uid) & (jobs.app==query)).select(orderby=~jobs.id)
+                elif key =="np":
+                    result = db((jobs.uid==uid) & (jobs.np==query)).select(orderby=~jobs.id)
                 elif key == "is":
                     if query == "starred":
                         result = db((jobs.uid==uid) & (jobs.starred=="True")).select(
