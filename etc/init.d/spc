@@ -11,6 +11,8 @@
 # instructions: copy this file to /etc/init.d on Redhat/Fedora/CentOS/SuSE/Amazon machines
 # run the following command to auto-start on boot: sudo chkconfig --add spc
 
+# NOTE: it's much easier to use Upstart than this file.  See the file in etc/init/spc.conf
+
 # Source function library.
 . /etc/init.d/functions
 
