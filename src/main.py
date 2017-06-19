@@ -985,6 +985,9 @@ def show_app(app):
     user = authorized()
     set_active(app)
     # parameters for return template
+    if app not in myapps:
+        return template('error', err="app %s is not installed" % (app))
+
     try:
         params = {}
         params.update(myapps[app].params)
@@ -1368,7 +1371,7 @@ def view_app(app):
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        return template('error', err="there was a problem with the template. Check traceback.")
+        return template('error', err="there was a problem showing the app template. Check traceback.")
 
 @get('/files')
 def list_files():
