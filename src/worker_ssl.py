@@ -1,15 +1,15 @@
 # This is an SSL worker for submitting jobs remotely
-# with some code borrowed from: 
+# with some code borrowed from:
 # https://github.com/nickbabcock/bottle-ssl/blob/master/main.py
 
 # to use this must install the following package using apt-get or yum:
 #   python-dev
 #   libssl-dev
 #   libffi-dev
- 
+
 # Also, must install the following using pip or easy_install:
-#   cherrypy 
-#   pyOpenSSL 
+#   cherrypy
+#   pyOpenSSL
 
 from bottle import Bottle, template, static_file, request, redirect, response, app, get, post, run, ServerAdapter
 from cherrypy import wsgiserver
@@ -22,6 +22,7 @@ import scheduler_sp
 import pickle, re
 from model import *
 from common import *
+from user_data import user_dir
 
 ssl_cert = "/etc/apache2/ssl/ssl.crt"
 ssl_key = "/etc/apache2/ssl/private.key"
@@ -56,7 +57,7 @@ def get_status(jid):
 def listfiles():
     app = request.forms['app']
     user = request.forms['user']
-    cid = request.forms['cid']    
+    cid = request.forms['cid']
     return listdir(mypath)
 
 @post('/execute')
@@ -69,7 +70,7 @@ def execute():
     appmod = pickle.loads(request.forms['appmod'])
     # remove the appmod key
     del request.forms['appmod']
-    
+
     appmod.write_params(request.forms, user)
 
     # if preprocess is set run the preprocessor
@@ -101,14 +102,14 @@ def output():
     app = request.query.app
     cid = request.query.cid
     user = request.query.user
-    
+
     try:
         if re.search("/", cid):
             (u, c) = cid.split("/")
         else:
             u = user
             c = cid
-        run_dir = os.path.join(config.user_dir, u, app, c)
+        run_dir = os.path.join(user_dir, u, app, c)
         fn = os.path.join(run_dir, app + '.out')
         output = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
@@ -131,7 +132,7 @@ def zipcase():
     app = request.query.app
     cid = request.query.cid
     user = request.query.user
-    base_dir = os.path.join(config.user_dir, user, app)
+    base_dir = os.path.join(user_dir, user, app)
     path = os.path.join(base_dir, cid+".zip")
 
     zf = zipfile.ZipFile(path, mode='w')

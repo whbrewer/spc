@@ -19,6 +19,7 @@ import scheduler
 import apps as appmod
 import plots as plotmod
 from datetime import datetime, timedelta
+import user_data
 
 # requires boto
 try:
@@ -52,7 +53,7 @@ NOAUTH_USER = 'guest'
 session_opts = {
     'session.type': 'file',
     'session.cookie_expires': True, # delete cookies when browser closed
-    'session.data_dir': config.user_dir,
+    'session.data_dir': user_data.user_dir,
     'session.auto': True
 }
 
@@ -1198,7 +1199,7 @@ def admin_delete_user():
         return template("error", err="can't delete admin user")
 
     if request.forms.del_files == "True":
-        path = os.path.join(config.user_dir, users(uid).user)
+        path = os.path.join(user_data.user_dir, users(uid).user)
         print "deleting files in path:", path
         if os.path.isdir(path): shutil.rmtree(path)
 
@@ -1896,7 +1897,7 @@ def zipget():
     requests.get(worker + "/zipcase",
          params={'app': app, 'cid': cid, 'user': user})
 
-    path = os.path.join(config.user_dir, user, app, cid)
+    path = os.path.join(user_data.user_dir, user, app, cid)
     file_path = path+".zip"
     url = os.path.join(worker, file_path)
 
@@ -2237,7 +2238,7 @@ def upload_file():
     #if ext not in ('.zip','.txt'):
     #    return template('error', err="file extension not allowed")
     #try:
-    save_path_dir = os.path.join(config.user_dir, user, config.upload_dir)
+    save_path_dir = os.path.join(user_data.user_dir, user, config.upload_dir)
     if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
     save_path = os.path.join(save_path_dir, upload.filename)
     if os.path.isfile(save_path):
@@ -2250,7 +2251,7 @@ def upload_file():
 @post('/upload_data')
 def upload_data():
     user = authorized()
-    save_path_dir = os.path.join(config.user_dir, user, config.upload_dir)
+    save_path_dir = os.path.join(appmod.user_dir, user, config.upload_dir)
     if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
     filename = request.forms.filename
     # print "filename:", filename

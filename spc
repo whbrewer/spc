@@ -47,8 +47,6 @@ def create_config_file():
             f.write("dbdir = 'db'\n")
             f.write("uri = 'sqlite://'+db\n")
             f.write("\n# DIRECTORIES\n")
-            f.write("apps_dir = 'apps'\n")
-            f.write("user_dir = 'user_data'\n")
             f.write("upload_dir = '_uploads'\n")
             f.write("tmp_dir = 'static/tmp'\n")
             f.write("mpirun = '/usr/local/bin/mpirun'\n")

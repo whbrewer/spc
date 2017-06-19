@@ -5,6 +5,7 @@ import scheduler_sp
 import pickle, re
 from model import *
 from common import *
+from user_data import user_dir
 
 sched = scheduler_sp.Scheduler()
 
@@ -40,7 +41,7 @@ def get_status(jid):
 def listfiles():
     app = request.forms['app']
     user = request.forms['user']
-    cid = request.forms['cid']    
+    cid = request.forms['cid']
     return listdir(mypath)
 
 @post('/execute')
@@ -53,7 +54,7 @@ def execute():
     appmod = pickle.loads(request.forms['appmod'])
     # remove the appmod key
     del request.forms['appmod']
-    
+
     appmod.write_params(request.forms, user)
 
     # if preprocess is set run the preprocessor
@@ -85,14 +86,14 @@ def output():
     app = request.query.app
     cid = request.query.cid
     user = request.query.user
-    
+
     try:
         if re.search("/", cid):
             (u, c) = cid.split("/")
         else:
             u = user
             c = cid
-        run_dir = os.path.join(config.user_dir, u, app, c)
+        run_dir = os.path.join(user_dir, u, app, c)
         fn = os.path.join(run_dir, app + '.out')
         output = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
@@ -115,7 +116,7 @@ def zipcase():
     app = request.query.app
     cid = request.query.cid
     user = request.query.user
-    base_dir = os.path.join(config.user_dir, user, app)
+    base_dir = os.path.join(user_dir, user, app)
     path = os.path.join(base_dir, cid+".zip")
 
     zf = zipfile.ZipFile(path, mode='w')

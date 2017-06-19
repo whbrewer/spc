@@ -9,12 +9,13 @@ except ImportError:
 import xml.etree.ElementTree as ET
 from gluino import DAL, Field
 from model import *
+import user_data
 
 # using convention over configuration
 # the executable is the name of the app
 # and the input file is the name of the app + '.in'
 apps_dir = 'apps'
-user_dir = config.user_dir
+user_dir = user_data.user_dir
 
 def is_number(value):
   try:

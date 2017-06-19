@@ -5,6 +5,7 @@ from multiprocessing import Process, BoundedSemaphore, Lock, Manager
 import subprocess, signal
 from gluino import DAL, Field
 import datetime
+from user_data import user_dir
 
 STATE_RUN = 'R'
 STATE_QUEUED = 'Q'
@@ -98,7 +99,7 @@ class Scheduler(object):
         outfn = app + ".out"
         cmd = command + ' > ' + outfn + ' 2>&1 '
 
-        run_dir = os.path.join(config.user_dir,user,app,cid)
+        run_dir = os.path.join(user_dir, user, app, cid)
 
         # if number procs available fork new process with command
         for i in range(np):
