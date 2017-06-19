@@ -19,7 +19,7 @@ import scheduler
 import apps as appmod
 import plots as plotmod
 from datetime import datetime, timedelta
-import user_data
+from user_data import user_dir
 
 # requires boto
 try:
@@ -53,7 +53,7 @@ NOAUTH_USER = 'guest'
 session_opts = {
     'session.type': 'file',
     'session.cookie_expires': True, # delete cookies when browser closed
-    'session.data_dir': user_data.user_dir,
+    'session.data_dir': user_dir,
     'session.auto': True
 }
 
@@ -79,7 +79,7 @@ def confirm_form():
     # cid = random.choice(string.ascii_lowercase) + str(uuid.uuid4())[:5]
     while True:
         cid = rand_cid()
-        run_dir = os.path.join(myapps[app].user_dir, user, app, cid)
+        run_dir = os.path.join(user_dir, user, app, cid)
         # check if this case exists or not, if it exists generate a new case id
         if not os.path.isdir(run_dir): break
 
@@ -123,7 +123,7 @@ def confirm_form():
 
     else:
 
-        run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
+        run_dir = os.path.join(user_dir, user, myapps[app].appname, cid)
         fn = os.path.join(run_dir, myapps[app].simfn)
 
         # this app-specific code should be removed in future
@@ -166,7 +166,7 @@ def execute():
     desc = request.forms.desc
     #priority = request.forms.priority
     params = {}
-    base_dir = os.path.join(myapps[app].user_dir, user, app, cid)
+    base_dir = os.path.join(user_dir, user, app, cid)
 
     inputs, _, _ = myapps[app].read_params(user, cid)
     # in addition to supporting input params, also support case id
@@ -239,7 +239,7 @@ def case():
         (owner, c) = cid.split("/")
         state = jobs(cid=c).state
         sid = request.query.sid # id of item in shared
-        run_dir = os.path.join(myapps[app].user_dir, owner, myapps[app].appname, c)
+        run_dir = os.path.join(user_dir, owner, myapps[app].appname, c)
         fn = os.path.join(run_dir, myapps[app].outfn)
         output = slurp_file(fn)
 
@@ -253,7 +253,7 @@ def case():
     else:
         owner = user
         state = jobs(cid=cid).state
-        run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
+        run_dir = os.path.join(user_dir, user, myapps[app].appname, cid)
         fn = os.path.join(run_dir, myapps[app].outfn)
         result = db(jobs.cid==cid).select().first()
         desc = result['description']
@@ -283,7 +283,7 @@ def output():
             owner = user
             c = cid
 
-        run_dir = os.path.join(myapps[app].user_dir, owner, myapps[app].appname, c)
+        run_dir = os.path.join(user_dir, owner, myapps[app].appname, c)
         fn = os.path.join(run_dir, myapps[app].outfn)
 
         if config.worker == 'remote':
@@ -325,7 +325,7 @@ def inputs():
         else:
             owner = user
             c = cid
-        run_dir = os.path.join(myapps[app].user_dir, owner, myapps[app].appname, c)
+        run_dir = os.path.join(user_dir, owner, myapps[app].appname, c)
         fn = os.path.join(run_dir, myapps[app].simfn)
         inputs = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
@@ -374,7 +374,7 @@ def tail(app, cid):
         xoutput = myoutput
         ofn = 'remote'
     else:
-        run_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname, cid)
+        run_dir = os.path.join(user_dir, user, myapps[app].appname, cid)
         ofn = os.path.join(run_dir, myapps[app].outfn)
         if os.path.exists(ofn):
             f = open(ofn,'r')
@@ -565,7 +565,7 @@ def diff_jobs():
         cid = jobs(jid).cid
         cids.append(cid)
         app = jobs(jid).app
-        base_dir = os.path.join(myapps[app].user_dir, user, myapps[app].appname)
+        base_dir = os.path.join(user_dir, user, myapps[app].appname)
         fn = os.path.join(base_dir, cid, myapps[app].simfn)
         content = slurp_file(fn).splitlines(1)
         contents.append(content)
@@ -860,7 +860,7 @@ def delete_job(jid):
         return template("error", err="only possible to delete cases that you own")
 
     if state != "R":
-        path = os.path.join(myapps[app].user_dir, user, app, cid)
+        path = os.path.join(user_dir, user, app, cid)
         if os.path.isdir(path): shutil.rmtree(path)
         sched.stop(jid)
         sched.qdel(jid)
@@ -882,7 +882,7 @@ def merge(rtype):
         cases.append(cid)
         relpath = os.path.join(app, cid)
         fn = replace_tags(request.forms.file_pattern, {'cid': cid})
-        path = os.path.join(myapps[app].user_dir, user, app, cid, fn)
+        path = os.path.join(user_dir, user, app, cid, fn)
 
         with open(path, "r") as infile:
             # Loop over lines in each file
@@ -914,7 +914,7 @@ def merge(rtype):
     # generate new case_id for outputtinging merged files
     while True:
         ocid = rand_cid()
-        run_dir = os.path.join(myapps[app].user_dir, user, app, ocid)
+        run_dir = os.path.join(user_dir, user, app, ocid)
         # check if this case exists or not, if it exists generate a new case id
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)
@@ -955,7 +955,7 @@ def delete_jobs():
     for jid in cases:
         cid = jobs(id=jid).cid
         app = jobs(id=jid).app
-        path = os.path.join(myapps[app].user_dir, user, app, cid)
+        path = os.path.join(user_dir, user, app, cid)
         if cid is not None:
             print "removing path:", path
             if os.path.isdir(path): shutil.rmtree(path)
@@ -1199,7 +1199,7 @@ def admin_delete_user():
         return template("error", err="can't delete admin user")
 
     if request.forms.del_files == "True":
-        path = os.path.join(user_data.user_dir, users(uid).user)
+        path = os.path.join(user_dir, users(uid).user)
         print "deleting files in path:", path
         if os.path.isdir(path): shutil.rmtree(path)
 
@@ -1395,7 +1395,7 @@ def list_files():
     else:
         owner = user
     if not path:
-        path = os.path.join(myapps[app].user_dir, owner, app, cid)
+        path = os.path.join(user_dir, owner, app, cid)
 
     params['path'] = path
     if q:
@@ -1420,7 +1420,7 @@ def delete_f():
     selected_files = request.forms.selected_files
     files = selected_files.rstrip(':').split(':')
     for file in files:
-        path = os.path.join(myapps[app].user_dir, user, app, cid, file)
+        path = os.path.join(user_dir, user, app, cid, file)
         if cid is not None:
             if os.path.isfile(path):
                 print "removing file:", path
@@ -1452,7 +1452,7 @@ def modify_selected_files(operation):
 
     for file in files:
         print file
-        path = os.path.join(myapps[app].user_dir, user, app, cid, file)
+        path = os.path.join(user_dir, user, app, cid, file)
 
         out = list()
         with open(path, "r") as infile:
@@ -1487,7 +1487,7 @@ def zip_selected_files():
     files = selected_files.rstrip(':').split(':')
 
     for file in files:
-        path = os.path.join(myapps[app].user_dir, user, app, cid, file)
+        path = os.path.join(user_dir, user, app, cid, file)
         print "attempting to zip:", path
         zf = zipfile.ZipFile(path+".zip", mode='w', compression=zipfile.ZIP_DEFLATED)
         zf.write(path)
@@ -1626,7 +1626,7 @@ def plot_interface(pltid):
         c = cid
 
     inputs, _, _ = myapps[app].read_params(owner, c)
-    sim_dir = os.path.join(myapps[app].user_dir, owner, app, c)
+    sim_dir = os.path.join(user_dir, owner, app, c)
 
     # use pltid of 0 to trigger finding the first pltid for the current app
     if int(pltid) == 0:
@@ -1815,7 +1815,7 @@ def matplotlib(pltid):
             line2 = int(line2str)
 
     plotfn = re.sub(r"<cid>", cid, plotfn)
-    sim_dir = os.path.join(myapps[app].user_dir, user, app, cid)
+    sim_dir = os.path.join(user_dir, user, app, cid)
     plotpath = os.path.join(sim_dir, plotfn)
     xx = p.get_column_of_data(plotpath, col1)
     yy = p.get_column_of_data(plotpath, col2)
@@ -1860,7 +1860,7 @@ def zip_case():
     app = request.query.app
     cid = request.query.cid
 
-    base_dir = os.path.join(myapps[app].user_dir, user, app)
+    base_dir = os.path.join(user_dir, user, app)
     path = os.path.join(base_dir, cid+".zip")
     zf = zipfile.ZipFile(path, mode='w', compression=zipfile.ZIP_DEFLATED)
     sim_dir = os.path.join(base_dir, cid)
@@ -1897,7 +1897,7 @@ def zipget():
     requests.get(worker + "/zipcase",
          params={'app': app, 'cid': cid, 'user': user})
 
-    path = os.path.join(user_data.user_dir, user, app, cid)
+    path = os.path.join(user_dir, user, app, cid)
     file_path = path+".zip"
     url = os.path.join(worker, file_path)
 
@@ -2238,7 +2238,7 @@ def upload_file():
     #if ext not in ('.zip','.txt'):
     #    return template('error', err="file extension not allowed")
     #try:
-    save_path_dir = os.path.join(user_data.user_dir, user, config.upload_dir)
+    save_path_dir = os.path.join(user_dir, user, config.upload_dir)
     if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
     save_path = os.path.join(save_path_dir, upload.filename)
     if os.path.isfile(save_path):
@@ -2251,7 +2251,7 @@ def upload_file():
 @post('/upload_data')
 def upload_data():
     user = authorized()
-    save_path_dir = os.path.join(appmod.user_dir, user, config.upload_dir)
+    save_path_dir = os.path.join(user_dir, user, config.upload_dir)
     if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
     filename = request.forms.filename
     # print "filename:", filename

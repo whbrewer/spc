@@ -9,13 +9,12 @@ except ImportError:
 import xml.etree.ElementTree as ET
 from gluino import DAL, Field
 from model import *
-import user_data
+from user_data import user_dir
 
 # using convention over configuration
 # the executable is the name of the app
 # and the input file is the name of the app + '.in'
 apps_dir = 'apps'
-user_dir = user_data.user_dir
 
 def is_number(value):
   try:
@@ -190,7 +189,6 @@ class Namelist(App):
         self.appdir = os.path.join(apps_dir,appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.in'
-        self.user_dir = user_dir
         self.preprocess = preprocess
         self.postprocess = postprocess
         self.params, self.blockmap, self.blockorder = self.read_params()
@@ -200,7 +198,7 @@ class Namelist(App):
         '''write the input file needed for the simulation'''
 
         cid = form_params['case_id']
-        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
+        sim_dir=os.path.join(user_dir, user, self.appname, cid)
 
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
@@ -250,7 +248,7 @@ class Namelist(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(self.user_dir,user,self.appname,cid)
+            fn = os.path.join(user_dir, user, self.appname, cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
         params = dict()   # a dictionary of parameter keys and default values
@@ -289,7 +287,6 @@ class INI(App):
         self.appdir = os.path.join(apps_dir,appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.ini'
-        self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = os.path.join(apps_dir,self.appname,self.appname)
         self.preprocess = preprocess
@@ -300,7 +297,7 @@ class INI(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(self.user_dir,user,self.appname,cid)
+            fn = os.path.join(user_dir, user, self.appname, cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
 
@@ -335,7 +332,7 @@ class INI(App):
     def write_params(self,form_params,user):
         Config = ConfigParser.ConfigParser()
         cid = form_params['case_id']
-        sim_dir = os.path.join(self.user_dir,user,self.appname,cid)
+        sim_dir = os.path.join(user_dir, user, self.appname, cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
@@ -371,7 +368,6 @@ class XML(App):
         self.simfn = appname + '.xml'
         self.preprocess = preprocess
         self.postprocess = postprocess
-        self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = os.path.join(apps_dir,self.appname,self.appname)
 
@@ -380,7 +376,7 @@ class XML(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(self.user_dir,user,self.appname,cid)
+            fn = os.path.join(user_dir, user, self.appname, cid)
 
         # append name of input file to end of string
         fn += os.sep + self.simfn
@@ -421,7 +417,7 @@ class XML(App):
     def write_params(self,form_params,user):
         """Write parameters to file."""
         cid = form_params['case_id']
-        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
+        sim_dir=os.path.join(user_dir, user, self.appname, cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
@@ -449,7 +445,6 @@ class JSON(App):
         self.simfn = appname + '.json'
         self.preprocess = preprocess
         self.postprocess = postprocess
-        self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = os.path.join(apps_dir,self.appname,self.appname)
 
@@ -458,7 +453,7 @@ class JSON(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(self.user_dir,user,self.appname,cid)
+            fn = os.path.join(user_dir, user, self.appname, cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
 
@@ -494,7 +489,7 @@ class JSON(App):
     def write_params(self,form_params,user):
         """Write parameters to the JSON file."""
         cid = form_params['case_id']
-        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
+        sim_dir=os.path.join(user_dir, user, self.appname, cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
@@ -527,7 +522,6 @@ class YAML(App):
         self.simfn = appname + '.yaml'
         self.preprocess = preprocess
         self.postprocess = postprocess
-        self.user_dir = user_dir
         self.params, self.blockmap, self.blockorder = self.read_params()
         self.exe = os.path.join(apps_dir,self.appname,self.appname)
 
@@ -536,7 +530,7 @@ class YAML(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(self.user_dir,user,self.appname,cid)
+            fn = os.path.join(user_dir, user, self.appname, cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
 
@@ -600,7 +594,7 @@ class YAML(App):
     def write_params(self,form_params,user):
         """Write parameters to the YAML file."""
         cid = form_params['case_id']
-        sim_dir=os.path.join(self.user_dir,user,self.appname,cid)
+        sim_dir=os.path.join(user_dir, user, self.appname, cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
