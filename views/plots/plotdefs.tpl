@@ -132,7 +132,7 @@ function endis() {
 % i = 0
 % for row in rows:
 % i += 1
-<tr onmouseover="getElementById('actions-{{i}}').style.display='block'" onmouseout="getElementById('actions-{{i}}').style.display='none'">
+<tr>
     <!-- <td>{{row['plots']['id']}}</td> -->
     %url="/plots/"+str(row['plots']['id'])+"/datasources?app="+app
     <td class="plotdef">{{i}} <a href="{{url}}"></a></td>
@@ -140,15 +140,15 @@ function endis() {
     <td class="plotdef" width="50">{{row['plots']['ptype']}} <a href="{{url}}"></a></td>
     <td class="plotdef">{{row['plots']['options']}} <a href="{{url}}"></a>
     <td>
-        <div class="form-group actionbox" id="actions-{{i}}" style="display:none">
-            <a class="btn btn-link" href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">datasources</a> <br>
-            <a class="btn btn-link" href="/plots/delete/{{row['plots']['id']}}?app={{app}}"
-            onclick="if(confirm('confirm')) return true; return false"><span style="color:red" class="glyphicon glyphicon-remove"></span> delete</a> <br>
-            <form method="post" action="/plots/edit">
-                <input type="hidden" name="app" value="{{app}}">
-                <input type="hidden" name="pltid" value="{{row['plots']['id']}}">
-                <button class="btn btn-link" type="submit"><span style="color:#000" class="glyphicon glyphicon-pencil"></span> edit</</button>
-            </form>
+        <div class="dropdown">
+            <button class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <i class="glyphicon glyphicon-option-vertical"></i>
+            </button>
+            <ul class="dropdown-menu pull-right">
+                <li><a  href="/plots/{{row['plots']['id']}}/datasources?app={{app}}">Datasources</a></li>
+                <li><a href="/plots/delete/{{row['plots']['id']}}?app={{app}}" onclick="if(confirm('confirm')) return true; return false"> Delete</a></li>
+                <li><a href="/plots/edit/{{row['plots']['id']}}?app={{app}}"> Edit</a></li>
+            </ul>
         </div>
     </td>
 </tr>
