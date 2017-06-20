@@ -515,6 +515,28 @@ def show_jobs():
     params['num_rows'] = config.jobs_num_rows
     return template('jobs', params, rows=result)
 
+@get('/<app>')
+def show_app(app):
+    # very similar to start_new_job() consider consolidating
+    user = authorized()
+    set_active(app)
+    # parameters for return template
+    if app not in myapps:
+        return template('error', err="app %s is not installed" % (app))
+
+    try:
+        params = {}
+        params.update(myapps[app].params)
+        params['cid'] = ''
+        params['app'] = app
+        params['user'] = user
+        params['apps'] = myapps
+        return template(os.path.join(appmod.apps_dir, app),  params)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        redirect('/app/'+app)
+
 @get('/jobs/new')
 def start_new_job():
     user = authorized()
@@ -533,7 +555,10 @@ def start_new_job():
 
     # read default params... this ensures no 500 error when restarting
     # in case params are missing
-    params = myapps[app].params
+    params = {}
+    params.update(myapps[app].params)
+    # pass by value not by reference to avoid apps templates modifying
+    # the myapps dictionary
 
     # if restarting from old case
     if re.search("[a-z]", cid):
@@ -546,6 +571,7 @@ def start_new_job():
     params['cid'] = cid
     params['app'] = app
     params['user'] = user
+    params['apps'] = myapps
     try:
         return template('apps/' + myapps[app].appname, params)
     except:
@@ -982,27 +1008,6 @@ def stop_job():
     jobs(jid).update_record(state="X")
     db.commit()
     redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
-
-@get('/<app>')
-def show_app(app):
-    user = authorized()
-    set_active(app)
-    # parameters for return template
-    if app not in myapps:
-        return template('error', err="app %s is not installed" % (app))
-
-    try:
-        params = {}
-        params.update(myapps[app].params)
-        params['cid'] = ''
-        params['app'] = app
-        params['user'] = user
-        params['apps'] = myapps
-        return template(os.path.join(appmod.apps_dir, app),  params)
-    except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        redirect('/app/'+app)
 
 @get('/login')
 @get('/login/<referrer>')
