@@ -1711,7 +1711,11 @@ def plot_interface(pltid):
 
         # do some postprocessing
         if line_range is not None:
-            (line1str, line2str) = line_range.split(":")
+            # to prevent breaking current spc apps, still support
+            # expressions like 1:1000, but in the future this should
+            # be changed to a range 1-1000.  Therefore, using : is deprecated
+            # and will be removed in the future.
+            (line1str, line2str) = re.split("[-:]", line_range)
             line1 = int(line1str)
             ## there is a problem with the following statement
             ## shows up in mendel app
@@ -1811,7 +1815,11 @@ def matplotlib(pltid):
         col1 = int(col1str)
         col2 = int(col2str)
         if line_range is not None:
-            (line1str, line2str) = line_range.split(":")
+            # to prevent breaking current spc apps, still support
+            # expressions like 1:1000, but in the future this should
+            # be changed to a range 1-1000.  Therefore, using : is deprecated
+            # and will be removed in the future.
+            (line1str, line2str) = re.split("[-:]", line_range)
             line1 = int(line1str)
             line2 = int(line2str)
 
