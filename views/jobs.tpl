@@ -84,7 +84,7 @@
     <!-- <td class="case hidden-xs hidden-sm hidden-md"><tt>{{row['priority']}}</tt> <a href="{{url}}"></a></td> -->
     <td class="case hidden-xs"><tt>{{row['time_submit']}}</tt> <a href="{{url}}"></a></td>
     <td class="case hidden-xs hidden-sm hidden-md"><tt>{{row['walltime']}}</tt> <a href="{{url}}"></a></td>
-    <td class="case hidden-xs"> {{row['description']}}
+    <td class="case hidden-xs"> {{!row['description']}}
       <!-- <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a> -->
       <a href="{{url}}"> </a>
     </td>

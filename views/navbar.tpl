@@ -46,7 +46,7 @@
                         <div class="hidden-md">
                             <a href="#" class="navbar-brand" style="width:250px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap"
                                data-toggle="modal" data-target="#myModal">
-                            <span class="glyphicon glyphicon-tag"></span> {{description}}</a>
+                            <span class="glyphicon glyphicon-tag"></span> {{!description}}</a>
                         </div>
                     %end
                 </div>
