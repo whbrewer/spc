@@ -139,7 +139,7 @@ function endis() {
     <td class="plotdef">{{row['plots']['title']}} <a href="{{url}}"></a></td>
     <td class="plotdef" width="50">{{row['plots']['ptype']}} <a href="{{url}}"></a></td>
     <td class="plotdef">{{row['plots']['options']}} <a href="{{url}}"></a>
-    <td>
+    <td style="vertical-align:middle">
         <div class="dropdown">
             <button class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                 <i class="glyphicon glyphicon-option-vertical"></i>
