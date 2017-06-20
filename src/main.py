@@ -1512,11 +1512,10 @@ def editplotdefs():
     params = { 'app': app, 'user': user }
     return template('plots/plotdefs', params, rows=result)
 
-@post('/plots/edit')
-def editplotdef():
+@get('/plots/edit/<pltid>')
+def editplotdef(pltid):
     user = authorized()
     app = request.forms.app
-    pltid = request.forms.pltid
     result = db(plots.id==pltid).select().first()
     params = { 'app': app, 'user': user }
     return template('plots/edit_plot', params, row=result)
