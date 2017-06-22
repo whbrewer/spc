@@ -91,10 +91,10 @@ class Scheduler(object):
         cid = db.jobs(jid).cid
         np = db.jobs(jid).np
         if np > 1: # use mpi
-            command = db.apps(name=app).command
+            command = db.jobs(jid).command
             command = config.mpirun + " -np " + str(np) + " " + command
         else: # dont use mpi
-            command = db.apps(name=app).command
+            command = db.jobs(jid).command
 
         outfn = app + ".out"
         cmd = command + ' > ' + outfn + ' 2>&1 '
