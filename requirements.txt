@@ -1,0 +1,4 @@
+bottle==0.12.13
+beaker==1.9.0
+pyyaml==3.12
+psutil==5.2.2

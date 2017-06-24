@@ -89,6 +89,7 @@ def confirm_form():
     request.forms['case_id'] = cid
     request.forms['cid'] = cid
     request.forms['user'] = user
+
     try:
         desc = request.forms['desc']
     except:
@@ -139,6 +140,7 @@ def confirm_form():
 
         # read the file
         inputs = slurp_file(fn)
+
         # convert html tags to entities (e.g. < to &lt;)
         inputs = cgi.escape(inputs)
 
@@ -531,7 +533,7 @@ def show_app(app):
         params['app'] = app
         params['user'] = user
         params['apps'] = myapps
-        return template(os.path.join(appmod.apps_dir, app),  params)
+        return template(os.path.join('apps', app),  params)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
@@ -2338,7 +2340,8 @@ def getuser():
     user = authorized()
     return user
 
-if __name__ == "__main__":
+
+def main():
     init_config_options()
     # set user session if authentication is disabled
     if not config.auth:

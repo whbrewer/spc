@@ -12,6 +12,10 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
 ## Quickstart
 
+* To install the python requirements:
+
+    `./spc requirements`
+
 * To create and initialize the database which SPC uses:
 
     `./spc init`
@@ -40,7 +44,7 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
       - Click output (if you see an error message, it most likely means the jobs has not started running yet, so you can just click output several times until you see the result)
 
-      - Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  
+      - Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.
 
 ## Install packaged apps
 
@@ -58,7 +62,7 @@ To install another SPC packaged app, e.g. Mendel's Accountant:
 
 To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc.git"
 you can just do "git pull" within the spc directory.  Before starting, also make sure
-to run "./spc migrate" to migrate the new changes to the database.  
+to run "./spc migrate" to migrate the new changes to the database.
 
 Note that cloning the latest version of the repo may be unstable.  So, it is
 better to download one of the releases (click on "Branch: master" and then click "Tags"

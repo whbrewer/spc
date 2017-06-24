@@ -132,6 +132,7 @@ def zipcase():
 def user_data(filepath):
     return static_file(filepath, root='user_data')
 
-if __name__ == "__main__":
+
+def main()
     sched.poll()
     run(host='0.0.0.0', port=config.port+1, debug=False)

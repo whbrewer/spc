@@ -14,7 +14,7 @@ from user_data import user_dir
 # using convention over configuration
 # the executable is the name of the app
 # and the input file is the name of the app + '.in'
-apps_dir = 'apps'
+apps_dir = 'src/spc_apps'
 
 def is_number(value):
   try:
