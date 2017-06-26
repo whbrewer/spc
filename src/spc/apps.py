@@ -1,15 +1,19 @@
-import re, sys, os, shutil
 import config
 import ConfigParser
 import json
-try:
-    import yaml
-except ImportError:
-    print "INFO: yaml not installed... if you need support for YAML files: pip install pyyaml"
+import os
+import re
+import shutil
+import sys
 import xml.etree.ElementTree as ET
+
+import yaml
+
+import pytoml as toml
 from gluino import DAL, Field
 from model import *
 from user_data import user_dir
+
 
 # using convention over configuration
 # the executable is the name of the app
@@ -613,3 +617,78 @@ class YAML(App):
         cfgfile.write(yaml.dump(params, default_flow_style=False))
         cfgfile.close()
         return 1
+
+
+class TOML(App):
+    def __init__(self, appname, preprocess=0, postprocess=0):
+        self.appname = appname
+        self.appdir = os.path.join(apps_dir, appname)
+        self.outfn = appname + '.out'
+        self.simfn = appname + '.toml'
+        self.original_toml_dict = {}
+        self.exe = os.path.join(apps_dir, self.appname, self.appname)
+        self.preprocess = preprocess
+        self.postprocess = postprocess
+
+        self.params, self.blockmap, self.blockorder = self.read_params()
+
+    def read_params(self, user=None, cid=None):
+        u'''Read the TOML file and return as a dictionary'''
+
+        if user is None or cid is None:
+            sim_dir = self.appdir
+        else:
+            sim_dir = os.path.join(user_dir, user, self.appname, cid)
+
+        file_name = os.path.join(sim_dir, self.simfn)
+
+        if not os.path.isfile(file_name):
+            print u'ERROR: input file does not exist: {}'.format(file_name)
+
+        params = {}
+        blockmap = {}
+        blockorder = []
+
+        with open(file_name, u'r') as f:
+            toml_dict = toml.load(f)
+            self.original_toml_dict = toml_dict
+            blockorder = toml_dict.keys()
+
+            for k, v in toml_dict.iteritems():
+                blockmap[k] = v.keys()
+                params.update(v)
+
+        return params, blockmap, blockorder
+
+    def write_params(self, form_params, user):
+        sim_dir = os.path.join(user_dir, user, self.appname, form_params[u'case_id'])
+
+        if not os.path.exists(sim_dir):
+            os.makedirs(sim_dir)
+
+        file_name = os.path.join(sim_dir, self.simfn)
+
+        toml_dict = {}
+
+        for section in self.blockorder:
+            toml_dict[section] = {}
+
+            for k in self.blockmap[section]:
+                if k in form_params:
+                    original_type = type(self.original_toml_dict[section][k])
+                    toml_dict[section][k] = self.cast_string_to_original_type(form_params[k], original_type)
+
+        with open(file_name, u'w') as f:
+            toml.dump(toml_dict, f)
+
+        return 1
+
+    def cast_string_to_original_type(self, s, original_type):
+        if original_type is int:
+            return int(s)
+        elif original_type is float:
+            return float(s)
+        elif original_type is bool:
+            return s == u'True'
+        else:
+            return s

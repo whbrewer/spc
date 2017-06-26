@@ -2290,6 +2290,8 @@ def app_instance(input_format, appname, preprocess=0, postprocess=0):
         myapp = appmod.JSON(appname, preprocess, postprocess)
     elif(input_format=='yaml'):
         myapp = appmod.YAML(appname, preprocess, postprocess)
+    elif(input_format=='toml'):
+        myapp = appmod.TOML(appname, preprocess, postprocess)
     else:
         return 'ERROR: input_format', input_format, 'not supported'
     return myapp
