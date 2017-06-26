@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # web framework
 from bottle import Bottle, template, static_file, request, redirect, app, get, post, run, delete, SimpleTemplate
 # python built-ins
@@ -175,17 +173,15 @@ def execute():
     if "cid" not in inputs: inputs["cid"] = cid
 
     # if preprocess is set run the preprocessor
-    # try:
-    if myapps[app].preprocess:
-        processed_inputs = process.preprocess(inputs,
-                                   myapps[app].preprocess,base_dir)
+    try:
+        if myapps[app].preprocess:
+            processed_inputs = process.preprocess(inputs,
+                                       myapps[app].preprocess,base_dir)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        return template('error', err="There was an error with the preprocessor")
 
-    if myapps[app].preprocess == "terra.in":
-        myapps[app].outfn = "out"+inputs['casenum']+".00"
-    # except:
-    #     return template('error', err="There was an error with the preprocessor")
-
-    print "np:", np
     cmd = apps(name=app).command
 
     # for parallel runs
