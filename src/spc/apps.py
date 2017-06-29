@@ -6,8 +6,10 @@ import re
 import shutil
 import sys
 import xml.etree.ElementTree as ET
-
-import yaml
+try:
+    import yaml
+except:
+    print "ERROR: when trying to import yaml"
 
 import pytoml as toml
 from gluino import DAL, Field
