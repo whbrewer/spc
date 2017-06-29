@@ -102,7 +102,7 @@ def initdb():
                        category="bioinformatics",
                        language="python",
                        input_format="ini",
-                       command="../../../../apps/dna/dna")
+                       command="<rel_apps_path>/dna/dna")
     dal.db.plots.insert(id=1,appid=1,ptype="flot-cat",title="Dinucleotides")
     dal.db.plots.insert(id=2,appid=1,ptype="flot-cat",title="Nucleotides")
     dal.db.plots.insert(id=3,appid=1,ptype="flot-cat",title="Codons")

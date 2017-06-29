@@ -186,6 +186,10 @@ def execute():
 
     # for parallel runs
     if np > 1: cmd = config.mpirun + " -np " + str(np) + " " + cmd
+ 
+    # this is the relative path to the executable from the case directory where
+    # the simulation files are stored
+    inputs['rel_apps_path'] = (os.pardir + os.sep)*4 + appmod.apps_dir
 
     # replace placeholder tags in the command line, e.g. <cid> with appropriate params
     cmd = replace_tags(cmd, inputs)
