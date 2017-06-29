@@ -76,8 +76,8 @@ function endis() {
                 <option VALUE="flot-scatter-animated">flot/scatter animated</option>
                 <option VALUE="flot-cat">flot/categories</option>
                 <option VALUE="plotly-hist">plotly/histogram</option>
-                <option VALUE="mpl-line">matplotlib/line</option>
-                <option VALUE="mpl-bar">matplotlib/bar</option>
+                <!--<option VALUE="mpl-line">matplotlib/line</option>-->
+                <!--<option VALUE="mpl-bar">matplotlib/bar</option>-->
             </select>
         </div>
     </div>
