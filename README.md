@@ -1,5 +1,11 @@
 # SPC
 
+6/29/17 NOTE: the latest version of SPC (v0.20) has been restructured and uses auto dependency management via virtualenv.  To migrate older (pre-0.20 version) installations to this version, two things must be done:
+
+1. Run `./spc requirements`
+2. Move intalled SPC apps to new location: `mv apps/* src/spc_apps`
+3. Change the command in each app to look like: `<rel_apps_path>/appname/appname`.  This is easiest done by logging is as admin user and configure/edit the app.
+
 ## Intro
 
 The Scientific Platform for the Cloud (SPC) is a cloud platform for easily migrating and running scientific applications in the cloud.  It is described in more detail in the following paper:
