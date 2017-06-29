@@ -70,21 +70,6 @@ and select one of the releases).
 
 For more information, see user's manual in the docs/ folder
 
-## Optional Dependencies
-
-SPC can run without any dependencies except Python 2.7 standard libs.  It
-is extensible in various ways by including other libs listed here:
-
-* matplotlib >= 1.3.1 (optional-used to support matplotlib plotting)
-* docker-py >= 1.1.0 (optional-used to support containers)
-* boto >= 2.6.0 (optional-used to support AWS management)
-* gevent >= 1.0.1 (optional-used for websocket monitoring)
-* gevent-websocket >= 0.9.3 (optional-used for websocket monitoring)
-* pika > 0.10.0 and RabbitMQ (optionally-required when using RabbitMQ for scheduling)
-* PyYAML >= 3.11 (optional-required for supporting YAML input files)
-* requests >= 2.9.1 (optional-required if using remote worker nodes)
-* psutil >= 5.0.1 (optional-required for monitoring CPU and Memory useage during runs)
-
 ## Questions
 
 For more info, check out the documentation in the docs folder.  Send questions to: wes@fluidphysics.com
