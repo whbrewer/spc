@@ -12,15 +12,11 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
 ## Quickstart
 
-* To install the python requirements:
-
-    `./spc requirements`
-
-* To create and initialize the database which SPC uses:
+* To install dependencies, create and initialize the database which SPC uses, type:
 
     `./spc init`
 
-* To start running the web server:
+* To start running the web server, type:
 
     `./spc run`
 

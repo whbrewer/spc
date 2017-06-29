@@ -12,6 +12,7 @@ url = 'https://s3-us-west-1.amazonaws.com/scihub'
 def usage():
     buf =  "usage: spc <command> [<args>]\n\n"
     buf += "available commands:\n"
+    buf += "help          this output\n"
     buf += "init          initialize database and create basic config.py file\n"
     buf += "list          list installed or available apps\n"
     buf += "migrate       migrate new database changes\n"
@@ -26,7 +27,7 @@ def usage():
     #buf += "test     run unit tests\n"
     return buf
 
-if (len(sys.argv) == 1):
+if (len(sys.argv) == 1 or sys.argv[1] == "help"):
     print usage()
     sys.exit()
 
