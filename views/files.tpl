@@ -116,7 +116,7 @@
 		<th>Timestamp</th>
 	</tr>
 	% import os, time
-	% binary_extensions = ['.bz2', '.gz', '.xz', '.zip']
+	% binary_extensions = ['.bz2', '.gz', '.xz', '.zip', '.xls', '.xlsx', '.doc', '.docx', '.ppt', '.pptx']
 	% image_extensions = ['.png', '.gif', '.jpg', '.svg']
 	% for file in files:
 		<tr>
