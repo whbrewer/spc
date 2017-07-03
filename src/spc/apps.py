@@ -352,9 +352,6 @@ class INI(App):
         for section in self.blockorder:
             Config.add_section(section)
             for key in self.blockmap[section]:
-                # Add quotes to case_id for TOML file used by mendel-go
-                if key == "case_id" and self.appname == "mendel-go":
-                    form_params[key] = "\"" + form_params[key]+ "\""
                 # for checkboxes that dont get sent when unchecked
                 if key not in form_params: form_params[key] = 'false'
                 #print key, form_params[key]
