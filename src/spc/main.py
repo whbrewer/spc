@@ -94,7 +94,7 @@ def confirm_form():
         desc = "None"
     desc = desc.replace(',', ', ')
 
-    if config.worker == 'remote':
+    if config.submit_type == 'remote':
 
         request.forms['np'] = 1
         request.forms['desc'] = desc
@@ -119,6 +119,27 @@ def confirm_form():
                            time_submit=time.asctime(), np=config.np, priority=pry)
             db.commit()
             redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
+
+    elif config.submit_type == 'noverify':
+        # "noverify" means don't echo the parameters back to the user before running
+        # the simulation.  Just run the simulation when user submits the parameters
+
+        # replace placeholder tags in the command line, e.g. <cid> with appropriate params
+        request.forms['rel_apps_path'] = (os.pardir + os.sep)*4 + appmod.apps_dir
+        myapps[app].write_params(request.forms, user)
+
+        cmd = apps(name=app).command
+        cmd = replace_tags(cmd, request.forms)
+        outfn = app + ".out"
+        cmd = cmd + ' > ' + outfn + ' 2>&1 '
+        print "cmd:", cmd
+        # following two params are temporary solutions
+        np = 1
+        walltime = 60
+        uid = users(user=user).id
+        priority = db(users.user==user).select(users.priority).first().priority
+        jid = sched.qsub(app, cid, uid, cmd, np, priority, walltime, desc)
+        redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
 
     else:
 
@@ -186,7 +207,7 @@ def execute():
 
     # for parallel runs
     if np > 1: cmd = config.mpirun + " -np " + str(np) + " " + cmd
- 
+
     # this is the relative path to the executable from the case directory where
     # the simulation files are stored
     inputs['rel_apps_path'] = (os.pardir + os.sep)*4 + appmod.apps_dir
@@ -355,7 +376,7 @@ def compute_stats(path):
             m = re.search(r'#.*$', line)
             if m:
                 xoutput += line
-        # this is a temporary hack for mendel
+        # app-specific: this is a temporary hack for mendel (remove in future)
         if path[-3:] == "hst":
             xoutput += output[len(output)-1]
     return xoutput
