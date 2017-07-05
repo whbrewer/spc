@@ -156,7 +156,7 @@ class App(object):
                 elif html_tags[param] == "select":
                     buf += "\t\t\t<select class=\"form-control\" name=\""+param+"\">\n"
                     buf += "\t\t\t%opts = {"+param+": "+param+", 'option2': 'option2'}\n"
-                    buf += "\t\t\t%for key, value in opts.iteritems():\n"
+                    buf += "\t\t\t%for key, value in sorted(opts.items()):\n"
                     buf += "\t\t\t\t%if key == "+param+":\n" \
                            "\t\t\t\t\t<option selected value=\"{{key}}\">{{value}}</option>\n"
                     buf += "\t\t\t\t%else:\n"
