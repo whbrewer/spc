@@ -94,6 +94,10 @@ def confirm_form():
         desc = "None"
     desc = desc.replace(',', ', ')
 
+    # set config.submit_type to default value if not set in config.py file
+    try:    config.submit_type
+    except: config.submit_type = "default"
+
     if config.submit_type == 'remote':
 
         request.forms['np'] = 1
