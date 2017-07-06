@@ -47,7 +47,7 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
     <!--<th>data_type</th>-->
 </thead>
 <tbody>
-% import common
+% from spc import common
 % for key,value in inputs.iteritems():
     <tr>
         <td>{{key}}</td> <td>{{value}}</td>

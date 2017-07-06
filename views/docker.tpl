@@ -44,7 +44,7 @@
                 % _, id = i['Id'].split(":")
                 <td>{{id[:12]}}</td>
                 <td>{{datetime.datetime.fromtimestamp(i['Created'])}}</td>
-                % from common import sizeof_fmt
+                % from spc.common import sizeof_fmt
                 <td>{{sizeof_fmt(i['Size'])}}</td>
                 <td><button class="btn btn-link" data-toggle="modal" data-target="#{{id}}"><span style="color:#080" class="glyphicon glyphicon-new-window"></span></button> &nbsp;&nbsp;
                     <!-- <a href="/docker/remove_image/{{t}}"><span class="glyphicon glyphicon-remove-circle"></span></a> -->
