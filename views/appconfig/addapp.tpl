@@ -58,7 +58,7 @@ function checkApp(appname) {
             $("#helper").addClass('hidden');
             $("#feedback").addClass('glyphicon-ok')
             $("#feedback").removeClass('glyphicon-remove')
-            $("#command").val("<rel_apps_path>/apps/"+appname+"/"+appname)
+            $("#command").val("<rel_apps_path>/"+appname+"/"+appname)
             $("#submit").prop('disabled',false)
          }
       }
