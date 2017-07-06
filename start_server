@@ -10,7 +10,7 @@ fi
 
 # start the server
 cd "$( dirname "${BASH_SOURCE[0]}" )"
-./spx go >& log &
+./spc run >& log &
 pid=$!
 echo "STARTING SERVER PLEASE WAIT..."
 
