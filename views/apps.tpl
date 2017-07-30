@@ -74,12 +74,10 @@
 
 <script>
 function useapp(app) {
-  $.post('/useapp', {'app': app})
-  location.reload();
+    $.post('/useapp', {'app': app}, function() { location.reload() })
 }
 function removeapp(app) {
-    $.post('/removeapp', {'app': app});
-    location.reload();
+    $.post('/removeapp', {'app': app}, function() { location.reload() })
 }
 </script>
 
