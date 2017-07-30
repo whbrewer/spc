@@ -1792,7 +1792,7 @@ def plot_interface(pltid):
 
     params = { 'cid': cid, 'pltid': pltid,
                'data': data, 'app': app, 'user': user, 'owner': owner,
-               'ticks': ticks, 'title': title, 'plotpath': plotpath,
+               'ticks': ticks, 'plotpath': plotpath,
                'rows': list_of_plots, 'options': options, 'datadef': datadef,
                'stats': stats, 'description': desc }
 
