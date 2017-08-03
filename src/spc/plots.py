@@ -2,6 +2,7 @@
 import re, string
 import config
 import traceback, sys
+import csv
 
 class Plot(object):
 
@@ -43,6 +44,16 @@ class Plot(object):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print traceback.print_exception(exc_type, exc_value, exc_traceback)
             return -2
+
+    def get_csv_data(self, fn):
+        try:
+            data = open(fn, 'rU').readlines()
+        except IOError:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print traceback.print_exception(exc_type, exc_value, exc_traceback)
+            return -1
+        dat = [ d.strip().split(",") for d in data]
+        return dat
 
     def get_data_gantt(self,fn,col1,col2,col3,col4,line1=1,line2=1e6):
         """return data as string in format [ [x1,y1], [x2,y2], ... ]"""
