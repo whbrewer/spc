@@ -1702,6 +1702,8 @@ def plot_interface(pltid):
         tfn = 'plots/plotly-hist'
     elif plottype == 'mpl-line' or plottype == 'mpl-bar':
         redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
+    elif plottype == 'handson':
+        tfn = 'plots/handson'
     else:
         return template("error", err="plot type not supported: " + plottype)
 
@@ -1718,75 +1720,84 @@ def plot_interface(pltid):
     datadef = ""
     for r in result:
         plotfn = r['filename']
-        cols = r['cols']
-        line_range = r['line_range']
-        try:
-            datadef += r['data_def'] + ", "
-        except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
-            datadef = ""
 
         # in addition to supporting input params, also support case id
         if "cid" not in inputs: inputs["cid"] = c
-        plotfn = replace_tags(plotfn, inputs)
 
+        # replace <cid>.dat with xyz123.dat
+        plotfn = replace_tags(plotfn, inputs)
         plotpath = os.path.join(sim_dir, plotfn)
 
-        if cols.find(":") > 0: # two columns
-            num_fields = 2
-            (col1str, col2str) = cols.split(":")
-            col1 = int(col1str); col2 = int(col2str)
-        else: # single column
-            num_fields = 1
-            col1 = int(cols)
+        # handle CSV data
+        _, file_extension = os.path.splitext(plotfn)
+        if file_extension == '.csv':
+            data = p.get_csv_data(plotpath)
+            stats = ''
 
-        # do some postprocessing
-        if line_range is not None:
-            # to prevent breaking current spc apps, still support
-            # expressions like 1:1000, but in the future this should
-            # be changed to a range 1-1000.  Therefore, using : is deprecated
-            # and will be removed in the future.
-            (line1str, line2str) = re.split("[-:]", line_range)
-            line1 = int(line1str)
-            ## there is a problem with the following statement
-            ## shows up in mendel app
-            # if myapps[app].postprocess > 0:
-            #    dat = process.postprocess(plotpath, line1, line2)
-            # else:
-            try: # if line2 is specified
-                line2 = int(line2str)
-                dat = p.get_data(plotpath, col1, col2, line1, line2)
-            except: # if line2 not specified
+        # handle X, Y columnar data
+        else:
+            cols = r['cols']
+            line_range = r['line_range']
+            try:
+                datadef += r['data_def'] + ", "
+            except:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print traceback.print_exception(exc_type, exc_value, exc_traceback)
-                if num_fields == 2:
-                    dat = p.get_data(plotpath, col1, col2, line1)
-                else: # single column of data
-                    dat = p.get_data(plotpath, col1)
-            # remove this app-specific code in future
-            if app == "fpg":
-                dat = process.postprocess(plotpath, line1, line2)
-        else:
-            dat = p.get_data(plotpath, col1, col2)
+                datadef = ""
 
-        if dat == -1:
-            stats = "ERROR: Could not read data file"
-        elif dat == -2:
-            stats = "ERROR: file exists, but problem parsing data. Are column and line ranges setup properly? Is all the data there?"
-        else:
-            stats = compute_stats(plotpath)
+            if cols.find(":") > 0: # two columns
+                num_fields = 2
+                (col1str, col2str) = cols.split(":")
+                col1 = int(col1str); col2 = int(col2str)
+            else: # single column
+                num_fields = 1
+                col1 = int(cols)
 
-        # clean data
-        #dat = [d.replace('?', '0') for d in dat]
-        data.append(dat)
-        # [[1,2,3]] >>> [1,2,3]
-        if num_fields == 1: data = data[0]
-        #data.append(p.get_data(plotpath, col1, col2))
-        if plottype == 'flot-cat':
-            ticks = p.get_ticks(plotpath, col1, col2)
-    #if not result:
-    #    return template("error", err="need to specify at least one datasource")
+            # do some postprocessing
+            if line_range is not None:
+                # to prevent breaking current spc apps, still support
+                # expressions like 1:1000, but in the future this should
+                # be changed to a range 1-1000.  Therefore, using : is deprecated
+                # and will be removed in the future.
+                (line1str, line2str) = re.split("[-:]", line_range)
+                line1 = int(line1str)
+                ## there is a problem with the following statement
+                ## shows up in mendel app
+                # if myapps[app].postprocess > 0:
+                #    dat = process.postprocess(plotpath, line1, line2)
+                # else:
+                try: # if line2 is specified
+                    line2 = int(line2str)
+                    dat = p.get_data(plotpath, col1, col2, line1, line2)
+                except: # if line2 not specified
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    print traceback.print_exception(exc_type, exc_value, exc_traceback)
+                    if num_fields == 2:
+                        dat = p.get_data(plotpath, col1, col2, line1)
+                    else: # single column of data
+                        dat = p.get_data(plotpath, col1)
+                # remove this app-specific code in future
+                if app == "fpg":
+                    dat = process.postprocess(plotpath, line1, line2)
+            else:
+                dat = p.get_data(plotpath, col1, col2)
+
+            if dat == -1:
+                stats = "ERROR: Could not read data file"
+            elif dat == -2:
+                stats = "ERROR: file exists, but problem parsing data. Are column and line ranges setup properly? Is all the data there?"
+            else:
+                stats = compute_stats(plotpath)
+            # [[1,2,3]] >>> [1,2,3]
+
+            # clean data
+            #dat = [d.replace('?', '0') for d in dat]
+            data.append(dat)
+
+            if num_fields == 1: data = data[0]
+
+            if plottype == 'flot-cat':
+                ticks = p.get_ticks(plotpath, col1, col2)
 
     desc = jobs(cid=c).description
 
