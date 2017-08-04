@@ -57,8 +57,8 @@ session_opts = {
 
 app = SessionMiddleware(app(), session_opts)
 # context processors - send to every template
-try:    SimpleTemplate.defaults["title"] = config.title
-except: SimpleTemplate.defaults["title"] = "SPC"
+try:    SimpleTemplate.defaults["tab_title"] = config.tab_title
+except: SimpleTemplate.defaults["tab_title"] = "SPC"
 ### end session management configuration ###
 
 # create instance of scheduler

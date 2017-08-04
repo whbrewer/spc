@@ -22,7 +22,7 @@
 
     <script> user_defaults() </script>
 
-    <title>{{title}}</title>
+    <title>{{tab_title}}</title>
 
     <style>
 
