@@ -1677,7 +1677,7 @@ def plot_interface(pltid):
             options = replace_tags(result['options'], inputs)
         else:
             options = ''
-        title = result['title']
+        plot_title = result['title']
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
@@ -1792,7 +1792,7 @@ def plot_interface(pltid):
 
     params = { 'cid': cid, 'pltid': pltid,
                'data': data, 'app': app, 'user': user, 'owner': owner,
-               'ticks': ticks, 'plotpath': plotpath,
+               'ticks': ticks, 'plot_title': plot_title, 'plotpath': plotpath,
                'rows': list_of_plots, 'options': options, 'datadef': datadef,
                'stats': stats, 'description': desc }
 
@@ -1821,7 +1821,7 @@ def matplotlib(pltid):
     # get info about plot from db
     p = plotmod.Plot()
     result = db(plots.id==pltid).select().first()
-    title = result['title']
+    plot_title = result['title']
     plottype = result['ptype']
     options = result['options']
 
@@ -1879,7 +1879,7 @@ def matplotlib(pltid):
     tmp_dir = "static/tmp"
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)
-    fn = title+'.png'
+    fn = plot_title+'.png'
     fig.set_size_inches(7, 4)
     img_path = os.path.join(sim_dir, fn)
     fig.savefig(img_path)
@@ -1890,7 +1890,7 @@ def matplotlib(pltid):
     stats = compute_stats(plotpath)
 
     params = {'image': fn, 'app': app, 'cid': cid, 'pltid': pltid,
-              'plotpath': plotpath, 'img_path': img_path, 'title': title,
+              'plotpath': plotpath, 'img_path': img_path, 'plot_title': plot_title,
               'rows': list_of_plots, 'stats': stats }
     return template('plots/matplotlib', params)
 
