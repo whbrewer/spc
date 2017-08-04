@@ -1007,6 +1007,8 @@ def delete_jobs():
     user = authorized()
     selected_cases = request.forms.selected_cases
     cases = selected_cases.rstrip(':').split(':')
+    # in case someone selected elements twice, get unique cases
+    cases = list(set(cases))
     for jid in cases:
         cid = jobs(id=jid).cid
         app = jobs(id=jid).app
