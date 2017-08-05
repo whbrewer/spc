@@ -16,7 +16,7 @@
 
 <div class="row">
 
-      <div class="col-xs-3">
+      <div class="col-xs-12 col-sm-3">
         <form role="form" action="/jobs">
           <input name="q" type="text" class="form-control input-lg"
                onchange="show(this.value)" style="background-color:#faffbd" placeholder="Search..." value="{{q}}">
