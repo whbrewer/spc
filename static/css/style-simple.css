@@ -14,9 +14,12 @@ pre {
     background-color: #F8F8F8; opacity: 0.9;
 }
 
-.navbar-form {
-    border: none;
-    box-shadow: none;
+@media only screen and (max-width : 768px) {
+    .navbar-form {
+        border: none;
+        box-shadow: none;
+        margin: 0px;
+    }
 }
 
 #navbar {

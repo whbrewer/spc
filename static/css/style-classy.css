@@ -72,9 +72,12 @@ pre {
     background-size:60px 60px;
 }
 
-.navbar-form {
-    border: none;
-    box-shadow: none;
+@media only screen and (max-width : 768px) {
+    .navbar-form {
+        border: none;
+        box-shadow: none;
+        margin: 0px;
+    }
 }
 
 .navbar-brand {
