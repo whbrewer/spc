@@ -345,6 +345,7 @@ def main():
             print install_usage
 
     elif (sys.argv[1] == "list"):
+        from spc import config
         list_usage = "usage: spc list [available|installed]"
         if (len(sys.argv) == 3):
             if (sys.argv[2] == "installed"):
