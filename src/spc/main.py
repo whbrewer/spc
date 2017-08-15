@@ -1343,7 +1343,6 @@ def app_edit(appid):
 def app_save(appid):
     user = authorized()
     app = request.forms.app
-    cmd = request.forms.command
     lang = request.forms.language
     info = request.forms.input_format
     category = request.forms.category
@@ -1354,7 +1353,7 @@ def app_save(appid):
     desc = request.forms.description
     row = db(db.apps.id==appid).select().first()
     row.update_record(language=lang, category=category, description=desc, input_format=info,
-                      preprocess=preprocess, postprocess=postprocess, command=cmd, assets=assets)
+                      preprocess=preprocess, postprocess=postprocess, assets=assets)
     db.commit()
     redirect("/app/"+app)
 

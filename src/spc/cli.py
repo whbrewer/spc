@@ -371,81 +371,95 @@ def main():
 
     elif (sys.argv[1] == "update"):
         import json
-        from spc import apps as appmod, migrate
+        from spc import apps as appmod
+        from spc import migrate, config
+        usage = "usage: spc update appname [command|plots]"
 
-        dal = migrate.dal(uri=config.uri, migrate=True)
-        usage = "usage: spc update appname"
-        if len(sys.argv) == 3:
+        if len(sys.argv) > 2:
             app = sys.argv[2]
-            app_path = appmod.apps_dir + os.sep + app
-
-            # check if directory exists
-            if not os.path.isdir(app_path):
-                print 'ERROR: app directory does not exist'
-                sys.exit()
-
-            file_path = os.path.join(app_path, "spc.json")
-
-            if not os.path.isfile(os.path.join(app_path, "spc.json")):
-                print 'ERROR: spc.json file does not exist in ' + app_path
-                sys.exit()
-
-            # read the json app config file and insert info into db
-            with open(file_path,'r') as f:
-                data = f.read()
-            parsed = json.loads(data)
-
-            # check if this is the correct spc.json for the app specified
-            if not app == parsed['name']:
-                print 'ERROR: app name specified in spc.json file different than command line'
-                sys.exit()
-            else:
-                appid = dal.db.apps(name=app).id
-
-            # nrecords = dal.db.apps.update_or_insert(dal.db.apps.name==app, name=app, description=parsed['description'],
-            #                                         category=parsed['category'], language=parsed['language'],
-            #                                         input_format=parsed['input_format'], command=parsed['command'])
-            # if nrecords is not None:
-            #     print "INFO: updated app metadata"
-
-            np = nd = 0
-            # update plots and datasources
-            if 'plots' in parsed.keys():
-                for key in parsed['plots']:
-                    sys.stdout.write('P')
-                    # following is not working but it should be the proper way to implement
-                    nrecords = dal.db.plots.update_or_insert(dal.db.plots.title==key['title'], appid=appid, ptype=key['ptype'],
-                                                             title=key['title'], options=key['options'])
-
-                    if nrecords is not None:
-                        print '\nINFO: inserting plot definition', key['title']
-                        np += 1
-
-                    pltid = dal.db.plots(title=key['title']).id
-
-                    for ds in key['datasource']:
-                        sys.stdout.write('.')
-                        nrecords = dal.db.datasource.update_or_insert(
-                                                 dal.db.datasource.label==ds['label'],
-                                                 label=ds['label'], pltid=pltid,
-                                                 filename=ds['filename'],
-                                                 cols=ds['cols'],
-                                                 line_range=ds['line_range'],
-                                                 data_def=ds['data_def'])
-                        if nrecords is not None:
-                            print '\nINFO: inserting datasource for plt', pltid
-                            nd += 1
-
-            # commit changes to db
-            dal.db.commit()
-            print
-            if np > 0: print "SUCCESS: inserted", np, "plot defs"
-            if nd > 0: print "SUCCESS: inserted defs for app", app
-            print
-            print "NOTE: some records may have been updated but currently web2py DAL does not notify about that"
-
         else:
             print usage
+            sys.exit()
+
+        app_path = appmod.apps_dir + os.sep + app
+        dal = migrate.dal(uri=config.uri, migrate=True)
+
+        # check if directory exists
+        if not os.path.isdir(app_path):
+            print 'ERROR: app directory does not exist'
+            sys.exit()
+
+        file_path = os.path.join(app_path, "spc.json")
+
+        if not os.path.isfile(os.path.join(app_path, "spc.json")):
+            print 'ERROR: spc.json file does not exist in ' + app_path
+            sys.exit()
+
+        # read the json app config file and insert info into db
+        with open(file_path,'r') as f:
+            data = f.read()
+        parsed = json.loads(data)
+
+        # check if this is the correct spc.json for the app specified
+        if not app == parsed['name']:
+            print 'ERROR: app name specified in spc.json file different than command line'
+            sys.exit()
+        else:
+            appid = dal.db.apps(name=app).id
+
+        if len(sys.argv) == 4:
+
+            if sys.argv[3] == "command":
+                dal = migrate.dal(uri=config.uri, migrate=True)
+                dal.db.apps(name=sys.argv[2]).update_record(command=parsed['command'])
+                dal.db.commit()
+                print "updated", app, "command to:", parsed['command']
+
+            elif sys.argv[3] == "plots":
+
+                np = nd = 0
+                # update plots and datasources
+                if 'plots' in parsed.keys():
+
+                    for key in parsed['plots']:
+                        sys.stdout.write('P')
+                        # following is not working but it should be the proper way to implement
+                        nrecords = dal.db.plots.update_or_insert(dal.db.plots.title==key['title'], 
+                                                                 appid=appid, ptype=key['ptype'],
+                                                                 title=key['title'], options=key['options'])
+
+                        if nrecords is not None:
+                            print '\nINFO: inserting plot definition', key['title']
+                            np += 1
+
+                        pltid = dal.db.plots(title=key['title']).id
+
+                        for ds in key['datasource']:
+                            sys.stdout.write('.')
+                            nrecords = dal.db.datasource.update_or_insert(
+                                                     dal.db.datasource.label==ds['label'],
+                                                     label=ds['label'], pltid=pltid,
+                                                     filename=ds['filename'],
+                                                     cols=ds['cols'],
+                                                     line_range=ds['line_range'],
+                                                     data_def=ds['data_def'])
+                            if nrecords is not None:
+                                print '\nINFO: inserting datasource for plt', pltid
+                                nd += 1
+
+                # commit changes to db
+                dal.db.commit()
+                print
+                if np > 0: print "SUCCESS: inserted", np, "plot defs"
+                if nd > 0: print "SUCCESS: inserted defs for app", app
+                print
+                print "NOTE: some plot records may have been updated but currently web2py DAL does not notify about that"
+            else:
+                print "ERROR: option not supported"
+                sys.exit()
+        else:
+            print usage
+            sys.exit()
 
     elif sys.argv[1] == "requirements":
         os.system('virtualenv venv')

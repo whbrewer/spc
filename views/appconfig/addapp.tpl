@@ -58,7 +58,6 @@ function checkApp(appname) {
             $("#helper").addClass('hidden');
             $("#feedback").addClass('glyphicon-ok')
             $("#feedback").removeClass('glyphicon-remove')
-            $("#command").val("<rel_apps_path>/"+appname+"/"+appname)
             $("#submit").prop('disabled',false)
          }
       }
@@ -328,12 +327,6 @@ span.round-tab:hover {
                         %input_format = "INI"
                         %include('appconfig/input_opts')
                     </td>
-                    </tr>
-
-                    <tr>
-                    <td><font size="+1">Command to run app:</font><br>
-                    <font size="-1">Note: this is a relative path from the <tt>user_data/app/user</tt> directory</font></td>
-                    <td><input class="form-control" type="text" id="command" name="command"></td>
                     </tr>
 
                     </table>
