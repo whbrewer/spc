@@ -228,7 +228,8 @@ def main():
         if len(sys.argv) == 3:
             import json
             import zipfile
-            from spc import apps as appmod, migrate
+            from spc import apps as appmod
+            from spc import migrate, config
 
             if re.search(r'http[s]://.*$', sys.argv[2]):
                 dlfile(sys.argv[2]) # download zip file
