@@ -2,7 +2,7 @@
 
 8/14/17 Since SPC v0.22, no longer can the app run command be specified or updated from the web interface. This was to prevent a major security vulnerability. Instead, edit the command field of the spc.json file for the app, and then run "./spc update appname command"
 
-8/3/17 Renamed {{title}} in app templates to {{tab_title}} because there was a name collision with the plot title.  All app template need to be updated to reflect this change.
+8/3/17 Renamed {{title}} in app templates to {{tab_title}} because there was a name collision with the plot title.  All app templates need to be updated to reflect this change.
 
 6/29/17 SPC v0.20 has been restructured and uses auto dependency management via virtualenv.  To migrate older (pre-0.20 version) installations to this version, two things must be done:
 
