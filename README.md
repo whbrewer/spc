@@ -1,6 +1,8 @@
-# SPC
+# NOTES
 
 8/14/17 NOTE: since SPC v0.22, no longer can the app run command be specified or updated from the web interface. This was to prevent a major security vulnerability. Instead, edit the command field of the spc.json file for the app, and then run "./spc update appname command"
+
+8/3/17 NOTE: renamed {{title}} in app templates to {{tab_title}} because there was a name collision with the plot title.  All app template need to be updated to reflect this change.
 
 6/29/17 NOTE: SPC v0.20 has been restructured and uses auto dependency management via virtualenv.  To migrate older (pre-0.20 version) installations to this version, two things must be done:
 
@@ -8,7 +10,7 @@
 2. Move installed SPC apps to new location: `mv apps/* src/spc_apps` (then can remove `apps` directory)
 3. Change the command in each app to look like: `<rel_apps_path>/appname/appname`.  This is easiest done by logging is as admin user and configure/edit the app.
 
-## Intro
+## INTRO
 
 The Scientific Platform for the Cloud (SPC) is a cloud platform for easily migrating and running scientific applications in the cloud.  It is described in more detail in the following paper:
 
@@ -18,7 +20,7 @@ This platform is ideally suited to run scientific applications that: (1) require
 
 Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7.8 to 2.7.12, on Linux and OS X systems. Other environments may work, but are not guaranteed to work.
 
-## Quickstart
+## QUICKSTART
 
 * To install dependencies, create and initialize the database which SPC uses, type:
 
@@ -50,7 +52,7 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
       - Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.
 
-## Install packaged apps
+## INSTALL PACKAGED APPS
 
 To install another SPC packaged app, e.g. Mendel's Accountant:
 
@@ -62,7 +64,7 @@ To install another SPC packaged app, e.g. Mendel's Accountant:
 
     > ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip
 
-## Updating SPC
+## UPDATING SPC
 
 To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc.git"
 you can just do "git pull" within the spc directory.  Before starting, also make sure
@@ -74,6 +76,6 @@ and select one of the releases).
 
 For more information, see user's manual in the docs/ folder
 
-## Questions
+## QUESTIONS
 
 For more info, check out the documentation in the docs folder.  Send questions to: wes@fluidphysics.com
