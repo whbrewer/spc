@@ -53,11 +53,6 @@
                  value="{{rows['language']}}"></td>
   </tr>
   <tr>
-      <td>Command:</td>
-      <td><input class="form-control input-lg" type="text" name="command" size="40"
-                 value="{{rows['command']}}"></td>
-  </tr>
-  <tr>
       <td>Static Assets:</td>
       <td><input class="form-control input-lg" type="text" name="assets" size="40"
                  value="{{rows['assets']}}"></td>
