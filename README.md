@@ -4,7 +4,7 @@
 
 8/3/17 Renamed {{title}} in app templates to {{tab_title}} because there was a name collision with the plot title.  All app templates need to be updated to reflect this change.
 
-6/29/17 SPC v0.20 has been restructured and uses auto dependency management via virtualenv.  To migrate older (pre-0.20 version) installations to this version, two things must be done:
+6/29/17 SPC v0.20 has been restructured and uses auto dependency management via virtualenv.  To migrate older (pre-0.20 version) installations to this version:
 
 1. Run `./spc requirements`
 2. Move installed SPC apps to new location: `mv apps/* src/spc_apps` (then can remove `apps` directory)
