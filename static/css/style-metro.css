@@ -50,6 +50,15 @@ pre {
 
 a.navbar-brand:hover { color:white !important }
 
+
+@media only screen and (max-width : 768px) {
+    .navbar-form {
+        border: none;
+        box-shadow: none;
+        margin: 0px;
+    }
+}
+
 #navbar {
     border-bottom-color: #0099CC;
     border-bottom-width: 2px;
