@@ -1,5 +1,8 @@
 *.pyc
 db/
 src/spc/config.py
+src/spc_apps
+static/apps
+views/apps
 user_data
 venv
