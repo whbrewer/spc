@@ -5,6 +5,7 @@ import config
 from user_data import user_dir, upload_dir
 
 from model import *
+from common import replace_tags
 
 routes = Bottle()
 
@@ -12,6 +13,21 @@ def bind(app):
     global root
     root = ap.Namespace(**app)
 
+def compute_stats(path):
+    """compute statistics on output data"""
+    xoutput = ''
+    if os.path.exists(path):
+        f = open(path,'r')
+        output = f.readlines()
+        for line in output:
+            m = re.search(r'#.*$', line)
+            if m:
+                xoutput += line
+        # app-specific: this is a temporary hack for mendel (remove in future)
+        if path[-3:] == "hst":
+            xoutput += output[len(output)-1]
+    return xoutput
+    
 class Plot(object):
 
     def get_data(self,fn,col1,col2=None,line1=1,line2=1e6):
@@ -267,7 +283,7 @@ def plot_interface(pltid):
         result = db(query).select().first()
         if result: pltid = result['plots']['id']
 
-    p = plotmod.Plot()
+    p = Plot()
 
     # get the data for the pltid given
     try:
@@ -430,7 +446,7 @@ def matplotlib(pltid):
     ax = fig.add_subplot(111)
 
     # get info about plot from db
-    p = plotmod.Plot()
+    p = Plot()
     result = db(plots.id==pltid).select().first()
     plot_title = result['title']
     plottype = result['ptype']
