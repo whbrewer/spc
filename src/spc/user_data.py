@@ -1,6 +1,7 @@
 from bottle import Bottle, request, template, redirect, static_file
 import argparse as ap
-import os, re, sys, traceback
+import os, re, sys, traceback, cgi
+from common import *
 from model import *
 try:
     import requests
@@ -20,6 +21,137 @@ def bind(app):
 def get_user_data(filepath):
     user = root.authorized()
     return static_file(filepath, root=user_dir)
+
+@routes.get('/more')
+def more():
+    """given a form with the attribute plotpath,
+       output the file to the browser"""
+    user = root.authorized()
+    app = request.query.app
+    cid = request.query.cid
+    filepath = request.query.filepath
+    contents = slurp_file(filepath)
+    # convert html tags to entities (e.g. < to &lt;)
+    contents = cgi.escape(contents)
+    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 'fn': filepath }
+    return template('more', params)
+
+@routes.get('/case')
+def case():
+    user = root.authorized()
+    app = request.query.app
+    root.set_active(app)
+    cid = request.query.cid
+    jid = request.query.jid
+
+    # note: eventually need to merge the following two into one
+    if re.search("/", cid):
+        (owner, c) = cid.split("/")
+        state = jobs(cid=c).state
+        sid = request.query.sid # id of item in shared
+        run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
+        fn = os.path.join(run_dir, root.myapps[app].outfn)
+        output = slurp_file(fn)
+
+        params = { 'cid': cid, 'app': app, 'contents': output,
+                   'sid': sid, 'user': user, 'fn': fn, 'state': state, 'owner': owner }
+
+        if jid: params['jid'] = jid
+
+        return template('case_public', params)
+
+    else:
+        owner = user
+        state = jobs(cid=cid).state
+        run_dir = os.path.join(user_dir, user, root.myapps[app].appname, cid)
+        fn = os.path.join(run_dir, root.myapps[app].outfn)
+        result = db(jobs.cid==cid).select().first()
+        desc = result['description']
+        shared = result['shared']
+
+        params = { 'cid': cid, 'app': app, 'jid': jid,
+                   'user': user, 'fn': fn, 'description': desc, 'shared': shared,
+                   'state': state, 'owner': owner }
+
+        if jid: params['jid'] = jid
+
+        return template('case', params)
+
+@routes.get('/output')
+def output():
+    user = root.authorized()
+    app = request.query.app
+    cid = request.query.cid
+    jid = request.query.jid
+    print "jid:", jid
+
+
+    try:
+        if re.search("/", cid):
+            (owner, c) = cid.split("/")
+        else:
+            owner = user
+            c = cid
+
+        run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
+        fn = os.path.join(run_dir, root.myapps[app].outfn)
+
+        if config.worker == 'remote':
+
+            params = {'user': user, 'app': app, 'cid': cid}
+            resp = requests.get(config.remote_worker_url +'/output', params=params)
+            output = resp.text
+
+        else:
+
+            output = slurp_file(fn)
+            # the following line will convert HTML chars like > to entities &gt;
+            # this is needed so that XML input files will show paramters labels
+            output = cgi.escape(output)
+
+        desc = jobs(cid=c).description
+
+        params = { 'cid': cid, 'contents': output, 'app': app,
+                   'user': owner, 'owner': owner, 'fn': fn, 'description': desc }
+
+        if jid: params['jid'] = jid
+
+        return template('more', params)
+
+    except:
+        params = { 'app': app, 'err': "Couldn't read input file. Check casename." }
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        return template('error', params)
+
+@routes.get('/inputs')
+def inputs():
+    user = root.authorized()
+    app = request.query.app
+    cid = request.query.cid
+    try:
+        if re.search("/", cid):
+            (owner, c) = cid.split("/")
+        else:
+            owner = user
+            c = cid
+        run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
+        fn = os.path.join(run_dir, root.myapps[app].simfn)
+        inputs = slurp_file(fn)
+        # the following line will convert HTML chars like > to entities &gt;
+        # this is needed so that XML input files will show paramters labels
+        inputs = cgi.escape(inputs)
+
+        desc = jobs(cid=c).description
+
+        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': owner,
+                   'fn': fn, 'description': desc }
+        return template('more', params)
+    except:
+        params = { 'app': app, 'err': "Couldn't read input file. Check casename." }
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        return template('error', params)
 
 @routes.get('/files')
 def list_files():
@@ -252,4 +384,6 @@ def upload_data():
     # if os.path.isfile(save_path): return template('error', err="file exists")
     upload_data = request.forms.upload_data
     with open(save_path, 'w') as f: f.write(upload_data)
+
+
 
