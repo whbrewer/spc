@@ -83,8 +83,6 @@ def output():
     app = request.query.app
     cid = request.query.cid
     jid = request.query.jid
-    print "jid:", jid
-
 
     try:
         if re.search("/", cid):
@@ -384,6 +382,11 @@ def upload_data():
     # if os.path.isfile(save_path): return template('error', err="file exists")
     upload_data = request.forms.upload_data
     with open(save_path, 'w') as f: f.write(upload_data)
+
+@routes.get('/download/<filepath:path>')
+def download(filepath):
+    user = root.authorized()
+    return static_file(filepath, root='download', download=filepath)
 
 
 
