@@ -1,4 +1,4 @@
-from bottle import Bottle, request, template, redirect, static_file
+from bottle import Bottle, request, template, redirect
 import argparse as ap
 import re, sys, hashlib, traceback
 from model import *

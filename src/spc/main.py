@@ -357,34 +357,6 @@ def get_favicon():
     return static_file('favicon.ico', root='static')
 
 
-@get('/admin/show_users')
-def admin_show_users():
-    user = authorized()
-    if not user == "admin":
-        return template("error", err="must be admin to delete")
-    result = db().select(users.ALL)
-    params = { 'user': user, 'app': active_app() }
-    return template('admin/users', params, rows=result)
-
-@post('/admin/delete_user')
-def admin_delete_user():
-    user = authorized()
-    if not user == "admin":
-        return template("error", err="must be admin to delete")
-    uid = request.forms.uid
-    if int(uid) == 0:
-        return template("error", err="can't delete admin user")
-
-    if request.forms.del_files == "True":
-        path = os.path.join(user_dir, users(uid).user)
-        print "deleting files in path:", path
-        if os.path.isdir(path): shutil.rmtree(path)
-
-    del db.users[uid]
-    db.commit()
-
-    redirect("/admin/show_users")
-
 @post('/check_user')
 def check_user(user=""):
     if user == "": user = request.forms.user
@@ -962,6 +934,10 @@ def main():
     import account
     account.bind(globals())
     app.app.merge(account.routes)
+
+    import admin
+    admin.bind(globals())
+    app.app.merge(admin.routes)
 
     # run the app
     try:
