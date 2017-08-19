@@ -1,7 +1,7 @@
 # web framework
 from bottle import Bottle, template, static_file, request, redirect, app, get, post, run, delete, SimpleTemplate
 # python built-ins
-import uuid, hashlib, shutil, string
+import uuid, shutil, string
 import random, subprocess, sys, os, re
 import cgi, urllib, urllib2, json, smtplib, time
 import pickle
@@ -18,19 +18,6 @@ import apps as appmod
 from datetime import datetime, timedelta
 from user_data import user_dir, upload_dir
 
-# requires boto
-try:
-    import aws as awsmod
-except ImportError:
-    print "INFO: disabling AWS menu because boto module not installed"
-
-# requires docker-py
-try:
-    import container as dockermod
-except ImportError:
-    print "INFO: docker options disabled because docker-py module not installed"
-
-#
 try:
     import psutil
 except ImportError:
@@ -360,187 +347,14 @@ def get_stats_mem():
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
         pass
 
-@get('/account')
-def get_account():
-    user = authorized()
-    app = request.query.app or active_app()
-    params = {}
-    params['app'] = app
-    params['user'] = user
-    uid = users(user=user).id
-    return template('account', params)
-
-@get('/login')
-@get('/login/<referrer>')
-def get_login(referrer=''):
-    try:
-        return template('login', {'referrer': referrer,
-                                  'oauth_client_id': config.oauth_client_id})
-    except:
-        return template('login', {'referrer': referrer})
-
-@get('/logout')
-def logout():
-    s = request.environ.get('beaker.session')
-    s.delete()
-    try:
-        return template('logout',  {'oauth_client_id': config.oauth_client_id})
-    except:
-        redirect('/login')
 
 @get('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='static')
 
-@get('/theme')
-def get_theme():
-    user = authorized()
-    uid = users(user=user).id
-    return user_meta(uid=uid).theme
-
-@post('/theme')
-def save_theme():
-    user = authorized()
-    uid = users(user=user).id
-    u = user_meta(uid=uid)
-    print "saving theme:", request.forms.theme
-    user_meta.update_or_insert(user_meta.uid==uid, uid=uid, theme=request.forms.theme)
-    db.commit()
-
-@get('/download/<filepath:path>')
-def download(filepath):
-    user = authorized()
-    return static_file(filepath, root='download', download=filepath)
-
 @get('/favicon.ico')
 def get_favicon():
     return static_file('favicon.ico', root='static')
-
-@post('/login')
-def post_login():
-    if not config.auth:
-        return "ERROR: authorization disabled. Change auth setting in config.py to enable"
-
-    s = request.environ.get('beaker.session')
-    row = users(user=request.forms.get('user').lower())
-    pw = request.forms.passwd
-    err = "<p>Login failed: wrong username or password</p>"
-    # if password matches, set the USER_ID_SESSION_KEY
-    hashpw = hashlib.sha256(pw).hexdigest()
-
-    try:
-        if hashpw == row.passwd:
-            # set session key
-            user = s[USER_ID_SESSION_KEY] = row.user.lower()
-        else:
-            return err
-    except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        return err
-    # if referred to login from another page redirect to referring page
-    referrer = request.forms.referrer
-    if referrer: redirect('/'+referrer)
-    else: redirect('/myapps')
-
-@post('/tokensignin')
-def tokensignin():
-    email = request.forms.get('email')
-    s = request.environ.get('beaker.session')
-    user, _ = email.split('@')
-    s[USER_ID_SESSION_KEY] = user
-
-    if not users(user=user.lower()):
-       # insert a random password that nobody will be able to guess
-       hashpw = _hash_pass(str(uuid.uuid4())[:8])
-       users.insert(user=user.lower(), email=email, passwd=hashpw,
-                    priority=config.default_priority, new_shared_jobs=0)
-       db.commit()
-
-    return user
-
-@post('/account/change_password')
-def change_password():
-    # this is basically the same coding as the register function
-    # needs to be DRY'ed out in the future
-    user = authorized()
-    if config.auth and not authorized(): redirect('/login')
-    opasswd = request.forms.opasswd
-    pw1 = request.forms.npasswd1
-    pw2 = request.forms.npasswd2
-    # check old passwd
-    #user = request.forms.user
-    if _check_user_passwd(user, opasswd) and pw1 == pw2 and len(pw1) > 0:
-        u = users(user=user)
-        u.update_record(passwd=_hash_pass(pw1))
-        db.commit()
-    else:
-        return template('error', err="problem with password")
-    params = {}
-    params['user'] = user
-    params['status'] = "password changed"
-    return template('account', params)
-
-def _check_user_passwd(user, passwd):
-    """check password against database"""
-    u = users(user=user)
-    hashpw = _hash_pass(passwd)
-    if hashpw == u.passwd:
-        return True
-    else:
-        return False
-
-def _hash_pass(pw):
-    return hashlib.sha256(pw).hexdigest()
-
-@get('/register')
-def get_register():
-    return template('register')
-
-@post('/register')
-def post_register():
-    valid = True
-
-    user = request.forms.user
-    if check_user(user) == 'true': valid = False
-
-    email = request.forms.email
-    if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email) is None:
-        valid = False
-
-    pw1 = request.forms.password1
-    if (any(x.isupper() for x in pw1) and any(x.isdigit() for x in pw1) and len(pw1) >= 7):
-        pass
-    else:
-        valid = False
-
-    pw2 = request.forms.password2
-    if pw1 != pw2: valid = False
-
-    if valid:
-        hashpw = _hash_pass(pw1)
-        try:
-            config.default_priority
-        except:
-            config.default_priority = 3
-
-        # insert into database
-        users.insert(user=user.lower(), passwd=hashpw, email=email,
-                     priority=config.default_priority, new_shared_jobs=0)
-        db.commit()
-        # email admin user
-        try:
-            server = smtplib.SMTP('localhost')
-            message = user + " just registered " + email
-            admin_email = db(users.user=="admin").select(users.email).first()
-            server.sendmail('admin@spc.com', [admin_email], message)
-            server.quit()
-            redirect('/login')
-        except:
-            redirect('/login')
-    else:
-        return "ERROR: there was a problem registering. Please try again...<p>" \
-             + "<a href='/register'>Return to registration</a>"
 
 
 @get('/admin/show_users')
@@ -1102,7 +916,6 @@ def getuser():
     user = authorized()
     return user
 
-
 def main():
     init_config_options()
     # set user session if authentication is disabled
@@ -1119,10 +932,13 @@ def main():
 
     # attempt to mix in docker functionality
     try:
+        import container as dockermod
         dockermod.bind(globals())
         app.app.merge(dockermod.dockerMod)
-    except Exception, e:
-        pass
+    except (ImportError, Exception) as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print "INFO: docker options disabled because docker-py module not installed"
 
     import plots as plotsmod
     plotsmod.bind(globals())
@@ -1132,12 +948,20 @@ def main():
     jobsmod.bind(globals())
     app.app.merge(jobsmod.routes)
 
-    awsmod.bind(globals())
-    app.app.merge(awsmod.routes)
+    try:
+        import aws as awsmod
+        awsmod.bind(globals())
+        app.app.merge(awsmod.routes)
+    except ImportError:
+        print "INFO: disabling AWS menu because boto module not installed"
 
     import user_data
     user_data.bind(globals())
     app.app.merge(user_data.routes)
+
+    import account
+    account.bind(globals())
+    app.app.merge(account.routes)
 
     # run the app
     try:
