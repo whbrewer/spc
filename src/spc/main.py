@@ -1,11 +1,7 @@
 # web framework
-from bottle import Bottle, template, static_file, request, redirect, app, get, post, run, delete, SimpleTemplate
+from bottle import template, static_file, request, redirect, app, get, post, run, SimpleTemplate
 # python built-ins
-import uuid, shutil, string
-import random, subprocess, sys, os, re
-import cgi, urllib, urllib2, json, smtplib, time
-import pickle
-import traceback
+import shutil, sys, os, re, cgi, json, time, pickle, traceback
 try:
     import requests
 except:
@@ -15,8 +11,6 @@ from common import *
 import config, process
 import scheduler
 import apps as appmod
-from datetime import datetime, timedelta
-from user_data import user_dir, upload_dir
 
 try:
     import psutil
@@ -26,6 +20,7 @@ except ImportError:
 # data access layer
 #from gluino import DAL, Field
 from model import *
+from user_data import user_dir
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
@@ -60,7 +55,6 @@ def confirm_form():
     # generate a random case id
     # force the first string to be a letter so that the case id
     # will be guaranteed to be a string
-    # cid = random.choice(string.ascii_lowercase) + str(uuid.uuid4())[:5]
     while True:
         cid = rand_cid()
         run_dir = os.path.join(user_dir, user, app, cid)
@@ -172,26 +166,25 @@ def execute():
     app = request.forms.app
     cid = request.forms.cid
     np = int(request.forms.np) or 1
-    par_system = request.forms.par_system
     walltime = request.forms.walltime
     desc = request.forms.desc
     #priority = request.forms.priority
     params = {}
-    base_dir = os.path.join(user_dir, user, app, cid)
+    # base_dir = os.path.join(user_dir, user, app, cid)
 
     inputs, _, _ = myapps[app].read_params(user, cid)
     # in addition to supporting input params, also support case id
     if "cid" not in inputs: inputs["cid"] = cid
 
     # if preprocess is set run the preprocessor
-    try:
-        if myapps[app].preprocess:
-            processed_inputs = process.preprocess(inputs,
-                                       myapps[app].preprocess,base_dir)
-    except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        return template('error', err="There was an error with the preprocessor")
+    # try:
+    #     if myapps[app].preprocess:
+    #         processed_inputs = process.preprocess(inputs,
+    #                                    myapps[app].preprocess,base_dir)
+    # except:
+    #     exc_type, exc_value, exc_traceback = sys.exc_info()
+    #     print traceback.print_exception(exc_type, exc_value, exc_traceback)
+    #     return template('error', err="There was an error with the preprocessor")
 
     cmd = apps(name=app).command
 
@@ -224,21 +217,6 @@ def execute():
         print >> sys.stderr, "Execution failed:", e
         params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e }
         return template('error', params)
-
-def compute_stats(path):
-    """compute statistics on output data"""
-    xoutput = ''
-    if os.path.exists(path):
-        f = open(path,'r')
-        output = f.readlines()
-        for line in output:
-            m = re.search(r'#.*$', line)
-            if m:
-                xoutput += line
-        # app-specific: this is a temporary hack for mendel (remove in future)
-        if path[-3:] == "hst":
-            xoutput += output[len(output)-1]
-    return xoutput
 
 @get('/<app>/<cid>/tail')
 def tail(app, cid):
@@ -288,7 +266,7 @@ def tail(app, cid):
 
 @get('/')
 def root():
-    user = authorized()
+    authorized()
     redirect('/myapps')
 
 @get('/<app>')
@@ -319,7 +297,7 @@ def get_docker():
 
 @get('/stats')
 def get_stats():
-    user = authorized()
+    authorized()
     params = {}
 
     # number of jobs in queued, running, and completed states
@@ -454,7 +432,7 @@ def app_edit(appid):
 
 @post('/app/save/<appid>')
 def app_save(appid):
-    user = authorized()
+    authorized()
     app = request.forms.app
     lang = request.forms.language
     info = request.forms.input_format
@@ -478,7 +456,6 @@ def delete_app(appid):
         return template('error', err="must be admin to edit app")
     appname = request.forms.app
     del_app_dir = request.forms.del_app_dir
-    del_app_cases = request.forms.del_app_cases
 
     try:
         if user == 'admin':
@@ -570,7 +547,6 @@ def addapp():
     # put in db
     a = appmod.App()
     #print "user:",user
-    uid = users(user=user).id
     a.create(appname, description, category, language,
              input_format, command, preprocess, postprocess)
     # load_apps() needs to be called here in case a user wants to delete
@@ -581,7 +557,7 @@ def addapp():
 
 @get('/appconfig/status')
 def appconfig_status():
-    user = authorized()
+    authorized()
     status = dict()
     app = request.query.app
 
@@ -885,7 +861,7 @@ def init_config_options():
 
 def getuser():
     '''Return the current user, if logged in'''
-    user = authorized()
+    authorized()
     return user
 
 def main():
@@ -907,7 +883,7 @@ def main():
         import container as dockermod
         dockermod.bind(globals())
         app.app.merge(dockermod.dockerMod)
-    except (ImportError, Exception) as e:
+    except (ImportError, Exception):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
         print "INFO: docker options disabled because docker-py module not installed"
