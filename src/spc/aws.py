@@ -1,7 +1,30 @@
+from bottle import Bottle, request, template, redirect
+import argparse as ap
 import boto, sys
 import boto.ec2
+import traceback
 from datetime import datetime, timedelta
-import math
+from model import *
+
+routes = Bottle()
+
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
+
+def aws_conn(id):
+    """create a connection to the EC2 machine and return the handle"""
+    user = root.authorized()
+    uid = users(user=user).id
+    creds = db(db.aws_creds.uid==uid).select().first()
+    account_id = creds['account_id']
+    secret = creds['secret']
+    key = creds['key']
+    instances = db(db.aws_instances.id==id).select().first()
+    instance = instances['instance']
+    region = instances['region']
+    rate = instances['rate'] or 0.
+    return EC2(key, secret, account_id, instance, region, rate)
 
 class EC2(object):
     """start, stop, and status of EC2 instances"""
@@ -50,3 +73,107 @@ class EC2(object):
     def charge(self,uptime):
         cost = self.uptime_seconds(self.launch_time)/3600.*self.rate
         return '${:,.2f}'.format(cost)
+
+@routes.get('/aws')
+def get_aws():
+    user = root.authorized()
+    cid = request.query.cid
+    app = request.query.app or root.active_app()
+    uid = db(users.user==user).select(users.id).first()
+    #creds = db().select(db.aws_creds.ALL)
+    creds = db(aws_creds.uid==uid).select()
+    # look for aws instances registered by the current user
+    # which means first need to get the uid
+    instances = db(aws_instances.uid==uid).select()
+    params = {}
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    if request.query.status:
+        params['status'] = request.query.status
+    return template('aws', params, creds=creds, instances=instances)
+
+@routes.post('/aws/creds')
+def post_aws_creds():
+    user = root.authorized()
+    a = request.forms.account_id
+    s = request.forms.secret
+    k = request.forms.key
+    uid = users(user=user).id
+    db.aws_creds.insert(account_id=a, secret=s, key=k, uid=uid)
+    db.commit()
+    redirect('/aws')
+
+@routes.delete('/aws/creds/<id>')
+def aws_cred_del(id):
+    user = root.authorized()
+    del db.aws_creds[id]
+    db.commit()
+    redirect('/aws')
+
+@routes.post('/aws/instance')
+def create_instance():
+    """create instance"""
+    user = root.authorized()
+    instance = request.forms.instance
+    itype = request.forms.itype
+    region = request.forms.region
+    rate = request.forms.rate
+    uid = users(user=user).id
+    db.aws_instances.insert(instance=instance, itype=itype, region=region, rate=rate, uid=uid)
+    db.commit()
+    redirect('/aws')
+
+@routes.delete('/aws/instance/<aid>')
+def del_instance(aid):
+    user = root.authorized()
+    try:
+        del aws_instances[aid]
+        db.commit()
+        return "true"
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        return "false"
+
+@routes.get('/aws/status/<aid>')
+def aws_status(aid):
+    user = root.authorized()
+    cid = request.query.cid
+    app = request.query.app
+    params = {}
+    params['aid'] = aid
+    params['cid'] = cid
+    params['app'] = app
+    params['user'] = user
+    params['port'] = config.port
+
+    a = aws_conn(aid)
+
+    try:
+        astatus = a.status()
+        if astatus['state'] == "running":
+            astatus['uptime'] = a.uptime(astatus['launch_time'])
+            astatus['charge since last boot'] = a.charge(astatus['uptime'])
+        return template('aws_status', params, astatus=astatus)
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        return template('error', err="There was a problem connecting to the AWS machine. Check the credentials and make sure the machine is running.")
+
+@routes.post('/aws/<aid>')
+def aws_start(aid):
+    user = root.authorized()
+    a = aws_conn(aid)
+    a.start()
+    # takes a few seconds for the status to change on the Amazon end
+    time.sleep(15)
+
+@routes.delete('/aws/<aid>')
+def aws_stop(aid):
+    user = root.authorized()
+    a = aws_conn(aid)
+    a.stop()
+    # takes a few seconds for the status to change on the Amazon end
+    time.sleep(10)
+
