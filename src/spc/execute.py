@@ -5,7 +5,7 @@ from common import rand_cid, slurp_file, replace_tags
 from user_data import user_dir
 import config
 from model import db, apps, users
-import apps_reader_writer as apprw
+import app_reader_writer as apprw
 
 try:
     import requests

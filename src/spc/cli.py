@@ -1,7 +1,7 @@
 import sys, os, shutil, urllib2, time
 import xml.etree.ElementTree as ET
 import hashlib, re
-import apps_reader_writer as apprw
+import app_reader_writer as apprw
 
 if os.path.exists("src/spc/config.py"):
     from spc import config
