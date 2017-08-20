@@ -88,10 +88,8 @@ def init_config_options():
 
     return None
 
-def getuser():
-    '''Return the current user, if logged in'''
-    user = authorized()
-    return user
+
+## a couple functions for loading the apps
 
 def app_instance(input_format, appname, preprocess=0, postprocess=0):
     if(input_format=='namelist'):
@@ -151,7 +149,7 @@ def main():
     try:
         import container as dockermod
         dockermod.bind(globals())
-        app.app.merge(dockermod.dockerMod)
+        app.app.merge(dockermod.routes)
     except (ImportError, Exception):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)

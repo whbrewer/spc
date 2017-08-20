@@ -8,9 +8,9 @@ def bind(app):
     global root
     root = ap.Namespace(**app)
 
-dockerMod = Bottle()
+routes = Bottle()
 
-@dockerMod.route('/docker')
+@routes.get('/docker')
 def get_docker():
     user = root.authorized()
     params = {}
@@ -32,7 +32,7 @@ def get_docker():
 
     return template('docker', params, images=images, containers=conts)
 
-@dockerMod.route('/docker/create/<id>', method='post')
+@routes.post('/docker/create/<id>')
 def create_container(id):
     print "creating container:", id
     cli = docker.Client(base_url=base_url)
@@ -60,7 +60,7 @@ def create_container(id):
 #                  " Remove the container and retry."
 #     redirect("/docker?status="+status)
 
-@dockerMod.route('/docker/start/<id>', method='GET')
+@routes.get('/docker/start/<id>')
 def start_container(id):
     print "starting container:", id
     cli = docker.Client(base_url=base_url)
@@ -71,7 +71,7 @@ def start_container(id):
         status = "ERROR: failed to start container " + id
     redirect("/docker?status="+status)
 
-@dockerMod.route('/docker/stop/<id>', method='GET')
+@routes.get('/docker/stop/<id>')
 def stop_container(id):
     cli = docker.Client(base_url=base_url)
     try:
@@ -81,7 +81,7 @@ def stop_container(id):
         status = "ERROR stopping container " + id
     redirect("/docker?status="+status)
 
-@dockerMod.route('/docker/remove/<id>', method='GET')
+@routes.get('/docker/remove/<id>')
 def container_status(id):
     print "removing container:", id
     cli = docker.Client(base_url=base_url)
