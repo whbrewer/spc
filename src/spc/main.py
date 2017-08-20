@@ -42,8 +42,6 @@ except: SimpleTemplate.defaults["tab_title"] = "SPC"
 # create instance of scheduler
 sched = scheduler.Scheduler()
 
-pbuffer = ''
-
 @get('/')
 def root():
     authorized()
@@ -52,7 +50,6 @@ def root():
 @get('/docker')
 def get_docker():
     return template("error", err="This feature not enabled. Install docker-py to activate.")
-
 
 @get('/static/<filepath:path>')
 def server_static(filepath):

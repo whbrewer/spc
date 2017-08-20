@@ -186,7 +186,7 @@ def execute():
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
         print >> sys.stderr, "Execution failed:", e
-        params = { 'cid': cid, 'output': pbuffer, 'app': app, 'user': user, 'err': e }
+        params = { 'cid': cid, 'app': app, 'user': user, 'err': e }
         return template('error', params)
 
 @routes.get('/<app>/<cid>/tail')
