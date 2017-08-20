@@ -203,10 +203,12 @@ def main():
     elif (sys.argv[1] == "uninstall"):
         install_usage = "usage: spc uninstall appname"
         if len(sys.argv) == 3:
-            from spc import apps as appmod, migrate
+            # from spc import apps as appmod, migrate
+            import migrate, config
+            from appmod import input_file_reader_writer as ifrw
 
             app = sys.argv[2]
-            a = appmod.App(app)
+            a = ifrw.App(app)
             # connect to db
             dal = migrate.dal(uri=config.uri)
             result = dal.db(dal.db.apps.name==app).select()
@@ -228,8 +230,8 @@ def main():
         if len(sys.argv) == 3:
             import json
             import zipfile
-            from spc import apps as appmod
-            from spc import migrate, config
+            import migrate, config
+            from appmod import input_file_reader_writer as ifrw
 
             if re.search(r'http[s]://.*$', sys.argv[2]):
                 dlfile(sys.argv[2]) # download zip file
@@ -276,7 +278,7 @@ def main():
 
             # get name of app from json data
             app = parsed['name']
-            app_path = appmod.apps_dir + os.sep + app
+            app_path = ifrw.apps_dir + os.sep + app
 
             # move directory to apps folder
             shutil.move(app_dir_name,app_path)
@@ -292,12 +294,12 @@ def main():
                 sys.exit()
 
             # copy tpl file to views/apps folder
-            src = appmod.apps_dir + os.sep + app + os.sep + app + '.tpl'
+            src = ifrw.apps_dir + os.sep + app + os.sep + app + '.tpl'
             dst = 'views' + os.sep + 'apps'
             shutil.copy(src,dst)
 
             # turn on executable bit
-            path = os.path.join(appmod.apps_dir, app, app)
+            path = os.path.join(ifrw.apps_dir, app, app)
             if os.path.exists(path): os.chmod(path, 0700)
 
             # add app to database
