@@ -2,10 +2,10 @@
 from bottle import static_file, request, redirect, app, get, run, SimpleTemplate
 
 # python built-ins
-import sys, traceback
+import sys, traceback, importlib
 
 # other local modules
-import config, scheduler, apps_reader_writer as apprw
+import config, scheduler, app_reader_writer as apprw
 from model import db, apps
 from user_data import user_dir
 
@@ -30,7 +30,7 @@ app = SessionMiddleware(app(), session_opts)
 try:    SimpleTemplate.defaults["tab_title"] = config.tab_title
 except: SimpleTemplate.defaults["tab_title"] = "SPC"
 
-# create instance of scheduler
+# create an instance of the scheduler
 sched = scheduler.Scheduler()
 
 # a few generic routes
@@ -74,6 +74,8 @@ def set_active(app):
     s[APP_SESSION_KEY] = app
 
 def init_config_options():
+    """set default options for missing config file settings"""
+
     try: config.worker
     except: config.worker = "local"
 
@@ -109,6 +111,7 @@ def app_instance(input_format, appname, preprocess=0, postprocess=0):
     return myapp
 
 def load_apps():
+    """load apps into myapps global dictionary"""
     global myapps, default_app
     # Connect to DB
     result = db().select(apps.ALL)
@@ -131,68 +134,29 @@ def load_apps():
     default_app = name # simple soln - use last app read from DB
     return True
 
+
 def main():
     init_config_options()
-    # set user session if authentication is disabled
-    if not config.auth:
-        s = {USER_ID_SESSION_KEY: NOAUTH_USER}
-        user = s[USER_ID_SESSION_KEY]
-    # load apps into memory
     load_apps()
+
     # for local workers, start a polling thread to continuously check for queued jobs
     # if worker == "local": sched.poll()
     sched.poll()
 
-    # merge in other routes and modules
+    ## merge in other routes and modules
+    
+    modules = ["plots", "jobs", "aws", "container", "user_data", "account",
+               "admin", "app_routes", "execute", "util"]
 
-    # attempt to mix in docker functionality
-    try:
-        import container as dockermod
-        dockermod.bind(globals())
-        app.app.merge(dockermod.routes)
-    except (ImportError, Exception):
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        print "INFO: docker options disabled because docker-py module not installed"
+    for module in modules:
+        try:
+            imported_module = importlib.import_module('.' + module, 'spc')
+            getattr(imported_module, 'bind')(globals())
+            app.app.merge(getattr(imported_module, 'routes'))
+        except ImportError:
+            print "ERROR importing module " + module
 
-    import plots as plotsmod
-    plotsmod.bind(globals())
-    app.app.merge(plotsmod.routes)
-
-    import jobs as jobsmod
-    jobsmod.bind(globals())
-    app.app.merge(jobsmod.routes)
-
-    try:
-        import aws as awsmod
-        awsmod.bind(globals())
-        app.app.merge(awsmod.routes)
-    except ImportError:
-        print "INFO: disabling AWS menu because boto module not installed"
-
-    import user_data
-    user_data.bind(globals())
-    app.app.merge(user_data.routes)
-
-    import account
-    account.bind(globals())
-    app.app.merge(account.routes)
-
-    import admin
-    admin.bind(globals())
-    app.app.merge(admin.routes)
-
-    import apps as appmod
-    appmod.bind(globals())
-    app.app.merge(appmod.routes)
-
-    import execute
-    execute.bind(globals())
-    app.app.merge(execute.routes)
-
-    import util
-    util.bind(globals())
-    app.app.merge(util.routes)
+    ## start up the web server
 
     # run the app using server specified in config.py
     try:
