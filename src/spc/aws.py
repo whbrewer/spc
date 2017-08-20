@@ -1,10 +1,9 @@
 from bottle import Bottle, request, template, redirect
-import argparse as ap
-import boto, sys
+import boto, sys, traceback, time, argparse as ap
 import boto.ec2
-import traceback
-from datetime import datetime, timedelta
-from model import *
+from datetime import datetime
+from model import db, users, aws_creds, aws_instances
+import config
 
 routes = Bottle()
 
@@ -44,7 +43,6 @@ class EC2(object):
     
     def status(self):
         reservations = self.conn.get_all_instances()
-        instances = [i for r in reservations for i in r.instances]
         status = {}
         for r in reservations:
             for inst in r.instances:
@@ -106,7 +104,7 @@ def post_aws_creds():
 
 @routes.delete('/aws/creds/<id>')
 def aws_cred_del(id):
-    user = root.authorized()
+    root.authorized()
     del db.aws_creds[id]
     db.commit()
     redirect('/aws')
@@ -126,7 +124,7 @@ def create_instance():
 
 @routes.delete('/aws/instance/<aid>')
 def del_instance(aid):
-    user = root.authorized()
+    root.authorized()
     try:
         del aws_instances[aid]
         db.commit()
@@ -163,7 +161,7 @@ def aws_status(aid):
 
 @routes.post('/aws/<aid>')
 def aws_start(aid):
-    user = root.authorized()
+    root.authorized()
     a = aws_conn(aid)
     a.start()
     # takes a few seconds for the status to change on the Amazon end
@@ -171,7 +169,7 @@ def aws_start(aid):
 
 @routes.delete('/aws/<aid>')
 def aws_stop(aid):
-    user = root.authorized()
+    root.authorized()
     a = aws_conn(aid)
     a.stop()
     # takes a few seconds for the status to change on the Amazon end

@@ -1,10 +1,10 @@
 from bottle import Bottle, request, template, redirect
 import argparse as ap
-import os, sys, re, string, traceback, csv
+import os, sys, re, traceback
 import config
-from user_data import user_dir, upload_dir
+from user_data import user_dir
 
-from model import *
+from model import db, apps, jobs, plots, datasource
 from common import replace_tags
 
 routes = Bottle()
@@ -105,7 +105,6 @@ class Plot(object):
 
     def get_raw_data(self,fn,line1=1,line2=1e6):
         """return data as an array..."""
-        y = []
         data = open(fn, 'rU').readlines()
         return data[line1:line2]
 
@@ -170,7 +169,7 @@ def editplotdef(pltid):
 
 @routes.post('/plots/edit/<pltid>')
 def editplot(pltid):
-    user = root.authorized()
+    root.authorized()
     app = request.forms.app
     title = request.forms.title
     ptype = request.forms.ptype
@@ -183,7 +182,7 @@ def editplot(pltid):
 
 @routes.get('/plots/delete/<pltid>')
 def delete_plot(pltid):
-    user = root.authorized()
+    root.authorized()
     app = request.query.app
     del db.plots[pltid]
     db.commit()
@@ -205,7 +204,7 @@ def get_datasource(pltid):
 @routes.post('/plots/<pltid>/datasources')
 def add_datasource(pltid):
     """create a new datasource for given plot"""
-    user = root.authorized()
+    root.authorized()
     app = request.forms.app
     r = request.forms
     datasource.insert(pltid=pltid, label=r['label'],  filename=r['fn'], cols=r['cols'],
@@ -216,7 +215,7 @@ def add_datasource(pltid):
 @routes.get('/plots/<pltid>/datasources/<dsid>')
 def edit_datasource(pltid, dsid):
     """create a new datasource for given plot"""
-    user = root.authorized()
+    root.authorized()
     app = request.query.app
     query = (datasource.id==dsid)
     result = db(query).select().first()
@@ -226,7 +225,7 @@ def edit_datasource(pltid, dsid):
 @routes.post('/plots/<pltid>/datasources/<dsid>')
 def edit_datasource_post(pltid, dsid):
     """update datasource for given plot"""
-    user = root.authorized()
+    root.authorized()
     app = request.forms.get('app')
     r = request.forms
     datasource(id=dsid).update_record(label=r['label'], pltid=pltid, filename=r['fn'], cols=r['cols'],
@@ -237,8 +236,8 @@ def edit_datasource_post(pltid, dsid):
     return template('plots/edit_datasource', params)
 
 @routes.post('/plots/datasource_delete')
-def delete_plot():
-    user = root.authorized()
+def delete_datasource():
+    root.authorized()
     app = request.forms.get('app')
     pltid = request.forms.get('pltid')
     dsid = request.forms.get('dsid')
@@ -248,7 +247,7 @@ def delete_plot():
 
 @routes.post('/plots/create')
 def create_plot():
-    user = root.authorized()
+    root.authorized()
     app = request.forms.get('app')
     r = request
     plots.insert(appid=root.myapps[app].appid, ptype=r.forms['ptype'],
@@ -394,6 +393,7 @@ def plot_interface(pltid):
                         dat = p.get_data(plotpath, col1)
                 # remove this app-specific code in future
                 if app == "fpg":
+                    import process
                     dat = process.postprocess(plotpath, line1, line2)
             else:
                 dat = p.get_data(plotpath, col1, col2)
@@ -434,7 +434,6 @@ def matplotlib(pltid):
     # libraries, so that it can respond gracefully.  See for example the
     # Examples section at https://docs.python.org/2/library/imp.html
     user = root.authorized()
-    from pylab import savefig
     import StringIO
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
@@ -479,8 +478,6 @@ def matplotlib(pltid):
             # be changed to a range 1-1000.  Therefore, using : is deprecated
             # and will be removed in the future.
             (line1str, line2str) = re.split("[-:]", line_range)
-            line1 = int(line1str)
-            line2 = int(line2str)
 
     plotfn = re.sub(r"<cid>", cid, plotfn)
     sim_dir = os.path.join(user_dir, user, app, cid)

@@ -1,7 +1,7 @@
 from bottle import Bottle, request, template, redirect
 import os, sys, traceback, cgi, time, shutil, json
 import argparse as ap
-from model import users, db, apps, app_user, plots
+from model import users, db, apps, app_user, plots, datasource
 from common import slurp_file
 import config
 import apps_reader_writer as apprw
@@ -69,7 +69,7 @@ def showapps():
     return template('apps', params, rows=result, activated=activated_apps)
 
 @routes.get('/myapps')
-def showapps():
+def showmyapps():
     user = root.authorized()
     uid = users(user=user).id
     app = root.active_app()
@@ -128,7 +128,6 @@ def delete_app(appid):
     try:
         if user == 'admin':
             # delete entry in DB
-            a = apprw.App()
             if del_app_dir == "on":
                 del_files = True
             else:
@@ -437,7 +436,7 @@ def edit_inputs(step):
     elif step == "end":
         appname = request.forms.get('appname')
         html_tags = request.forms.getlist('html_tags')
-        data_type = request.forms.getlist('data_type')
+        # data_type = request.forms.getlist('data_type')
         descriptions = request.forms.getlist('descriptions')
         bool_rep = request.forms.bool_rep
         keys = request.forms.getlist('keys')

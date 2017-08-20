@@ -3,7 +3,7 @@ import os
 from bottle import template
 
 def preprocess(params,fn,base_dir=""):
-    """in the future these need to be generalized or hooked in"""
+    """app-specific code: in the future these need to be generalized or hooked in"""
     buf = ''
     if fn == 'fpg.in':  
         # convert input key/value params to command-line style args
@@ -26,12 +26,6 @@ def preprocess(params,fn,base_dir=""):
         buf = template('apps/simple.sim', params) 
         sim_dir = os.path.join(base_dir, fn)
         return _write_file(buf, sim_dir)
-    elif fn == 'terra.in':
-        # this doesn't work because already redirecting output to terra.out
-        # only way it might work is if we don't redirect output to terra.out
-        src = os.path.join(base_dir, "out"+params['casenum']+".00")
-        dst = os.path.join(base_dir, "terra.out")
-        #os.symlink(src, dst)
     elif fn == 'pbs.script':
         buf  = "#!/bin/sh\n"
         buf += "cd $PBS_O_WORKDIR"

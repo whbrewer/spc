@@ -1,8 +1,7 @@
 from bottle import Bottle, request, template, redirect
-import argparse as ap
-import os, shutil
-from model import *
+import os, shutil, argparse as ap
 from user_data import user_dir
+from model import db, users
 
 routes = Bottle()
 

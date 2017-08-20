@@ -1,13 +1,13 @@
-from bottle import Bottle, template, static_file, request, redirect, response, app, get, post, run
-import config, cgi, os
+from bottle import template, static_file, request, response, get, post, run
+import config, cgi, os, pickle, re, process
 from os import listdir
-import scheduler_sp
-import pickle, re
-from model import *
-from common import *
+
+import scheduler
+from model import db, users, jobs
+from common import slurp_file
 from user_data import user_dir
 
-sched = scheduler_sp.Scheduler()
+sched = scheduler.Scheduler()
 
 @get('/')
 def root(): return "hello this is an SPC worker node"
@@ -42,6 +42,7 @@ def listfiles():
     app = request.forms['app']
     user = request.forms['user']
     cid = request.forms['cid']
+    mypath = os.path.join(user_dir, user, app, cid)
     return listdir(mypath)
 
 @post('/execute')
@@ -54,14 +55,14 @@ def execute():
     appmod = pickle.loads(request.forms['appmod'])
     # remove the appmod key
     del request.forms['appmod']
-
     appmod.write_params(request.forms, user)
 
     # if preprocess is set run the preprocessor
     try:
         if appmod.preprocess:
             run_params, _, _ = appmod.read_params(user, cid)
-            processed_inputs = process.preprocess(run_params, appmod.preprocess, base_dir)
+            base_dir = os.path.join(user_dir, user, app)
+            process.preprocess(run_params, appmod.preprocess, base_dir)
         if appmod.preprocess == "terra.in":
             appmod.outfn = "out"+run_params['casenum']+".00"
     except:
@@ -74,7 +75,7 @@ def execute():
         jid = sched.qsub(app, cid, uid, np, priority, desc)
         return str(jid)
         #redirect("http://localhost:"+str(config.port)+"/case?app="+str(app)+"&cid="+str(cid)+"&jid="+str(jid))
-    except OSError, e:
+    except OSError:
         return "ERROR: a problem occurred"
 
 @get('/output')
@@ -133,6 +134,6 @@ def user_data(filepath):
     return static_file(filepath, root='user_data')
 
 
-def main()
+def main():
     sched.poll()
     run(host='0.0.0.0', port=config.port+1, debug=False)

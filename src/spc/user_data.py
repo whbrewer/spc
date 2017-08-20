@@ -1,8 +1,8 @@
 from bottle import Bottle, request, template, redirect, static_file
-import argparse as ap
-import os, re, sys, traceback, cgi
-from common import *
-from model import *
+import os, re, sys, shutil, urllib, traceback, cgi, time, argparse as ap
+from common import slurp_file
+from model import db, users, jobs
+import config
 try:
     import requests
 except:
@@ -19,7 +19,7 @@ def bind(app):
 
 @routes.get('/' + user_dir + '/<filepath:path>')
 def get_user_data(filepath):
-    user = root.authorized()
+    root.authorized()
     return static_file(filepath, root=user_dir)
 
 @routes.get('/more')
@@ -153,7 +153,6 @@ def inputs():
 
 @routes.get('/files')
 def list_files():
-    import glob
     user = root.authorized()
     cid = request.query.cid
     app = request.query.app
@@ -334,9 +333,9 @@ def zipget():
 
     # add case to database
     uid = users(user=user).id
-    jid = db.jobs.insert(uid=uid, app=app, cid=cid, state="REMOTE",
-                          description="", time_submit=time.asctime(),
-                          walltime="", np="", priority="")
+    db.jobs.insert(uid=uid, app=app, cid=cid, state="REMOTE",
+                   description="", time_submit=time.asctime(),
+                   walltime="", np="", priority="")
     db.commit()
 
     # status = "file_downloaded"
@@ -385,7 +384,7 @@ def upload_data():
 
 @routes.get('/download/<filepath:path>')
 def download(filepath):
-    user = root.authorized()
+    root.authorized()
     return static_file(filepath, root='download', download=filepath)
 
 

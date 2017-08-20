@@ -1,22 +1,12 @@
 # web framework
-from bottle import template, static_file, request, redirect, app, get, post, run, SimpleTemplate
+from bottle import static_file, request, redirect, app, get, run, SimpleTemplate
+
 # python built-ins
-import shutil, sys, os, re, cgi, json, time, pickle, traceback
+import sys, traceback
 
 # other local modules
-from common import *
-import config, process
-import scheduler
-import apps_reader_writer as apprw
-
-try:
-    import psutil
-except ImportError:
-    print "INFO: /stats page disabled because psutil module not installed"
-
-# data access layer
-#from gluino import DAL, Field
-from model import *
+import config, scheduler, apps_reader_writer as apprw
+from model import db, apps
 from user_data import user_dir
 
 ### session management configuration ###
@@ -34,22 +24,20 @@ session_opts = {
 }
 
 app = SessionMiddleware(app(), session_opts)
+### end session management configuration ###
+
 # context processors - send to every template
 try:    SimpleTemplate.defaults["tab_title"] = config.tab_title
 except: SimpleTemplate.defaults["tab_title"] = "SPC"
-### end session management configuration ###
 
 # create instance of scheduler
 sched = scheduler.Scheduler()
 
+# a few generic routes
 @get('/')
 def root():
     authorized()
     redirect('/myapps')
-
-@get('/docker')
-def get_docker():
-    return template("error", err="This feature not enabled. Install docker-py to activate.")
 
 @get('/static/<filepath:path>')
 def server_static(filepath):
@@ -58,23 +46,6 @@ def server_static(filepath):
 @get('/favicon.ico')
 def get_favicon():
     return static_file('favicon.ico', root='static')
-
-@post('/check_user')
-def check_user(user=""):
-    if user == "": user = request.forms.user
-    """Server-side AJAX function to check if a username exists in the DB."""
-    # return booleans as strings here b/c they get parsed by JavaScript
-    if users(user=user.lower()): return 'true'
-    else: return 'false'
-
-# this shows a listing of all files and allows the user to pick
-# which one to use
-#@get('/upload_contents/<appname>/<fn>')
-#def select_input_file(appname, fn):
-#    path = os.path.join(apprw.apps_dir, appname, fn)
-#    params = {'fn': fn, 'contents': slurp_file(path), 'appname': appname }
-#    return template('appconfig/step3', params)
-
 
 def authorized():
     '''Return True if user is already logged in, redirect otherwise'''
@@ -119,7 +90,7 @@ def init_config_options():
 
 def getuser():
     '''Return the current user, if logged in'''
-    authorized()
+    user = authorized()
     return user
 
 def app_instance(input_format, appname, preprocess=0, postprocess=0):
@@ -225,9 +196,10 @@ def main():
     util.bind(globals())
     app.app.merge(util.routes)
 
-    # run the app
+    # run the app using server specified in config.py
     try:
         run(server=config.server, app=app, host='0.0.0.0', \
             port=config.port, debug=False)
+    # use the Bottle built-in web server
     except:
         run(app=app, host='0.0.0.0', port=config.port, debug=False)

@@ -1,6 +1,7 @@
 import sys, os, shutil, urllib2, time
 import xml.etree.ElementTree as ET
 import hashlib, re
+import apps_reader_writer as apprw
 
 if os.path.exists("src/spc/config.py"):
     from spc import config
@@ -203,9 +204,7 @@ def main():
     elif (sys.argv[1] == "uninstall"):
         install_usage = "usage: spc uninstall appname"
         if len(sys.argv) == 3:
-            # from spc import apps as appmod, migrate
             import migrate, config
-            import apps_reader_writer as apprw
 
             app = sys.argv[2]
             a = apprw.App(app)
@@ -231,7 +230,6 @@ def main():
             import json
             import zipfile
             import migrate, config
-            import apps_reader_writer as apprw
 
             if re.search(r'http[s]://.*$', sys.argv[2]):
                 dlfile(sys.argv[2]) # download zip file
@@ -325,7 +323,7 @@ def main():
             dst = 'static' + os.sep + 'apps' + os.sep + app
             if 'assets' in parsed.keys():
                 for asset in parsed['assets']:
-                    src = os.path.join(appmod.apps_dir, app, asset)
+                    src = os.path.join(apprw.apps_dir, app, asset)
                     shutil.copy(src, dst)
 
             # add plots and datasources to db
@@ -375,8 +373,7 @@ def main():
 
     elif (sys.argv[1] == "update"):
         import json
-        from spc import apps as appmod
-        from spc import migrate, config
+        import migrate, config
         usage = "usage: spc update appname [command|plots]"
 
         if len(sys.argv) > 2:
@@ -385,7 +382,7 @@ def main():
             print usage
             sys.exit()
 
-        app_path = appmod.apps_dir + os.sep + app
+        app_path = apprw.apps_dir + os.sep + app
         dal = migrate.dal(uri=config.uri, migrate=True)
 
         # check if directory exists

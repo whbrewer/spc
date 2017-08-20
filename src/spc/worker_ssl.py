@@ -11,17 +11,17 @@
 #   cherrypy
 #   pyOpenSSL
 
-from bottle import Bottle, template, static_file, request, redirect, response, app, get, post, run, ServerAdapter
+from bottle import template, static_file, request, response, get, post, run, ServerAdapter
 from cherrypy import wsgiserver
 from cherrypy.wsgiserver.ssl_pyopenssl import pyOpenSSLAdapter
 from OpenSSL import SSL
 
-import config, cgi, os
+import cgi, os, process
 from os import listdir
 import scheduler_sp
 import pickle, re
-from model import *
-from common import *
+from model import db, users, jobs
+from common import slurp_file
 from user_data import user_dir
 
 ssl_cert = "/etc/apache2/ssl/ssl.crt"
@@ -58,6 +58,7 @@ def listfiles():
     app = request.forms['app']
     user = request.forms['user']
     cid = request.forms['cid']
+    mypath = os.path.join(user_dir, user, app, cid)
     return listdir(mypath)
 
 @post('/execute')
@@ -77,7 +78,8 @@ def execute():
     try:
         if appmod.preprocess:
             run_params, _, _ = appmod.read_params(user, cid)
-            processed_inputs = process.preprocess(run_params, appmod.preprocess, base_dir)
+            base_dir = os.path.join(user_dir, user, app)
+            process.preprocess(run_params, appmod.preprocess, base_dir)
         if appmod.preprocess == "terra.in":
             appmod.outfn = "out"+run_params['casenum']+".00"
     except:
@@ -90,7 +92,7 @@ def execute():
         jid = sched.qsub(app, cid, uid, np, priority, desc)
         return str(jid)
         #redirect("http://localhost:"+str(config.port)+"/case?app="+str(app)+"&cid="+str(cid)+"&jid="+str(jid))
-    except OSError, e:
+    except OSError:
         return "ERROR: a problem occurred"
 
 @get('/output')

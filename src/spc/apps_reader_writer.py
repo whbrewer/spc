@@ -1,6 +1,7 @@
 # import config
 import ConfigParser
 import json, os, re, shutil, sys
+# import logging
 import xml.etree.ElementTree as ET
 try:
     import yaml
@@ -8,14 +9,15 @@ except:
     print "ERROR: when trying to import yaml"
 
 import pytoml as toml
-from gluino import DAL, Field
-from model import *
+from model import db, apps
 from user_data import user_dir
 
 # using convention over configuration
 # the executable is the name of the app
 # and the input file is the name of the app + '.in'
 apps_dir = 'src/spc_apps'
+
+# logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 def is_number(value):
   try:
@@ -321,8 +323,8 @@ class INI(App):
                 try:
                     params[option] = Config.get(section, option)
                     blockmap.setdefault(section,[]).append(option)
-                    if params[option] == -1:
-                        DebugPrint("skip: %s" % option)
+                    # if params[option] == -1:
+                    #     logging.debug("skip: %s" % option)
                 except:
                     print("exception on %s!" % option)
                     params[option] = None
@@ -396,8 +398,8 @@ class XML(App):
                 try:
                     params[child.tag] = child.text
                     blockmap.setdefault(section.tag,[]).append(child.tag)
-                    if params[child.tag] == -1:
-                        DebugPrint("skip: %s" % child.tag)
+                    # if params[child.tag] == -1:
+                    #     logging.debug("skip: %s" % child.tag)
                 except:
                     print("exception on %s!" % child.tag)
                     params[child.tag] = None
@@ -475,8 +477,8 @@ class JSON(App):
                 try:
                     params[option] = parsed[section][option]
                     blockmap.setdefault(section,[]).append(option)
-                    if params[option] == -1:
-                        DebugPrint("skip: %s" % option)
+                    # if params[option] == -1:
+                    #     logging.debug("skip: %s" % option)
                 except:
                     print("exception on %s!" % option)
                     params[option] = None
@@ -556,8 +558,8 @@ class YAML(App):
                     try:
                         params[option] = parsed[section][option]
                         blockmap.setdefault(section,[]).append(option)
-                        if params[option] == -1:
-                            DebugPrint("skip: %s" % option)
+                        # if params[option] == -1:
+                        #     logging.debug("skip: %s" % option)
                     except:
                         print("exception on %s!" % option)
                         params[option] = None
@@ -569,8 +571,8 @@ class YAML(App):
                     for option in item:
                         try:
                             blockmap.setdefault(section,[]).append(option)
-                            if params[option] == -1:
-                                DebugPrint("skip: %s" % option)
+                            # if params[option] == -1:
+                            #     logging.debug("skip: %s" % option)
                         except:
                             print("exception on %s!" % option)
                             params[option] = None

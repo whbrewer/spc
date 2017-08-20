@@ -1,8 +1,7 @@
 from bottle import Bottle, request, template, redirect
-import argparse as ap
-import re, sys, hashlib, traceback
-from model import *
-
+import re, sys, hashlib, traceback, smtplib, uuid, argparse as ap
+from model import db, users, user_meta
+import config
 routes = Bottle()
 
 def bind(app):
@@ -28,12 +27,19 @@ def get_account():
     params = {}
     params['app'] = app
     params['user'] = user
-    uid = users(user=user).id
     return template('account', params)
 
 @routes.get('/register')
 def get_register():
     return template('register')
+
+@routes.post('/check_user')
+def check_user(user=""):
+    if user == "": user = request.forms.user
+    """Server-side AJAX function to check if a username exists in the DB."""
+    # return booleans as strings here b/c they get parsed by JavaScript
+    if users(user=user.lower()): return 'true'
+    else: return 'false'
 
 @routes.post('/register')
 def post_register():
@@ -104,7 +110,7 @@ def post_login():
     try:
         if hashpw == row.passwd:
             # set session key
-            user = s[root.USER_ID_SESSION_KEY] = row.user.lower()
+            s[root.USER_ID_SESSION_KEY] = row.user.lower()
         else:
             return err
     except:
@@ -173,7 +179,6 @@ def get_theme():
 def save_theme():
     user = root.authorized()
     uid = users(user=user).id
-    u = user_meta(uid=uid)
     print "saving theme:", request.forms.theme
     user_meta.update_or_insert(user_meta.uid==uid, uid=uid, theme=request.forms.theme)
     db.commit()

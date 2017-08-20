@@ -1,10 +1,11 @@
 from bottle import Bottle, request, template, redirect
-import argparse as ap
-import os, sys, re, string, traceback, csv, shutil, time
+import os, sys, re, traceback, shutil, time, argparse as ap
 import config
-from user_data import user_dir, upload_dir
-from common import *
-from model import *
+from user_data import user_dir
+from common import rand_cid, replace_tags, slurp_file
+from model import db, users, jobs
+from datetime import datetime, timedelta
+
 
 routes = Bottle()
 
@@ -182,7 +183,6 @@ def diff_jobs():
         content = slurp_file(fn).splitlines(1)
         contents.append(content)
 
-    inputs = slurp_file(fn)
     import difflib
     d = difflib.Differ()
     result = list(d.compare(contents[0], contents[1]))
@@ -193,8 +193,7 @@ def diff_jobs():
 
 @routes.post('/jobs/annotate')
 def annotate_job():
-    user = root.authorized()
-    app = request.forms.app
+    root.authorized()
     cid = request.forms.cid
     # jid = request.forms.jid
     desc = request.forms.description
@@ -205,7 +204,7 @@ def annotate_job():
 
 @routes.post('/jobs/star')
 def star_case():
-    user = root.authorized()
+    root.authorized()
     jid = request.forms.jid
     jobs(id=jid).update_record(starred="True")
     db.commit()
@@ -213,7 +212,7 @@ def star_case():
 
 @routes.post('/jobs/unstar')
 def unstar_case():
-    user = root.authorized()
+    root.authorized()
     jid = request.forms.jid
     jobs(id=jid).update_record(starred="False")
     db.commit()
@@ -221,9 +220,7 @@ def unstar_case():
 
 @routes.post('/jobs/share')
 def share_case():
-    user = root.authorized()
-    app = request.forms.app
-    cid = request.forms.cid
+    root.authorized()
     jid = request.forms.jid
     jobs(id=jid).update_record(shared="True")
     db.commit()
@@ -236,9 +233,7 @@ def share_case():
 
 @routes.post('/jobs/unshare')
 def unshare_case():
-    user = root.authorized()
-    app = request.forms.app
-    cid = request.forms.cid
+    root.authorized()
     jid = request.forms.jid
     jobs(id=jid).update_record(shared="False")
     db.commit()
@@ -330,7 +325,6 @@ def merge(rtype):
         app = jobs(id=jid).app
         cid = jobs(id=jid).cid
         cases.append(cid)
-        relpath = os.path.join(app, cid)
         fn = replace_tags(request.forms.file_pattern, {'cid': cid})
         path = os.path.join(user_dir, user, app, cid, fn)
 
@@ -419,7 +413,7 @@ def delete_jobs():
 
 @routes.post('/jobs/stop')
 def stop_job():
-    user = root.authorized()
+    root.authorized()
     app = request.forms.app
     cid = request.forms.cid
     jid = request.forms.jid

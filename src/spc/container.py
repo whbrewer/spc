@@ -1,14 +1,7 @@
-import sys
 import docker
-import datetime
-import math
-import json
 import argparse as ap
-import config
-from model import *
-from bottle import Bottle, request, redirect
+from bottle import Bottle, request, redirect, template
 
-root = 0
 base_url = 'unix://var/run/docker.sock'
 
 def bind(app):
@@ -19,12 +12,7 @@ dockerMod = Bottle()
 
 @dockerMod.route('/docker')
 def get_docker():
-    global root
-    if not root.authorized(): root.redirect('/login')
-    user = root.getuser()
-    cid = root.request.query.cid
-    app = root.request.query.app
-    uid = root.db(users.user==user).select(users.id).first()
+    user = root.authorized()
     params = {}
 
     try:
@@ -39,9 +27,10 @@ def get_docker():
     params['user'] = user
     params['app'] = root.active_app()
 
-    if root.request.query.status:
-        params['status'] = root.request.query.status
-    return root.template('docker', params, images=images, containers=conts)
+    if request.query.status:
+        params['status'] = request.query.status
+
+    return template('docker', params, images=images, containers=conts)
 
 @dockerMod.route('/docker/create/<id>', method='post')
 def create_container(id):
@@ -90,7 +79,7 @@ def stop_container(id):
         status = "SUCCESS: stopped container " + id
     except:
         status = "ERROR stopping container " + id
-    root.redirect("/docker?status="+status)
+    redirect("/docker?status="+status)
 
 @dockerMod.route('/docker/remove/<id>', method='GET')
 def container_status(id):

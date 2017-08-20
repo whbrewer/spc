@@ -3,7 +3,7 @@ import threading, time, os
 import config
 from multiprocessing import Process, BoundedSemaphore, Lock, Manager
 import subprocess, signal
-from gluino import DAL, Field
+from gluino import DAL
 import datetime
 from user_data import user_dir
 

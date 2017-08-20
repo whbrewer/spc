@@ -1,6 +1,6 @@
-from bottle import Bottle, request, template, redirect
+from bottle import Bottle, request, template
 import argparse as ap
-import psutil, json, traceback
+import sys, psutil, json, traceback
 from model import db, users, jobs
 
 routes = Bottle()
@@ -45,3 +45,7 @@ def get_stats_mem():
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
         pass
+
+
+
+
