@@ -10,8 +10,7 @@ except:
 from common import *
 import config, process
 import scheduler
-from appmod import input_file_reader_writer as ifrw
-from appmod import app_routes
+import apps_reader_writer as apprw
 
 try:
     import psutil
@@ -110,7 +109,7 @@ def confirm_form():
         # the simulation.  Just run the simulation when user submits the parameters
 
         # replace placeholder tags in the command line, e.g. <cid> with appropriate params
-        request.forms['rel_apps_path'] = (os.pardir + os.sep)*4 + ifrw.apps_dir
+        request.forms['rel_apps_path'] = (os.pardir + os.sep)*4 + apprw.apps_dir
         myapps[app].write_params(request.forms, user)
 
         cmd = apps(name=app).command
@@ -194,7 +193,7 @@ def execute():
 
     # this is the relative path to the executable from the case directory where
     # the simulation files are stored
-    inputs['rel_apps_path'] = (os.pardir + os.sep)*4 + ifrw.apps_dir
+    inputs['rel_apps_path'] = (os.pardir + os.sep)*4 + apprw.apps_dir
 
     # replace placeholder tags in the command line, e.g. <cid> with appropriate params
     cmd = replace_tags(cmd, inputs)
@@ -325,7 +324,7 @@ def check_user(user=""):
 # which one to use
 #@get('/upload_contents/<appname>/<fn>')
 #def select_input_file(appname, fn):
-#    path = os.path.join(ifrw.apps_dir, appname, fn)
+#    path = os.path.join(apprw.apps_dir, appname, fn)
 #    params = {'fn': fn, 'contents': slurp_file(path), 'appname': appname }
 #    return template('appconfig/step3', params)
 
@@ -384,17 +383,17 @@ def getuser():
 
 def app_instance(input_format, appname, preprocess=0, postprocess=0):
     if(input_format=='namelist'):
-        myapp = ifrw.Namelist(appname, preprocess, postprocess)
+        myapp = apprw.Namelist(appname, preprocess, postprocess)
     elif(input_format=='ini'):
-        myapp = ifrw.INI(appname, preprocess, postprocess)
+        myapp = apprw.INI(appname, preprocess, postprocess)
     elif(input_format=='xml'):
-        myapp = ifrw.XML(appname, preprocess, postprocess)
+        myapp = apprw.XML(appname, preprocess, postprocess)
     elif(input_format=='json'):
-        myapp = ifrw.JSON(appname, preprocess, postprocess)
+        myapp = apprw.JSON(appname, preprocess, postprocess)
     elif(input_format=='yaml'):
-        myapp = ifrw.YAML(appname, preprocess, postprocess)
+        myapp = apprw.YAML(appname, preprocess, postprocess)
     elif(input_format=='toml'):
-        myapp = ifrw.TOML(appname, preprocess, postprocess)
+        myapp = apprw.TOML(appname, preprocess, postprocess)
     else:
         return 'ERROR: input_format', input_format, 'not supported'
     return myapp
@@ -473,8 +472,9 @@ def main():
     admin.bind(globals())
     app.app.merge(admin.routes)
 
-    app_routes.bind(globals())
-    app.app.merge(app_routes.routes)
+    import apps as appmod
+    appmod.bind(globals())
+    app.app.merge(appmod.routes)
 
     # run the app
     try:

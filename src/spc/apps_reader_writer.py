@@ -9,8 +9,8 @@ except:
 
 import pytoml as toml
 from gluino import DAL, Field
-from ..model import *
-from ..user_data import user_dir
+from model import *
+from user_data import user_dir
 
 # using convention over configuration
 # the executable is the name of the app

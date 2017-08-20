@@ -1,10 +1,10 @@
 from bottle import Bottle, request, template, redirect
-import os, sys, traceback, cgi, time, shutil
+import os, sys, traceback, cgi, time, shutil, json
 import argparse as ap
-from ..model import users, db, apps, app_user, plots
-from ..common import slurp_file
-from .. import config
-import input_file_reader_writer as ifrw
+from model import users, db, apps, app_user, plots
+from common import slurp_file
+import config
+import apps_reader_writer as apprw
 
 routes = Bottle()
 
@@ -128,7 +128,7 @@ def delete_app(appid):
     try:
         if user == 'admin':
             # delete entry in DB
-            a = ifrw.App()
+            a = apprw.App()
             if del_app_dir == "on":
                 del_files = True
             else:
@@ -213,7 +213,7 @@ def addapp():
     preprocess = request.forms.preprocess
     postprocess = request.forms.postprocess
     # put in db
-    a = ifrw.App()
+    a = apprw.App()
     #print "user:",user
     a.create(appname, description, category, language,
              input_format, command, preprocess, postprocess)
@@ -230,8 +230,8 @@ def appconfig_status():
     app = request.query.app
 
     # check db file
-    command = apps(name=app).command
-    if command:
+    appname = apps(name=app).name
+    if appname:
         status['command'] = 1
     else:
         status['command'] = 0
@@ -244,14 +244,14 @@ def appconfig_status():
 
     # check inputs file
     extension = {'namelist': '.in', 'ini': '.ini', 'xml': '.xml', 'json': '.json', 'yaml': '.yaml'}
-    if os.path.exists(os.path.join(ifrw.apps_dir, app,
+    if os.path.exists(os.path.join(apprw.apps_dir, app,
                       app + extension[root.myapps[app].input_format])):
         status['inputs'] = 1
     else:
         status['inputs'] = 0
 
     # check app binary
-    if os.path.exists(os.path.join(ifrw.apps_dir, app, app)):
+    if os.path.exists(os.path.join(apprw.apps_dir, app, app)):
         status['binary'] = 1
     else:
         status['binary'] = 0
@@ -286,7 +286,7 @@ def appconfig_exe(step="upload"):
         # if ext not in ('.exe','.sh','.xml','.json',):
         #     return 'ERROR: File extension apps not allowed.'
         try:
-            save_path_dir = os.path.join(ifrw.apps_dir, name)
+            save_path_dir = os.path.join(apprw.apps_dir, name)
             if not os.path.exists(save_path_dir):
                 os.makedirs(save_path_dir)
             save_path = os.path.join(save_path_dir, name) + ext
@@ -359,7 +359,7 @@ def export():
 
         data['plots'].append(thisplot)
 
-    path = os.path.join(ifrw.apps_dir, app, 'spc.json')
+    path = os.path.join(apprw.apps_dir, app, 'spc.json')
     with open(path, 'w') as outfile:
         json.dump(data, outfile, indent=3)
 
@@ -387,7 +387,7 @@ def edit_inputs(step):
         if ext not in ('.in', '.ini', '.xml', '.json', '.yaml', ):
             return 'ERROR: File extension not allowed.'
         try:
-            save_path_dir = os.path.join(ifrw.apps_dir, name)
+            save_path_dir = os.path.join(apprw.apps_dir, name)
             if not os.path.exists(save_path_dir):
                 os.makedirs(save_path_dir)
             save_path = os.path.join(save_path_dir, name) + ext
@@ -411,7 +411,7 @@ def edit_inputs(step):
                 fn = appname + ".yaml"
             else:
                 return "ERROR: input_format not valid: ", input_format
-            path = os.path.join(ifrw.apps_dir, appname, fn)
+            path = os.path.join(apprw.apps_dir, appname, fn)
             # cgi.escape converts HTML chars like > to entities &gt;
             contents = cgi.escape(slurp_file(path))
             params = {'fn': fn, 'contents': contents, 'appname': appname,

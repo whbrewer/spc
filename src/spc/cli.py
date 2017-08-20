@@ -205,10 +205,10 @@ def main():
         if len(sys.argv) == 3:
             # from spc import apps as appmod, migrate
             import migrate, config
-            from appmod import input_file_reader_writer as ifrw
+            import apps_reader_writer as apprw
 
             app = sys.argv[2]
-            a = ifrw.App(app)
+            a = apprw.App(app)
             # connect to db
             dal = migrate.dal(uri=config.uri)
             result = dal.db(dal.db.apps.name==app).select()
@@ -231,7 +231,7 @@ def main():
             import json
             import zipfile
             import migrate, config
-            from appmod import input_file_reader_writer as ifrw
+            import apps_reader_writer as apprw
 
             if re.search(r'http[s]://.*$', sys.argv[2]):
                 dlfile(sys.argv[2]) # download zip file
@@ -278,7 +278,7 @@ def main():
 
             # get name of app from json data
             app = parsed['name']
-            app_path = ifrw.apps_dir + os.sep + app
+            app_path = apprw.apps_dir + os.sep + app
 
             # move directory to apps folder
             shutil.move(app_dir_name,app_path)
@@ -294,12 +294,12 @@ def main():
                 sys.exit()
 
             # copy tpl file to views/apps folder
-            src = ifrw.apps_dir + os.sep + app + os.sep + app + '.tpl'
+            src = apprw.apps_dir + os.sep + app + os.sep + app + '.tpl'
             dst = 'views' + os.sep + 'apps'
             shutil.copy(src,dst)
 
             # turn on executable bit
-            path = os.path.join(ifrw.apps_dir, app, app)
+            path = os.path.join(apprw.apps_dir, app, app)
             if os.path.exists(path): os.chmod(path, 0700)
 
             # add app to database

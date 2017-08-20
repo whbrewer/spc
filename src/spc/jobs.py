@@ -128,7 +128,9 @@ def start_new_job():
     else: redirect('/myapps')
 
     if config.auth and not root.authorized(): redirect('/login')
-    if root.myapps[app].appname not in root.myapps: redirect('/apps')
+
+    if app not in root.myapps: redirect('/apps')
+
     cid = request.query.cid
     if re.search("/", cid):
         owner, cid = cid.split("/")
