@@ -9,13 +9,6 @@ def bind(app):
     global root
     root = ap.Namespace(**app)
 
-@routes.get('/notifications')
-def get_notifications():
-    user = root.authorized()
-    response = dict()
-    response['new_shared_jobs'] = users(user=user).new_shared_jobs
-    return json.dumps(response)
-
 @routes.get('/stats')
 def get_stats():
     root.authorized()

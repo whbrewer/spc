@@ -1,5 +1,5 @@
 from bottle import Bottle, request, template, redirect, static_file
-import os, re, sys, shutil, urllib, traceback, cgi, time, argparse as ap
+import os, re, sys, shutil, urllib, traceback, cgi, time, json, argparse as ap
 from common import slurp_file
 from model import db, users, jobs
 import config
@@ -387,5 +387,10 @@ def download(filepath):
     root.authorized()
     return static_file(filepath, root='download', download=filepath)
 
-
+@routes.get('/notifications')
+def get_notifications():
+    user = root.authorized()
+    response = dict()
+    response['new_shared_jobs'] = users(user=user).new_shared_jobs
+    return json.dumps(response)
 
