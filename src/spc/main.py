@@ -144,13 +144,13 @@ def main():
     sched.poll()
 
     ## merge in other routes and modules
-    
+
     modules = ["plots", "jobs", "aws", "container", "user_data", "account",
                "admin", "app_routes", "execute", "util"]
 
     for module in modules:
         try:
-            imported_module = importlib.import_module('.' + module, 'spc')
+            imported_module = importlib.import_module(os.path.curdir + module, 'spc')
             getattr(imported_module, 'bind')(globals())
             app.app.merge(getattr(imported_module, 'routes'))
         except ImportError:
