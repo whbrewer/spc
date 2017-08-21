@@ -2,7 +2,7 @@
 from bottle import static_file, request, redirect, app, get, run, SimpleTemplate
 
 # python built-ins
-import sys, traceback, importlib
+import os, sys, traceback, importlib
 
 # other local modules
 import config, scheduler, app_reader_writer as apprw
