@@ -1,5 +1,9 @@
 # SPC Release Notes
 
+## 8/21/17
+
+On some Amazon Linux systems, the "./spc requirements" command may install `psutil` in a lib64 directory, which will not be recognized by the path, and thereby not be imported.  This means that you won't get CPU and Memory stats showing up on the jobs monitor view.  This is discussed here: https://github.com/pypa/pip/issues/4464.  The fix is to reinstall psutil into venv/lib/python2.7/dist-packages using `pip --target` command line option.
+
 ## 8/14/17 
 
 Since SPC v0.22, no longer can the app run command be specified or updated from the web interface. This was to prevent a major security vulnerability. Instead, edit the command field of the spc.json file for the app, and then run "./spc update appname command"
