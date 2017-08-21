@@ -3,8 +3,7 @@ import xml.etree.ElementTree as ET
 import hashlib, re
 import app_reader_writer as apprw
 
-if os.path.exists("src/spc/config.py"):
-    from spc import config
+if os.path.exists("config.py"): import config
 
 sys.argv[1:]
 
@@ -20,7 +19,7 @@ def usage():
     buf += "install       install an app\n"
     buf += "run           start the server\n"
     buf += "runworker     start a worker\n"
-    buf += "runsslworker  start a SSL worker\n"
+    buf += "runsslworker  start an SSL worker\n"
     buf += "uninstall     uninstall an app\n"
     # update is currently too buggy, don't release yet
     # buf += "update        update an app (in case spc.json was modified)\n"
@@ -175,11 +174,6 @@ def main():
     elif (sys.argv[1] == "migrate"):
         print "migrating database schema changes"
         migrate()
-    elif (sys.argv[1] == "go"):
-        print "\"spc go\" has been deprecated. use \"spc run\" instead"
-        time.sleep(3)
-        import spc.main
-        spc.main.main()
     elif (sys.argv[1] == "run"):
         import spc.main
         spc.main.main()

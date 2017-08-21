@@ -1,4 +1,3 @@
-# import config
 import ConfigParser
 import json, os, re, shutil, sys
 # import logging

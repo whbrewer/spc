@@ -6,13 +6,11 @@ from common import rand_cid, replace_tags, slurp_file
 from model import db, users, jobs
 from datetime import datetime, timedelta
 
-
 routes = Bottle()
 
 def bind(app):
     global root
     root = ap.Namespace(**app)
-
 
 @routes.get('/jobs')
 def show_jobs():
