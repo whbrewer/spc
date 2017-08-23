@@ -2,6 +2,7 @@ from bottle import Bottle, request, template, redirect
 import re, sys, hashlib, traceback, smtplib, uuid, argparse as ap
 from model import db, users, user_meta
 import config
+
 routes = Bottle()
 
 def bind(app):

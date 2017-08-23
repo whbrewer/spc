@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-import threading, time, os
-import config
+import threading, time, os, subprocess, signal, datetime
 from multiprocessing import Process, BoundedSemaphore, Lock, Manager
-import subprocess, signal
+
 from gluino import DAL
-import datetime
 from user_data import user_dir
+import config
 
 STATE_RUN = 'R'
 STATE_QUEUED = 'Q'

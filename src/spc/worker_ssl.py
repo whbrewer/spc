@@ -15,14 +15,13 @@ from bottle import template, static_file, request, response, get, post, run, Ser
 from cherrypy import wsgiserver
 from cherrypy.wsgiserver.ssl_pyopenssl import pyOpenSSLAdapter
 from OpenSSL import SSL
-
-import cgi, os, process
 from os import listdir
-import scheduler_sp
-import pickle, re
+import cgi, os, process, pickle, re
+
+import scheduler
 from model import db, users, jobs
-from common import slurp_file
 from user_data import user_dir
+from common import slurp_file
 
 ssl_cert = "/etc/apache2/ssl/ssl.crt"
 ssl_key = "/etc/apache2/ssl/private.key"

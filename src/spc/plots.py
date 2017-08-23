@@ -1,11 +1,11 @@
 from bottle import Bottle, request, template, redirect
 import argparse as ap
 import os, sys, re, traceback
-import config
-from user_data import user_dir
 
+from user_data import user_dir
 from model import db, apps, jobs, plots, datasource
 from common import replace_tags
+import config
 
 routes = Bottle()
 

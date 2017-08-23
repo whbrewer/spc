@@ -1,10 +1,11 @@
 from bottle import Bottle, request, template, redirect
 import os, sys, re, traceback, shutil, time, argparse as ap
-import config
+from datetime import datetime, timedelta
+
 from user_data import user_dir
 from common import rand_cid, replace_tags, slurp_file
 from model import db, users, jobs
-from datetime import datetime, timedelta
+import config
 
 routes = Bottle()
 

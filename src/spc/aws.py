@@ -2,6 +2,7 @@ from bottle import Bottle, request, template, redirect
 import boto, sys, traceback, time, argparse as ap
 import boto.ec2
 from datetime import datetime
+
 from model import db, users, aws_creds, aws_instances
 import config
 

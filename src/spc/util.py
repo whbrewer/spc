@@ -1,6 +1,6 @@
 from bottle import Bottle, request, template
-import argparse as ap
-import sys, psutil, json, traceback
+import sys, psutil, json, traceback, argparse as ap
+
 from model import db, users, jobs
 
 routes = Bottle()

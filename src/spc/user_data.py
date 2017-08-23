@@ -1,12 +1,14 @@
 from bottle import Bottle, request, template, redirect, static_file
-import os, re, sys, shutil, urllib, traceback, cgi, time, json, argparse as ap
-from common import slurp_file
-from model import db, users, jobs
-import config
+import os, re, sys, shutil, urllib, traceback, cgi, time, json
+import argparse as ap
 try:
     import requests
 except:
     print "INFO: not importing requests... only needed for remote workers"
+
+from common import slurp_file
+from model import db, users, jobs
+import config
 
 user_dir = 'user_data'
 upload_dir = '_uploads'

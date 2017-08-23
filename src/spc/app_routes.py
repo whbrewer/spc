@@ -1,10 +1,11 @@
 from bottle import Bottle, request, template, redirect
 import os, sys, traceback, cgi, time, shutil, json
 import argparse as ap
+
 from model import users, db, apps, app_user, plots, datasource
 from common import slurp_file
-import config
 import app_reader_writer as apprw
+import config
 
 routes = Bottle()
 
