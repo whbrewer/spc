@@ -46,7 +46,7 @@ def post_register():
     valid = True
 
     user = request.forms.user
-    if root.check_user(user) == 'true': valid = False
+    if check_user(user) == 'true': valid = False
 
     email = request.forms.email
     if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email) is None:
