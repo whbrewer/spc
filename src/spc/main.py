@@ -1,5 +1,6 @@
 # web framework
-from bottle import static_file, request, redirect, app, get, run, SimpleTemplate
+from bottle import static_file, request, redirect, app, get, run,\
+                   SimpleTemplate, error, template
 
 # python built-ins
 import os, sys, traceback, importlib
@@ -47,6 +48,10 @@ def server_static(filepath):
 def get_favicon():
     return static_file('favicon.ico', root='static')
 
+@error(500)
+def error500(error):
+    return template('error', err="500. Check log for traceback")
+
 def authorized():
     '''Return True if user is already logged in, redirect otherwise'''
     if config.auth:
@@ -66,7 +71,6 @@ def active_app():
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        return ''
 
 def set_active(app):
     # set a session variable to keep track of the current app
