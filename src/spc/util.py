@@ -1,7 +1,7 @@
 from bottle import Bottle, request, template
 import sys, psutil, json, traceback, argparse as ap
 
-from model import db, users, jobs
+from model import db, jobs
 
 routes = Bottle()
 
