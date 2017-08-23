@@ -26,7 +26,7 @@ from common import slurp_file
 ssl_cert = "/etc/apache2/ssl/ssl.crt"
 ssl_key = "/etc/apache2/ssl/private.key"
 
-sched = scheduler_sp.Scheduler()
+sched = scheduler.Scheduler()
 
 @get('/')
 def root(): return "hello this is an SPC worker node"
