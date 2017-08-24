@@ -55,7 +55,7 @@
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="filepath" value="{{plotpath}}">
-                    <button class="btn btn-warning hidden-xs"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
+                    <button class="btn btn-warning hidden-xs hidden-sm hidden-md"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
                 </form>
             %end
 
