@@ -1,4 +1,4 @@
-from bottle import Bottle, request, template, redirect
+from bottle import Bottle, request, template, redirect, response
 import re, sys, hashlib, traceback, smtplib, uuid, argparse as ap
 from model import db, users, user_meta
 import config
@@ -20,6 +20,12 @@ def _check_user_passwd(user, passwd):
 
 def _hash_pass(pw):
     return hashlib.sha256(pw).hexdigest()
+
+@routes.get('/rest/<name>')
+def root(name):
+    '''Simple example to demonstrate how to test Bottle routes'''
+    response.content_type = 'text/plain'
+    return ['you requested "{}"'.format(name)]
 
 @routes.get('/account')
 def get_account():

@@ -186,15 +186,17 @@ def main():
     elif (sys.argv[1] == "search"):
         print notyet
     elif (sys.argv[1] == "test"):
-        os.chdir('tests')
-        if not os.path.exists('db'): os.makedirs('db')
-        if not os.path.exists('src'): os.makedirs('src')
-        if not os.path.exists('apps'): os.makedirs('apps')
-        os.system("../spc init")
-        print "RUNNING UNIT TESTS..."
-        os.system("python test_unit.py")
-        print "RUNNING FUNCTIONAL TESTS..."
-        os.system("python test_func.py")
+        import spc.test
+        spc.test.main()
+        #os.chdir('tests')
+        #if not os.path.exists('db'): os.makedirs('db')
+        #if not os.path.exists('src'): os.makedirs('src')
+        #if not os.path.exists('apps'): os.makedirs('apps')
+        #os.system("../spc init")
+        #print "RUNNING UNIT TESTS..."
+        #os.system("python test_unit.py")
+        #print "RUNNING FUNCTIONAL TESTS..."
+        #os.system("python test_func.py")
     elif (sys.argv[1] == "uninstall"):
         install_usage = "usage: spc uninstall appname"
         if len(sys.argv) == 3:
