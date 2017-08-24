@@ -22,7 +22,8 @@
                         <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
                     </form>
 
-                    <button type="button" class="btn btn-danger hidden-xs"
+                    <button type="button" 
+                            class="btn btn-danger hidden-xs hidden-sm hidden-md"
                             data-toggle="modal" data-target="#dModal">
                             <span class="glyphicon glyphicon-trash"></span> Delete
                     </button>
