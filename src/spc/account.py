@@ -1,6 +1,7 @@
 from bottle import Bottle, request, template, redirect, response
 import re, sys, hashlib, traceback, smtplib, uuid, argparse as ap
 from model import db, users, user_meta
+from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
 import config
 
 routes = Bottle()
@@ -111,7 +112,7 @@ def post_login():
     try:
         if hashpw == row.passwd:
             # set session key
-            s[root.USER_ID_SESSION_KEY] = row.user.lower()
+            s[USER_ID_SESSION_KEY] = row.user.lower()
         else:
             return err
     except:
@@ -159,7 +160,7 @@ def tokensignin():
     email = request.forms.get('email')
     s = request.environ.get('beaker.session')
     user, _ = email.split('@')
-    s[root.USER_ID_SESSION_KEY] = user
+    s[USER_ID_SESSION_KEY] = user
 
     if not users(user=user.lower()):
        # insert a random password that nobody will be able to guess

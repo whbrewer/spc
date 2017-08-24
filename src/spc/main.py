@@ -9,13 +9,14 @@ import os, sys, traceback, importlib
 import config, scheduler, app_reader_writer as apprw
 from model import db, apps
 from user_data import user_dir
+from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
 
-USER_ID_SESSION_KEY = 'user_id'
-APP_SESSION_KEY = 'app'
-NOAUTH_USER = 'guest'
+# USER_ID_SESSION_KEY = 'user_id'
+# APP_SESSION_KEY = 'app'
+# NOAUTH_USER = 'guest'
 
 session_opts = {
     'session.type': 'file',
