@@ -21,12 +21,6 @@ def _check_user_passwd(user, passwd):
 def _hash_pass(pw):
     return hashlib.sha256(pw).hexdigest()
 
-@routes.get('/rest/<name>')
-def root(name):
-    '''Simple example to demonstrate how to test Bottle routes'''
-    response.content_type = 'text/plain'
-    return ['you requested "{}"'.format(name)]
-
 @routes.get('/account')
 def get_account():
     user = root.authorized()

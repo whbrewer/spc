@@ -1,29 +1,13 @@
-from bottle import Bottle, response
+from bottle import Bottle, response, SimpleTemplate
 from webtest import TestApp
 import importlib, os
 
 # the real webapp
 app = Bottle()
 
-# @app.get('/rest/<name>')
-# def root(name):
-#     '''Simple example to demonstrate how to test Bottle routes'''
-#     response.content_type = 'text/plain'
-#     return ['you requested "{}"'.format(name)]
-
-
-def test_root():
-    '''Test GET /'''
-
-    # wrap the real app in a TestApp object
-    test_app = TestApp(app)
-
-    # simulate a call (HTTP GET)
-    resp = test_app.get('/rest/roger')
-
-    # validate the response
-    assert resp.body == 'you requested "roger"'
-    assert resp.content_type == 'text/plain'
+# context processors - send to every template
+try:    SimpleTemplate.defaults["tab_title"] = config.tab_title
+except: SimpleTemplate.defaults["tab_title"] = "SPC"
 
 def main():
 
@@ -37,7 +21,11 @@ def main():
         except ImportError:
             print "ERROR importing module " + module
 
-    # print app.routes
+    print app.routes
 
-    test_root()
+    test_app = TestApp(app)
+
+    resp = test_app.get('/login')
+    # assert resp.status == '200 OK'
+    assert resp.status_int == 200
 
