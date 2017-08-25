@@ -113,6 +113,7 @@ def post_login():
         if hashpw == row.passwd:
             # set session key
             s[USER_ID_SESSION_KEY] = row.user.lower()
+            s.save()
         else:
             return err
     except:

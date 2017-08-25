@@ -1,19 +1,18 @@
-from bottle import Bottle, response, SimpleTemplate
+from bottle import Bottle, response, request, SimpleTemplate
 from webtest import TestApp
 import importlib, os
 from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
 from user_data import user_dir
 from common import rand_cid
+from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
+from model import users
+import config
 
 # the real webapp
 app = Bottle()
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
-
-# USER_ID_SESSION_KEY = 'user_id'
-# APP_SESSION_KEY = 'app'
-# NOAUTH_USER = 'guest'
 
 session_opts = {
     'session.type': 'file',
@@ -30,9 +29,26 @@ try:    SimpleTemplate.defaults["tab_title"] = config.tab_title
 except: SimpleTemplate.defaults["tab_title"] = "SPC"
 
 
+# DRY this out in the future -- currently in main.py and here
+def authorized():
+    '''Return username if user is already logged in, redirect otherwise'''
+    if config.auth:
+        s = request.environ.get('beaker.session')
+        s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY, False)
+        if not s[USER_ID_SESSION_KEY]:
+            redirect('/login')
+        else:
+            return s[USER_ID_SESSION_KEY]
+    else:
+        return NOAUTH_USER
+
+
 def main():
 
     modules = ["account", "admin"]
+
+    # propagate exceptions through middleware, otherwise difficult to debug
+    app.app.catchall = False
 
     for module in modules:
         try:
@@ -48,6 +64,7 @@ def main():
     test_app = TestApp(app)
 
     # GET /register
+    print "GET /register"
     resp = test_app.get('/register')
     assert resp.status_int == 200
 
@@ -56,27 +73,27 @@ def main():
     passwd = 'XYZ1234'
 
     # POST /check_user - test existing user
-    resp = test_app.post('/check_user', {'user': 'admin'})
     print "POST /check_user user =", 'admin', resp.status
+    resp = test_app.post('/check_user', {'user': 'admin'})
     assert resp.status_int == 200 # serves error page
     assert resp.body == "true"
 
     # POST /check_user - test non-existing user
-    resp = test_app.post('/check_user', {'user': user})
     print "POST /check_user user =", user, resp.status
+    resp = test_app.post('/check_user', {'user': user})
     assert resp.status_int == 200 # serves error page
     assert resp.body == "false"
 
     print "registering user", user
 
     # POST /register test new user
-    resp = test_app.post('/register', {'user': user, 'email': email, 'password1': passwd, 'password2': passwd})
     print "POST /register", resp.status
+    resp = test_app.post('/register', {'user': user, 'email': email, 'password1': passwd, 'password2': passwd})
     assert resp.status_int == 302 # redirects to /login or to referrer   
 
     # POST /register test user already exists
-    resp = test_app.post('/register', {'user': user, 'email': email, 'password1': passwd, 'password2': passwd})
     print "POST /register", resp.status
+    resp = test_app.post('/register', {'user': user, 'email': email, 'password1': passwd, 'password2': passwd})
     assert resp.status_int == 200 # return error template   
 
     # POST /register test new user
@@ -86,32 +103,30 @@ def main():
     # assert resp.status_int == 302 # redirects to /login or to referrer   
 
     # GET /login
-    resp = test_app.get('/login')
     print "GET /login", resp.status
+    resp = test_app.get('/login')
     assert resp.status_int == 200
 
 
     ### Admin
 
     # POST /login - test incorrect password
-    resp = test_app.post('/login', {'user': 'admin', 'passwd': 'xyz'})
     print "POST /login", resp.status
+    resp = test_app.post('/login', {'user': 'admin', 'passwd': 'xyz'})
     assert resp.status_int == 200 # serves error page
 
     # POST /login - test correct password
-    resp = test_app.post('/login', {'user': 'admin', 'passwd': 'admin'})
     print "POST /login", resp.status
+    resp = test_app.post('/login', {'user': 'admin', 'passwd': 'admin'})
     assert resp.status_int == 302 # redirects to /myapps or to referrer
 
     # POST /admin/delete_user
-    # resp = test_app.post('/admin/delete_user', {'user': user})
-    # print "POST /admin/delete_user user =", user, resp.status
-    # assert resp.status_int == 302 # serves error page
+    uid = users(user=user).id
+    print "POST /admin/delete_user user =", user, uid, resp.status
+    resp = test_app.post('/admin/delete_user', {'uid': uid})
+    assert resp.status_int == 302 # serves error page
 
     # test GET /logout -- this should be the last test
     resp = test_app.get('/logout')
     print "POST /logout", resp.status
     assert resp.status_int == 302
-
-
-

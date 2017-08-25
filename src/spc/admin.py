@@ -24,6 +24,7 @@ def admin_delete_user():
     if not user == "admin":
         return template("error", err="must be admin to delete")
     uid = request.forms.uid
+
     if int(uid) == 0:
         return template("error", err="can't delete admin user")
 

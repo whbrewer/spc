@@ -14,10 +14,6 @@ from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
 
-# USER_ID_SESSION_KEY = 'user_id'
-# APP_SESSION_KEY = 'app'
-# NOAUTH_USER = 'guest'
-
 session_opts = {
     'session.type': 'file',
     'session.cookie_expires': True, # delete cookies when browser closed
@@ -54,7 +50,7 @@ def error500(error):
     return template('error', err="500. Check log for traceback")
 
 def authorized():
-    '''Return True if user is already logged in, redirect otherwise'''
+    '''Return username if user is already logged in, redirect otherwise'''
     if config.auth:
         s = request.environ.get('beaker.session')
         s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY, False)
