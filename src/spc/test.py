@@ -1,4 +1,4 @@
-from bottle import Bottle, response, request, SimpleTemplate
+from bottle import Bottle, response, request, redirect, SimpleTemplate
 from webtest import TestApp
 import importlib, os
 from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
@@ -97,10 +97,10 @@ def main():
     assert resp.status_int == 200 # return error template   
 
     # POST /register test new user
-    # npasswd = "Hello1234"
-    # resp = test_app.post('/account/change_password', {'user': user, 'opasswd': passwd, 'npasswd1': npasswd, 'npasswd2': npasswd})
-    # print "POST /account/change_password", resp.status
-    # assert resp.status_int == 302 # redirects to /login or to referrer   
+    npasswd = "Hello1234"
+    print "POST /account/change_password", resp.status
+    resp = test_app.post('/account/change_password', {'user': user, 'opasswd': passwd, 'npasswd1': npasswd, 'npasswd2': npasswd})
+    assert resp.status_int == 302 # redirects to /login or to referrer   
 
     # GET /login
     print "GET /login", resp.status
