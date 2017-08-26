@@ -39,7 +39,7 @@ function prevTab(elem) {
 
 function checkApp(appname) {
    jQuery.ajax({
-      type: "POST",
+      type: "GET",
       url:  "/app_exists/"+appname,
       data: { appname: appname },
       complete: function(xhr){

@@ -125,8 +125,9 @@ def main():
         except ImportError:
             print "ERROR importing module " + module
 
-    for route in app.app.routes:
-        print route.method + "\t" + route.rule
+    # list all routes
+    # for route in app.app.routes:
+    #     print route.method + "\t" + route.rule
 
     print 
 
@@ -185,9 +186,15 @@ def main():
     print "\n### Test /app routes"
 
     # test GET /logout -- this should be the last test
-    print "GET /dna"
-    resp = test_app.get('/dna')
+    appname = 'dna'
+    print "GET /" + appname
+    resp = test_app.get('/' + appname)
     assert resp.status_int == 200
+
+    print "GET /app_exists/<appname>"
+    resp = test_app.get('/app_exists/'+ appname)
+    assert resp.status_int == 200 
+    assert resp.body == "true"
 
     ### Admin
 

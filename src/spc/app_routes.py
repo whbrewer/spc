@@ -35,10 +35,9 @@ def show_app(app):
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
         redirect('/app/'+app)
 
-@routes.post('/app_exists/<appname>')
+@routes.get('/app_exists/<appname>')
 def app_exists(appname):
-    """Server-side AJAX function to check if an app exists in the DB."""
-    appname = request.forms.appname
+    '''Server-side AJAX function to check if an app exists in the DB.'''
     # return booleans as strings here b/c they get parsed by JavaScript
     if apps(name=appname): return 'true'
     else: return 'false'
