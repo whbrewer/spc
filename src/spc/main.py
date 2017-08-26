@@ -147,8 +147,8 @@ def main():
 
     ## merge in other routes and modules
 
-    modules = ["plots", "jobs", "aws", "container", "user_data", "account",
-               "admin", "app_routes", "execute", "util"]
+    modules = ["account", "admin", "app_routes", "aws", "container",
+               "execute", "jobs", "plots", "user_data", "util"]
 
     for module in modules:
         try:
