@@ -1,5 +1,9 @@
 # SPC Release Notes
 
+## 8/29/17
+
+If you want to run `./spc test` to test routes, need to first run `./spc requirements` on existing installation to update the 3rd party dependencies.
+
 ## 8/21/17
 
 On some Amazon Linux systems, the "./spc requirements" command may install `psutil` in a lib64 directory, which will not be recognized by the path, and thereby not be imported.  This means that you won't get CPU and Memory stats showing up on the jobs monitor view.  This is discussed here: https://github.com/pypa/pip/issues/4464.  The fix is to reinstall psutil into venv/lib/python2.7/dist-packages using `pip --target` command line option.
