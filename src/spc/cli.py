@@ -18,11 +18,12 @@ def usage():
     buf += "list          list installed or available apps\n"
     buf += "migrate       migrate new database changes\n"
     buf += "install       install an app\n"
+    buf += "requirements  update 3rd party dependencies\n"
     buf += "run           start the server\n"
     buf += "runworker     start a worker\n"
     buf += "runsslworker  start an SSL worker\n"
     buf += "uninstall     uninstall an app\n"
-    buf += "test          run route tests using WebTest\n"
+    buf += "test          run route tests\n"
     # update is currently too buggy, don't release yet
     # buf += "update        update an app (in case spc.json was modified)\n"
     #buf += "search   search for available apps\n"
