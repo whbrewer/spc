@@ -57,6 +57,9 @@ a.navbar-brand:hover { color:white !important }
         box-shadow: none;
         margin: 0px;
     }
+    .navbar-fixed-bottom {
+        padding-top: 0px !important
+    }
 }
 
 #navbar {

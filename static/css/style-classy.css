@@ -78,6 +78,9 @@ pre {
         box-shadow: none;
         margin: 0px;
     }
+    .navbar-fixed-bottom {
+        padding-top: 0px !important
+    }
 }
 
 .navbar-brand {
