@@ -186,8 +186,10 @@ def main():
     print "\n### Test /app routes"
 
     # test GET /logout -- this should be the last test
+    # note: this test will fail if dna has been removed
+    # need to probably add a test app
     appname = 'dna'
-    print "GET /" + appname
+    print "GET /<app> app is:" + appname
     resp = test_app.get('/' + appname)
     assert resp.status_int == 200
 

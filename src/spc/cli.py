@@ -21,10 +21,10 @@ def usage():
     buf += "runworker     start a worker\n"
     buf += "runsslworker  start an SSL worker\n"
     buf += "uninstall     uninstall an app\n"
+    buf += "test          run route tests using WebTest\n"
     # update is currently too buggy, don't release yet
     # buf += "update        update an app (in case spc.json was modified)\n"
     #buf += "search   search for available apps\n"
-    #buf += "test     run unit tests\n"
     return buf
 
 if (len(sys.argv) == 1 or sys.argv[1] == "help"):
@@ -188,15 +188,6 @@ def main():
     elif (sys.argv[1] == "test"):
         import spc.test
         spc.test.main()
-        #os.chdir('tests')
-        #if not os.path.exists('db'): os.makedirs('db')
-        #if not os.path.exists('src'): os.makedirs('src')
-        #if not os.path.exists('apps'): os.makedirs('apps')
-        #os.system("../spc init")
-        #print "RUNNING UNIT TESTS..."
-        #os.system("python test_unit.py")
-        #print "RUNNING FUNCTIONAL TESTS..."
-        #os.system("python test_func.py")
     elif (sys.argv[1] == "uninstall"):
         install_usage = "usage: spc uninstall appname"
         if len(sys.argv) == 3:
