@@ -2,8 +2,9 @@ import sys, os, shutil, urllib2, time
 import xml.etree.ElementTree as ET
 import hashlib, re
 
-import app_reader_writer as apprw
-if os.path.exists("config.py"): import config
+if os.path.exists("config.py"): 
+    import config
+    import app_reader_writer as apprw
 
 sys.argv[1:]
 
