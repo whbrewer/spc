@@ -363,6 +363,7 @@ def main():
     elif (sys.argv[1] == "update"):
         import json
         import migrate, config
+        import app_reader_writer as apprw
         usage = "usage: spc update appname [command|plots]"
 
         if len(sys.argv) > 2:
@@ -377,6 +378,7 @@ def main():
         # check if directory exists
         if not os.path.isdir(app_path):
             print 'ERROR: app directory does not exist'
+            print usage
             sys.exit()
 
         file_path = os.path.join(app_path, "spc.json")
