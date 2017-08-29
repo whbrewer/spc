@@ -130,7 +130,7 @@
 
         </div>
 
-        <span id="stats" class="navbar-right hidden-xs hidden-sm"></span>
+        <span id="stats" class="navbar-right hidden-xs hidden-sm" style="position:relative;top:-10px"></span>
 
     </div>
 </div>
