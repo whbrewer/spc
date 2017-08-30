@@ -2,7 +2,7 @@ import sys, os, shutil, urllib2, time
 import xml.etree.ElementTree as ET
 import hashlib, re
 
-if os.path.exists("config.py"): 
+if os.path.exists("src/spc/config.py"):
     import config
     import app_reader_writer as apprw
 
@@ -363,7 +363,6 @@ def main():
     elif (sys.argv[1] == "update"):
         import json
         import migrate, config
-        import app_reader_writer as apprw
         usage = "usage: spc update appname [command|plots]"
 
         if len(sys.argv) > 2:
