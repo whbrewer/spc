@@ -14,6 +14,10 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
 ## QUICKSTART
 
+* Note, SPC assumes you have a few packages installed by default, namely: Python 2.78 or later,
+  virtualenv, gcc, and python-dev (required for compiling psutil).  If you don't have these 
+  installed, use either apt-get or yum to install them.
+
 * To install dependencies, create and initialize the database which SPC uses, type:
 
     `./spc init`
