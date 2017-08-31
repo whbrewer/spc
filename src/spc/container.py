@@ -22,13 +22,13 @@ def get_docker():
     except:
         images = []
         conts = []
-        params['status'] = "there was a problem talking to the Docker daemon..."
+        params['alert'] = "ERROR: there was a problem talking to the Docker daemon..."
 
     params['user'] = user
     params['app'] = root.active_app()
 
-    if request.query.status:
-        params['status'] = request.query.status
+    if request.query.alert:
+        params['alert'] = request.query.alert
 
     return template('docker', params, images=images, containers=conts)
 
@@ -40,11 +40,11 @@ def create_container(id):
     container_port_number = int(request.forms.container_port_number)
     try:
         cli.create_container(image=id, ports=[host_port_number], host_config=cli.create_host_config(port_bindings={host_port_number:container_port_number}))
-        status = "SUCCESS: container created " + id
+        alert = "SUCCESS: container created " + id
     except Exception as e:
-        status = "ERROR: failed to start container " + str(e)
+        alert = "ERROR: failed to start container " + str(e)
 
-    redirect("/docker?status="+status)
+    redirect("/docker?alert="+alert)
 
 # don't think we want to have this option
 # @dockerMod.route('/docker/remove_image/<id:path>', method='GET')
@@ -53,12 +53,12 @@ def create_container(id):
 #     cli = docker.Client(base_url=base_url)
 #     try:
 #         msg = cli.remove_image(image=id)
-#         status = "SUCCESS: image removed " + id
+#         alert = "SUCCESS: image removed " + id
 #     except:
-#         status = "ERROR: unable to remove image " + id + \
+#         alert = "ERROR: unable to remove image " + id + \
 #                  " Either has dependent child images, or a container is running." + \
 #                  " Remove the container and retry."
-#     redirect("/docker?status="+status)
+#     redirect("/docker?alert="+alert)
 
 @routes.get('/docker/start/<id>')
 def start_container(id):
@@ -66,28 +66,28 @@ def start_container(id):
     cli = docker.Client(base_url=base_url)
     try:
         cli.start(container=id)
-        status = "SUCCESS: started container " + id
+        alert = "SUCCESS: started container " + id
     except:
-        status = "ERROR: failed to start container " + id
-    redirect("/docker?status="+status)
+        alert = "ERROR: failed to start container " + id
+    redirect("/docker?alert="+alert)
 
 @routes.get('/docker/stop/<id>')
 def stop_container(id):
     cli = docker.Client(base_url=base_url)
     try:
         cli.stop(container=id)
-        status = "SUCCESS: stopped container " + id
+        alert = "SUCCESS: stopped container " + id
     except:
-        status = "ERROR stopping container " + id
-    redirect("/docker?status="+status)
+        alert = "ERROR stopping container " + id
+    redirect("/docker?alert="+alert)
 
 @routes.get('/docker/remove/<id>')
-def container_status(id):
+def remove_container(id):
     print "removing container:", id
     cli = docker.Client(base_url=base_url)
     try:
         cli.remove_container(id)
-        status = "SUCCESS: removed container " + id
+        alert = "SUCCESS: removed container " + id
     except:
-        status = "ERROR: problem removing container " + id
-    redirect("/docker?status="+status)
+        alert = "ERROR: problem removing container " + id
+    redirect("/docker?alert="+alert)

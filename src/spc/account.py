@@ -153,7 +153,7 @@ def change_password():
         return template('error', err="problem with password")
     params = {}
     params['user'] = user
-    params['status'] = "password changed"
+    params['alert'] = "SUCCESS: password changed"
     return template('account', params)
 
 @routes.post('/tokensignin')

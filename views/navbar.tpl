@@ -38,6 +38,10 @@
                         %end
                     %end
 
+                    %if defined('status'):
+                        <span class="navbar-brand">{{!status}}</span>
+                    %end
+
                     %if defined('description'):
                         <div class="hidden-md">
                             <a href="#" class="navbar-brand" style="width:250px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap"
@@ -83,7 +87,7 @@
 
 </nav>
 
-%include('status')
+%include('alerts')
 
 <script>
 window.addEventListener('load', checkForNotifications);
