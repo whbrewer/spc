@@ -66,9 +66,7 @@ def active_app():
     try:
         return s[APP_SESSION_KEY]
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        return ''
+        return None
 
 def set_active(app):
     # set a session variable to keep track of the current app
