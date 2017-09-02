@@ -59,7 +59,7 @@ def create_config_file():
             f.write("# don't define server if you want to use built-in\n")
             f.write("# other options: cherrypy, bjoern, tornado, gae, etc.\n")
             f.write("# cherrypy is a decent multi-threaded server\n")
-            f.write("#server = 'cherrypy'\n")
+            f.write("server = 'cherrypy'\n")
             f.write("# port number to listen for connections\n")
             f.write("port = 8580\n")
 
