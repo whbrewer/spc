@@ -1,6 +1,7 @@
 from bottle import Bottle, request, template, redirect
 import argparse as ap
 import os, sys, re, traceback
+import json
 
 from user_data import user_dir
 from model import db, apps, jobs, plots, datasource
@@ -27,7 +28,7 @@ def compute_stats(path):
         if path[-3:] == "hst":
             xoutput += output[len(output)-1]
     return xoutput
-    
+
 class Plot(object):
 
     def get_data(self,fn,col1,col2=None,line1=1,line2=1e6):
@@ -56,7 +57,7 @@ class Plot(object):
                     #following line doesnt work when NaN's in another column
                     #if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
                     if col2:
-                        y += '[ ' + x[col1-1] + ', ' + x[col2-1] + '], ' 
+                        y += '[ ' + x[col1-1] + ', ' + x[col2-1] + '], '
                     else:
                         try: z += [ float(x[col1-1]) ]
                         except: pass
@@ -97,7 +98,7 @@ class Plot(object):
                     x = line.split()
                     #following line doesnt work when NaN's in another column
                     #if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
-                    y += '[ ' + x[col1-1] + ', ' + x[col2-1] + x[col3-1] + x[col4-1] + '], ' 
+                    y += '[ ' + x[col1-1] + ', ' + x[col2-1] + x[col3-1] + x[col4-1] + '], '
             s = "[ %s ]" % y
             return s
         except:
@@ -125,7 +126,7 @@ class Plot(object):
                     x = line.split()
                     #following line doesnt work when NaN's in another column
                     #if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
-                    y += [ x[col-1] ] 
+                    y += [ x[col-1] ]
             return y
         except:
             return False
@@ -139,7 +140,7 @@ class Plot(object):
                 if re.search(r'#',line): continue
                 x = line.split()
                 if not re.search(r'[A-Za-z]{2,}\s+[A-Za-z]{2,}',line):
-                    y += '[ ' + str(i) + ', ' + x[col1-1] + '], ' 
+                    y += '[ ' + str(i) + ', ' + x[col1-1] + '], '
                     i += 1
             s = "[ %s ]" % y
             return s
@@ -288,10 +289,7 @@ def plot_interface(pltid):
     try:
         result = db(plots.id==pltid).select().first()
         plottype = result['ptype']
-        if result['options']:
-            options = replace_tags(result['options'], inputs)
-        else:
-            options = ''
+
         plot_title = result['title']
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -319,8 +317,15 @@ def plot_interface(pltid):
         redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
     elif plottype == 'handson':
         tfn = 'plots/handson'
+    elif plottype == 'flot-3d':
+        return plot_flot_3d(result, cid, app, sim_dir, owner, user, plot_title, pltid)
     else:
         return template("error", err="plot type not supported: " + plottype)
+
+    if result['options']:
+        options = replace_tags(result['options'], inputs)
+    else:
+        options = ''
 
     # get list of all plots for this app
     query = (apps.id==plots.appid) & (apps.name==app)
@@ -426,6 +431,56 @@ def plot_interface(pltid):
     if jid: params['jid'] = jid
 
     return template(tfn, params)
+
+def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
+    desc = jobs(cid=cid).description
+    list_of_plots = db((apps.id==plots.appid) & (apps.name==app)).select()
+
+    options = json.loads(plot['options'])
+
+    plot_data = []
+    z_data = []
+
+    data_dir = os.path.join(sim_dir, options['directory'])
+    z_property = options['z_property']
+    file_names = os.listdir(data_dir)
+
+    for file_name in file_names:
+        file_path = os.path.join(data_dir, file_name)
+
+        if os.path.isfile(file_path) and not file_name.startswith('.') and file_name.endswith('.json'):
+            with open(file_path) as file_:
+                file_data = json.load(file_)
+                all_series = []
+
+                for source in options['datasources']:
+                    series = {
+                        'data': zip(file_data[source['x_property']], file_data[source['y_property']]),
+                    }
+                    series.update(source['data_def'])
+
+                    all_series.append(series)
+
+                plot_data.append(all_series)
+                z_data.append(file_data[z_property])
+
+    params = {
+        'app': app,
+        'cid': cid,
+        'description': desc,
+        'owner': owner,
+        'plot_title': plot_title,
+        'pltid': pltid,
+        'rows': list_of_plots,
+        'stats': '',
+        'user': user,
+        'options_json': json.dumps(options['flot_options']),
+        'data_json': json.dumps(plot_data),
+        'z_data_json': json.dumps(z_data),
+        'z_label_json': json.dumps(options['z_label']),
+    }
+
+    return template('plots/flot-3d', params)
 
 @routes.get('/mpl/<pltid>')
 def matplotlib(pltid):
