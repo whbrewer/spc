@@ -444,7 +444,7 @@ def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
 
     data_dir = os.path.join(sim_dir, options['directory'])
     z_property = options['z_property']
-    file_names = os.listdir(data_dir)
+    file_names = sorted(os.listdir(data_dir))
 
     for file_name in file_names:
         file_path = os.path.join(data_dir, file_name)
