@@ -1,6 +1,6 @@
 from bottle import Bottle, request, template, redirect
 import argparse as ap
-import os, sys, re, traceback
+import os, re, sys, csv, traceback
 
 from user_data import user_dir
 from model import db, apps, jobs, plots, datasource
@@ -71,13 +71,14 @@ class Plot(object):
 
     def get_csv_data(self, fn):
         try:
-            data = open(fn, 'rU').readlines()
+            with open(fn, 'rU') as csv_file:
+                data = csv.reader(csv_file)
+                return list(data)
+
         except IOError:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print traceback.print_exception(exc_type, exc_value, exc_traceback)
             return -1
-        dat = [ d.strip().split(",") for d in data]
-        return dat
 
     def get_data_gantt(self,fn,col1,col2,col3,col4,line1=1,line2=1e6):
         """return data as string in format [ [x1,y1], [x2,y2], ... ]"""
