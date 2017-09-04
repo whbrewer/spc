@@ -1,6 +1,7 @@
 import sys, os, shutil, urllib2, time
 import xml.etree.ElementTree as ET
 import hashlib, re
+import json
 
 if os.path.exists("src/spc/config.py"):
     import config
@@ -216,7 +217,6 @@ def main():
         install_usage = "usage: spc install /path/to/file.zip\n    or spc install http://url/to/file.zip"
 
         if len(sys.argv) == 3:
-            import json
             import zipfile
             import migrate, config
 
@@ -318,15 +318,31 @@ def main():
             # add plots and datasources to db
             if 'plots' in parsed.keys():
                 for key in parsed['plots']:
-                    pltid = dal.db.plots.insert(appid=appid, ptype=key['ptype'],
-                                                title=key['title'],
-                                                options=key['options'])
-                    for ds in key['datasource']:
-                        dal.db.datasource.insert(pltid=pltid,
-                                                 filename=ds['filename'],
-                                                 cols=ds['cols'],
-                                                 line_range=ds['line_range'],
-                                                 data_def=ds['data_def'])
+                    if key['ptype'] == 'flot-3d':
+                        # For flot-3d we need different fields than other plot types
+                        # so as a hack we json encode everything and save it in
+                        # the filename field
+                        pltid = dal.db.plots.insert(
+                            appid=appid,
+                            ptype=key['ptype'],
+                            title=key['title'],
+                            options=json.dumps(key['options'])
+                        )
+                    else:
+                        pltid = dal.db.plots.insert(
+                            appid=appid,
+                            ptype=key['ptype'],
+                            title=key['title'],
+                            options=key['options']
+                        )
+
+                        for ds in key['datasource']:
+                            dal.db.datasource.insert(pltid=pltid,
+                                                     filename=ds['filename'],
+                                                     cols=ds['cols'],
+                                                     line_range=ds['line_range'],
+                                                     data_def=ds['data_def'])
+
             # commit to db
             dal.db.commit()
             print "SUCCESS: installed app", app
@@ -361,7 +377,6 @@ def main():
             print list_usage
 
     elif (sys.argv[1] == "update"):
-        import json
         import migrate, config
         usage = "usage: spc update appname [command|plots]"
 
@@ -415,7 +430,7 @@ def main():
                     for key in parsed['plots']:
                         sys.stdout.write('P')
                         # following is not working but it should be the proper way to implement
-                        nrecords = dal.db.plots.update_or_insert(dal.db.plots.title==key['title'], 
+                        nrecords = dal.db.plots.update_or_insert(dal.db.plots.title==key['title'],
                                                                  appid=appid, ptype=key['ptype'],
                                                                  title=key['title'], options=key['options'])
 
