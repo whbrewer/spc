@@ -14,14 +14,14 @@
     <div style="height:5px"></div>
 
     <div class="form-group">
-        <div class="col-xs-12 col-sm-1">
+        <div class="col-xs-12 col-sm-2">
             <button type="submit" class="btn btn-success"> <!-- pull-right -->
                 Execute <em class="glyphicon glyphicon-play"></em>
             </button>
         </div>
 
         %if nap > 1:
-            <label for="np" class="control-label col-xs-12 col-sm-3"># Processors:</label>
+            <label for="np" class="control-label col-xs-12 col-sm-2"># Processors:</label>
             <div class="col-xs-12 col-sm-1">
                 <select name="np" id="np" class="btn-group form-control" title="Number of processors to use">
                     %for i in range(1, nap+1):
