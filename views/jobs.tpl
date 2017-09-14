@@ -1,6 +1,6 @@
-%include('header')
-
-<style>
+<%
+styles = """
+ <style>
   .glyphicon.glyphicon-star, .glyphicon.glyphicon-star-empty {
     font-size: 120%;
   }
@@ -8,35 +8,34 @@
     font-size: 120%;
   }
 </style>
+"""
+%>
 
-<body>
-%include('navbar')
+% rebase('base.tpl', styles=styles)
 
-<div class="col-xs-12" style="height:10px"></div>
+<div class="container-fluid">
+    <div class="row">
 
-<div class="row">
+          <div class="col-xs-12 col-sm-3">
+            <form action="/jobs">
+              <input name="q" type="text" class="form-control input-lg"
+                   onchange="show(this.value)" style="background-color:#faffbd" placeholder="Search..." value="{{q}}">
+            </form>
+          </div>
 
-      <div class="col-xs-12 col-sm-3">
-        <form role="form" action="/jobs">
-          <input name="q" type="text" class="form-control input-lg"
-               onchange="show(this.value)" style="background-color:#faffbd" placeholder="Search..." value="{{q}}">
-        </form>
-      </div>
+          <div class="btn-group col-xs-6" id="actions" style="display:none">
+              <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
 
-      <div class="btn-group col-xs-6" id="actions" style="display:none">
-          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+              <button type="button" class="btn btn-warning" data-toggle="modal"  data-target="#mergeModal"><span class="glyphicon glyphicon-resize-small"></span> Merge</button>
+          </div>
 
-          <button type="button" class="btn btn-warning" data-toggle="modal"  data-target="#mergeModal"><span class="glyphicon glyphicon-resize-small"></span> Merge</button>
-      </div>
+          <div class="btn-group col-xs-3">
+              <form id="diff_button" class="btn-group" style="display:none" action="/jobs/diff">
+                  <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-scale"></span> Diff</button>
+              </form>
+          </div>
 
-      <div class="btn-group col-xs-3">
-          <form id="diff_button" class="btn-group" style="display:none" action="/jobs/diff">
-              <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-scale"></span> Diff</button>
-          </form>
-      </div>
-
-  </div>
-
+    </div>
 </div>
 
 <!--<meta http-equiv="refresh" content="5">-->
@@ -75,15 +74,15 @@
       </td>
     %end
     %url="/case?cid="+row['cid']+"&app="+row['app']+"&jid="+str(row['id'])
-    <td class="case"><tt>{{row['cid']}}</tt> <a href="{{url}}"></a></td>
+    <td class="case"><samp>{{row['cid']}}</samp> <a href="{{url}}"></a></td>
     <td class="case">{{row['app']}} <a href="{{url}}"></a></td>
-    <td class="case"><tt><a id="job-{{row['state']}}" onclick="get_remote_job_status({{row['state']}})">{{row['state']}}</a></tt> <a href="{{url}}"></a></td>
+    <td class="case"><samp><a id="job-{{row['id']}}" onclick="get_remote_job_status({{row['id']}})">{{row['state']}}</a></samp> <a href="{{url}}"></a></td>
     %if np > 1:
       <td class="case hidden-xs hidden-sm hidden-md">{{row['np']}} <a href="{{url}}"></a></td>
     %end
-    <!-- <td class="case hidden-xs hidden-sm hidden-md"><tt>{{row['priority']}}</tt> <a href="{{url}}"></a></td> -->
-    <td class="case hidden-xs"><tt>{{row['time_submit']}}</tt> <a href="{{url}}"></a></td>
-    <td class="case hidden-xs hidden-sm hidden-md"><tt>{{row['walltime']}}</tt> <a href="{{url}}"></a></td>
+    <!-- <td class="case hidden-xs hidden-sm hidden-md"><samp>{{row['priority']}}</samp> <a href="{{url}}"></a></td> -->
+    <td class="case hidden-xs"><samp>{{row['time_submit']}}</samp> <a href="{{url}}"></a></td>
+    <td class="case hidden-xs hidden-sm hidden-md"><samp>{{row['walltime']}}</samp> <a href="{{url}}"></a></td>
     <td class="case hidden-xs"> {{!row['description']}}
       <!-- <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a> -->
       <a href="{{url}}"> </a>
@@ -103,7 +102,6 @@
 %end
 </tbody>
 </table>
-</form>
 
 <form method="get" action="/jobs">
   <input type="hidden" name="n" value="{{n+num_rows}}">
@@ -140,7 +138,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="mergeModal">What do you want do with the selected cases?</h4>
+                    <h4 class="modal-title">What do you want do with the selected cases?</h4>
                 </div>
                 <div class="modal-footer">
                     <div class="form-group">
@@ -281,4 +279,3 @@ function toggle_action_button_visibility() {
 
 }
 </script>
-%include('footer')
