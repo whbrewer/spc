@@ -1,5 +1,4 @@
-%include('header')
-%include('navbar')
+%rebase('base.tpl')
 
 <ol class="breadcrumb">
   <li><a href="/">Apps</a></li>
@@ -9,18 +8,16 @@
 
 <h1>{{app}} app</h1>
 
-<div class="container-fluid">
-<form role="form" class="form-horizontal" method="post" action="/app/save/{{rows['id']}}">
+<form class="form-horizontal" method="post" action="/app/save/{{rows['id']}}">
 
 <table>
-  </tr>
   <tr>
       <td>Category:</td>
       <td><input class="form-control input-lg" type="text" name="category"
                  value="{{rows['category']}}"></td>
   </tr>
   <tr>
-      <td>Description:</th>
+      <td>Description:</td>
       <td><textarea style="font-size:120%" class="form-control" name="description" cols="60" rows="4">{{rows['description']}}</textarea></td>
   </tr>
   <tr>
@@ -66,6 +63,3 @@
     </div>
 </div>
 </form>
-</div>
-
-%include('footer')

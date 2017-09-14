@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>      
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
     <script src="/static/jquery-2.1.4.min.js"></script>
@@ -34,7 +34,7 @@
     <style>
 
 		body {
-		    padding-top: 60px;
+		    padding-top: 75px;
             padding-bottom: 75px;
 		}
 
@@ -45,13 +45,18 @@
 		}
 
     </style>
-        
-    {{ !styles }}
+
+    % if defined('styles'):
+        {{ !styles }}
+    % end
+
 </head>
 
 <body>
     %include('navbar')
+    <div class="container-fluid">
     {{ !base }}
+    </div>
 
     <footer>
         <div class="container-fluid">

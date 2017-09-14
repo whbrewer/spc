@@ -1,16 +1,16 @@
-%include('header')
+<%
+    styles = """
+    <style>
+      .table {
+        font-size: 120%;
+      }
+    </style>
+    """
+%>
 
-<body>
+%rebase('base.tpl', styles=styles)
 
-<style>
-  .table {
-    font-size: 120%;
-  }
-</style>
-
-%include('navbar')
-
-<h1 align=center>Users</h1>
+<h1 class="text-center">Users</h1>
 
 <table class="table table-striped">
 <thead>
@@ -39,5 +39,3 @@
 %end
 </tbody>
 </table>
-
-%include('footer')

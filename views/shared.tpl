@@ -1,19 +1,19 @@
-%include('header')
+<%
+styles = """
+    <style>
+      .glyphicon.glyphicon-star, .glyphicon.glyphicon-star-empty {
+        font-size: 120%;
+      }
+      .table {
+        font-size: 120%;
+      }
+    </style>
+    """
+%>
 
-<style>
-  .glyphicon.glyphicon-star, .glyphicon.glyphicon-star-empty {
-    font-size: 120%;
-  }
-  .table {
-    font-size: 120%;
-  }
-</style>
-</head>
+%rebase('base.tpl', styles=styles)
 
-<body id="shared_page">
-%include('navbar')
-
-<h1 align=center>Shared Cases</h1>
+<h1 class="text-center">Shared Cases</h1>
 
 <table id="clickable" class="table table-striped">
 <thead>
@@ -28,10 +28,10 @@
 
 %for row in rows:
   <tr>
-     <td><tt>{{row['jobs.cid']}}</tt></td>
+     <td><samp>{{row['jobs.cid']}}</samp></td>
      <td>{{row['users.user']}}</td>
      <td>{{row['jobs.app']}}</td>
-     <td class="case hidden-xs"><tt>{{row['jobs.time_submit']}}</tt> </td>
+     <td class="case hidden-xs"><samp>{{row['jobs.time_submit']}}</samp> </td>
      <td class="hidden-xs">{{row['jobs.description']}}
          <a href="/case?cid={{row['users.user']}}/{{row['jobs.cid']}}&app={{row['jobs.app']}}&jid={{row['jobs.id']}}"></a>
      </td>
@@ -55,5 +55,3 @@ $(document).ready(function() {
     });
 });
 </script>
-
-%include('footer')

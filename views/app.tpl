@@ -1,4 +1,18 @@
-%include('header')
+<%
+    styles = """
+        <style>
+        .table {
+            font-size: 120%;
+        }
+        tr:hover {
+            cursor: auto;
+        }
+        </style>
+    """
+%>
+
+%rebase('base.tpl', styles=styles)
+
 <script>
 $(document).ready(function() {
    jQuery.ajax({
@@ -32,19 +46,6 @@ function toggle(cmd,id) {
    }
 }
 </script>
-<style>
-.table {
-    font-size: 120%;
-}
-tr:hover {
-    cursor: auto;
-}
-</style>
-
-</head>
-<body>
-
-%include('navbar')
 
 <ol class="breadcrumb">
   <li><a href="/">Apps</a></li>
@@ -56,14 +57,14 @@ tr:hover {
 <table class="table table-striped">
   <tr>
       <td>Name:</td>
-      <td><a href="/app/{{rows['name']}}"></a>{{rows['name']}}</td></tr>
+      <td><a href="/app/{{rows['name']}}"></a>{{rows['name']}}</td>
   </tr>
   <tr>
       <td>Category:</td>
       <td>{{rows['category']}}</td>
   </tr>
   <tr>
-      <td>Description:</th>
+      <td>Description:</td>
       <td>{{rows['description']}}</td>
   </tr>
   <tr>
@@ -125,11 +126,11 @@ tr:hover {
 
 <form>
 <h3>Status of installation:</h3>
-<div class="form-group" id="dbdiv"><span id="db" class="glyphicon glyphicon-ok"> Database entry setup</div>
-<div class="form-group" id="indiv"><span id="in" class="glyphicon glyphicon-ok"> Inputs file uploaded</div>
-<div class="form-group" id="tpdiv"><span id="tp" class="glyphicon glyphicon-ok"> HTML template file setup</div>
-<div class="form-group" id="bndiv"><span id="bn" class="glyphicon glyphicon-ok"> Application binary uploaded</div>
-<div class="form-group" id="pldiv"><span id="pl" class="glyphicon glyphicon-ok"> Plots setup</div>
+<div class="form-group" id="dbdiv"><span id="db" class="glyphicon glyphicon-ok"></span> Database entry setup</div>
+<div class="form-group" id="indiv"><span id="in" class="glyphicon glyphicon-ok"></span> Inputs file uploaded</div>
+<div class="form-group" id="tpdiv"><span id="tp" class="glyphicon glyphicon-ok"></span> HTML template file setup</div>
+<div class="form-group" id="bndiv"><span id="bn" class="glyphicon glyphicon-ok"></span> Application binary uploaded</div>
+<div class="form-group" id="pldiv"><span id="pl" class="glyphicon glyphicon-ok"></span> Plots setup</div>
 </form>
 
 <!-- Delete Modal -->
@@ -170,5 +171,3 @@ tr:hover {
 </div>
 
 </div>
-
-%include('footer')

@@ -1,5 +1,4 @@
-%include('header')
-%include('navbar')
+%rebase('base.tpl')
 
 <script>
     function start_ec2() {
@@ -17,7 +16,7 @@
         $(document).bind("ajaxComplete", function(){
             location.reload(true)
         })
-    } 
+    }
 </script>
 
 <ol class="breadcrumb">
@@ -30,12 +29,11 @@
 
 <pre>
 %for key,value in astatus.iteritems():
-    {{key}}: {{value}} 
+    {{key}}: {{value}}
 %end
 </pre>
 
-<fieldset>
-<center>
+<fieldset style="text-align:center">
 
 %if astatus['state']=="stopped":
     <button class="btn btn-success" onclick="start_ec2()" id="start_button"> <span class="glyphicon glyphicon-play"></span> start machine</button>
@@ -69,9 +67,6 @@
     <meta http-equiv="refresh" content="2">
 %end
 
-<img src="/static/images/loading.gif" id="loading-indicator" style="display:none" />
+<img src="/static/images/loading.gif" alt="loading..." id="loading-indicator" style="display:none" />
 
-</center>
 </fieldset>
-
-%include('footer')

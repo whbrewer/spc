@@ -1,8 +1,6 @@
-%include('header')
-%include('navbar')
-% import datetime, re, urllib
+%rebase('base.tpl')
 
-<body>
+% import datetime, re, urllib
 
 <h2>Containers</h2>
 
@@ -57,10 +55,10 @@
 
 % for i in images:
     % _, id = i['Id'].split(":")
-    <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+    <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header"
+          <div class="modal-header">
             <h4 class="modal-title">Create container</h4>
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           </div>
@@ -88,5 +86,3 @@
     </div>
 
 % end
-
-%include('footer')

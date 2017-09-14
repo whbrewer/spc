@@ -1,5 +1,4 @@
-%include('header')
-%include('navbar')
+%rebase('base.tpl')
 
 <script>
 
@@ -32,8 +31,6 @@ function toggleAddInstance() {
     $(".editable").show()
 }
 </script>
-
-<body>
 
 <h1>Amazon Web Services (AWS)</h1>
 
@@ -109,38 +106,38 @@ function toggleAddInstance() {
     <td><input class="form-control" type="text" size=10 name="instance" onkeyup="verifyInstance(this.value)"></td>
     <td>
     <select class="form-control btn-lg" name="itype">
-    <option disabled role=separator>General purpose:
+    <option disabled>General purpose:
     <option value="t1.micro">t1.micro
     <option value="t2.micro">t2.micro
     <option value="t2.small">t2.small
     <option value="t2.medium">t2.medium
-    <option disabled role=separator>-
+    <option disabled> -
     <option value="m3.medium">m3.medium
     <option value="m3.large">m3.large
     <option value="m3.xlarge">m3.xlarge
     <option value="m3.2xlarge">m3.2xlarge
     <option value="m4.4xlarge">m4.4xlarge
-    <option disabled role=separator>Compute optimized:
+    <option disabled>Compute optimized:
     <option value="c3.large">c3.large
     <option value="c3.xlarge">c3.xlarge
     <option value="c3.2xlarge">c3.2xlarge
     <option value="c3.3xlarge">c3.3xlarge
     <option value="c3.8xlarge">c3.8xlarge
-    <option disabled role=separator>-
+    <option disabled> -
     <option value="c4.large">c4.large
     <option value="c4.xlarge">c4.xlarge
     <option value="c4.2xlarge">c4.2xlarge
     <option value="c4.4xlarge">c4.4xlarge
     <option value="c4.8xlarge">c4.8xlarge
-    <option disabled role=separator>Memory optimized:
+    <option disabled>Memory optimized:
     <option value="r3.large">r3.large
     <option value="r3.xlarge">r3.xlarge
     <option value="r3.2xlarge">r3.2xlarge
     <option value="r3.3xlarge">r3.3xlarge
     <option value="r3.8xlarge">r3.8xlarge
-    <option disabled role=separator>GPU:
+    <option disabled>GPU:
     <option value="r3.large">g2.2xlarge
-    <option disabled role=separator>Storage optimized:
+    <option disabled>Storage optimized:
     <option value="i2.large">i2.large
     <option value="i2.xlarge">i2.xlarge
     <option value="i2.2xlarge">i2.2xlarge
@@ -184,8 +181,7 @@ function toggleAddInstance() {
      aria-labelledby="deleteModal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="delete_modal" class="form-horizontal" method="post" action="/jobs/delete_selected
-_cases">
+            <form id="delete_modal" class="form-horizontal" method="post" action="/jobs/delete_selected_cases">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -200,6 +196,3 @@ _cases">
         </div>
     </div>
 </div>
-
-
-%include('footer')

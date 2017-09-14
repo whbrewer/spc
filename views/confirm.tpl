@@ -1,11 +1,9 @@
-%include('header')
-<body>
-%include('navbar')
+%rebase('base.tpl')
 
 <div class="container-fluid">
 <div class="col-xs-12" style="height:5px"></div>
 
-<div align="center" class="alert-info">
+<div class="alert-info text-center">
     <em>Wrote parameters to input file. Click Execute to start simulation.</em>
 </div>
 
@@ -25,7 +23,6 @@
             <div class="col-xs-12 col-sm-1">
                 <select name="np" id="np" class="btn-group form-control" title="Number of processors to use">
                     %for i in range(1, nap+1):
-                        i: {{i}} {{np}}
                         %if int(i) == int(np):
                             <option value="{{i}}" selected>{{i}}</option>
                         %else:
@@ -71,5 +68,3 @@
 </form>
 
 </div>
-
-%include('footer')

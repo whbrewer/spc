@@ -1,9 +1,13 @@
-%include('header')
-%include('navbar')
+<%
+    styles = """
+        <style>
+        #navaction { display: none }
+        </style>
+    """
+%>
 
-<style>
-#navaction { display: none }
-</style>
+%rebase('base.tpl', styles=styles)
+
 
 %if defined('status'):
     Status: {{status}}
@@ -17,8 +21,6 @@
 </div>
 
 %include("navactions")
-
-<body>
 
 <!--
 <form>
@@ -63,5 +65,3 @@ function show(update_interval) {
   show(1000) // comment out if using websocket
 % end
 </script>
-
-%include('footer')

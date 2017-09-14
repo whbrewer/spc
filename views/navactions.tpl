@@ -15,14 +15,14 @@
 
             %if defined('jid') and owner == user:
                 %if jid > 0:
-                    <form class="btn-group hidden-xs" role="form" action="/jobs/stop" method="post">
+                    <form class="btn-group hidden-xs" action="/jobs/stop" method="post">
                         <input type="hidden" name="cid" value="{{cid}}">
                         <input type="hidden" name="app" value="{{app}}">
                         <input type="hidden" name="jid" value="{{jid}}">
                         <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
                     </form>
 
-                    <button type="button" 
+                    <button type="button"
                             class="btn btn-danger hidden-xs hidden-sm hidden-md"
                             data-toggle="modal" data-target="#dModal">
                             <span class="glyphicon glyphicon-trash"></span> Delete
@@ -52,7 +52,7 @@
             </form>
 
             %if defined('plotpath'):
-                <form class="btn-group" role="form" action="/more" method="get">
+                <form class="btn-group" action="/more" method="get">
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="filepath" value="{{plotpath}}">
@@ -110,7 +110,7 @@
                     <li>
                         <form class="btn-group" action="/files" method="get">
                             <button class="btn btn-default" style="width:200px">
-                                <span class="glyphicon glyphicon-folder-open"></span> Browse Files</span>
+                                <span class="glyphicon glyphicon-folder-open"></span> Browse Files
                             </button>
                             <input type="hidden" name="cid" value="{{cid}}">
                             <input type="hidden" name="app" value="{{app}}">
@@ -138,9 +138,9 @@
 %if defined('jid'):
 %if jid > 0:
 <!-- Delete Modal -->
-<div class="modal fade" style="top:35%" id="dModal" tabindex="-1" role="dialog"
+<div class="modal fade" style="top:35%" id="dModal" tabindex="-1"
      aria-labelledby="deleteModal">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog">
         <div class="modal-content">
             <form class="form-horizontal" method="post" action="/jobs/delete/{{jid}}">
                 <div class="modal-header">
@@ -163,9 +163,8 @@
 
 %if defined('description'):
 <!-- Label Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
-     aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
         <div class="modal-content">
             <form class="form-horizontal" method="post" action="/jobs/annotate">
                 <div class="modal-header">

@@ -1,9 +1,13 @@
-%include('header', title='Menu')
+<%
+styles = """
+        <style>
+            a { font-size: 120% }
+            .plus2 { font-size: 2em }
+        </style>
+    """
+%>
 
-<body>
-<style>
-  a { font-size: 120% }
-</style>
+%rebase('base.tpl', styles=styles)
 
 <script>
     function toggle(source) {
@@ -75,14 +79,12 @@
     }
 </script>
 
-%include('navbar')
 %include('navactions')
-
 
 <div class="row">
 
 	<div class="hidden-xs col-md-4">
-		<form id="search_form" role="form" action="/files">
+		<form id="search_form" action="/files">
 			<input type="hidden" name="cid" value="{{cid}}"/>
 			<input type="hidden" name="app" value="{{app}}"/>
 			<input name="q" type="text" value="{{q}}" class="form-control input-lg"
@@ -94,7 +96,7 @@
 
 	    <button id="delete_button" type="button" class="btn-group btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
 
-        <button id="" type="button" class="btn-group btn btn-default" data-toggle="modal" data-target="#modModal"><span class="glyphicon glyphicon-scale"></span> Modify</button>
+        <button type="button" class="btn-group btn btn-default" data-toggle="modal" data-target="#modModal"><span class="glyphicon glyphicon-scale"></span> Modify</button>
 
 	    <form id="zipform" class="btn-group" method="post" action="/files/zip_selected">
 	    	<input type="hidden" name="app" value="{{app}}">
@@ -142,9 +144,8 @@
 </table>
 
 <!-- Delete Modal -->
-<div class="modal fade" id="dModal" tabindex="-1" role="dialog"
-     aria-labelledby="deleteModal">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="dModal" tabindex="-1" aria-labelledby="deleteModal">
+    <div class="modal-dialog">
         <div class="modal-content">
             <form id="delete_modal" class="form-horizontal" method="post" action="/files/delete_selected">
                 <div class="modal-header">
@@ -164,9 +165,8 @@
 </div>
 
 <!-- Modify Modal -->
-<div class="modal fade" id="modModal" tabindex="-1" role="dialog"
-     aria-labelledby="modModal">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="modModal" tabindex="-1" aria-labelledby="modModal">
+    <div class="modal-dialog">
         <div class="modal-content">
             <form id="modform" class="form-horizontal" method="post">
                 <div class="modal-header">
@@ -182,10 +182,10 @@
                             <input type="text" name="columns" class="input-lg form-control" placeholder="columns, e.g. 5:6" />
                         </div>
                         <div class="btn-group col-xs-6">
-                            <button formaction="/files/modify/add" type="submit" class="btn btn-default"><font size="+2">&plus;</font></button>
-                            <button formaction="/files/modify/sub" type="submit" class="btn btn-default"><font size="+2">&minus;</font></button>
-                            <button formaction="/files/modify/mul" type="submit" class="btn btn-default"><font size="+2">&times;</font></button>
-                            <button formaction="/files/modify/div" type="submit" class="btn btn-default"><font size="+2">&divide;</font></button>
+                            <button formaction="/files/modify/add" type="submit" class="btn btn-default plus2">&plus;</button>
+                            <button formaction="/files/modify/sub" type="submit" class="btn btn-default plus2">&minus;</button>
+                            <button formaction="/files/modify/mul" type="submit" class="btn btn-default plus2">&times;</button>
+                            <button formaction="/files/modify/div" type="submit" class="btn btn-default plus2">&divide;</button>
                         </div>
                     </div>
                     <input type="hidden" name="app" value="{{app}}"/>
@@ -195,5 +195,3 @@
         </div>
     </div>
 </div>
-
-%include('footer')

@@ -1,25 +1,27 @@
-%include('header')
-<style>
-  .panel:hover {
-    background-color: #dfdfdf !important;
-  }
-  a {
-    text-decoration: none;
-    color: #5f5f5f;
-  }
-  body {
-    background: #f5f5f5 !important;
-  }
-</style>
+<%
+    styles = """
+        <style>
+          .panel:hover {
+            background-color: #dfdfdf !important;
+          }
+          a {
+            text-decoration: none;
+            color: #5f5f5f;
+          }
+          body {
+            background: #f5f5f5 !important;
+          }
+        </style>
+    """
+%>
 
-<body>
-%include('navbar')
+%rebase('base.tpl', styles=styles)
 
 <div style="height:15px"></div>
 
 <div class="row">
 
-  <div class="col-xs-12 col-md-4" align="left">
+  <div class="col-xs-12 col-md-4">
     <div class="btn-group">
       <a class="btn btn-warning" href="/myapps">Activated</a>
       <a class="btn btn-warning active" href="/apps">Installed</a>
@@ -27,13 +29,13 @@
   </div>
 
   <div class="hidden-xs col-md-4">
-    <form role="form" action="/apps">
+    <form action="/apps">
       <input name="q" type="text" class="form-control input-lg" placeholder="Search for apps...">
     </form>
   </div>
 
   %if configurable:
-  <div class="xs-hidden col-md-4" align="right">
+  <div class="xs-hidden col-md-4">
     <a href="/addapp" class="btn btn-primary">
       <span class="glyphicon glyphicon-plus"></span> Add
     </a>
@@ -80,5 +82,3 @@ function removeapp(app) {
     $.post('/removeapp', {'app': app}, function() { location.reload() })
 }
 </script>
-
-%include('footer')

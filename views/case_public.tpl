@@ -1,9 +1,12 @@
-%include('header')
-%include('navbar')
+<%
+    styles = """
+        <style>
+        #navaction { display: none }
+        </style>
+    """
+%>
 
-<style>
-#navaction { display: none }
-</style>
+%rebase('base.tpl', styles=styles)
 
 %if defined('status'):
     Status: {{status}}
@@ -19,4 +22,3 @@
 <script>
 $(function() { $('#navaction').fadeIn() })
 </script>
-%include('footer')

@@ -1,9 +1,4 @@
-%include('header')
-%include('navbar')
-
-<script>
-
-</script>
+%rebase('base.tpl')
 
 <h1>Machine Stats</h1>
 
@@ -20,5 +15,3 @@
 </div>
 
 %include('navactions')
-
-%include('footer')

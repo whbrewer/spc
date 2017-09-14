@@ -1,7 +1,4 @@
-%include('header')
-%include('navbar')
-
-<body>
+%rebase('base.tpl')
 
 <h1>{{user}}'s account</h1>
 <br>
@@ -46,7 +43,7 @@
 <legend>Upload data to account</legend>
 <form action="/upload" method="post" enctype="multipart/form-data">
   <!-- Category: <input type="text" name="category" /> -->
-  <font size="+1">Select a file:</font>
+  <h4>Select a file:</h4>
   <input type="file" name="upload" /><br>
   <input class="btn btn-default" type="submit" value="Upload"/>
 </form>
@@ -60,5 +57,3 @@
         <button type="radio" class="btn btn-default" onclick="switch_style('classy');return false;" name="theme" id="classy">Classy</button>
     </form>
 </fieldset>
-
-%include('footer')
