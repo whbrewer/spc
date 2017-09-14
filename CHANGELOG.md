@@ -1,3 +1,11 @@
+v0.31 released on 8/29/17
+-------------------------
+* add basic route testing using command `./spc test` 
+
+v0.30 released on 8/20/17
+-------------------------
+* modularize - distribute routes to various files, e.g. /jobs to jobs.py
+
 v0.20 released on 6/29/17
 -------------------------
 * add support for dependencies using virtualenv (see note in README.md)
