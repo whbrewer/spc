@@ -15,7 +15,7 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 ## QUICKSTART
 
 * Note, SPC assumes you have a few packages installed by default, namely: Python 2.78 or later,
-  virtualenv, gcc, and python-dev (required for compiling psutil).  If you don't have these 
+  virtualenv, gcc, and python-dev (required for compiling psutil).  If you don't have these
   installed, use either apt-get or yum to install them.
 
 * To install dependencies, create and initialize the database which SPC uses, type:
@@ -30,23 +30,21 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
 * To run the pre-installed example DNA Analyzer app in SPC:
 
-      - Login with default username/password: guest/guest
+    * Click `Apps` and then click `installed`
 
-      - Click "Apps" and then click "installed"
+    * `Activate` the DNA app, then click `Activated` again
 
-      - Activate the DNA app, then click "Activated" again
+    * Click on `dna` the default installed app
 
-      - Click on "dna" the default installed app
+    * Enter a DNA string, or use the default
 
-      - Enter a DNA string, or use the default
+    * Click `confirm` to write the datafile to disk
 
-      - Click confirm to write the datafile to disk
+    * Click `execute` to run the DNA analysis.  SPC will submit it to the job scheduler
 
-      - Click execute to run the DNA analysis.  SPC will submit it to the job scheduler
+    * Click `output` (if you see an error message, it most likely means the jobs has not started running yet, so you can just click output several times until you see the result)
 
-      - Click output (if you see an error message, it most likely means the jobs has not started running yet, so you can just click output several times until you see the result)
-
-      - Click plot to see or define a list of plots.  For each plot, you can view it by clicking the plot button.
+    * Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.
 
 ## INSTALL PACKAGED APPS
 
