@@ -1,17 +1,14 @@
 <%
-styles = """
-    <style>
-      .glyphicon.glyphicon-star, .glyphicon.glyphicon-star-empty {
-        font-size: 120%;
-      }
-      .table {
-        font-size: 120%;
-      }
-    </style>
+    style = """
+        .glyphicon.glyphicon-star, .glyphicon.glyphicon-star-empty {
+            font-size: 120%;
+        }
+        .table {
+            font-size: 120%;
+        }
     """
+    rebase('base.tpl', style=style)
 %>
-
-%rebase('base.tpl', styles=styles)
 
 <h1 class="text-center">Shared Cases</h1>
 
@@ -29,10 +26,10 @@ styles = """
 %for row in rows:
   <tr>
      <td><samp>{{row['jobs.cid']}}</samp></td>
-     <td>{{row['users.user']}}</td>
-     <td>{{row['jobs.app']}}</td>
+     <td><samp>{{row['users.user']}}</samp></td>
+     <td><samp>{{row['jobs.app']}}</samp></td>
      <td class="case hidden-xs"><samp>{{row['jobs.time_submit']}}</samp> </td>
-     <td class="hidden-xs">{{row['jobs.description']}}
+     <td class="hidden-xs"><samp>{{row['jobs.description']}}</samp>
          <a href="/case?cid={{row['users.user']}}/{{row['jobs.cid']}}&app={{row['jobs.app']}}&jid={{row['jobs.id']}}"></a>
      </td>
   </tr>
@@ -46,7 +43,6 @@ styles = """
 
 <script>
 $(document).ready(function() {
-
     $('#clickable tr').click(function() {
         var href = $(this).find("a").attr("href");
         if(href) {

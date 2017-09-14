@@ -1,21 +1,18 @@
 <%
-    styles = """
-        <style>
-          .panel:hover {
+    style = """
+        .panel:hover {
             background-color: #dfdfdf !important;
-          }
-          a {
+        }
+        a {
             text-decoration: none;
             color: #5f5f5f;
-          }
-          body {
+        }
+        body {
             background: #f5f5f5 !important;
-          }
-        </style>
+        }
     """
+    rebase('base.tpl', style=style)
 %>
-
-%rebase('base.tpl', styles=styles)
 
 <div style="height:15px"></div>
 

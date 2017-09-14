@@ -1,17 +1,14 @@
 <%
-styles = """
- <style>
-  .glyphicon.glyphicon-star, .glyphicon.glyphicon-star-empty {
-    font-size: 120%;
-  }
-  .table {
-    font-size: 120%;
-  }
-</style>
-"""
+    style = """
+      .glyphicon.glyphicon-star, .glyphicon.glyphicon-star-empty {
+        font-size: 120%;
+      }
+      .table {
+        font-size: 120%;
+      }
+    """
+    rebase('base.tpl', style=style)
 %>
-
-% rebase('base.tpl', styles=styles)
 
 <div class="container-fluid">
     <div class="row">
@@ -75,7 +72,7 @@ styles = """
     %end
     %url="/case?cid="+row['cid']+"&app="+row['app']+"&jid="+str(row['id'])
     <td class="case"><samp>{{row['cid']}}</samp> <a href="{{url}}"></a></td>
-    <td class="case">{{row['app']}} <a href="{{url}}"></a></td>
+    <td class="case"><samp>{{row['app']}} <a href="{{url}}"></a></samp></td>
     <td class="case"><samp><a id="job-{{row['id']}}" onclick="get_remote_job_status({{row['id']}})">{{row['state']}}</a></samp> <a href="{{url}}"></a></td>
     %if np > 1:
       <td class="case hidden-xs hidden-sm hidden-md">{{row['np']}} <a href="{{url}}"></a></td>
@@ -83,7 +80,7 @@ styles = """
     <!-- <td class="case hidden-xs hidden-sm hidden-md"><samp>{{row['priority']}}</samp> <a href="{{url}}"></a></td> -->
     <td class="case hidden-xs"><samp>{{row['time_submit']}}</samp> <a href="{{url}}"></a></td>
     <td class="case hidden-xs hidden-sm hidden-md"><samp>{{row['walltime']}}</samp> <a href="{{url}}"></a></td>
-    <td class="case hidden-xs"> {{!row['description']}}
+    <td class="case hidden-xs"><samp>{{!row['description']}}</samp>
       <!-- <a href="/case?cid={{row['cid']}}&app={{row['app']}}&jid={{row['id']}}"></a> -->
       <a href="{{url}}"> </a>
     </td>

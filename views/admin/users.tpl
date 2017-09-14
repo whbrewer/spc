@@ -1,14 +1,5 @@
-<%
-    styles = """
-    <style>
-      .table {
-        font-size: 120%;
-      }
-    </style>
-    """
-%>
-
-%rebase('base.tpl', styles=styles)
+%style = ".table { font-size: 120% }"
+%rebase('base.tpl', style=style)
 
 <h1 class="text-center">Users</h1>
 

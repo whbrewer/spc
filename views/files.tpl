@@ -1,13 +1,10 @@
 <%
-styles = """
-        <style>
-            a { font-size: 120% }
-            .plus2 { font-size: 2em }
-        </style>
+    style = """
+        a { font-size: 120% }
+        .plus2 { font-size: 2em }
     """
+    rebase('base.tpl', style=style)
 %>
-
-%rebase('base.tpl', styles=styles)
 
 <script>
     function toggle(source) {

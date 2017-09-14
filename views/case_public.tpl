@@ -1,12 +1,5 @@
-<%
-    styles = """
-        <style>
-        #navaction { display: none }
-        </style>
-    """
-%>
-
-%rebase('base.tpl', styles=styles)
+%style = "#navaction { display: none }"
+%rebase('base.tpl', style=style)
 
 %if defined('status'):
     Status: {{status}}

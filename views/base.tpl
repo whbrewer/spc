@@ -46,14 +46,17 @@
 
     </style>
 
-    % if defined('styles'):
-        {{ !styles }}
+    % if defined('style'):
+    <style>
+        {{ !style }}
+    </style>
     % end
 
 </head>
 
 <body>
     %include('navbar')
+
     <div class="container-fluid">
     {{ !base }}
     </div>

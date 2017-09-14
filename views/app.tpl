@@ -1,17 +1,14 @@
 <%
-    styles = """
-        <style>
+    style = """
         .table {
             font-size: 120%;
         }
         tr:hover {
             cursor: auto;
         }
-        </style>
     """
+    rebase('base.tpl', style=style)
 %>
-
-%rebase('base.tpl', styles=styles)
 
 <script>
 $(document).ready(function() {
