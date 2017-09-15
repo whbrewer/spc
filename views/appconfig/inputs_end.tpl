@@ -6,6 +6,8 @@
 
 <!-- <p>You may test the app <a href="/{{appname}}">here</a></p> -->
 
+<h3>NOTE: You will need to restart SPC to use the app!</h3>
+
 <p>Redirecting to <a href="/app/{{appname}}">app configuration page</a></p>
 
-<meta http-equiv="refresh" content="1; url=/app/{{appname}}">
+<meta http-equiv="refresh" content="10; url=/app/{{appname}}">

@@ -71,11 +71,8 @@ class App(object):
     def create_template(self,html_tags=None,bool_rep="T",desc=None):
         # need to output according to blocks
         f = open('views/apps/'+self.appname+'.tpl', 'w')
-        f.write("%include('header')\n")
-        f.write("<body>\n")
-        f.write("%include('navbar')\n")
+        f.write("%rebase('base.tpl')\n")
         f.write("%include('apps/alert')\n")
-        f.write("<div class=\"container-fluid\">\n")
         f.write("<form class=\"form-horizontal\" action=\"/confirm\" method=\"post\" novalidate>\n")
         f.write("<input type=\"hidden\" name=\"app\" value=\"{{app}}\">\n")
         f.write("%if defined('cid'):\n")
@@ -98,7 +95,7 @@ class App(object):
                 first_tab = False
             else:
                 f.write("\t<li role=\"presentation\">\n")
-            f.write("\t\t<a href=\"#" + block.replace(" ", "_") + "\" aria-controls=\"home\" role=\"tab\"")
+            f.write("\t\t<a href=\"#" + block.replace(" ", "_") + "\" role=\"tab\"")
             f.write(" data-toggle=\"tab\">" + block + "</a>\n")
             f.write("\t</li>\n")
         f.write("</ul>\n")
@@ -116,7 +113,8 @@ class App(object):
                 f.write("\t<div class=\"form-group\">\n")
                 # label
                 if not html_tags[param] == "hidden" and not html_tags[param] == "video":
-                    buf = "\t\t<label for=\"" + param + "\" class=\"control-label col-xs-6\">"
+                    # buf = "\t\t<label for=\"" + param + "\" class=\"control-label col-xs-6\">"
+                    buf = "\t\t<label class=\"control-label col-xs-6\">"
                     if desc: # description
                         buf += "\n\t\t\t" + desc[param]
                     else:
@@ -179,7 +177,6 @@ class App(object):
         f.write("\t</div>\n")
         f.write("</div>\n")
         f.write("</form>\n")
-        f.write("%include('footer')\n")
         f.close()
         return True
 
