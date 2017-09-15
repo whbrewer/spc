@@ -5,7 +5,7 @@
     Status: {{status}}
 %end
 
-%include("navactions")
+%include('navactions')
 
 <pre>
 {{!contents}}

@@ -12,7 +12,7 @@
     For best experience, increase screen width until this message disappears
 </div>
 
-%include("navactions")
+%include('navactions')
 
 <!--
 <form>
