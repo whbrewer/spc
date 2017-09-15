@@ -72,50 +72,18 @@
             <div class="btn-group dropdown hidden-xs">
 
                 <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        <span class="glyphicon glyphicon-folder-open"></span> Files <span class="glyphicon glyphicon-chevron-up"></span>
+                    <span class="glyphicon glyphicon-folder-open"></span> Files <span class="glyphicon glyphicon-chevron-up"></span>
                 </button>
 
-                <ul class="dropdown-menu" style="background-color:#404040;padding:10px">
+                <ul class="dropdown-menu">
 
-                    <li>
-                        <form class="btn-group" action="/zipcase" method="get">
-                            <button class="btn btn-default" style="width:200px">
-                                <span class="glyphicon glyphicon-cloud-download"></span> Download
-                            </button>
-                            <input type="hidden" name="cid" value="{{cid}}">
-                            <input type="hidden" name="app" value="{{app}}">
-                        </form>
-                    </li>
+                    <li> <a href="/zipcase?cid={{cid}}&app={{app}}">Download</a> </li>
 
-                    <li>
-                        <form class="btn-group" method="get" action="/inputs?cid={{cid}}&app={{app}}">
-                            <button class="btn btn-default" style="width:200px">
-                                <span class="glyphicon glyphicon-wrench"></span> Inputs</button>
-                            <input type="hidden" name="cid" value="{{cid}}">
-                            <input type="hidden" name="app" value="{{app}}">
-                        </form>
-                    </li>
+                    <li> <a href="/inputs?cid={{cid}}&app={{app}}">Inputs</a> </li>
 
-                    <li>
-                        <form class="btn-group" method="get" action="/output?cid={{cid}}&app={{app}}">
-                            <button class="btn btn-default" style="width:200px"><span class="glyphicon glyphicon-file"></span> Output</button>
-                            % if defined('jid'):
-                               <input type="hidden" name="jid" value="{{jid}}">
-                            % end
-                            <input type="hidden" name="cid" value="{{cid}}">
-                            <input type="hidden" name="app" value="{{app}}">
-                        </form>
-                    </li>
+                    <li> <a href="/output?cid={{cid}}&app={{app}}">Output</a> </li>
 
-                    <li>
-                        <form class="btn-group" action="/files" method="get">
-                            <button class="btn btn-default" style="width:200px">
-                                <span class="glyphicon glyphicon-folder-open"></span> Browse Files
-                            </button>
-                            <input type="hidden" name="cid" value="{{cid}}">
-                            <input type="hidden" name="app" value="{{app}}">
-                        </form>
-                    </li>
+                    <li> <a href="/files?cid={{cid}}&app={{app}}">Files</a> </li>
 
                 </ul>
 
