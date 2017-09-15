@@ -1,5 +1,4 @@
-%include('header')
-%include('navbar')
+%rebase('base.tpl')
 %include('navactions')
 
 <h4>{{fn}}</h4>
@@ -81,5 +80,3 @@
 	    }
 	});
 </script>
-
-%include('footer')
