@@ -242,7 +242,7 @@ def appconfig_status():
         status['template'] = 0
 
     # check inputs file
-    extension = {'namelist': '.in', 'ini': '.ini', 'xml': '.xml', 'json': '.json', 'yaml': '.yaml'}
+    extension = {'namelist':'.in', 'ini':'.ini', 'xml':'.xml', 'json':'.json', 'yaml':'.yaml', 'toml':'.toml'}
     if os.path.exists(os.path.join(apprw.apps_dir, app,
                       app + extension[root.myapps[app].input_format])):
         status['inputs'] = 1
