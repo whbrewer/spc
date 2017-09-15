@@ -383,7 +383,7 @@ def edit_inputs(step):
             return template('appconfig/error',
                    err="no file selected. press back button and try again")
         name, ext = os.path.splitext(upload.filename)
-        if ext not in ('.in', '.ini', '.xml', '.json', '.yaml', ):
+        if ext not in ('.in', '.ini', '.xml', '.json', '.yaml', '.toml'):
             return 'ERROR: File extension not allowed.'
         try:
             save_path_dir = os.path.join(apprw.apps_dir, name)
@@ -408,6 +408,8 @@ def edit_inputs(step):
                 fn = appname + ".json"
             elif input_format == "yaml":
                 fn = appname + ".yaml"
+            elif input_format == "toml":
+                fn = appname + ".toml"
             else:
                 return "ERROR: input_format not valid: ", input_format
             path = os.path.join(apprw.apps_dir, appname, fn)

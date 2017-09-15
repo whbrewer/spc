@@ -23,7 +23,7 @@
   <tr>
       <td>Input format:</td>
       <td><select class="form-control input-lg" name="input_format">
-          %opts = {'namelist':'namelist.input','ini':'INI','xml':'XML','json':'JSON', 'yaml': 'YAML'}
+          %opts = {'namelist':'namelist.input','ini':'INI','xml':'XML','json':'JSON', 'yaml':'YAML', 'toml':'TOML'}
           %for key, value in opts.iteritems():
               %if key == rows['input_format']:
                   <option selected value="{{key}}">{{value}}
