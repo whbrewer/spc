@@ -10,7 +10,7 @@
    </p>
    -->
 
-   <script id="source" language="javascript" type="text/javascript">
+   <script id="source">
       function download()  {
           document.location.href=document.getElementById('canvasImg').src;
       }

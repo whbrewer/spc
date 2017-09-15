@@ -1,5 +1,5 @@
-%include('header')
-%include('navbar')
+%style = "table { font-size: 120% }"
+%rebase('base.tpl', style=style)
 
 <script>
 function ddef() {
@@ -21,11 +21,7 @@ function ddef() {
 }
 </script>
 
-<style>
-  table { font-size: 120%; }
-</style>
-
-<div id="warning" align="center" class="alert-warning"></div>
+<div id="warning" class="alert-warning text-center"></div>
 
 <ol class="breadcrumb">
   <li><a href="/">Apps</a></li>
@@ -84,7 +80,7 @@ function ddef() {
 
     <div class="form-group">
         <label for="filename" class="control-label col-md-3">Filename:</label>
-        <div class="col-md-6"><input type="text" class="form-control" name="fn" required></div>
+        <div class="col-md-6"><input type="text" class="form-control" name="fn" id="filename" required></div>
     </div>
 
     <div class="form-group">
@@ -136,5 +132,3 @@ $(document).ready(function() {
     });
 });
 </script>
-
-%include('footer')

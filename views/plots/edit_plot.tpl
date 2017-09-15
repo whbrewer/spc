@@ -1,10 +1,4 @@
-%include('header')
-%include('navbar')
-
-<body>
-
-<script>
-</script>
+%rebase('base.tpl')
 
 <ol class="breadcrumb">
   <li><a href="/">Apps</a></li>
@@ -15,13 +9,11 @@
 
 <h1>Edit plot definition</h1>
 
-<div class="container-fluid">
-
 <div id="addplot">
 <form class="form-horizontal" method="post" action="/plots/edit/{{row['id']}}">
     <div class="form-group">
         <label for="title" class="control-label col-md-3">Title:</label>
-        <div class="col-md-6"><input type="text" class="form-control input-lg" name="title" value="{{row['title']}}"></div>
+        <div class="col-md-6"><input type="text" class="form-control input-lg" name="title" id="title" value="{{row['title']}}"></div>
     </div>
 
     <div class="form-group">
@@ -65,5 +57,3 @@
     <input type="submit" class="btn btn-success center-block" value="Submit">
 </form>
 </div>
-
-%include('footer')

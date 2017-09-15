@@ -1,15 +1,22 @@
-%include('header')
-<link href="/static/css/flot.css" rel="stylesheet" type="text/css">
-<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.min.js"></script>
-<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="/static/js/flot/jquery.flot.categories.min.js"></script>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+    %include('header')
+
+    <link href="/static/css/flot.css" rel="stylesheet" type="text/css">
+    <script src="/static/js/flot/jquery.min.js"></script>
+    <script src="/static/js/flot/jquery.flot.min.js"></script>
+    <script src="/static/js/flot/jquery.flot.categories.min.js"></script>
+
+    %include('plots/style')
+</head>
 
 <body>
 %include('navbar')
-%include('plots/header')
+%include('plots/plot_list')
 
 <div>
-   <script id="source" language="javascript" type="text/javascript">
+   <script id="source">
       $(function () {
 
         var placeholder = "#myplot";

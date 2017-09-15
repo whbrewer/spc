@@ -1,7 +1,13 @@
-%include('header')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    %include('header')
+    %include('plots/style')
+</head>
+
 <body>
 %include('navbar')
-%include('plots/header')
+%include('plots/plot_list')
 
 <div style="display: none">
     <div id="flot-3d-data-json">{{!data_json}}</div>
@@ -23,3 +29,5 @@
 <script src="/static/js/plots/flot_3d.js"></script>
 
 %include('footer')
+</body>
+</html>

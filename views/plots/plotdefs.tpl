@@ -1,7 +1,14 @@
-%include('header')
-%include('navbar')
-
-<body>
+<%
+    style = """
+      td,th {
+        text-align: center
+      }
+      table {
+        font-size: 120%;
+      }
+    """
+    rebase('base.tpl', style=style)
+%>
 
 <script>
 function opt() {
@@ -36,15 +43,6 @@ function endis() {
 }
 </script>
 
-<style type="text/css">
-  td,th {
-    text-align: center
-  }
-  table {
-    font-size: 120%;
-  }
-</style>
-
 <ol class="breadcrumb">
   <li><a href="/">Apps</a></li>
   <li><a href="/app/{{app}}">Configure App</a></li>
@@ -65,7 +63,7 @@ function endis() {
 <form class="form-horizontal" method="post" action="/plots/create">
     <div class="form-group">
         <label for="title" class="control-label col-md-3">Title:</label>
-        <div class="col-md-6"><input type="text" class="form-control" name="title"></div>
+        <div class="col-md-6"><input type="text" class="form-control" name="title" id="title"></div>
     </div>
 
     <div class="form-group">
@@ -138,7 +136,7 @@ function endis() {
     %url="/plots/"+str(row['plots']['id'])+"/datasources?app="+app
     <td class="plotdef">{{i}} <a href="{{url}}"></a></td>
     <td class="plotdef">{{row['plots']['title']}} <a href="{{url}}"></a></td>
-    <td class="plotdef" width="50">{{row['plots']['ptype']}} <a href="{{url}}"></a></td>
+    <td class="plotdef" style="width:50px">{{row['plots']['ptype']}} <a href="{{url}}"></a></td>
     <td class="plotdef">{{row['plots']['options']}} <a href="{{url}}"></a>
     <td style="vertical-align:middle">
         <div class="dropdown">
@@ -165,5 +163,3 @@ $(document).ready(function() {
     });
 });
 </script>
-
-%include('footer')

@@ -1,7 +1,4 @@
-%include('header')
-%include('navbar')
-
-<body>
+%rebase('base.tpl')
 
 <ol class="breadcrumb">
   <li><a href="/">Apps</a></li>
@@ -11,7 +8,7 @@
   <li class="active">Edit datasource</li>
 </ol>
 
-<h1 align="center">Edit data source</h1>
+<h1 class="text-center">Edit data source</h1>
 
 <br>
 
@@ -31,7 +28,7 @@
 
     <div class="form-group">
         <label for="filename" class="control-label col-md-3">Filename:</label>
-        <div class="col-md-6"><input type="text" class="form-control input-lg" name="fn" value="{{row['filename']}}" required></div>
+        <div class="col-md-6"><input type="text" class="form-control input-lg" name="fn" id="filename" value="{{row['filename']}}" required></div>
     </div>
 
     <div class="form-group">
@@ -48,9 +45,3 @@
     <input type="hidden" name="app" value="{{app}}">
 
 </form>
-</div>
-
-</body>
-</html>
-
-%include('footer')
