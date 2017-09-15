@@ -1,36 +1,35 @@
-%include('header')
-<style>
-  .panel:hover {
-    background-color: #dfdfdf !important;
-  }
-  a {
-    text-decoration: none;
-    color: #5f5f5f;
-  }
-  body {
-    background: #f5f5f5 !important;
-  }
-  .list-group-item {
-    font-size: 200%;
-  }
-</style>
-
-<body>
-%include('navbar')
+<%
+    style = """
+        .panel:hover {
+            background-color: #dfdfdf !important;
+        }
+        a {
+            text-decoration: none;
+            color: #5f5f5f;
+        }
+        body {
+            background: #f5f5f5 !important;
+        }
+        .list-group-item {
+            font-size: 200%;
+        }
+    """
+    rebase('base.tpl', style=style)
+%>
 
 <div style="height:15px"></div>
 
 <div class="row">
 
-  <div class="col-xs-12 col-sm-4" align="left">
+  <div class="col-xs-12 col-sm-4">
     <div class="btn-group">
-      <a data-step="1" data-intro="These are your activated apps.  Apps must be activated before they can be used..." class="btn btn-warning" class="btn btn-warning active" href="/myapps">Activated</a>
+      <a data-step="1" data-intro="These are your activated apps.  Apps must be activated before they can be used..." class="btn btn-warning active" href="/myapps">Activated</a>
       <a data-step="2" data-intro="By clicking here you can find apps to activate..." class="btn btn-warning" href="/apps">Installed</a>
     </div>
   </div>
 
   <div class="col-sm-4">
-    <h2 align="center">Activated Apps</h2>
+    <h2 class="text-center">Activated Apps</h2>
   </div>
 
   <div class="hidden-xs col-sm-4">
@@ -72,5 +71,3 @@ function removeapp(app) {
     location.reload();
 }
 </script>
-
-%include('footer')
