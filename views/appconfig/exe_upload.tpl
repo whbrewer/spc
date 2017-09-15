@@ -1,6 +1,4 @@
-%include("header")
-
-<body>
+%rebase('base.tpl')
 
 <h3>Configure Executable: step 1 of 2</h3>
 
@@ -22,5 +20,3 @@
   <input type="submit" class="btn btn-success" value="Next >>"/>
 </form>
 </div>
-
-%include('footer')

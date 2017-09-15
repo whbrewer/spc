@@ -1,6 +1,4 @@
-%include("header")
-
-<body>
+%rebase('base.tpl')
 
 <div class="container-fluid">
 <h3>Configure inputs: step 2 of 3</h3><br>
@@ -22,5 +20,3 @@
 {{!contents}}
 </pre>
 </div>
-
-%include('footer')

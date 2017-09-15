@@ -1,6 +1,4 @@
-%include('header')
-
-<body>
+%rebase('base.tpl')
 
 <h3>Configure Executable: step 2 of 2</h3><br>
 
@@ -35,5 +33,3 @@
 {{!contents}}
 </pre>
 </div>
-
-%include('footer')
