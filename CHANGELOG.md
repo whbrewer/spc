@@ -1,3 +1,7 @@
+v0.32 released on 9/15/17
+-------------------------
+* make valid with HTML5
+
 v0.31 released on 8/29/17
 -------------------------
 * add basic route testing using command `./spc test` 
