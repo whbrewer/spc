@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-sm-8">
             <h3 class="text-center">{{plot_title}}</h3>
-            <div id="myplot" style="width:100%; height:70%;"></div> <br>
+            <div id="myplot" style="height:calc(100vh - 280px)"></div> <br>
         </div>
         <div class="col-sm-4 sidebar">
             <h4>Available Plots:</h4>
