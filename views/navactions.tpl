@@ -98,6 +98,11 @@
 
         </div>
 
+        %if defined('cid'):
+            &nbsp;&nbsp;&nbsp;
+            <samp style="color:#dfdfdf; font-size:x-large">{{cid}}</samp>
+        %end
+
         <span id="stats" class="navbar-right hidden-xs hidden-sm" style="position:relative;top:-10px"></span>
 
     </div>
@@ -168,7 +173,7 @@ jQuery(document).ready(function(){
     function pollStats(){
         $.get('/stats/mem', function(data) {
             var obj = $.parseJSON(data)
-            $('#stats').html("<a class=\"navbar-brand\" href=\"/stats?cid={{cid}}&app={{app}}\"><tt>CPU: " + obj.cpu + "%<br>MEM: " + obj.mem + "%</tt></a>");
+            $('#stats').html("<a class=\"navbar-brand\" href=\"/stats?cid={{cid}}&app={{app}}\"><samp>CPU: " + obj.cpu + "%<br>MEM: " + obj.mem + "%</samp></a>");
             setTimeout(pollStats,5000);
         });
     }

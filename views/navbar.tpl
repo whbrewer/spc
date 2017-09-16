@@ -24,20 +24,6 @@
                 </div>
 
                 <div class="hidden-xs hidden-sm">
-                    %if defined('app') and defined('cid'):
-                        %if app != '' and cid != '':
-                            <a href="/static/apps/{{app}}/about.html"
-                                class="navbar-brand" data-toggle="modal"
-                                data-target="#footModal">{{app}} :: {{cid}}</a>
-                        %end
-                    %elif defined('app'):
-                        %if app != '':
-                            <a href="/static/apps/{{app}}/about.html"
-                                class="navbar-brand" data-toggle="modal"
-                                data-target="#footModal">{{app}}</a>
-                        %end
-                    %end
-
                     %if defined('status'):
                         <span class="navbar-brand">{{!status}}</span>
                     %end
