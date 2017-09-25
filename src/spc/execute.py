@@ -87,7 +87,6 @@ def confirm_form():
         cmd = apps(name=app).command
         cmd = replace_tags(cmd, request.forms)
         outfn = app + ".out"
-        cmd = cmd + ' > ' + outfn + ' 2>&1 '
         print "cmd:", cmd
         # following two params are temporary solutions
         np = 1
@@ -171,8 +170,6 @@ def execute():
     cmd = replace_tags(cmd, inputs)
 
     outfn = app + ".out"
-    cmd = cmd + ' > ' + outfn + ' 2>&1 '
-    print "cmd:", cmd
 
     # submit job to queue
     try:

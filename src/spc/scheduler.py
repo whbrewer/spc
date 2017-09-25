@@ -95,8 +95,10 @@ class Scheduler(object):
         else: # dont use mpi
             command = db.jobs(jid).command
 
+        # redirect output to appname.out file
         outfn = app + ".out"
         cmd = command + ' > ' + outfn + ' 2>&1 '
+        print "cmd:", cmd
 
         run_dir = os.path.join(user_dir, user, app, cid)
 
