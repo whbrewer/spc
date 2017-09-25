@@ -1,5 +1,5 @@
 
-<div id="navaction" class="container-fluid navbar navbar-default navbar-fixed-bottom" style="padding-left:0px; padding-top:10px; bottom:0px">
+<div id="navaction" class="container-fluid navbar navbar-default navbar-fixed-bottom" style="padding-left:0px; padding-top:10px; padding-bottom:10px; bottom:0px">
 
     <div class="visible-xs" style="height:10px"></div>
 
