@@ -48,8 +48,10 @@
                         <ul class="dropdown-menu" role="menu">
                             <li> <a href="/account">Account</a> </li>
                             <li class="divider"> </li>
-                            <li> <a href="/aws">AWS</a>
-                            <li> <a href="/docker">Docker</a>
+                            <li> <a href="/aws">AWS</a> </li>
+                            <li> <a href="/docker">Docker</a> </li>
+                            <li> <a href="/stats">Machine Stats</a> </li>
+                            <li class="divider"> </li>
                             %if defined('user'):
                                 %if user=="admin":
                                     <li> <a href="/admin/show_users">Admin</a> </li>
