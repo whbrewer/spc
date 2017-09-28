@@ -13,7 +13,7 @@
                 <input type="hidden" name="app" value="{{app}}">
             </form>
 
-            %if defined('jid') and owner == user:
+            %if defined('jid') and owner == user and not defined('plotpath'):
                 %if jid > 0:
                     <form class="btn-group hidden-xs" action="/jobs/stop" method="post">
                         <input type="hidden" name="cid" value="{{cid}}">
