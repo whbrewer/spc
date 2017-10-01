@@ -52,8 +52,8 @@
                             <li> <a href="/docker">Docker</a> </li>
                             <li> <a href="/stats">Machine Stats</a> </li>
                             %if defined('user'):
-                                <li class="divider"> </li>
                                 %if user=="admin":
+			   	    <li class="divider"> </li>
                                     <li> <a href="/admin/show_users">Admin</a> </li>
                                     %if defined('app'):
                                         % if app != '':
