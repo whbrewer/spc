@@ -102,6 +102,7 @@
 
 <form method="get" action="/jobs">
   <input type="hidden" name="n" value="{{n+num_rows}}">
+  <input type="hidden" name="q" value="{{q}}">
   <input type="submit" class="btn btn-default btn-block" value="Show more">
 </form>
 
