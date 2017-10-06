@@ -50,6 +50,8 @@ def show_jobs():
                     else:
                         this_id = users(user=query).id
                         result = db(jobs.uid==this_id).select(orderby=~jobs.id)[:n]
+                        for i, r in enumerate(result):
+                            result[i]['cid'] = query + "/" + result[i]['cid']
                 elif key == "cid":
                     result = db((jobs.uid==uid) & \
                         (db.jobs.cid.contains(query, case_sensitive=False))).select(orderby=~jobs.id)
