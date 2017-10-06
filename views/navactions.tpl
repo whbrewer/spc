@@ -100,7 +100,7 @@
 
         %if defined('cid'):
             &nbsp;&nbsp;&nbsp;
-            <samp style="color:#dfdfdf; font-size:x-large" ondblclick="document.execCommand('copy'); this.style.color='yellow'; this.style.transition='1s ease-in-out'">{{cid}}</samp>
+            <samp class="hidden-xs" style="color:#dfdfdf; font-size:x-large" ondblclick="document.execCommand('copy'); this.style.color='yellow'; this.style.transition='1s ease-in-out'">{{cid}}</samp>
         %end
 
         <span id="stats" class="navbar-right hidden-xs hidden-sm" style="position:relative;top:-10px"></span>
