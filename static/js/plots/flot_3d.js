@@ -21,7 +21,7 @@
         var plot = $.plot(plotElement, singlePlotData, options);
     });
 
-    var activePlot = plotParent.children[0];
+    var activePlot = plotParent.children[plotParent.children.length - 1];
     activePlot.style.visibility = null;
 
     var sliderParent = document.createElement('div');
@@ -35,12 +35,12 @@
     var sliderValue = document.createElement('div');
     sliderValue.style.marginRight = '10px';
     sliderValue.style.width = '50px';
-    sliderValue.textContent = zData[0];
+    sliderValue.textContent = zData[zData.length - 1];
 
     var slider = document.createElement('input');
     slider.setAttribute('type', 'range');
     slider.setAttribute('max', data.length - 1);
-    slider.value = '0';
+    slider.value = data.length - 1;
 
     sliderParent.appendChild(sliderLabel);
     sliderParent.appendChild(sliderValue);
