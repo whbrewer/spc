@@ -5,7 +5,6 @@ import json
 
 if os.path.exists("src/spc/config.py"):
     import config
-    import app_reader_writer as apprw
 
 sys.argv[1:]
 
@@ -192,6 +191,7 @@ def main():
         import spc.test
         spc.test.main()
     elif (sys.argv[1] == "uninstall"):
+        import app_reader_writer as apprw
         install_usage = "usage: spc uninstall appname"
         if len(sys.argv) == 3:
             import migrate, config
@@ -211,6 +211,7 @@ def main():
         else:
             print install_usage
     elif (sys.argv[1] == "install"):
+        import app_reader_writer as apprw
         #import platform
         #platform.system()  # Darwin, Linux, Windows, or Java
         #platform.machine() # i386, x86_64
@@ -377,7 +378,8 @@ def main():
             print list_usage
 
     elif (sys.argv[1] == "update"):
-        import migrate, config
+        import migrate, config, app_reader_writer as apprw
+
         usage = "usage: spc update appname [command|plots]"
 
         if len(sys.argv) > 2:
