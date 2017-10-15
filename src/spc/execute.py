@@ -194,7 +194,8 @@ def tail(app, cid):
     num_lines = int(request.query.num_lines) or 24
     progress = 0
     complete = 0
-    worker = config.worker or None
+    try: worker = config.worker
+    except: worker = 'local'
     if worker == 'remote':
         myparams = {'user': user, 'app': app, 'cid': cid}
         resp = requests.get(config.remote_worker_url +'/output', params=myparams)
