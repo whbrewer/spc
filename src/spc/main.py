@@ -159,9 +159,8 @@ def main():
     ## start up the web server
 
     # run the app using server specified in config.py
-    try:
+    if config.server != 'uwsgi':
         run(server=config.server, app=app, host='0.0.0.0', \
             port=config.port, debug=False)
-    # use the Bottle built-in web server
-    except:
-        run(app=app, host='0.0.0.0', port=config.port, debug=False)
+
+if config.server == 'uwsgi': main()

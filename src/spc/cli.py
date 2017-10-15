@@ -56,9 +56,10 @@ def create_config_file():
             f.write("\n# WORKERS\n")
             f.write("worker = 'local'\n")
             f.write("\n# WEB SERVER\n")
-            f.write("# don't define server if you want to use built-in\n")
-            f.write("# other options: cherrypy, bjoern, tornado, gae, etc.\n")
-            f.write("# cherrypy is a decent multi-threaded server\n")
+            f.write("# use 'wsgiref' for the Bottle built-in single-threaded dev server\n")
+            f.write("# for a production system 'uwsgi' with NGINX is recommended\n")
+            f.write("# 'cherrypy' is a decent multi-threaded server\n")
+            f.write("# other options: 'rocket', 'bjoern', 'tornado', 'gae', etc.\n")
             f.write("server = 'cherrypy'\n")
             f.write("# port number to listen for connections\n")
             f.write("port = 8580\n")
@@ -177,8 +178,12 @@ def main():
         print "migrating database schema changes"
         migrate()
     elif (sys.argv[1] == "run"):
-        import spc.main
-        spc.main.main()
+        import config
+        if config.server == 'uwsgi':
+            os.system('/usr/local/bin/uwsgi etc/uwsgi.ini')
+        else:
+            import spc.main
+            spc.main.main()
     elif (sys.argv[1] == "runworker"):
         import spc.worker
         spc.worker.main()
