@@ -3,7 +3,7 @@ The SPC project
 
 The Scientific Platform for the Cloud (SPC) is a cloud platform for easily migrating and running scientific applications in the cloud. It is described in more detail in the following paper:
 
-> W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24 http://ieeexplore.ieee.org/document/7421906/
+	W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24 http://ieeexplore.ieee.org/document/7421906/
 
 This platform is ideally suited to run scientific applications that: (1) require an input deck full of integers, floats, strings, and booleans stored in a standardized file format such as INI, XML, JSON, YAML, or Namelist.input, (2) require some amount of processing time (i.e. not instantaneous -- although it can handle such cases too), (3) require some plotting at the end of the simulation, (4) use MPI or MapReduce for parallelization (although handles serial cases well too). Moreover, it can handle other applications as well, but some amount of pre- or post-processing may be required. Such topics are described in more detail in the aforementioned paper. If you need a copy of this paper, please send an e-mail request to the address at the bottom of this file.
 
@@ -29,7 +29,8 @@ Installing Apps
 
 Adding apps can be accomplished in two ways: (1) interactively via the user interface, or (2) via the command-line options (see section on package management).
 
-#### A. Manually adding app through user interface
+A. Manually adding app through user interface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To install or modify apps interactively, one must be logged in as user admin (default password admin).  Note, if user authentication is turned, off one will still need to login as admin, by clicking the hamburger icon , logging out, and then logging back in as admin.  Before this can happen,  enable authentication by setting “auth = True” in the src/config.py file.
 To install an app interactively, click the Apps button, then click the +Add button.  Installation of an app requires five steps:
@@ -71,7 +72,8 @@ After setting up the database entry, to finish setting up the application will r
 **Upload binary file** – To upload a binary file, click the “Configure Executable” button.  Please note that the binary file must be compiled on the same operating system as the host machine running SPC.  So, for example, if SPC is running on an Amazon EC2 instance running 32-bit Linux with a certain glibc version, it should be compiled on an equivalent machine running the same glibc version.
 Setup plots – To configure plots, click the “Configure Plots” button, then click “Add Plot”.  Each plot must have at least one datasource.  So, once a plot has been setup, one must click the “datasource” link connected with that plot, and then click the “Add Data Source” button.  While there are options for label, plot type, and color, these are all stored together in JSON format under one field in the database called data_def, short for data definition.
 
-#### B. Adding app through SPC’s package management system
+B. Adding app through SPC’s package management system
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Because it may take some time to setup an app, especially the plots, it is possible to save the configuration as a JSON manifest file called spc.json.  Therefore, it is possible to create an SPC package of an app, which is simply a zipped archive containing the input file, binary, spc.json manifest file, and then make it available on the Internet (e.g. by hosting it on github.org or bitbucket.org).  In this way, anyone else running SPC can easily install your app by running the command:
 
@@ -85,11 +87,13 @@ For Mac OS X users, an example can be installed by running the following command
 
     > spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip
 
-#### Pre-/Post-processing
+Pre-/Post-processing
+~~~~~~~~~~~~~~~~~~~~
 
 The code for pre- and post-processing is in the processing.py file.  This feature can be turned on by setting the pre-processing option in the database setup to the input filename.  However, coding to handle the pre-processing step must be manually added to the processing.py file.
 
-##### Pre-processing
+Pre-processing
+~~~~~~~~~~~~~~
 
 The pre-processor is run just before starting the executable in the function execute() in main.py.  This feature is called as:
 
@@ -99,7 +103,7 @@ The pre-processor is run just before starting the executable in the function exe
 
 This feature can be used for things that need to be changed just before running.
 
-##### Examples:
+**Examples:**
 
 1. Your program writes its output to a different file than appname.out, e.g. out100.00 where 100 is an entry input by the user in the input form.  Therefore you can add a couple lines in execute() such as:
 
@@ -138,7 +142,8 @@ This feature can be used for things that need to be changed just before running.
     The pre-processing option may also be used if one needs to write e.g. a PBS run script pbs.script file for running parallel applications via MPI.
 
 
-#### Post-processing
+Post-processing
+~~~~~~~~~~~~~~~
 
 The post-processor is called when the user clicks on any plot.  The post-processor may be used to convert raw output data into JSON form that is needed for a programs like the Flot JavaScript plotting program to plot the files correctly.   This function is defined in the file process.py.  Here is the doc string for the postprocess() function:
 
