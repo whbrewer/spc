@@ -37,24 +37,25 @@ To install an app interactively, click the Apps button, then click the +Add butt
 
 1. **Database entry setup** – The first step is to store some basic information about the app into the database:
 
-2. **Name** – A unique name for the app, with no spaces or punctuation marks.
-Description – Description of the app.  What does it do?
-Input format – There are three possible options for input format: (1) namelist, (2) INI format, (3) XML format.  In the future, support may be added for JSON format as well.
-Command – This is the command to run to start the simulation.  This command is being run from the working directory of the case, which is user_data/user/app/case (e.g. user_data/joe/mendel/c82d3f).   For example, this may look like:
+	* **Name** – A unique name for the app, with no spaces or punctuation marks.
+	Description – Description of the app.  What does it do?
+	Input format – There are three possible options for input format: (1) namelist, (2) INI format, (3) XML format.  In the future, support may be added for JSON format as well.
 
-    <rel_apps_dir>/mendel/mendel
+	* **Command** – This is the command to run to start the simulation.  This command is being run from the working directory of the case, which is user_data/user/app/case (e.g. user_data/joe/mendel/c82d3f).   For example, this may look like::
 
-(or mendel.exe for a Windows machine).  Here <rel_apps_dir> will be later replaced by the location where the SPC apps are installed (currently this would replaced by the string ../../../../src/spc_apps). For a Java application, this may look like:
+	    <rel_apps_dir>/mendel/mendel
 
-    /usr/bin/java -jar <rel_apps_dir>/jmendel/dist/jmendel.jar
+	(or mendel.exe for a Windows machine).  Here <rel_apps_dir> will be later replaced by the location where the SPC apps are installed (currently this would replaced by the string ../../../../src/spc_apps). For a Java application, this may look like::
 
-NOTE: since v0.22, the app run command can no longer be specified through the web interface.  It must instead be specified in the spc.json file.  Therefore, after setting up an, app, one may generate an spc.json manifest file by going in to the app configuration page (Click on top right “hamburger” icon and click “Configure app”, then click the “Export” button).  This will output a spc.json file to the src/spc_apps/appname folder.   Then, edit the command line in the  spc.json file to be something like (replacing app with the name of your app):
+	    /usr/bin/java -jar <rel_apps_dir>/jmendel/dist/jmendel.jar
 
-    "command": "<rel_apps_path>/app/app",
+	NOTE: since v0.22, the app run command can no longer be specified through the web interface.  It must instead be specified in the spc.json file.  Therefore, after setting up an, app, one may generate an spc.json manifest file by going in to the app configuration page (Click on top right “hamburger” icon and click “Configure app”, then click the “Export” button).  This will output a spc.json file to the src/spc_apps/appname folder.   Then, edit the command line in the  spc.json file to be something like (replacing app with the name of your app)::
 
-After setting up the database entry, to finish setting up the application will require several more steps, which can be controlled from the App Edit page, which can be accessed by clicking the cog wheel on the App Edit page
+	    "command": "<rel_apps_path>/app/app",
 
-3. **Upload input file** – To accomplish this step, click the “Configure inputs” button, and following through the instructions. One must upload an input file that is consistent with the input format specified in step 1.  So, for example, if namelist input format is specified, the upload file must be in namelist format.  Also, the name of the input file should be the name of the app with the following extension:
+	After setting up the database entry, to finish setting up the application will require several more steps, which can be controlled from the App Edit page, which can be accessed by clicking the cog wheel on the App Edit page
+
+2. **Upload input file** – To accomplish this step, click the “Configure inputs” button, and following through the instructions. One must upload an input file that is consistent with the input format specified in step 1.  So, for example, if namelist input format is specified, the upload file must be in namelist format.  Also, the name of the input file should be the name of the app with the following extension:
 
 	* INI format - appname.ini
 	* XML format - appname.xml
@@ -63,14 +64,16 @@ After setting up the database entry, to finish setting up the application will r
 	* TOML format - appname.toml
 	* namelist.input - appname.in (e.g. mendel.in)
 
-4. **Setup HTML template file** – one of the things that the upload input file format does is to create an HTML template file, appname.tpl, in the views/apps folder.
+3. **Setup HTML template file** – one of the things that the upload input file format does is to create an HTML template file, ``appname.tpl``, in the ``views/apps`` folder.
 
-5. **Static assets** – It is also possible to include static assets such as JavaScript files, CSS files, etc. which currently cannot be uploaded through the web interface, but can be added later manually by copying the files to static/apps/appname.   They can be referenced later in the views/apps/appname.tpl, for example refer to the file mendel.js as follows::
+4. **Upload binary file** – To upload a binary file, click the “Configure Executable” button.  Please note that the binary file must be compiled on the same operating system as the host machine running SPC.  So, for example, if SPC is running on an Amazon EC2 instance running 32-bit Linux with a certain glibc version, it should be compiled on an equivalent machine running the same glibc version.
+
+5. **Setup plots** – To configure plots, click the “Configure Plots” button, then click “Add Plot”.  Each plot must have at least one datasource.  So, once a plot has been setup, one must click the “datasource” link connected with that plot, and then click the “Add Data Source” button.  While there are options for label, plot type, and color, these are all stored together in JSON format under one field in the database called data_def, short for data definition.
+
+Additional options.  **Static assets** – It is also possible to include static assets such as JavaScript files, CSS files, etc. which currently cannot be uploaded through the web interface, but can be added later manually by copying the files to static/apps/appname.   They can be referenced later in the views/apps/appname.tpl, for example refer to the file mendel.js as follows::
 
     <script src="/static/apps/mendel/mendel.js"></script>
 
-6. **Upload binary file** – To upload a binary file, click the “Configure Executable” button.  Please note that the binary file must be compiled on the same operating system as the host machine running SPC.  So, for example, if SPC is running on an Amazon EC2 instance running 32-bit Linux with a certain glibc version, it should be compiled on an equivalent machine running the same glibc version.
-Setup plots – To configure plots, click the “Configure Plots” button, then click “Add Plot”.  Each plot must have at least one datasource.  So, once a plot has been setup, one must click the “datasource” link connected with that plot, and then click the “Add Data Source” button.  While there are options for label, plot type, and color, these are all stored together in JSON format under one field in the database called data_def, short for data definition.
 
 B. Adding app through SPC’s package management system
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
