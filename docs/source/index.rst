@@ -179,12 +179,17 @@ SPC currently uses a multi-processing scheduler.  The scheduler uses Python’s 
 config.py options
 -----------------
 
-* auth
-* tab_title
-* submit_type
-* remote_worker_url
-* port
-* np
+* **auth** - ``True`` = require username password authorization.  ``False`` = disable authentication
+* **tab_title** - (optional) This is the title to use in the browser tab
+* **submit_type** - (optional) This can either be remote, for a remote worker, or noverify for the case where you don’t want to echo back the parameters to the user before submitting the case.
+* **worker** - can be ``local`` or ``remote``
+* **remote_worker_url** - (optional) If you want to run the simulation on another SPC worker node at a different URL, specify it here.
+* **port** - (required) The port for the web server to listen on, e.g. ``port = 8580``
+* **np** - (required) The number of jobs to schedule simultaneously
+* **server** - (required) Can be either 'uwsgi', 'wsgiref', 'cherrypy', 'rocket', 'gae', or any other servers supported by Bottle
+* **time_zone** - (optional) Used to show job submit date/time in local timezone.  This is needed in cases where Linux system shows time in UTC format.  One of the supported time zones, e.g. ``time_zone = "US/Eastern"``
+* **submit_type** - (optional) if this is set to either ``verify`` or ``noverify``, when the user clicks the green "Continue" button, the job will start directly, without echoing back the run parameters.  This can be used in cases where additional run-time options are not needed, such as specifying the number of processors.  For instantaneous applications with few parameters, it is recommended to use this setting.  For simulations that require a wall-time or use multiple processes, this is not recommended.  If this setting is not set, it will default to ``verify``.
+* **mpirun** - path to MPI executable, e.g. ``/usr/local/bin/run``
 
 Setting up MPI-based applications
 ---------------------------------
