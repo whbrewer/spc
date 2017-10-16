@@ -338,3 +338,13 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #
 # texinfo_no_detailmenu = False
+
+# github integration
+html_context = {
+    "display_github": True, # Integrate GitHub
+    "github_user": "whbrewer", # Username
+    "github_repo": "spc", # Repo name
+    "github_version": "master", # Version
+    "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
+}
+

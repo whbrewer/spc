@@ -97,40 +97,45 @@ The pre-processor is run just before starting the executable in the function exe
        run_params,_,_ = myapps[app].read_params(user,cid)
        processed_inputs = process.preprocess(…)
 
-This feature can be used for things that need to be changed just before running.  Some examples:
+This feature can be used for things that need to be changed just before running.
 
-* Your program writes its output to a different file than appname.out, e.g. out100.00 where 100 is an entry input by the user in the input form.  Therefore you can add a couple lines in execute() such as:
+##### Examples:
+
+1. Your program writes its output to a different file than appname.out, e.g. out100.00 where 100 is an entry input by the user in the input form.  Therefore you can add a couple lines in execute() such as:
 
     if myapps[app].preprocess == "terra.in":
        myapps[app].outfn = "out"+run_params['casenum']+".00"
 
 * Your program doesn’t actually use an input file, but rather uses command line switches to control certain behavior.  Since SPC requires an input file to interact with the user interface, one can use the pre-processing option to convert a file that looks like:
 
-    [BASIC]
-    g_popsize = 100
-    o_polytype = NBH
-    …
-    [MUTATIONS]
-    f_del_prop = 0.9
-    h_dominance = 0.5
-    …
+        [BASIC]
+        g_popsize = 100
+        o_polytype = NBH
+        …
+        [MUTATIONS]
+        f_del_prop = 0.9
+        h_dominance = 0.5
+        …
 
-to a file containing set of switches that the program reads:
+    to a file containing set of switches that the program reads:
 
-    -x2 -s2 -n100 -v5 -r10 -k1 -i4 -j0.5 -f0.9 -g100 -oNBH -h0.5 -c5 -u5
+        -x2 -s2 -n100 -v5 -r10 -k1 -i4 -j0.5 -f0.9 -g100 -oNBH -h0.5 -c5 -u5
 
-This was accomplished by adding the following code to the preprocess() function in process.py:
-if fn == 'fpg.in':
+    This was accomplished by adding the following code to the preprocess() function in process.py:
 
-#### convert input key/value params to cmd-line style args
+        if fn == 'fpg.in': ...
 
-    for key, value in (params.iteritems()):
-       option = '-' + key.split('_')[0] # extract 1st letter
-       buf += option + value + ' '
-    sim_dir = os.path.join(base_dir,fn)
-    return _write_file(buf,sim_dir)
+    This is not good practice, to embed code in the spc source code.  In the future, code hooks should be implemented to look for pre-process specific code in the installed app folder.
 
-The pre-processing option may also be used if one needs to write e.g. a PBS run script pbs.script file for running parallel applications via MPI.
+* Convert input key/value params to cmd-line style args:
+
+        for key, value in (params.iteritems()):
+           option = '-' + key.split('_')[0] # extract 1st letter
+           buf += option + value + ' '
+        sim_dir = os.path.join(base_dir,fn)
+        return _write_file(buf,sim_dir)
+
+    The pre-processing option may also be used if one needs to write e.g. a PBS run script pbs.script file for running parallel applications via MPI.
 
 
 #### Post-processing
