@@ -1,3 +1,8 @@
+v0.33 released on 10/16/17
+--------------------------
+* add support for NGINX via uwsgi
+* add full support for TOML app input files
+
 v0.32 released on 9/15/17
 -------------------------
 * make valid with HTML5
