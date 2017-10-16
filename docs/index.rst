@@ -95,8 +95,7 @@ Pre-/Post-processing
 
 The code for pre- and post-processing is in the processing.py file.  This feature can be turned on by setting the pre-processing option in the database setup to the input filename.  However, coding to handle the pre-processing step must be manually added to the processing.py file.
 
-Pre-processing
-~~~~~~~~~~~~~~
+**Pre-processing**
 
 The pre-processor is run just before starting the executable in the function execute() in main.py.  This feature is called as::
 
@@ -145,8 +144,7 @@ This is not good practice, to embed code in the spc source code.  In the future,
 The pre-processing option may also be used if one needs to write e.g. a PBS run script pbs.script file for running parallel applications via MPI.
 
 
-Post-processing
-~~~~~~~~~~~~~~~
+**Post-processing**
 
 The post-processor is called when the user clicks on any plot.  The post-processor may be used to convert raw output data into JSON form that is needed for a programs like the Flot JavaScript plotting program to plot the files correctly.   This function is defined in the file process.py.  Here is the doc string for the postprocess() function::
 
@@ -161,7 +159,7 @@ User Authentication
 
 User authentication can be enabled or disabled by setting the auth value in `config.py` to either True or False.   There are two default accounts that are setup when the running “spc init”.  They are: admin (password admin) and guest (password guest).  The admin user can install, configure apps, run cases, and also can manage other users accounts (presently this is just limited to deleting other accounts, but may in the future include some options such as setting the default priority level, or disk quotas, etc.).
 
-The Web Server
+Web Server
 --------------
 
 Currently, SPC is setup to use Bottle’s built-in web server, which works fine as a development server, but not as a production server.  This can easily be changed to use a multi-threaded server such as cherrypy, bjoern, tornado, gae, etc. by changing the server variable in config.py, e.g.::
@@ -194,8 +192,8 @@ After making the changes, you will need to restart SPC if it is running (if you 
 
 NOTE: if you ever change the SPC port number, will need to change in two places: (1) in the spc/src/spc/config.py file, and also in the NGINX config file in /etc/nginx/conf.d/config.py
 
-The Job Scheduler
------------------
+Job Scheduler
+-------------
 
 SPC currently uses a multi-processing scheduler.  The scheduler uses Python’s multiprocessing module and includes synchronization primitives such as Lock (mutex) and a BoundedSemaphore for ensuring that only a user-specified number of jobs can run concurrently.  To change scheduler options, modify config.py.  It is important to set the number of jobs that you will allow to run concurrently by setting the np parameter in config.py, e.g.::
 
@@ -220,8 +218,8 @@ All the config.py options are listed here:
 * **mpirun** - path to MPI executable, e.g. ``/usr/local/bin/run``
 
 
-Setting up MPI-based applications
----------------------------------
+MPI-based applications
+----------------------
 
 MPI may be used for running parallel applications.  First, one must install the MPI software (e.g. www.mpich.org)
 
