@@ -10,7 +10,7 @@ This platform is ideally suited to run scientific applications that: (1) require
 Getting started
 ---------------
 
-The latest version of SPC can be downloaded from https://bitbucket.org/whbrewer/spc.  This was developed using Python 2.7 for compatibility with other modules, and thus is not currently compatible with Python 3.
+The latest version of SPC can be downloaded from https://github.com/whbrewer/spc.  This was developed using Python 2.7 for compatibility with other modules, and thus is not currently compatible with Python 3.
 
 Currently, SPC cannot be installed as a typical application but simply runs from wherever the directory is located.  To setup SPC, one needs to first generate a database, and also a Python configuration file (src/config.py) as follows::
 
@@ -168,8 +168,7 @@ Currently, SPC is setup to use Bottle’s built-in web server, which works fine 
 
 Of course, this assumes that cherrypy has already been installed (e.g. sudo pip install cherrypy).
 
-NGINX & uWSGI
--------------
+**NGINX & uWSGI**
 
 To use SPC in production, it is recommended to use NGINX and uWSGI.  A configuration file for both NGINX and uWSGI are available in the spc/etc folder.
 
