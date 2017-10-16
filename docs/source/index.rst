@@ -56,12 +56,12 @@ After setting up the database entry, to finish setting up the application will r
 
 **Upload input file** – To accomplish this step, click the “Configure inputs” button, and following through the instructions. One must upload an input file that is consistent with the input format specified in step 1.  So, for example, if namelist input format is specified, the upload file must be in namelist format.  Also, the name of the input file should be the name of the app with the following extension:
 
-* INI format &rightarrow; appname.ini
-* XML format &rightarrow; appname.xml
-* JSON format &rightarrow; appname.json
-* YAML format &rightarrow; appname.yaml
-* TOML format &rightarrow; appname.toml
-* namelist.input &rightarrow; appname.in (e.g. mendel.in)
+* INI format - appname.ini
+* XML format - appname.xml
+* JSON format - appname.json
+* YAML format - appname.yaml
+* TOML format - appname.toml
+* namelist.input - appname.in (e.g. mendel.in)
 
 **Setup HTML template file** – one of the things that the upload input file format does is to create an HTML template file, appname.tpl, in the views/apps folder.
 
@@ -95,7 +95,7 @@ The code for pre- and post-processing is in the processing.py file.  This featur
 Pre-processing
 ~~~~~~~~~~~~~~
 
-The pre-processor is run just before starting the executable in the function execute() in main.py.  This feature is called as:
+The pre-processor is run just before starting the executable in the function execute() in main.py.  This feature is called as::
 
     if myapps[app].preprocess:
        run_params,_,_ = myapps[app].read_params(user,cid)
@@ -105,12 +105,12 @@ This feature can be used for things that need to be changed just before running.
 
 **Examples:**
 
-1. Your program writes its output to a different file than appname.out, e.g. out100.00 where 100 is an entry input by the user in the input form.  Therefore you can add a couple lines in execute() such as:
+1. Your program writes its output to a different file than appname.out, e.g. out100.00 where 100 is an entry input by the user in the input form.  Therefore you can add a couple lines in execute() such as::
 
     if myapps[app].preprocess == "terra.in":
        myapps[app].outfn = "out"+run_params['casenum']+".00"
 
-* Your program doesn’t actually use an input file, but rather uses command line switches to control certain behavior.  Since SPC requires an input file to interact with the user interface, one can use the pre-processing option to convert a file that looks like:
+2. Your program doesn’t actually use an input file, but rather uses command line switches to control certain behavior.  Since SPC requires an input file to interact with the user interface, one can use the pre-processing option to convert a file that looks like::
 
         [BASIC]
         g_popsize = 100
@@ -121,31 +121,31 @@ This feature can be used for things that need to be changed just before running.
         h_dominance = 0.5
         …
 
-    to a file containing set of switches that the program reads:
+to a file containing set of switches that the program reads::
 
-        -x2 -s2 -n100 -v5 -r10 -k1 -i4 -j0.5 -f0.9 -g100 -oNBH -h0.5 -c5 -u5
+    -x2 -s2 -n100 -v5 -r10 -k1 -i4 -j0.5 -f0.9 -g100 -oNBH -h0.5 -c5 -u5
 
-    This was accomplished by adding the following code to the preprocess() function in process.py:
+This was accomplished by adding the following code to the preprocess() function in process.py:
 
-        if fn == 'fpg.in': ...
+    if fn == 'fpg.in': ...
 
-    This is not good practice, to embed code in the spc source code.  In the future, code hooks should be implemented to look for pre-process specific code in the installed app folder.
+This is not good practice, to embed code in the spc source code.  In the future, code hooks should be implemented to look for pre-process specific code in the installed app folder.
 
-* Convert input key/value params to cmd-line style args:
+3. Convert input key/value params to cmd-line style args::
 
-        for key, value in (params.iteritems()):
-           option = '-' + key.split('_')[0] # extract 1st letter
-           buf += option + value + ' '
-        sim_dir = os.path.join(base_dir,fn)
-        return _write_file(buf,sim_dir)
+    for key, value in (params.iteritems()):
+       option = '-' + key.split('_')[0] # extract 1st letter
+       buf += option + value + ' '
+    sim_dir = os.path.join(base_dir,fn)
+    return _write_file(buf,sim_dir)
 
-    The pre-processing option may also be used if one needs to write e.g. a PBS run script pbs.script file for running parallel applications via MPI.
+The pre-processing option may also be used if one needs to write e.g. a PBS run script pbs.script file for running parallel applications via MPI.
 
 
 Post-processing
 ~~~~~~~~~~~~~~~
 
-The post-processor is called when the user clicks on any plot.  The post-processor may be used to convert raw output data into JSON form that is needed for a programs like the Flot JavaScript plotting program to plot the files correctly.   This function is defined in the file process.py.  Here is the doc string for the postprocess() function:
+The post-processor is called when the user clicks on any plot.  The post-processor may be used to convert raw output data into JSON form that is needed for a programs like the Flot JavaScript plotting program to plot the files correctly.   This function is defined in the file process.py.  Here is the doc string for the postprocess() function::
 
     """return data as an array...
        turn data that looks like this:
@@ -167,6 +167,28 @@ Currently, SPC is setup to use Bottle’s built-in web server, which works fine 
 
 Of course, this assumes that cherrypy has already been installed (e.g. sudo pip install cherrypy).
 
+NGINX & uWSGI
+-------------
+
+To use SPC in production, it is recommended to use NGINX and uWSGI.  A configuration file for both NGINX and uWSGI are available in the spc/etc folder.
+
+The following steps may be used to setup NGINX:
+
+	* sudo yum install nginx
+	* sudo cp spc/etc/nginx/conf.d/spc.conf /etc/nginx/conf.d/
+	* sudo chkconfig nginx --levels 2345 on
+
+
+The following steps may be used to setup uWSGI:
+
+	* ``> sudo pip install uwsgi``
+
+	* Edit ``spc/src/spc/config.py`` to set ``server = ‘uwsgi’``
+
+After making the changes, you will need to restart SPC if it is running (if you are using upstart: ``sudo initctl start spc``), and also will need to start up the NGINX server by running ``sudo service nginx start``.
+
+NOTE: if you ever change the SPC port number, will need to change in two places: (1) in the spc/src/spc/config.py file, and also in the NGINX config file in /etc/nginx/conf.d/config.py
+
 The Job Scheduler
 -----------------
 
@@ -176,8 +198,8 @@ SPC currently uses a multi-processing scheduler.  The scheduler uses Python’s 
 
 **np** is short for number of processors, but really represents how many processors can be scheduled concurrently.  For example, if the value is 2, two jobs that require a single processor can be scheduled, or a single job that requires 2 processors can be scheduled.
 
-config.py options
------------------
+All config.py options
+---------------------
 
 * **auth** - ``True`` = require username password authorization.  ``False`` = disable authentication
 * **tab_title** - (optional) This is the title to use in the browser tab
@@ -190,6 +212,7 @@ config.py options
 * **time_zone** - (optional) Used to show job submit date/time in local timezone.  This is needed in cases where Linux system shows time in UTC format.  One of the supported time zones, e.g. ``time_zone = "US/Eastern"``
 * **submit_type** - (optional) if this is set to either ``verify`` or ``noverify``, when the user clicks the green "Continue" button, the job will start directly, without echoing back the run parameters.  This can be used in cases where additional run-time options are not needed, such as specifying the number of processors.  For instantaneous applications with few parameters, it is recommended to use this setting.  For simulations that require a wall-time or use multiple processes, this is not recommended.  If this setting is not set, it will default to ``verify``.
 * **mpirun** - path to MPI executable, e.g. ``/usr/local/bin/run``
+
 
 Setting up MPI-based applications
 ---------------------------------
@@ -217,14 +240,14 @@ Docker may be used in conjunction with SPC to run remote jobs.  To use Docker wi
 
 Then, you can bring up the /docker view in SPC by clicking on the hamburger icon on the top right, and click the Docker option.  From there, you can create a container from the image by clicking the   icon under the docker images actions.  On creation you may specify host and container port numbers, but since the container version of SPC is listening on port 8581, best to just leave them as the defaults given.   Once you create the container, you will need to start it, so click the  icon.  The container should start running, and should be able to access from the browser using http://url:8581 (e.g. http://localhost:8581) . The container version of SPC is running on port 8581, so that it doesn’t conflict with SPC running on the host.
 
-One can schedule jobs from the host to run on the container by adding the following two options in the config.py such as:
+One can schedule jobs from the host to run on the container by adding the following two options in the config.py such as::
 
-    submit_type = “remote”
-    remote_worker_url = “localhost:8581”
+	submit_type = “remote”
+	remote_worker_url = “localhost:8581”
 
 For this case, you will need to setup the container to as a worker node, which is explained next.
 
-One can login to the Docker container and modify SPC to add new apps.  Once this is done, the container must be saved using “docker commit”.  One may also build their own Docker container by using an older version or starting from a Ubuntu base image.  In this case, you will need to  make a Dockerfile with contents such as:
+One can login to the Docker container and modify SPC to add new apps.  Once this is done, the container must be saved using “docker commit”.  One may also build their own Docker container by using an older version or starting from a Ubuntu base image.  In this case, you will need to  make a Dockerfile with contents such as::
 
     FROM bf6b7e57fba6
     WORKDIR /root/spc
@@ -247,7 +270,6 @@ Known Issues
 HTML input elements, which are disabled will cause problems.  In essence, they will be interpreted as checkboxes that are not checked, so the values will be set to F, which may cause problems when the simulation program tries to read the value and is expecting say an integer value.  Therefore, in lieu of using disabled=true on input tags, set readOnly=true.
 The restart option does not work for apps that use XML input files.  This is a problem with the structure that is being output from SPC and needs to be fixed in the future.
 
-Contents:
 
 .. toctree::
    :maxdepth: 2
