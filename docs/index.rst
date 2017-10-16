@@ -45,15 +45,15 @@ To install an app interactively, click the Apps button, then click the +Add butt
 
 	    <rel_apps_dir>/mendel/mendel
 
-		(or mendel.exe for a Windows machine).  Here <rel_apps_dir> will be later replaced by the location where the SPC apps are installed (currently this would replaced by the string ../../../../src/spc_apps). For a Java application, this may look like::
+	(or mendel.exe for a Windows machine).  Here <rel_apps_dir> will be later replaced by the location where the SPC apps are installed (currently this would replaced by the string ../../../../src/spc_apps). For a Java application, this may look like::
 
-		    /usr/bin/java -jar <rel_apps_dir>/jmendel/dist/jmendel.jar
+		/usr/bin/java -jar <rel_apps_dir>/jmendel/dist/jmendel.jar
 
-		NOTE: since v0.22, the app run command can no longer be specified through the web interface.  It must instead be specified in the spc.json file.  Therefore, after setting up an, app, one may generate an spc.json manifest file by going in to the app configuration page (Click on top right “hamburger” icon and click “Configure app”, then click the “Export” button).  This will output a spc.json file to the src/spc_apps/appname folder.   Then, edit the command line in the  spc.json file to be something like (replacing app with the name of your app)::
+	NOTE: since v0.22, the app run command can no longer be specified through the web interface.  It must instead be specified in the spc.json file.  Therefore, after setting up an, app, one may generate an spc.json manifest file by going in to the app configuration page (Click on top right “hamburger” icon and click “Configure app”, then click the “Export” button).  This will output a spc.json file to the src/spc_apps/appname folder.   Then, edit the command line in the  spc.json file to be something like (replacing app with the name of your app)::
 
-		    "command": "<rel_apps_path>/app/app",
+		"command": "<rel_apps_path>/app/app",
 
-		After setting up the database entry, to finish setting up the application will require several more steps, which can be controlled from the App Edit page, which can be accessed by clicking the cog wheel on the App Edit page
+	After setting up the database entry, to finish setting up the application will require several more steps, which can be controlled from the App Edit page, which can be accessed by clicking the cog wheel on the App Edit page
 
 2. **Upload input file** – To accomplish this step, click the “Configure inputs” button, and following through the instructions. One must upload an input file that is consistent with the input format specified in step 1.  So, for example, if namelist input format is specified, the upload file must be in namelist format.  Also, the name of the input file should be the name of the app with the following extension:
 
@@ -157,7 +157,7 @@ The post-processor is called when the user clicks on any plot.  The post-process
 User Authentication
 -------------------
 
-User authentication can be enabled or disabled by setting the auth value in `config.py` to either True or False.   There are two default accounts that are setup when the running “spc init”.  They are: admin (password admin) and guest (password guest).  The admin user can install, configure apps, run cases, and also can manage other users accounts (presently this is just limited to deleting other accounts, but may in the future include some options such as setting the default priority level, or disk quotas, etc.).
+User authentication can be enabled or disabled by setting the auth value in `config.py` to either ``True`` or ``False``.   There are two default accounts that are setup when the running “spc init”.  They are: admin (password admin) and guest (password guest).  The admin user can install, configure apps, run cases, and also can manage other users accounts (presently this is just limited to deleting other accounts, but may in the future include some options such as setting the default priority level, or disk quotas, etc.).
 
 Web Server
 --------------
