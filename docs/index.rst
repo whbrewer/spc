@@ -166,7 +166,7 @@ Currently, SPC is setup to use Bottle’s built-in web server, which works fine 
 
     server = ‘cherrypy’
 
-Of course, this assumes that cherrypy has already been installed (e.g. sudo pip install cherrypy).
+Of course, this assumes that cherrypy has already been installed (e.g. ``sudo pip install cherrypy``).
 
 **NGINX & uWSGI**
 
@@ -227,27 +227,43 @@ In config.py, set the mpirun parameter, e.g.::
     mpirun = '/usr/local/bin/mpiexec'
 
 In config.py, the np parameter has to be set to a value of greater than 1.
-After clicking Start, then Continue, select the number of processors to use for this run:
-
-For example, setting the value to 2, will execute the command::
+After clicking Start, then Continue, select the number of processors to use for this run.  For example, setting the value to 2, will execute the command::
 
     mpiexec –n 2 app.exe
 
 Docker
 ------
 
-Docker may be used in conjunction with SPC to run remote jobs.  To use Docker with SPC, first docker (on Fedora/Centos, etc. “sudo yum update -y; sudo yum install docker” or on Ubuntu “sudo apt-get update; sudo apt-get install docker-ce”) and docker-py must be installed (“sudo pip install docker-py").  Startup docker (“sudo service docker start”).  Thirdly, you should pull an Docker images that is running an SPC worker by running, e.g.::
+Docker may be used in conjunction with SPC to run remote jobs.  To use Docker with SPC:
+
+1. Install Docker::
+
+ 	#on Fedora/Centos, etc.
+	> sudo yum update -y; sudo yum install docker
+
+	# on Ubuntu
+	> sudo apt-get update; sudo apt-get install docker-ce
+
+2. Install docker-py::
+
+ 	> sudo pip install docker-py"
+
+3. Startup docker::
+
+	> sudo service docker start
+
+4. Pull a Docker images that is running an SPC worker::
 
 	> docker pull whbrewer/spc
 
-Then, you can bring up the /docker view in SPC by clicking on the hamburger icon on the top right, and click the Docker option.  From there, you can create a container from the image by clicking the   icon under the docker images actions.  On creation you may specify host and container port numbers, but since the container version of SPC is listening on port 8581, best to just leave them as the defaults given.   Once you create the container, you will need to start it, so click the  icon.  The container should start running, and should be able to access from the browser using http://url:8581 (e.g. http://localhost:8581) . The container version of SPC is running on port 8581, so that it doesn’t conflict with SPC running on the host.
+Then, you can bring up the ``/docker`` view in SPC by clicking on the hamburger icon on the top right, and click the Docker option.  From there, you can create a container from the image by clicking the icon under the docker images actions.  On creation you may specify host and container port numbers, but since the container version of SPC is listening on port 8581, best to just leave them as the defaults given.   Once you create the container, you will need to start it, so click the  icon.  The container should start running, and should be able to access from the browser using http://url:8581 (e.g. http://localhost:8581) . The container version of SPC is running on port 8581, so that it doesn’t conflict with SPC running on the host.
 
 One can schedule jobs from the host to run on the container by adding the following two options in the config.py such as::
 
-	submit_type = “remote”
-	remote_worker_url = “localhost:8581”
+	submit_type = 'remote'
+	remote_worker_url = 'localhost:8581'
 
-For this case, you will need to setup the container to as a worker node, which is explained next.
+For this case, you will need to setup the container to as a `worker` node, which is explained next.
 
 One can login to the Docker container and modify SPC to add new apps.  Once this is done, the container must be saved using “docker commit”.  One may also build their own Docker container by using an older version or starting from a Ubuntu base image.  In this case, you will need to  make a Dockerfile with contents such as::
 
