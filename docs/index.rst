@@ -56,12 +56,12 @@ After setting up the database entry, to finish setting up the application will r
 
 3. **Upload input file** – To accomplish this step, click the “Configure inputs” button, and following through the instructions. One must upload an input file that is consistent with the input format specified in step 1.  So, for example, if namelist input format is specified, the upload file must be in namelist format.  Also, the name of the input file should be the name of the app with the following extension:
 
-* INI format - appname.ini
-* XML format - appname.xml
-* JSON format - appname.json
-* YAML format - appname.yaml
-* TOML format - appname.toml
-* namelist.input - appname.in (e.g. mendel.in)
+	* INI format - appname.ini
+	* XML format - appname.xml
+	* JSON format - appname.json
+	* YAML format - appname.yaml
+	* TOML format - appname.toml
+	* namelist.input - appname.in (e.g. mendel.in)
 
 4. **Setup HTML template file** – one of the things that the upload input file format does is to create an HTML template file, appname.tpl, in the views/apps folder.
 
