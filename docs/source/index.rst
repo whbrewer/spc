@@ -12,11 +12,11 @@ Getting started
 
 The latest version of SPC can be downloaded from https://bitbucket.org/whbrewer/spc.  This was developed using Python 2.7 for compatibility with other modules, and thus is not currently compatible with Python 3.
 
-Currently, SPC cannot be installed as a typical application but simply runs from wherever the directory is located.  To setup SPC, one needs to first generate a database, and also a Python configuration file (src/config.py) as follows:
+Currently, SPC cannot be installed as a typical application but simply runs from wherever the directory is located.  To setup SPC, one needs to first generate a database, and also a Python configuration file (src/config.py) as follows::
 
     > spc init
 
-To start running the server, then type:
+To start running the server, then type::
 
     > spc run
 
@@ -35,9 +35,9 @@ A. Manually adding app through user interface
 To install or modify apps interactively, one must be logged in as user admin (default password admin).  Note, if user authentication is turned, off one will still need to login as admin, by clicking the hamburger icon , logging out, and then logging back in as admin.  Before this can happen,  enable authentication by setting “auth = True” in the src/config.py file.
 To install an app interactively, click the Apps button, then click the +Add button.  Installation of an app requires five steps:
 
-**Database entry setup** – The first step is to store some basic information about the app into the database:
+1. **Database entry setup** – The first step is to store some basic information about the app into the database:
 
-**Name** – A unique name for the app, with no spaces or punctuation marks.
+2. **Name** – A unique name for the app, with no spaces or punctuation marks.
 Description – Description of the app.  What does it do?
 Input format – There are three possible options for input format: (1) namelist, (2) INI format, (3) XML format.  In the future, support may be added for JSON format as well.
 Command – This is the command to run to start the simulation.  This command is being run from the working directory of the case, which is user_data/user/app/case (e.g. user_data/joe/mendel/c82d3f).   For example, this may look like:
@@ -54,7 +54,7 @@ NOTE: since v0.22, the app run command can no longer be specified through the we
 
 After setting up the database entry, to finish setting up the application will require several more steps, which can be controlled from the App Edit page, which can be accessed by clicking the cog wheel on the App Edit page
 
-**Upload input file** – To accomplish this step, click the “Configure inputs” button, and following through the instructions. One must upload an input file that is consistent with the input format specified in step 1.  So, for example, if namelist input format is specified, the upload file must be in namelist format.  Also, the name of the input file should be the name of the app with the following extension:
+3. **Upload input file** – To accomplish this step, click the “Configure inputs” button, and following through the instructions. One must upload an input file that is consistent with the input format specified in step 1.  So, for example, if namelist input format is specified, the upload file must be in namelist format.  Also, the name of the input file should be the name of the app with the following extension:
 
 * INI format - appname.ini
 * XML format - appname.xml
@@ -63,27 +63,27 @@ After setting up the database entry, to finish setting up the application will r
 * TOML format - appname.toml
 * namelist.input - appname.in (e.g. mendel.in)
 
-**Setup HTML template file** – one of the things that the upload input file format does is to create an HTML template file, appname.tpl, in the views/apps folder.
+4. **Setup HTML template file** – one of the things that the upload input file format does is to create an HTML template file, appname.tpl, in the views/apps folder.
 
-**Static assets** – It is also possible to include static assets such as JavaScript files, CSS files, etc. which currently cannot be uploaded through the web interface, but can be added later manually by copying the files to static/apps/appname.   They can be referenced later in the views/apps/appname.tpl, for example refer to the file mendel.js as follows:
+5. **Static assets** – It is also possible to include static assets such as JavaScript files, CSS files, etc. which currently cannot be uploaded through the web interface, but can be added later manually by copying the files to static/apps/appname.   They can be referenced later in the views/apps/appname.tpl, for example refer to the file mendel.js as follows::
 
     <script src="/static/apps/mendel/mendel.js"></script>
 
-**Upload binary file** – To upload a binary file, click the “Configure Executable” button.  Please note that the binary file must be compiled on the same operating system as the host machine running SPC.  So, for example, if SPC is running on an Amazon EC2 instance running 32-bit Linux with a certain glibc version, it should be compiled on an equivalent machine running the same glibc version.
+6. **Upload binary file** – To upload a binary file, click the “Configure Executable” button.  Please note that the binary file must be compiled on the same operating system as the host machine running SPC.  So, for example, if SPC is running on an Amazon EC2 instance running 32-bit Linux with a certain glibc version, it should be compiled on an equivalent machine running the same glibc version.
 Setup plots – To configure plots, click the “Configure Plots” button, then click “Add Plot”.  Each plot must have at least one datasource.  So, once a plot has been setup, one must click the “datasource” link connected with that plot, and then click the “Add Data Source” button.  While there are options for label, plot type, and color, these are all stored together in JSON format under one field in the database called data_def, short for data definition.
 
 B. Adding app through SPC’s package management system
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Because it may take some time to setup an app, especially the plots, it is possible to save the configuration as a JSON manifest file called spc.json.  Therefore, it is possible to create an SPC package of an app, which is simply a zipped archive containing the input file, binary, spc.json manifest file, and then make it available on the Internet (e.g. by hosting it on github.org or bitbucket.org).  In this way, anyone else running SPC can easily install your app by running the command:
+Because it may take some time to setup an app, especially the plots, it is possible to save the configuration as a JSON manifest file called spc.json.  Therefore, it is possible to create an SPC package of an app, which is simply a zipped archive containing the input file, binary, spc.json manifest file, and then make it available on the Internet (e.g. by hosting it on github.org or bitbucket.org).  In this way, anyone else running SPC can easily install your app by running the command::
 
     > spc install http://url/to/package.zip
 
-or by running the command on a file:
+or by running the command on a file::
 
     > spc install /path/to/package.zip
 
-For Mac OS X users, an example can be installed by running the following command:
+For Mac OS X users, an example can be installed by running the following command::
 
     > spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip
 
@@ -125,7 +125,7 @@ to a file containing set of switches that the program reads::
 
     -x2 -s2 -n100 -v5 -r10 -k1 -i4 -j0.5 -f0.9 -g100 -oNBH -h0.5 -c5 -u5
 
-This was accomplished by adding the following code to the preprocess() function in process.py:
+This was accomplished by adding the following code to the preprocess() function in process.py::
 
     if fn == 'fpg.in': ...
 
@@ -161,7 +161,7 @@ User authentication can be enabled or disabled by setting the auth value in `con
 The Web Server
 --------------
 
-Currently, SPC is setup to use Bottle’s built-in web server, which works fine as a development server, but not as a production server.  This can easily be changed to use a multi-threaded server such as cherrypy, bjoern, tornado, gae, etc. by changing the server variable in config.py, e.g.
+Currently, SPC is setup to use Bottle’s built-in web server, which works fine as a development server, but not as a production server.  This can easily be changed to use a multi-threaded server such as cherrypy, bjoern, tornado, gae, etc. by changing the server variable in config.py, e.g.::
 
     server = ‘cherrypy’
 
@@ -172,34 +172,37 @@ NGINX & uWSGI
 
 To use SPC in production, it is recommended to use NGINX and uWSGI.  A configuration file for both NGINX and uWSGI are available in the spc/etc folder.
 
-The following steps may be used to setup NGINX:
+The following steps may be used to setup NGINX::
 
-	* sudo yum install nginx
-	* sudo cp spc/etc/nginx/conf.d/spc.conf /etc/nginx/conf.d/
-	* sudo chkconfig nginx --levels 2345 on
+	> sudo yum install nginx
+	> sudo cp spc/etc/nginx/conf.d/spc.conf /etc/nginx/conf.d/
+	> sudo chkconfig nginx --levels 2345 on
 
 
-The following steps may be used to setup uWSGI:
+The following steps may be used to setup uWSGI::
 
-	* ``> sudo pip install uwsgi``
+	> sudo pip install uwsgi
 
-	* Edit ``spc/src/spc/config.py`` to set ``server = ‘uwsgi’``
+Now, edit ``spc/src/spc/config.py`` to set ``server = ‘uwsgi’``
 
-After making the changes, you will need to restart SPC if it is running (if you are using upstart: ``sudo initctl start spc``), and also will need to start up the NGINX server by running ``sudo service nginx start``.
+After making the changes, you will need to restart SPC if it is running (if you are using upstart: ``sudo initctl start spc``), and also will need to start up the NGINX server by running::
+
+	> sudo service nginx start
 
 NOTE: if you ever change the SPC port number, will need to change in two places: (1) in the spc/src/spc/config.py file, and also in the NGINX config file in /etc/nginx/conf.d/config.py
 
 The Job Scheduler
 -----------------
 
-SPC currently uses a multi-processing scheduler.  The scheduler uses Python’s multiprocessing module and includes synchronization primitives such as Lock (mutex) and a BoundedSemaphore for ensuring that only a user-specified number of jobs can run concurrently.  To change scheduler options, modify config.py.  It is important to set the number of jobs that you will allow to run concurrently by setting the np parameter in config.py, e.g.
+SPC currently uses a multi-processing scheduler.  The scheduler uses Python’s multiprocessing module and includes synchronization primitives such as Lock (mutex) and a BoundedSemaphore for ensuring that only a user-specified number of jobs can run concurrently.  To change scheduler options, modify config.py.  It is important to set the number of jobs that you will allow to run concurrently by setting the np parameter in config.py, e.g.::
 
     np = 2
 
 **np** is short for number of processors, but really represents how many processors can be scheduled concurrently.  For example, if the value is 2, two jobs that require a single processor can be scheduled, or a single job that requires 2 processors can be scheduled.
 
-All config.py options
+config.py options
 ---------------------
+All the config.py options are listed here:
 
 * **auth** - ``True`` = require username password authorization.  ``False`` = disable authentication
 * **tab_title** - (optional) This is the title to use in the browser tab
@@ -217,26 +220,25 @@ All config.py options
 Setting up MPI-based applications
 ---------------------------------
 
-Install MPI software (e.g. www.mpich.org)
-In config.py, set the mpirun parameter, e.g.
+MPI may be used for running parallel applications.  First, one must install the MPI software (e.g. www.mpich.org)
+
+In config.py, set the mpirun parameter, e.g.::
 
     mpirun = '/usr/local/bin/mpiexec'
 
 In config.py, the np parameter has to be set to a value of greater than 1.
 After clicking Start, then Continue, select the number of processors to use for this run:
 
-For example, setting the value to 2, will execute the command:
+For example, setting the value to 2, will execute the command::
 
     mpiexec –n 2 app.exe
 
 Docker
 ------
 
-Notice, this is still a largely untested feature and still may be considered in alpha mode.
+Docker may be used in conjunction with SPC to run remote jobs.  To use Docker with SPC, first docker (on Fedora/Centos, etc. “sudo yum update -y; sudo yum install docker” or on Ubuntu “sudo apt-get update; sudo apt-get install docker-ce”) and docker-py must be installed (“sudo pip install docker-py").  Startup docker (“sudo service docker start”).  Thirdly, you should pull an Docker images that is running an SPC worker by running, e.g.::
 
-Docker may be used in conjunction with SPC to run remote jobs.  To use Docker with SPC, first docker (on Fedora/Centos, etc. “sudo yum update -y; sudo yum install docker” or on Ubuntu “sudo apt-get update; sudo apt-get install docker-ce”) and docker-py must be installed (“sudo pip install docker-py").  Startup docker (“sudo service docker start”).  Thirdly, you should pull an Docker images that is running an SPC worker by running, e.g.
-
-	docker pull whbrewer/spc
+	> docker pull whbrewer/spc
 
 Then, you can bring up the /docker view in SPC by clicking on the hamburger icon on the top right, and click the Docker option.  From there, you can create a container from the image by clicking the   icon under the docker images actions.  On creation you may specify host and container port numbers, but since the container version of SPC is listening on port 8581, best to just leave them as the defaults given.   Once you create the container, you will need to start it, so click the  icon.  The container should start running, and should be able to access from the browser using http://url:8581 (e.g. http://localhost:8581) . The container version of SPC is running on port 8581, so that it doesn’t conflict with SPC running on the host.
 
@@ -253,7 +255,7 @@ One can login to the Docker container and modify SPC to add new apps.  Once this
     WORKDIR /root/spc
     ENTRYPOINT ["python", "spc", "runworker"]
 
-Here, the FROM statement is the image that you are basing SPC on, possibly a previous SPC container, or an Ubuntu base image.  The third argument “runworker” can be just “run” if you want to run a regular SPC installation, or “runworker" if you want to just use it as a worker node, i.e. no user interface.  In this case, you can build the new image using a command such as:
+Here, the FROM statement is the image that you are basing SPC on, possibly a previous SPC container, or an Ubuntu base image.  The third argument “runworker” can be just “run” if you want to run a regular SPC installation, or “runworker" if you want to just use it as a worker node, i.e. no user interface.  In this case, you can build the new image using a command such as::
 
 	docker build -t spc .
 
