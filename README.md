@@ -2,6 +2,8 @@
 
 Note: see NOTES.md file for important release notes.
 
+Full documentation is available online at http://spc.readthedocs.io
+
 ## INTRO
 
 The Scientific Platform for the Cloud (SPC) is a cloud platform for easily migrating and running scientific applications in the cloud.  It is described in more detail in the following paper:
