@@ -123,15 +123,15 @@ This feature can be used for things that need to be changed just before running.
         h_dominance = 0.5
         …
 
-	to a file containing set of switches that the program reads::
+to a file containing set of switches that the program reads::
 
-	    -x2 -s2 -n100 -v5 -r10 -k1 -i4 -j0.5 -f0.9 -g100 -oNBH -h0.5 -c5 -u5
+    -x2 -s2 -n100 -v5 -r10 -k1 -i4 -j0.5 -f0.9 -g100 -oNBH -h0.5 -c5 -u5
 
-	This was accomplished by adding the following code to the preprocess() function in process.py::
+This was accomplished by adding the following code to the preprocess() function in process.py::
 
-	    if fn == 'fpg.in': ...
+    if fn == 'fpg.in': ...
 
-	This is not good practice, to embed code in the spc source code.  In the future, code hooks should be implemented to look for pre-process specific code in the installed app folder.
+This is not good practice, to embed code in the spc source code.  In the future, code hooks should be implemented to look for pre-process specific code in the installed app folder.
 
 3. Convert input key/value params to cmd-line style args::
 
@@ -287,7 +287,6 @@ Known Issues
 * HTML input elements, which are disabled will cause problems.  In essence, they will be interpreted as checkboxes that are not checked, so the values will be set to F, which may cause problems when the simulation program tries to read the value and is expecting say an integer value.  Therefore, in lieu of using ``disabled=true`` on input tags, set ``readOnly=true``.
 
 * The restart option does not work for apps that use XML input files.  This is a problem with the structure that is being output from SPC and needs to be fixed in the future.
-
 
 .. toctree::
    :maxdepth: 2

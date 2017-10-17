@@ -51,6 +51,9 @@
                             <li> <a href="/aws">AWS</a> </li>
                             <li> <a href="/docker">Docker</a> </li>
                             <li> <a href="/stats">Machine Stats</a> </li>
+                            <li class="divider"> </li>
+                            <li> <a target="_blank" href="http://spc.readthedocs.io">SPC Docs</a> </li>
+
                             %if defined('user'):
                                 %if user=="admin":
 			   	    <li class="divider"> </li>
