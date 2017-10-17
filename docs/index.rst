@@ -123,15 +123,15 @@ This feature can be used for things that need to be changed just before running.
         h_dominance = 0.5
         …
 
-to a file containing set of switches that the program reads::
+	to a file containing set of switches that the program reads::
 
-    -x2 -s2 -n100 -v5 -r10 -k1 -i4 -j0.5 -f0.9 -g100 -oNBH -h0.5 -c5 -u5
+	    -x2 -s2 -n100 -v5 -r10 -k1 -i4 -j0.5 -f0.9 -g100 -oNBH -h0.5 -c5 -u5
 
-This was accomplished by adding the following code to the preprocess() function in process.py::
+	This was accomplished by adding the following code to the preprocess() function in process.py::
 
-    if fn == 'fpg.in': ...
+	    if fn == 'fpg.in': ...
 
-This is not good practice, to embed code in the spc source code.  In the future, code hooks should be implemented to look for pre-process specific code in the installed app folder.
+	This is not good practice, to embed code in the spc source code.  In the future, code hooks should be implemented to look for pre-process specific code in the installed app folder.
 
 3. Convert input key/value params to cmd-line style args::
 
@@ -162,11 +162,11 @@ User authentication can be enabled or disabled by setting the auth value in `con
 Web Server
 --------------
 
-Currently, SPC is setup to use Bottle’s built-in web server, which works fine as a development server, but not as a production server.  This can easily be changed to use a multi-threaded server such as cherrypy, bjoern, tornado, gae, etc. by changing the server variable in config.py, e.g.::
+A number of different web servers can be used withing SPC.  By default, the CherryPy web server will be setup.  However, there are development servers, such as ``wsgiref``, and also a number of multi-threaded servers, such as: cherrypy, bjoern, tornado, rocket, gae, etc.  The web server can easily be changed by changing the server variable in config.py, e.g.::
 
-    server = ‘cherrypy’
+    server = 'rocket'
 
-Of course, this assumes that cherrypy has already been installed (e.g. ``sudo pip install cherrypy``).
+Of course, this assumes that the web server has been installed on the local machine (e.g. ``sudo pip install rocket``).
 
 **NGINX & uWSGI**
 
@@ -204,17 +204,16 @@ config.py options
 ---------------------
 All the config.py options are listed here:
 
-* **auth** - ``True`` = require username password authorization.  ``False`` = disable authentication
-* **tab_title** - (optional) This is the title to use in the browser tab
-* **submit_type** - (optional) This can either be remote, for a remote worker, or noverify for the case where you don’t want to echo back the parameters to the user before submitting the case.
-* **worker** - can be ``local`` or ``remote``
-* **remote_worker_url** - (optional) If you want to run the simulation on another SPC worker node at a different URL, specify it here.
-* **port** - (required) The port for the web server to listen on, e.g. ``port = 8580``
-* **np** - (required) The number of jobs to schedule simultaneously
-* **server** - (required) Can be either 'uwsgi', 'wsgiref', 'cherrypy', 'rocket', 'gae', or any other servers supported by Bottle
-* **time_zone** - (optional) Used to show job submit date/time in local timezone.  This is needed in cases where Linux system shows time in UTC format.  One of the supported time zones, e.g. ``time_zone = "US/Eastern"``
-* **submit_type** - (optional) if this is set to either ``verify`` or ``noverify``, when the user clicks the green "Continue" button, the job will start directly, without echoing back the run parameters.  This can be used in cases where additional run-time options are not needed, such as specifying the number of processors.  For instantaneous applications with few parameters, it is recommended to use this setting.  For simulations that require a wall-time or use multiple processes, this is not recommended.  If this setting is not set, it will default to ``verify``.
+* **auth** - ``True`` means require username password authorization.  ``False`` means disable authentication
 * **mpirun** - path to MPI executable, e.g. ``/usr/local/bin/run``
+* **np** - (required) The number of jobs to schedule simultaneously
+* **port** - (required) The port for the web server to listen on, e.g. ``port = 8580``
+* **remote_worker_url** - (optional) If you want to run the simulation on another SPC worker node at a different URL, specify it here.
+* **server** - (required) Can be either 'uwsgi', 'wsgiref', 'cherrypy', 'rocket', 'gae', or any other servers supported by Bottle
+* **submit_type** - (optional) if this is set to either ``verify`` or ``noverify``, when the user clicks the green "Continue" button, the job will start directly, without echoing back the run parameters.  This can be used in cases where additional run-time options are not needed, such as specifying the number of processors.  For instantaneous applications with few parameters, it is recommended to use this setting.  For simulations that require a wall-time or use multiple processes, this is not recommended.  If this setting is not set, it will default to ``verify``.
+* **tab_title** - (optional) This is the title to use in the browser tab
+* **time_zone** - (optional) Used to show job submit date/time in local timezone.  This is needed in cases where Linux system shows time in UTC format.  One of the supported time zones, e.g. ``time_zone = "US/Eastern"``
+* **worker** - can be ``local`` or ``remote``
 
 
 MPI-based applications
@@ -285,18 +284,10 @@ Create a variable called “case_id” in the input file (e.g. case.ini).  When 
 Known Issues
 ------------
 
-HTML input elements, which are disabled will cause problems.  In essence, they will be interpreted as checkboxes that are not checked, so the values will be set to F, which may cause problems when the simulation program tries to read the value and is expecting say an integer value.  Therefore, in lieu of using disabled=true on input tags, set readOnly=true.
-The restart option does not work for apps that use XML input files.  This is a problem with the structure that is being output from SPC and needs to be fixed in the future.
+* HTML input elements, which are disabled will cause problems.  In essence, they will be interpreted as checkboxes that are not checked, so the values will be set to F, which may cause problems when the simulation program tries to read the value and is expecting say an integer value.  Therefore, in lieu of using ``disabled=true`` on input tags, set ``readOnly=true``.
+
+* The restart option does not work for apps that use XML input files.  This is a problem with the structure that is being output from SPC and needs to be fixed in the future.
 
 
 .. toctree::
    :maxdepth: 2
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
