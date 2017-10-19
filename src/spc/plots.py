@@ -319,7 +319,7 @@ def plot_interface(pltid):
     elif plottype == 'handson':
         tfn = 'plots/handson'
     elif plottype == 'flot-3d':
-        return plot_flot_3d(result, cid, app, sim_dir, owner, user, plot_title, pltid)
+        return plot_flot_3d(result, c, app, sim_dir, owner, user, plot_title, pltid)
     else:
         return template("error", err="plot type not supported: " + plottype)
 
@@ -573,4 +573,3 @@ def matplotlib(pltid):
               'plotpath': plotpath, 'img_path': img_path, 'plot_title': plot_title,
               'rows': list_of_plots, 'stats': stats }
     return template('plots/matplotlib', params)
-
