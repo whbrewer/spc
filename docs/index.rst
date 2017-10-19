@@ -5,7 +5,7 @@ The Scientific Platform for the Cloud (SPC) is a cloud platform for easily migra
 
 	W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24
 
-This platform is ideally suited to run scientific applications that: (1) require an input deck full of integers, floats, strings, and booleans stored in a standardized file format such as INI, XML, JSON, YAML, or Namelist.input, (2) require some amount of processing time (i.e. not instantaneous -- although it can handle such cases too), (3) require some plotting at the end of the simulation, (4) use MPI or MapReduce for parallelization (although handles serial cases well too). Moreover, it can handle other applications as well, but some amount of pre- or post-processing may be required. Such topics are described in more detail in the aforementioned paper. If you need a copy of this paper, please send an e-mail request to the address at the bottom of this file.
+This platform is ideally suited to run scientific applications that: (1) require an input deck full of integers, floats, strings, and booleans stored in a standardized file format such as INI, XML, JSON, YAML, or Namelist.input, (2) require some amount of processing time (i.e. not instantaneous -- although it can handle such cases too), (3) require some plotting at the end of the simulation, (4) use MPI or MapReduce for parallelization (although handles serial cases well too). Moreover, it can handle other applications as well, but some amount of pre- or post-processing may be required. Such topics are described in more detail in the aforementioned paper.
 
 Getting started
 ---------------
@@ -245,7 +245,7 @@ Docker may be used in conjunction with SPC to run remote jobs.  To use Docker wi
 
 2. Install docker-py::
 
- 	> sudo pip install docker-py"
+ 	> sudo pip install docker-py
 
 3. Startup docker::
 
