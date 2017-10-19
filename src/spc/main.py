@@ -46,8 +46,12 @@ def get_favicon():
     return static_file('favicon.ico', root='static')
 
 @error(500)
+@error(501)
+@error(502)
 def error500(error):
-    return template('error', err="500. Check log for traceback")
+    msg = error.exception.message + " (" + str(error.status_code) + ")"
+    trace = error.traceback
+    return template('error', err=msg, traceback=trace)
 
 def authorized():
     '''Return username if user is already logged in, redirect otherwise'''
