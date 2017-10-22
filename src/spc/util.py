@@ -20,8 +20,8 @@ def get_stats():
     params['nc'] = db(jobs.state=='C').count()
 
     params['cpu'] = psutil.cpu_percent()
-    params['vm'] = psutil.virtual_memory()
-    params['disk'] = psutil.disk_usage('/')
+    params['vm'] = psutil.virtual_memory().percent
+    params['disk'] = psutil.disk_usage('/').percent
     params['cid'] = request.query.cid
     params['app'] = request.query.app
 
@@ -38,7 +38,3 @@ def get_stats_mem():
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print traceback.print_exception(exc_type, exc_value, exc_traceback)
         pass
-
-
-
-

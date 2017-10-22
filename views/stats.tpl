@@ -6,11 +6,11 @@
 
 <p><b>Jobs</b> running:{{nr}} queued:{{nq}} completed:{{nc}}</p>
 
-<p><b>CPU</b> percent utilization: {{cpu}}%</p>
+<p><b>CPU</b> utilization: {{cpu}}%</p>
 
-<p><b>Memory</b> info: {{vm}}%</p>
+<p><b>Memory</b> utilization: {{vm}}%</p>
 
-<p><b>Disk space:</b> {{disk}}</p>
+<p><b>Disk usage:</b> {{disk}}%</p>
 
 </div>
 
