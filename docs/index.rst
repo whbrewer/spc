@@ -204,16 +204,20 @@ config.py options
 ---------------------
 All the config.py options are listed here:
 
-* **auth** - ``True`` means require username password authorization.  ``False`` means disable authentication
-* **mpirun** - path to MPI executable, e.g. ``/usr/local/bin/run``
-* **np** - (required) The number of jobs to schedule simultaneously
-* **port** - (required) The port for the web server to listen on, e.g. ``port = 8580``
-* **remote_worker_url** - (optional) If you want to run the simulation on another SPC worker node at a different URL, specify it here.
-* **server** - (required) Can be either 'uwsgi', 'wsgiref', 'cherrypy', 'rocket', 'gae', or any other servers supported by Bottle
-* **submit_type** - (optional) if this is set to either ``verify`` or ``noverify``, when the user clicks the green "Continue" button, the job will start directly, without echoing back the run parameters.  This can be used in cases where additional run-time options are not needed, such as specifying the number of processors.  For instantaneous applications with few parameters, it is recommended to use this setting.  For simulations that require a wall-time or use multiple processes, this is not recommended.  If this setting is not set, it will default to ``verify``.
-* **tab_title** - (optional) This is the title to use in the browser tab
-* **time_zone** - (optional) Used to show job submit date/time in local timezone.  This is needed in cases where Linux system shows time in UTC format.  One of the supported time zones, e.g. ``time_zone = "US/Eastern"``
-* **worker** - can be ``local`` or ``remote``
+======                ========= =======================================
+ VAR                  REQUIRED   DESCRIPTION
+======                ========= =======================================
+**auth**              YES       ``True`` means require username password authorization.    ``False`` means disable authentication
+**mpirun**            NO        path to MPI executable, e.g. ``/usr/local/bin/run``
+**np**                YES       The number of jobs to schedule simultaneously
+**port**              YES       The port for the web server to listen on, e.g. ``port = 8580``
+**remote_worker_url** NO        If you want to run the simulation on another SPC worker node at a different URL, specify it here.
+**server**            YES       Can be either 'uwsgi', 'wsgiref', 'cherrypy', 'rocket', 'gae', or any other servers supported by Bottle
+**submit_type**       NO        if this is set to either ``verify`` or ``noverify``, when the user clicks the green "Continue" button, the job will start directly, without echoing back the run parameters.  This can be used in cases where additional run-time options are not needed, such as specifying the number of processors.  For instantaneous applications with few parameters, it is recommended to use this setting.  For simulations that require a wall-time or use multiple processes, this is not recommended.  If this setting is not set, it will default to ``verify``.
+**tab_title**         NO        This is the title to use in the browser tab
+**time_zone**         NO        Used to show job submit date/time in local timezone.  This is needed in cases where Linux system shows time in UTC format.  One of the supported time zones, e.g. ``time_zone = "US/Eastern"``
+**worker**            NO        Can be ``local`` or ``remote``
+======                ========= =======================================
 
 
 MPI-based applications
