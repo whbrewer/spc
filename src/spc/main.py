@@ -140,6 +140,8 @@ def load_apps():
 
 
 def main():
+    import util
+
     init_config_options()
     load_apps()
 
@@ -159,6 +161,10 @@ def main():
             app.app.merge(getattr(imported_module, 'routes'))
         except ImportError:
             print "ERROR importing module " + module
+
+    ## Log CPU and Memory history to log files
+    # util.MachineStatsLogger(interval=5, function=util.print_machine_stats)
+    # util.setup_rotating_handler(1000, 3)
 
     ## start up the web server
 
