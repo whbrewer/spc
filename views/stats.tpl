@@ -7,12 +7,12 @@
 <!-- <p><b>Jobs</b> running:{{nr}} queued:{{nq}} completed:{{nc}}</p> -->
 
 <table class="table table-striped">
-<tr> <td width="200">CPU</td> <td>{{cpu}}%</td> </tr>
-<tr> <td>Memory</td> <td>{{vm}}%</td> </tr>
-<tr> <td>Disk usage</td> <td>{{disk}}%</td> </tr>
-<tr> <td>Jobs Running</td> <td>{{nr}}</td> </tr>
-<tr> <td>Jobs Queued</td> <td>{{nq}}</td> </tr>
-<tr> <td>Jobs Completed</td> <td>{{nc}}</td> </tr>
+<tr> <td width="200"><b>CPU</b></td> <td>{{cpu}}%</td> </tr>
+<tr> <td><b>Memory</b></td> <td>{{vm}}%</td> </tr>
+<tr> <td><b>Disk usage</b></td> <td>{{disk}}%</td> </tr>
+<tr> <td><b>Jobs Running</b></td> <td>{{nr}}</td> </tr>
+<tr> <td><b>Jobs Queued</b></td> <td>{{nq}}</td> </tr>
+<tr> <td><b>Jobs Completed</b></td> <td>{{nc}}</td> </tr>
 </table>
 
 <!-- <p><b>CPU</b> utilization: {{cpu}}%</p>
