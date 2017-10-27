@@ -38,8 +38,6 @@ app_user = db.define_table('app_user', Field('id', 'integer'),
                                        Field('appid', 'integer'),
                                        Field('uid', 'integer'))
 
-# this is also defined in scheduler.py
-# need to fix in the future
 jobs = db.define_table('jobs', Field('id', 'integer'),
                                Field('uid', db.users),
                                Field('app', 'string'),
