@@ -46,13 +46,19 @@ def case():
     cid = request.query.cid
     jid = request.query.jid
 
-    # note: eventually need to merge the following two into one
     if re.search("/", cid):
         (owner, c) = cid.split("/")
-        state = jobs(cid=c).state
+    else:
+        owner = user
+        c = cid
+
+    state = jobs(cid=c).state
+    run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
+    fn = os.path.join(run_dir, root.myapps[app].outfn)
+
+    # note: eventually need to merge the following two into one
+    if re.search("/", cid):
         sid = request.query.sid # id of item in shared
-        run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
-        fn = os.path.join(run_dir, root.myapps[app].outfn)
         output = slurp_file(fn)
 
         params = { 'cid': cid, 'app': app, 'contents': output,
@@ -63,10 +69,6 @@ def case():
         return template('case_public', params)
 
     else:
-        owner = user
-        state = jobs(cid=cid).state
-        run_dir = os.path.join(user_dir, user, root.myapps[app].appname, cid)
-        fn = os.path.join(run_dir, root.myapps[app].outfn)
         result = db(jobs.cid==cid).select().first()
         desc = result['description']
         shared = result['shared']
@@ -395,4 +397,3 @@ def get_notifications():
     response = dict()
     response['new_shared_jobs'] = users(user=user).new_shared_jobs
     return json.dumps(response)
-
