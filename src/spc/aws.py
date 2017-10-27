@@ -1,4 +1,4 @@
-from bottle import Bottle, request, template, redirect
+from bottle import Bottle, request, template, redirect, HTTPError
 import boto, sys, traceback, time, argparse as ap
 import boto.ec2
 from datetime import datetime
@@ -16,22 +16,27 @@ def aws_conn(id):
     """create a connection to the EC2 machine and return the handle"""
     user = root.authorized()
     uid = users(user=user).id
-    creds = db(db.aws_creds.uid==uid).select().first()
-    account_id = creds['account_id']
-    secret = creds['secret']
-    key = creds['key']
-    instances = db(db.aws_instances.id==id).select().first()
-    instance = instances['instance']
-    region = instances['region']
-    rate = instances['rate'] or 0.
-    return EC2(key, secret, account_id, instance, region, rate)
+    try:
+        creds = db(db.aws_creds.uid==uid).select().first()
+        account_id = creds['account_id']
+        secret = creds['secret']
+        key = creds['key']
+        instances = db(db.aws_instances.id==id).select().first()
+        instance = instances['instance']
+        region = instances['region']
+        rate = instances['rate'] or 0.
+        return EC2(key, secret, account_id, instance, region, rate)
+
+    except:
+        return template('error', err="problem validating AWS credentials")
+
 
 class EC2(object):
     """start, stop, and status of EC2 instances"""
 
     def __init__(self, key, secret, account_id, instance, region, rate):
         # Connect to region
-        self.conn = boto.ec2.connect_to_region(region, aws_access_key_id=key, 
+        self.conn = boto.ec2.connect_to_region(region, aws_access_key_id=key,
                                                aws_secret_access_key=secret)
         self.instance = instance
         self.rate = float(rate)
@@ -41,7 +46,7 @@ class EC2(object):
 
     def stop(self):
         self.conn.stop_instances(instance_ids=[self.instance])
-    
+
     def status(self):
         reservations = self.conn.get_all_instances()
         status = {}
@@ -149,6 +154,10 @@ def aws_status(aid):
 
     a = aws_conn(aid)
 
+    if users(user=user).id != aws_instances(aid).uid:
+        # raise HTTPError(403, 'wrong user')
+        return template('error', err="access forbidden")
+
     try:
         astatus = a.status()
         if astatus['state'] == "running":
@@ -175,4 +184,3 @@ def aws_stop(aid):
     a.stop()
     # takes a few seconds for the status to change on the Amazon end
     time.sleep(10)
-
