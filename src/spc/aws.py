@@ -1,4 +1,4 @@
-from bottle import Bottle, request, template, redirect, HTTPError
+from bottle import Bottle, request, template, redirect
 import boto, sys, traceback, time, argparse as ap
 import boto.ec2
 from datetime import datetime
@@ -154,8 +154,7 @@ def aws_status(aid):
 
     a = aws_conn(aid)
 
-    if users(user=user).id != aws_instances(aid).uid:
-        # raise HTTPError(403, 'wrong user')
+    if users(user=user).id != aws_instances(aid).uid or user='admin':
         return template('error', err="access forbidden")
 
     try:
