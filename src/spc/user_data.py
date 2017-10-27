@@ -15,14 +15,17 @@ upload_dir = '_uploads'
 
 routes = Bottle()
 
+
 def bind(app):
     global root
     root = ap.Namespace(**app)
+
 
 @routes.get('/' + user_dir + '/<filepath:path>')
 def get_user_data(filepath):
     root.authorized()
     return static_file(filepath, root=user_dir)
+
 
 @routes.get('/more')
 def more():
@@ -46,13 +49,14 @@ def more():
     shared = jobs(cid=c).shared
     # only allow admin to see other user's cases that have not been shared
     if owner != user and shared != "True" and user != "admin":
-        return template('error', err="case has not been not shared by user")
+        return template('error', err="access forbidden")
 
     contents = slurp_file(filepath)
     # convert html tags to entities (e.g. < to &lt;)
     contents = cgi.escape(contents)
     params = { 'cid': c, 'contents': contents, 'app': app, 'user': user, 'fn': filepath }
     return template('more', params)
+
 
 @routes.get('/case')
 def case():
@@ -105,6 +109,7 @@ def case():
 
         return template('case', params)
 
+
 @routes.get('/output')
 def output():
     user = root.authorized()
@@ -112,72 +117,73 @@ def output():
     cid = request.query.cid
     jid = request.query.jid
 
-    try:
-        if re.search("/", cid):
-            (owner, c) = cid.split("/")
-        else:
-            owner = user
-            c = cid
+    if re.search("/", cid):
+        (owner, c) = cid.split("/")
+    else:
+        owner = user
+        c = cid
 
-        run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
-        fn = os.path.join(run_dir, root.myapps[app].outfn)
+    shared = jobs(cid=c).shared
+    # only allow admin to see other user's cases that have not been shared
+    if owner != user and shared != "True" and user != "admin":
+        return template('error', err="access forbidden")
 
-        if config.worker == 'remote':
+    run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
+    fn = os.path.join(run_dir, root.myapps[app].outfn)
 
-            params = {'user': user, 'app': app, 'cid': cid}
-            resp = requests.get(config.remote_worker_url +'/output', params=params)
-            output = resp.text
+    if config.worker == 'remote':
 
-        else:
+        params = {'user': user, 'app': app, 'cid': cid}
+        resp = requests.get(config.remote_worker_url +'/output', params=params)
+        output = resp.text
 
-            output = slurp_file(fn)
-            # the following line will convert HTML chars like > to entities &gt;
-            # this is needed so that XML input files will show paramters labels
-            output = cgi.escape(output)
+    else:
 
-        desc = jobs(cid=c).description
+        output = slurp_file(fn)
+        # the following line will convert HTML chars like > to entities &gt;
+        # this is needed so that XML input files will show paramters labels
+        output = cgi.escape(output)
 
-        params = { 'cid': cid, 'contents': output, 'app': app,
-                   'user': owner, 'owner': owner, 'fn': fn, 'description': desc }
+    desc = jobs(cid=c).description
 
-        if jid: params['jid'] = jid
+    params = { 'cid': cid, 'contents': output, 'app': app,
+               'user': owner, 'owner': owner, 'fn': fn, 'description': desc }
 
-        return template('more', params)
+    if jid: params['jid'] = jid
 
-    except:
-        params = { 'app': app, 'err': "Couldn't read input file. Check casename." }
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        return template('error', params)
+    return template('more', params)
+
 
 @routes.get('/inputs')
 def inputs():
     user = root.authorized()
     app = request.query.app
     cid = request.query.cid
-    try:
-        if re.search("/", cid):
-            (owner, c) = cid.split("/")
-        else:
-            owner = user
-            c = cid
-        run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
-        fn = os.path.join(run_dir, root.myapps[app].simfn)
-        inputs = slurp_file(fn)
-        # the following line will convert HTML chars like > to entities &gt;
-        # this is needed so that XML input files will show paramters labels
-        inputs = cgi.escape(inputs)
 
-        desc = jobs(cid=c).description
+    if re.search("/", cid):
+        (owner, c) = cid.split("/")
+    else:
+        owner = user
+        c = cid
 
-        params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': owner,
-                   'fn': fn, 'description': desc }
-        return template('more', params)
-    except:
-        params = { 'app': app, 'err': "Couldn't read input file. Check casename." }
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        return template('error', params)
+    shared = jobs(cid=c).shared
+    # only allow admin to see other user's cases that have not been shared
+    if owner != user and shared != "True" and user != "admin":
+        return template('error', err="access forbidden")
+
+    run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
+    fn = os.path.join(run_dir, root.myapps[app].simfn)
+    inputs = slurp_file(fn)
+    # the following line will convert HTML chars like > to entities &gt;
+    # this is needed so that XML input files will show paramters labels
+    inputs = cgi.escape(inputs)
+
+    desc = jobs(cid=c).description
+
+    params = { 'cid': cid, 'contents': inputs, 'app': app, 'user': owner,
+               'fn': fn, 'description': desc }
+    return template('more', params)
+
 
 @routes.get('/files')
 def list_files():
@@ -198,6 +204,12 @@ def list_files():
         owner, cid = cid.split("/")
     else:
         owner = user
+
+    shared = jobs(cid=cid).shared
+    # only allow admin to see other user's cases that have not been shared
+    if owner != user and shared != "True" and user != "admin":
+        return template('error', err="access forbidden")
+
     if not path:
         path = os.path.join(user_dir, owner, app, cid)
 
@@ -215,6 +227,7 @@ def list_files():
     params['description'] = jobs(cid=cid).description
 
     return template('files', params)
+
 
 @routes.post('/files/delete_selected')
 def delete_f():
@@ -235,6 +248,7 @@ def delete_f():
         else:
             print "ERROR: not removing path:", path, "because cid missing"
     redirect("/files?cid="+cid+"&app="+app)
+
 
 @routes.post('/files/modify/<operation>')
 def modify_selected_files(operation):
@@ -280,6 +294,7 @@ def modify_selected_files(operation):
 
     redirect("/files?cid="+cid+"&app="+app)
 
+
 @routes.post('/files/zip_selected')
 def zip_selected_files():
     user = root.authorized()
@@ -301,6 +316,7 @@ def zip_selected_files():
 
     redirect("/files?cid="+cid+"&app="+app)
 
+
 @routes.get('/zipcase')
 def zip_case():
     """zip case on machine to prepare for download"""
@@ -320,6 +336,7 @@ def zip_case():
     return static_file(path, root="./")
     # status = "case compressed"
     # redirect(request.headers.get('Referer')+"&status="+status)
+
 
 @routes.get('/zipget')
 def zipget():
@@ -374,6 +391,7 @@ def zipget():
     #     params = { 'app': app, 'err': "Configuration not setup with remote worker." }
     #     return template('error', params)
 
+
 @routes.post('/upload')
 def upload_file():
 	# upload file to user_dir/user/upload_dir folder
@@ -395,6 +413,7 @@ def upload_file():
     #except:
     #    return "FAILED"
 
+
 @routes.post('/upload_data')
 def upload_data():
 	# upload a payload of data that the user submits via form to the filename specified
@@ -410,10 +429,12 @@ def upload_data():
     upload_data = request.forms.upload_data
     with open(save_path, 'w') as f: f.write(upload_data)
 
+
 @routes.get('/download/<filepath:path>')
 def download(filepath):
     root.authorized()
     return static_file(filepath, root='download', download=filepath)
+
 
 @routes.get('/notifications')
 def get_notifications():
