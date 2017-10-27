@@ -10,9 +10,11 @@ import config
 
 routes = Bottle()
 
+
 def bind(app):
     global root
     root = ap.Namespace(**app)
+
 
 def compute_stats(path):
     """compute statistics on output data"""
@@ -29,7 +31,9 @@ def compute_stats(path):
             xoutput += output[len(output)-1]
     return xoutput
 
+
 class Plot(object):
+
 
     def get_data(self,fn,col1,col2=None,line1=1,line2=1e6):
         """return data as string in format [ [x1,y1], [x2,y2], ... ]"""
@@ -70,6 +74,7 @@ class Plot(object):
             print traceback.print_exception(exc_type, exc_value, exc_traceback)
             return -2
 
+
     def get_csv_data(self, fn):
         try:
             with open(fn, 'rU') as csv_file:
@@ -80,6 +85,7 @@ class Plot(object):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print traceback.print_exception(exc_type, exc_value, exc_traceback)
             return -1
+
 
     def get_data_gantt(self,fn,col1,col2,col3,col4,line1=1,line2=1e6):
         """return data as string in format [ [x1,y1], [x2,y2], ... ]"""
@@ -105,10 +111,12 @@ class Plot(object):
         except:
             return False
 
+
     def get_raw_data(self,fn,line1=1,line2=1e6):
         """return data as an array..."""
         data = open(fn, 'rU').readlines()
         return data[line1:line2]
+
 
     def get_column_of_data(self,fn,col,line1=1,line2=1e6):
         try:
@@ -132,6 +140,7 @@ class Plot(object):
         except:
             return False
 
+
     def get_ticks(self,fn,col1,col2):
         try:
             y = ''
@@ -148,6 +157,7 @@ class Plot(object):
         except:
             return False
 
+
 @routes.get('/plots/edit')
 def editplotdefs():
     user = root.authorized()
@@ -161,17 +171,23 @@ def editplotdefs():
     params = { 'app': app, 'user': user }
     return template('plots/plotdefs', params, rows=result)
 
+
 @routes.get('/plots/edit/<pltid>')
 def editplotdef(pltid):
     user = root.authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit plots")
     app = request.forms.app
     result = db(plots.id==pltid).select().first()
     params = { 'app': app, 'user': user }
     return template('plots/edit_plot', params, row=result)
 
+
 @routes.post('/plots/edit/<pltid>')
 def editplot(pltid):
-    root.authorized()
+    user = root.authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit plots")
     app = request.forms.app
     title = request.forms.title
     ptype = request.forms.ptype
@@ -184,16 +200,21 @@ def editplot(pltid):
 
 @routes.get('/plots/delete/<pltid>')
 def delete_plot(pltid):
-    root.authorized()
+    user = root.authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit plots")
     app = request.query.app
     del db.plots[pltid]
     db.commit()
     redirect ('/plots/edit?app='+app)
 
+
 @routes.get('/plots/<pltid>/datasources')
 def get_datasource(pltid):
     """get list of datasources for given plot"""
     user = root.authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit plots")
     app = request.query.app
     cid = request.query.cid
     if root.myapps[app].appname not in root.myapps: redirect('/apps')
@@ -203,10 +224,13 @@ def get_datasource(pltid):
     params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result, 'title': title}
     return template('plots/datasources', params, rows=result)
 
+
 @routes.post('/plots/<pltid>/datasources')
 def add_datasource(pltid):
     """create a new datasource for given plot"""
-    root.authorized()
+    user = root.authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit plots")
     app = request.forms.app
     r = request.forms
     datasource.insert(pltid=pltid, label=r['label'],  filename=r['fn'], cols=r['cols'],
@@ -214,20 +238,26 @@ def add_datasource(pltid):
     db.commit()
     redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
 
+
 @routes.get('/plots/<pltid>/datasources/<dsid>')
 def edit_datasource(pltid, dsid):
     """create a new datasource for given plot"""
-    root.authorized()
+    user = root.authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit plots")
     app = request.query.app
     query = (datasource.id==dsid)
     result = db(query).select().first()
     params = {'app': app, 'pltid': pltid, 'dsid': dsid}
     return template('plots/edit_datasource', params, row=result)
 
+
 @routes.post('/plots/<pltid>/datasources/<dsid>')
 def edit_datasource_post(pltid, dsid):
     """update datasource for given plot"""
-    root.authorized()
+    user = root.authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit plots")
     app = request.forms.get('app')
     r = request.forms
     datasource(id=dsid).update_record(label=r['label'], pltid=pltid, filename=r['fn'], cols=r['cols'],
@@ -237,9 +267,12 @@ def edit_datasource_post(pltid, dsid):
     params = {'app': app, 'pltid': pltid, 'dsid': dsid}
     return template('plots/edit_datasource', params)
 
+
 @routes.post('/plots/datasource_delete')
 def delete_datasource():
-    root.authorized()
+    user = root.authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit plots")
     app = request.forms.get('app')
     pltid = request.forms.get('pltid')
     dsid = request.forms.get('dsid')
@@ -247,15 +280,19 @@ def delete_datasource():
     db.commit()
     redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
 
+
 @routes.post('/plots/create')
 def create_plot():
-    root.authorized()
+    user = root.authorized()
+    if user != 'admin':
+        return template('error', err="must be admin to edit plots")
     app = request.forms.get('app')
     r = request
     plots.insert(appid=root.myapps[app].appid, ptype=r.forms['ptype'],
                  title=r.forms['title'], options=r.forms['options'])
     db.commit()
     redirect ('/plots/edit?app='+app)
+
 
 @routes.get('/plot/<pltid>')
 def plot_interface(pltid):
@@ -274,6 +311,11 @@ def plot_interface(pltid):
     else:
         owner = user
         c = cid
+
+    shared = jobs(cid=cid).shared
+    # only allow admin to see other user's cases that have not been shared
+    if owner != user and shared != "True" and user != "admin":
+        return template('error', err="access forbidden")
 
     inputs, _, _ = root.myapps[app].read_params(owner, c)
     sim_dir = os.path.join(user_dir, owner, app, c)
@@ -433,6 +475,7 @@ def plot_interface(pltid):
 
     return template(tfn, params)
 
+
 def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
 
     # to handle data in user/cid format when looking at shared cases
@@ -490,6 +533,7 @@ def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
     }
 
     return template('plots/flot-3d', params)
+
 
 @routes.get('/mpl/<pltid>')
 def matplotlib(pltid):
