@@ -31,11 +31,27 @@ def more():
     user = root.authorized()
     app = request.query.app
     cid = request.query.cid
+
     filepath = request.query.filepath
+    # get the owner from the filepath
+    # e.g. "user_data/wes/mendel/y23022/file.dat"
+    path_list = filepath.split("/")
+    owner = path_list[1]
+
+    if re.search("/", cid):
+        (_, c) = cid.split("/")
+    else:
+        c = cid
+
+    shared = jobs(cid=c).shared
+    # only allow admin to see other user's cases that have not been shared
+    if owner != user and shared != "True" and user != "admin":
+        return template('error', err="case has not been not shared by user")
+
     contents = slurp_file(filepath)
     # convert html tags to entities (e.g. < to &lt;)
     contents = cgi.escape(contents)
-    params = { 'cid': cid, 'contents': contents, 'app': app, 'user': user, 'fn': filepath }
+    params = { 'cid': c, 'contents': contents, 'app': app, 'user': user, 'fn': filepath }
     return template('more', params)
 
 @routes.get('/case')
@@ -48,9 +64,17 @@ def case():
 
     if re.search("/", cid):
         (owner, c) = cid.split("/")
+        shared = jobs(cid=c).shared
+        # only allow admin to see other user's cases that have not been shared
+        if owner != user and shared != "True" and user != "admin":
+            return template('error', err="access forbidden")
+
     else:
-        owner = user
-        c = cid
+        owner, c = user, cid
+
+    # if case does not exist return error
+    if jobs(cid=c) is None:
+        return template('error', err="case does not exist")
 
     state = jobs(cid=c).state
     run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
