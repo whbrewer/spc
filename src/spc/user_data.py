@@ -23,7 +23,20 @@ def bind(app):
 
 @routes.get('/' + user_dir + '/<filepath:path>')
 def get_user_data(filepath):
-    root.authorized()
+    user = root.authorized()
+    # filepath = request.query.filepath
+    # get the owner from the filepath
+    # e.g. "user_data/wes/mendel/y23022/file.dat"
+    path_list = filepath.split("/")
+    owner = path_list[0]
+    cid = path_list[2]
+    shared = jobs(cid=cid).shared
+    print filepath, path_list, shared
+
+    # only allow admin to see other user's cases that have not been shared
+    if owner != user and shared != "True" and user != "admin":
+        return template('error', err="access forbidden")
+
     return static_file(filepath, root=user_dir)
 
 
