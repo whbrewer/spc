@@ -107,12 +107,12 @@ def initdb():
                        language="python",
                        input_format="ini",
                        command="<rel_apps_path>/dna/dna")
-    dal.db.plots.insert(id=1,appid=1,ptype="flot-cat",title="Dinucleotides")
-    dal.db.plots.insert(id=2,appid=1,ptype="flot-cat",title="Nucleotides")
-    dal.db.plots.insert(id=3,appid=1,ptype="flot-cat",title="Codons")
-    dal.db.datasource.insert(filename="din.out",cols="1:2",pltid=1)
-    dal.db.datasource.insert(filename="nucs.out",cols="1:2",pltid=2)
-    dal.db.datasource.insert(filename="codons.out",cols="1:2",pltid=3)
+    dal.db.plots.insert(id=1, appid=1, ptype="flot-cat", title="Dinucleotides")
+    dal.db.plots.insert(id=2, appid=1, ptype="flot-cat", title="Nucleotides")
+    dal.db.plots.insert(id=3, appid=1, ptype="flot-cat", title="Codons")
+    dal.db.datasource.insert(filename="din.out", cols="1:2", pltid=1, data_def='{label: "Dinucleotides"}')
+    dal.db.datasource.insert(filename="nucs.out", cols="1:2", pltid=2, data_def='{label: "Nucleotides"}')
+    dal.db.datasource.insert(filename="codons.out", cols="1:2", pltid=3, data_def='{label: "Codons"}')
 
     # activate the default app for admin and guest
     dal.db.app_user.insert(appid=1, uid=1)
