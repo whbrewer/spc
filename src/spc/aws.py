@@ -154,7 +154,7 @@ def aws_status(aid):
 
     a = aws_conn(aid)
 
-    if users(user=user).id != aws_instances(aid).uid or user='admin':
+    if users(user=user).id != aws_instances(aid).uid:
         return template('error', err="access forbidden")
 
     try:
