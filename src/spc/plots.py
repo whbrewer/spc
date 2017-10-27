@@ -312,7 +312,7 @@ def plot_interface(pltid):
         owner = user
         c = cid
 
-    shared = jobs(cid=cid).shared
+    shared = jobs(cid=c).shared
     # only allow admin to see other user's cases that have not been shared
     if owner != user and shared != "True" and user != "admin":
         return template('error', err="access forbidden")
