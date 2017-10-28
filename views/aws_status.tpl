@@ -36,14 +36,12 @@
 <fieldset style="text-align:center">
 
 %if astatus['state']=="stopped":
+
     <button class="btn btn-success" onclick="start_ec2()" id="start_button"> <span class="glyphicon glyphicon-play"></span> start machine</button>
-    <meta http-equiv="refresh" content="10">
 
 %elif astatus['state']=="running":
 
-    <p> LINK: <a target="_blank" href="http://{{astatus['public_dns_name']}}:{{port}}/">http://{{astatus['public_dns_name']}}:{{port}}</a> <span class="glyphicon glyphicon-new-window"></span></p>
-
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-xs-12 col-sm-offset-2 col-sm-8">
             <form class="form-horizontal" action="/zipget">
                 <div class="input-group">
@@ -56,15 +54,16 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> -->
 
-    <div class="col-xs-12 center-block">
-        <button class="btn btn-danger" onclick="stop_ec2()" id="stop_button"> <span class="glyphicon glyphicon-stop"></span> stop machine</button>
-    </div>
-    <meta http-equiv="refresh" content="10">
+    <button class="btn btn-danger" onclick="stop_ec2()" id="stop_button"> <span class="glyphicon glyphicon-stop"></span> stop machine</button>
+
+    <br/><br/>
+
+    <p> LINK: <a target="_blank" href="http://{{astatus['public_dns_name']}}:{{port}}/">http://{{astatus['public_dns_name']}}:{{port}}</a> <span class="glyphicon glyphicon-new-window"></span></p>
 
 %else:
-    <meta http-equiv="refresh" content="2">
+    <a class="btn btn-default span"     href="javascript:window.location.reload(true)"><span style="font-size: 100%" class="glyphicon glyphicon-refresh"></span> </a>
 %end
 
 <img src="/static/images/loading.gif" alt="loading..." id="loading-indicator" style="display:none" />
