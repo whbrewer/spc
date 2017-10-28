@@ -372,7 +372,6 @@ def zipget():
                           " in config.py for this feature to work" }
         return template('error', params)
 
-    # try:
     requests.get(worker + "/zipcase",
          params={'app': app, 'cid': cid, 'user': user})
 
@@ -400,10 +399,6 @@ def zipget():
     # redirect(request.headers.get('Referer')) #+ "&status=" + status)
     redirect("/jobs")
 
-    # except:
-    #     params = { 'app': app, 'err': "Configuration not setup with remote worker." }
-    #     return template('error', params)
-
 
 @routes.post('/upload')
 def upload_file():
@@ -412,10 +407,7 @@ def upload_file():
     upload = request.files.upload
     if not upload:
         return template('error', err="no file selected.")
-    #name, ext = os.path.splitext(upload.filename)
-    #if ext not in ('.zip','.txt'):
-    #    return template('error', err="file extension not allowed")
-    #try:
+
     save_path_dir = os.path.join(user_dir, user, upload_dir)
     if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
     save_path = os.path.join(save_path_dir, upload.filename)
@@ -423,8 +415,6 @@ def upload_file():
         return template('error', err="file exists")
     upload.save(save_path)
     return "SUCCESS"
-    #except:
-    #    return "FAILED"
 
 
 @routes.post('/upload_data')
