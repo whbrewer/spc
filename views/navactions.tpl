@@ -52,7 +52,7 @@
             </form>
 
             %if defined('plotpath'):
-                <form class="btn-group" action="/more" method="get">
+                <form class="btn-group hidden-xs" action="/more" method="get">
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="filepath" value="{{plotpath}}">

@@ -1,3 +1,7 @@
+v0.34 released on 10/27/17
+--------------------------
+* security harden routes so that unless case is shared, others cannot view
+
 v0.33 released on 10/16/17
 --------------------------
 * add support for NGINX via uwsgi

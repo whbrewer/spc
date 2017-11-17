@@ -36,7 +36,7 @@
 
 <body>
 
-    <h3 class="text-center">Sign in with SPC</h3>
+    <h3 class="text-center">Login</h3>
 
     <div style="height:10px"></div>
 
