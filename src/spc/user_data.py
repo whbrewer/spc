@@ -144,6 +144,10 @@ def output():
     run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
     fn = os.path.join(run_dir, root.myapps[app].outfn)
 
+    # prevent 500 error in case config.worker not defined in config.py
+    try: config.worker
+    except: config.worker = 'local'
+
     if config.worker == 'remote':
 
         params = {'user': user, 'app': app, 'cid': cid}
