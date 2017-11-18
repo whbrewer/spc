@@ -111,30 +111,47 @@ function toggleAddInstance() {
     <option value="t2.micro">t2.micro
     <option value="t2.small">t2.small
     <option value="t2.medium">t2.medium
-    <option disabled> -
+    <option value="t2.large">t2.large
+    <option value="t2.xlarge">t2.xlarge
+    <option value="t2.2xlarge">t2.2xlarge
     <option value="m3.medium">m3.medium
     <option value="m3.large">m3.large
     <option value="m3.xlarge">m3.xlarge
     <option value="m3.2xlarge">m3.2xlarge
+    <option value="m4.large">m4.large
+    <option value="m4.xlarge">m4.xlarge
+    <option value="m4.2xlarge">m4.2xlarge
     <option value="m4.4xlarge">m4.4xlarge
+    <option value="m4.10xlarge">m4.10xlarge
+    <option value="m4.16xlarge">m4.16xlarge
+    <option disabled> 
     <option disabled>Compute optimized:
     <option value="c3.large">c3.large
     <option value="c3.xlarge">c3.xlarge
     <option value="c3.2xlarge">c3.2xlarge
     <option value="c3.3xlarge">c3.3xlarge
     <option value="c3.8xlarge">c3.8xlarge
-    <option disabled> -
     <option value="c4.large">c4.large
     <option value="c4.xlarge">c4.xlarge
     <option value="c4.2xlarge">c4.2xlarge
     <option value="c4.4xlarge">c4.4xlarge
     <option value="c4.8xlarge">c4.8xlarge
+    <option disabled> 
     <option disabled>Memory optimized:
     <option value="r3.large">r3.large
     <option value="r3.xlarge">r3.xlarge
     <option value="r3.2xlarge">r3.2xlarge
     <option value="r3.3xlarge">r3.3xlarge
     <option value="r3.8xlarge">r3.8xlarge
+    <option value="r4.large">r4.large
+    <option value="r4.xlarge">r4.xlarge
+    <option value="r4.2xlarge">r4.2xlarge
+    <option value="r4.3xlarge">r4.4xlarge
+    <option value="r4.8xlarge">r4.8xlarge
+    <option value="r4.8xlarge">r4.16xlarge
+    <option value="x1.16xlarge">x1.16xlarge 
+    <option value="x1.32xlarge">x1.32xlarge 
+    <option disabled> 
     <option disabled>GPU:
     <option value="r3.large">g2.2xlarge
     <option disabled>Storage optimized:
