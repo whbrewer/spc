@@ -18,8 +18,8 @@
             </button>
         </div>
 
-        %if nap > 1:
-            <input type="hidden" name="np" value="{{nap}}">
+        %if np > 1:
+            <input type="hidden" name="np" value="{{np}}">
         %else:
             <input type="hidden" name="np" value="1">
         %end
