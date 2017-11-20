@@ -19,18 +19,7 @@
         </div>
 
         %if nap > 1:
-            <label for="np" class="control-label col-xs-12 col-sm-2"># Processors:</label>
-            <div class="col-xs-12 col-sm-1">
-                <select name="np" id="np" class="btn-group form-control" title="Number of processors to use">
-                    %for i in range(1, nap+1):
-                        %if int(i) == int(np):
-                            <option value="{{i}}" selected>{{i}}</option>
-                        %else:
-                            <option value="{{i}}">{{i}}</option>
-                        %end
-                    %end
-                </select>
-            </div>
+            <input type="hidden" name="np" value="{{nap}}">
         %else:
             <input type="hidden" name="np" value="1">
         %end
