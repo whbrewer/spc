@@ -154,6 +154,7 @@ function toggleAddInstance() {
     <option disabled> 
     <option disabled>GPU:
     <option value="r3.large">g2.2xlarge
+    <option disabled> 
     <option disabled>Storage optimized:
     <option value="i2.large">i2.large
     <option value="i2.xlarge">i2.xlarge
