@@ -31,7 +31,7 @@ def get_user_data(filepath):
     owner = path_list[0]
     cid = path_list[2]
     shared = jobs(cid=cid).shared
-    print filepath, path_list, shared
+    # print filepath, path_list, shared
 
     # only allow admin to see other user's cases that have not been shared
     if owner != user and shared != "True" and user != "admin":
@@ -121,6 +121,7 @@ def case():
         if jid: params['jid'] = jid
 
         return template('case', params)
+        #return template('case_tail-f', params)
 
 
 @routes.get('/output')
