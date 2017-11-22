@@ -36,9 +36,9 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
     c. **Start the job**. Click `execute` to run the DNA analysis.  SPC will submit it to the job scheduler, and will redirect to the output.
 
-    d. **Outputs**.  At this point, you can look at the files output by clicking the `files` button. The `output` button will show the redirected output of the executable.
+    d. **Outputs**.  At this point, you can look at the files output by clicking the `files` button to show the file manager. The `output` button will show the redirected output of the executable.  All the files for the case can be zipped up and downloaded by clicking the `download` button.
 
-    e. **View the Plots**. Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.
+    e. **View the Plots**. Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  You can also see the data behind the plots by clicking the `data` button.  These files are also available in the file manager by clicking `files`.
 
 ## INSTALL PACKAGED APPS
 
