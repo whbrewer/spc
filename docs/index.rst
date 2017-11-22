@@ -5,7 +5,7 @@ The Scientific Platform for the Cloud (SPC) is a cloud platform for easily migra
 
 	W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24
 
-This platform is ideally suited to run scientific applications that: (1) require an input deck full of integers, floats, strings, and booleans stored in a standardized file format such as INI, XML, JSON, YAML, or Namelist.input, (2) require some amount of processing time (i.e. not instantaneous -- although it can handle such cases too), (3) require some plotting at the end of the simulation, (4) use MPI or MapReduce for parallelization (although handles serial cases well too). Moreover, it can handle other applications as well, but some amount of pre- or post-processing may be required. Such topics are described in more detail in the aforementioned paper.
+This platform is ideally suited to run scientific applications that: (1) require an input deck full of integers, floats, strings, and booleans stored in a standardized file format such as INI, XML, JSON, YAML, TOML, or Namelist.input, (2) require some amount of processing time (i.e. not instantaneous -- although it can handle such cases too), (3) require some plotting at the end of the simulation, (4) use MPI or MapReduce for parallelization (although handles serial cases well too). Moreover, it can handle other applications as well, but some amount of pre- or post-processing may be required. Such topics are described in more detail in the aforementioned paper.
 
 Getting started
 ---------------
@@ -27,10 +27,9 @@ This will start the web server listening on port 8580. Then, open your web brows
 Installing Apps
 ---------------
 
-Adding apps can be accomplished in two ways: (1) interactively via the user interface, or (2) via the command-line options (see section on package management).
+Adding apps can be accomplished in two ways: (A) interactively via the user interface, or (B) via the command-line options (see section on package management).
 
-A. Manually adding app through user interface
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**A. Manually adding app through user interface**
 
 To install or modify apps interactively, one must be logged in as user admin (default password admin).  Note, if user authentication is turned, off one will still need to login as admin, by clicking the hamburger icon , logging out, and then logging back in as admin.  Before this can happen,  enable authentication by setting “auth = True” in the src/config.py file.
 To install an app interactively, click the Apps button, then click the +Add button.  Installation of an app requires five steps:
@@ -75,8 +74,7 @@ Additional options.  **Static assets** – It is also possible to include static
     <script src="/static/apps/mendel/mendel.js"></script>
 
 
-B. Adding app through SPC’s package management system
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**B. Adding app through SPC’s package management system**
 
 Because it may take some time to setup an app, especially the plots, it is possible to save the configuration as a JSON manifest file called spc.json.  Therefore, it is possible to create an SPC package of an app, which is simply a zipped archive containing the input file, binary, spc.json manifest file, and then make it available on the Internet (e.g. by hosting it on github.org or bitbucket.org).  In this way, anyone else running SPC can easily install your app by running the command::
 
@@ -91,7 +89,7 @@ For Mac OS X users, an example can be installed by running the following command
     > spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip
 
 Pre-/Post-processing
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 The code for pre- and post-processing is in the processing.py file.  This feature can be turned on by setting the pre-processing option in the database setup to the input filename.  However, coding to handle the pre-processing step must be manually added to the processing.py file.
 
