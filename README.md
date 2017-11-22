@@ -32,33 +32,31 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
 * To run the pre-installed example DNA Analyzer app in SPC:
 
-    * Click `Apps` and then click `installed`
+    1. **Activate the App**.  Click `Apps` and then click `installed`.  `Activate` the DNA app, then click `Activated` again
 
-    * `Activate` the DNA app, then click `Activated` again
+    2. **Enter parameters**. Click on `dna` the default installed app.  Enter a DNA string, or use the default.  Then Click `confirm` to write the datafile to disk
 
-    * Click on `dna` the default installed app
+    3. **Start the job**. Click `execute` to run the DNA analysis.  SPC will submit it to the job scheduler, and will redirect to the output.
 
-    * Enter a DNA string, or use the default
+    4. **Outputs**.  At this point, you can look at the files output by clicking the `files` button, the `output` button will show the redirected output of the executable.
 
-    * Click `confirm` to write the datafile to disk
-
-    * Click `execute` to run the DNA analysis.  SPC will submit it to the job scheduler
-
-    * Click `output` (if you see an error message, it most likely means the jobs has not started running yet, so you can just click output several times until you see the result)
-
-    * Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.
+    5. **View the Plots**. Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.
 
 ## INSTALL PACKAGED APPS
 
-To install another SPC packaged app, e.g. Mendel's Accountant:
+To install another SPC packaged app, e.g. Mendel's Accountant run the following commands according to the version needed:
 
 * Mac OS X version:
 
     > ./spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip
 
-* Linux version:
+* Linux 64-bit version:
 
     > ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip
+
+* Linux 32-bit version:
+
+    > ./spc install https://github.com/whbrewer/fmendel-spc-linux-32/archive/master.zip
 
 ## UPDATING SPC
 
@@ -66,11 +64,7 @@ To update SPC: if you got the code using "git clone https://github.com/whbrewer/
 you can just do "git pull" within the spc directory.  Before starting, also make sure
 to run "./spc migrate" to migrate the new changes to the database.
 
-Note that cloning the latest version of the repo may be unstable.  So, it is
-better to download one of the releases (click on "Branch: master" and then click "Tags"
-and select one of the releases).
-
-For more information, see user's manual in the docs/ folder
+For more information, see user's manual at http://spc.readthedocs.io
 
 ## QUESTIONS
 
