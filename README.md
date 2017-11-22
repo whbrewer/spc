@@ -6,7 +6,7 @@ Full documentation is available online at http://spc.readthedocs.io
 
 ## INTRO
 
-The Scientific Platform for the Cloud (SPC) is a cloud platform for easily migrating and running scientific applications in the cloud.  It is described in more detail in the following paper:
+The Scientific Platform for the Cloud (SPC) is a Python-based cloud platform/framework for easily migrating and running scientific applications in the cloud.  It is described in more detail in the following paper:
 
   > W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24 http://ieeexplore.ieee.org/document/7421906/
 
@@ -16,9 +16,7 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
 ## QUICKSTART
 
-* Note, SPC assumes you have a few packages installed by default, namely: Python 2.78 or later,
-  virtualenv, gcc, and python-dev (required for compiling psutil).  If you don't have these
-  installed, use either apt-get or yum to install them.
+* Note, SPC assumes you have a few packages installed by default, namely: Python 2.78 or later, virtualenv, gcc, and python-dev (required for compiling psutil).  If you don't have these installed, use either apt-get or yum to install them.
 
 * To install dependencies, create and initialize the database which SPC uses, type:
 
