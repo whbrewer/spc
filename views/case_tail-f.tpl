@@ -40,8 +40,6 @@ $(function() { $('#navaction').fadeIn() })
 /* Copyright (c) 2012: Daniel Richman. License: GNU GPL 3 */
 /* Additional features: Priyesh Patel                     */
 
-// $(function () {
-
 var dataelem = "#output";
 var pausetoggle = "#pause";
 var scrollelems = ["html", "body"];
@@ -227,7 +225,5 @@ $(document).ready(function () {
 
     get_log();
 });
-
-// })();
 
 </script>
