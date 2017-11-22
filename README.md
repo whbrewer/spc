@@ -32,15 +32,15 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
 * To run the pre-installed example DNA Analyzer app in SPC:
 
-    1. **Activate the App**.  Click `Apps` and then click `installed`.  `Activate` the DNA app, then click `Activated` again
+    a. **Activate the App**.  Click `Apps` and then click `installed`.  `Activate` the DNA app, then click `Activated` again
 
-    2. **Enter parameters**. Click on `dna` the default installed app.  Enter a DNA string, or use the default.  Then Click `confirm` to write the datafile to disk
+    b. **Enter parameters**. Click on `dna` the default installed app.  Enter a DNA string, or use the default.  Then Click `confirm` to write the datafile to disk
 
-    3. **Start the job**. Click `execute` to run the DNA analysis.  SPC will submit it to the job scheduler, and will redirect to the output.
+    c. **Start the job**. Click `execute` to run the DNA analysis.  SPC will submit it to the job scheduler, and will redirect to the output.
 
-    4. **Outputs**.  At this point, you can look at the files output by clicking the `files` button, the `output` button will show the redirected output of the executable.
+    d. **Outputs**.  At this point, you can look at the files output by clicking the `files` button, the `output` button will show the redirected output of the executable.
 
-    5. **View the Plots**. Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.
+    e. **View the Plots**. Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.
 
 ## INSTALL PACKAGED APPS
 
