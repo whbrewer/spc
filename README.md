@@ -30,15 +30,15 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7
 
 * To run the pre-installed example DNA Analyzer app in SPC:
 
-    a. **Activate the App**.  Click `Apps` and then click `installed`.  `Activate` the DNA app, then click `Activated` again
+    a. **Activate App**.  Click `Apps` and then click `installed`.  `Activate` the DNA app, then click `Activated` again
 
-    b. **Enter parameters**. Click on `dna` the default installed app.  Enter a DNA string, or use the default.  Then Click `confirm` to write the datafile to disk
+    b. **Enter Parameters**. Click on `dna` the default installed app.  Enter a DNA string, or use the default.  Then Click `confirm` to write the datafile to disk
 
-    c. **Start the job**. Click `execute` to run the DNA analysis.  SPC will submit it to the job scheduler, and will redirect to the output.
+    c. **Start Job**. Click `execute` to run the DNA analysis.  SPC will submit it to the job scheduler, and will redirect to the output.
 
-    d. **Outputs**.  At this point, you can look at the files output by clicking the `files` button to show the file manager. The `output` button will show the redirected output of the executable.  All the files for the case can be zipped up and downloaded by clicking the `download` button.
+    d. **Inspect Outputs**.  At this point, you can look at the files output by clicking the `files` button to show the file manager. The `output` button will show the redirected output of the executable.  All the files for the case can be zipped up and downloaded by clicking the `download` button.
 
-    e. **View the Plots**. Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  You can also see the data behind the plots by clicking the `data` button.  These files are also available in the file manager by clicking `files`.
+    e. **View Plots**. Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  You can also see the data behind the plots by clicking the `data` button.  These files are also available in the file manager by clicking `files`.
 
 ## INSTALL PACKAGED APPS
 
