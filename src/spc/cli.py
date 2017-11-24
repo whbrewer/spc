@@ -245,7 +245,12 @@ def main():
                            walltime="", np="", priority="")
             dal.db.commit()
 
-            print "imported case. user:", user, "app:", app, "cid:", cid,
+            # delete zip file
+            os.unlink(save_path)
+
+            print "imported case. user:", user, "app:", app, "cid:", cid
+
+            print "removed zip file", save_path
 
     elif (sys.argv[1] == "install"):
         import app_reader_writer as apprw
