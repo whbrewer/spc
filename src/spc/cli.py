@@ -1,7 +1,6 @@
 import sys, os, shutil, urllib2, time
 import xml.etree.ElementTree as ET
-import hashlib, re
-import json
+import re, json, hashlib, zipfile
 
 if os.path.exists("src/spc/config.py"):
     import config
@@ -12,18 +11,19 @@ url = 'https://s3-us-west-1.amazonaws.com/scihub'
 
 def usage():
     buf =  "usage: spc <command> [<args>]\n\n"
-    buf += "available commands:\n"
+    buf += "available commands:\n\n"
     buf += "help          this output\n"
+    buf += "import        import downloaded SPC case to local SPC instance\n"
     buf += "init          setup dependencies, database, and config.py file\n"
+    buf += "install       install an app\n"
     buf += "list          list installed or available apps\n"
     buf += "migrate       migrate new database changes\n"
-    buf += "install       install an app\n"
     buf += "requirements  install or update dependencies\n"
     buf += "run           start the server\n"
     buf += "runworker     start a worker\n"
     buf += "runsslworker  start an SSL worker\n"
-    buf += "uninstall     uninstall an app\n"
     buf += "test          run route tests\n"
+    buf += "uninstall     uninstall an app\n"
     # update is currently too buggy, don't release yet
     # buf += "update        update an app (in case spc.json was modified)\n"
     #buf += "search   search for available apps\n"
@@ -215,6 +215,38 @@ def main():
                 sys.exit()
         else:
             print install_usage
+
+    elif (sys.argv[1] == "import"):
+        if len(sys.argv) <= 2:
+            print "usage: spc import zipcase.zip (file.zip downloaded from another SPC instance)"
+            sys.exit()
+        else:
+            save_path = sys.argv[2]
+
+            # unzip file
+            fh = open(save_path, 'rb')
+            z = zipfile.ZipFile(fh)
+            z.extractall()
+            # depending on how file was zipped, the extracted directory
+            # may be different than the zip filename, so update the app_dir_name
+            # to the extracted filename
+            app_dir_name = z.namelist()[0]
+            fh.close()
+
+            # get the username, appname, and case id out of the file structure
+            _, user, app, cid, _ = z.namelist()[0].split(os.sep)
+
+            # add case to database
+            import migrate, config
+            dal = migrate.dal(uri=config.uri, migrate=True)
+            uid = dal.db.users(user=user).id
+            dal.db.jobs.insert(uid=uid, app=app, cid=cid, state="D",
+                           description="", time_submit=time.asctime(),
+                           walltime="", np="", priority="")
+            dal.db.commit()
+
+            print "imported case. user:", user, "app:", app, "cid:", cid,
+
     elif (sys.argv[1] == "install"):
         import app_reader_writer as apprw
         #import platform
@@ -223,7 +255,6 @@ def main():
         install_usage = "usage: spc install /path/to/file.zip\n    or spc install http://url/to/file.zip"
 
         if len(sys.argv) == 3:
-            import zipfile
             import migrate, config
 
             if re.search(r'http[s]://.*$', sys.argv[2]):
