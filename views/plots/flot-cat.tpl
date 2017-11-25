@@ -8,6 +8,19 @@
     <script src="/static/js/flot/jquery.flot.min.js"></script>
     <script src="/static/js/flot/jquery.flot.categories.min.js"></script>
 
+    <style>
+       #myplot div.xAxis div.tickLabel
+       {
+           transform: rotate(-45deg);
+           -ms-transform:rotate(-45deg); /* IE 9 */
+           -moz-transform:rotate(-45deg); /* Firefox */
+           -webkit-transform:rotate(-45deg); /* Safari and Chrome */
+           -o-transform:rotate(-45deg); /* Opera */
+           /*rotation-point:50% 50%;*/ /* CSS3 */
+           /*rotation:270deg;*/ /* CSS3 */
+       }
+    </style>
+
     %include('plots/style')
 </head>
 
