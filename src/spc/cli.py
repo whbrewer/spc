@@ -223,6 +223,12 @@ def main():
         else:
             save_path = sys.argv[2]
 
+        filename, file_extension = os.path.splitext(save_path)
+
+        if file_extension == ".zip":
+
+            print "importing zip file:", save_path
+
             # unzip file
             fh = open(save_path, 'rb')
             z = zipfile.ZipFile(fh)
@@ -236,21 +242,28 @@ def main():
             # get the username, appname, and case id out of the file structure
             _, user, app, cid, _ = z.namelist()[0].split(os.sep)
 
-            # add case to database
-            import migrate, config
-            dal = migrate.dal(uri=config.uri, migrate=True)
-            uid = dal.db.users(user=user).id
-            dal.db.jobs.insert(uid=uid, app=app, cid=cid, state="D",
-                           description="", time_submit=time.asctime(),
-                           walltime="", np="", priority="")
-            dal.db.commit()
-
             # delete zip file
-            os.unlink(save_path)
+            user_input = raw_input('Remove zip file? [Yn] ') or 'y'
+            if user_input.lower() == 'y':
+                os.unlink(save_path)
+                print "removed zip file", save_path
+            else:
+                print "file not removed"
 
-            print "imported case. user:", user, "app:", app, "cid:", cid
+        else:
+            print "importing directory:", save_path
+            _, user, app, cid = save_path.split(os.sep)
 
-            print "removed zip file", save_path
+        # add case to database
+        import migrate, config
+        dal = migrate.dal(uri=config.uri, migrate=True)
+        uid = dal.db.users(user=user).id
+        dal.db.jobs.insert(uid=uid, app=app, cid=cid, state="D",
+                       description="", time_submit=time.asctime(),
+                       walltime="", np="", priority="")
+        dal.db.commit()
+
+        print "imported case. user:", user, "app:", app, "cid:", cid
 
     elif (sys.argv[1] == "install"):
         import app_reader_writer as apprw
@@ -408,7 +421,7 @@ def main():
                     root = ET.fromstring(html)
                     for child in root.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Contents"):
                         for c in child.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Key"):
-                            (app,ext) = c.text.split(".")
+                            (app, ext) = c.text.split(".")
                             print app
                 except:
                     print "ERROR: problem accessing network"
