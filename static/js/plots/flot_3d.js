@@ -3,6 +3,7 @@
     var options = JSON.parse(document.getElementById('flot-3d-options-json').textContent);
     var zData = JSON.parse(document.getElementById('flot-3d-z-data-json').textContent);
     var zLabel = JSON.parse(document.getElementById('flot-3d-z-label-json').textContent);
+    var zoomed = false;
 
     var plotParent = document.getElementById('myplot');
     plotParent.style.position = 'relative';
@@ -32,6 +33,8 @@
     options = $.extend(true, {yaxis: getYMinMax(data, options)}, options);
     data.forEach(initPlot);
 
+    var plotElements = $.makeArray(plotParent.children);
+
     var activePlot = plotParent.children[plotParent.children.length - 1];
     activePlot.style.visibility = null;
 
@@ -41,11 +44,13 @@
         var i = parseInt(slider.value);
 
         activePlot.style.visibility = 'hidden';
-        plotParent.children[i].style.visibility = null;
-        activePlot = plotParent.children[i];
+        plotElements[i].style.visibility = null;
+        activePlot = plotElements[i];
 
         sliderValue.textContent = zData[i];
     });
+
+    var busyElement = initBusy();
 
     function getYMinMax(data, options) {
         var element = document.createElement('div');
@@ -68,15 +73,10 @@
             }
         });
 
-        console.log('Min:', min);
-        console.log('Max:', max);
-
         return {min: min, max: max};
     }
 
     function initPlot(singlePlotData) {
-        var zoomed = false;
-
         var plotElement = document.createElement('div');
         plotElement.style.position = 'absolute';
         plotElement.style.top = '0';
@@ -90,31 +90,87 @@
         var plot = $.plot(plotElement, singlePlotData, options);
 
         $(plotElement).on('plotselected', function (e, ranges) {
-            zoomed = true;
-
-            var newOptions = $.extend(true, {}, options, {
-                xaxis: {
-                    min: ranges.xaxis.from,
-                    max: ranges.xaxis.to,
-                },
-                yaxis: {
-                    min: ranges.yaxis.from,
-                    max: ranges.yaxis.to,
-                },
-            });
-
-            $.plot(plotElement, singlePlotData, newOptions);
+            zoomAllPlots(ranges);
         });
 
-        plotElement.addEventListener('dblclick', resetPlot);
-        window.addEventListener('resize', resetPlot);
-        slider.addEventListener('input', resetPlot);
+        plotElement.addEventListener('dblclick', resetZoom);
+        window.addEventListener('resize', resetZoom);
+    }
 
-        function resetPlot() {
-            if (!zoomed) return;
-            zoomed = false;
+    function zoomAllPlots(ranges) {
+        zoomed = true;
 
-            $.plot(plotElement, singlePlotData, options);
-        }
+        var newOptions = $.extend(true, {}, options, {
+            xaxis: {
+                min: ranges.xaxis.from,
+                max: ranges.xaxis.to,
+            },
+            yaxis: {
+                min: ranges.yaxis.from,
+                max: ranges.yaxis.to,
+            },
+        });
+
+        busyElement.style.visibility = 'inherit';
+
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                plotElements.forEach(function(plotElement, i) {
+                    $.plot(plotElement, data[i], newOptions);
+                });
+
+                busyElement.style.visibility = 'hidden';
+            });
+        });
+    }
+
+    function resetZoom() {
+        if (!zoomed) return;
+        zoomed = false;
+
+        busyElement.style.visibility = 'inherit';
+
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                plotElements.forEach(function(plotElement, i) {
+                    $.plot(plotElement, data[i], options);
+                });
+
+                busyElement.style.visibility = 'hidden';
+            });
+        });
+    }
+
+    function initBusy() {
+        var wrapper = document.createElement('div');
+        wrapper.style.position = 'absolute';
+        wrapper.style.top = '0';
+        wrapper.style.left = '0';
+        wrapper.style.width = '100%';
+        wrapper.style.height = '100%';
+        wrapper.style.backgroundColor = '#FFF';
+        wrapper.style.visibility = 'hidden';
+
+        var spinner = document.createElement('div');
+        spinner.style.position = 'absolute';
+        spinner.style.top = 'calc(50% - 25px)';
+        spinner.style.left = 'calc(50% - 25px)';
+        spinner.style.border = '4px solid #999';
+        spinner.style.width = '50px';
+        spinner.style.height = '50px';
+        spinner.style.boxSizing = 'border-box';
+        spinner.style.borderRadius = '50%';
+        spinner.style.borderRightColor = 'transparent';
+        spinner.style.borderTopColor = 'transparent';
+        spinner.style.animation = 'plot-busy-spinner 1s linear infinite';
+
+        var headStyle = document.createElement('style');
+        headStyle.textContent = '@keyframes plot-busy-spinner { from { transform: rotate(0) } to { transform: rotate(360deg) } }';
+        document.head.appendChild(headStyle);
+
+        wrapper.appendChild(spinner);
+        plotParent.appendChild(wrapper);
+
+        return wrapper;
     }
 }());
