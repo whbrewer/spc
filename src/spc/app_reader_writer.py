@@ -618,12 +618,12 @@ class TOML(App):
         self.appdir = os.path.join(apps_dir, appname)
         self.outfn = appname + '.out'
         self.simfn = appname + '.toml'
-        self.original_toml_dict = {}
         self.exe = os.path.join(apps_dir, self.appname, self.appname)
         self.preprocess = preprocess
         self.postprocess = postprocess
 
         self.params, self.blockmap, self.blockorder = self.read_params()
+        self.original_toml_dict = self.read_original_toml_dict()
 
     def read_params(self, user=None, cid=None):
         u'''Read the TOML file and return as a dictionary'''
@@ -644,7 +644,6 @@ class TOML(App):
 
         with open(file_name, u'r') as f:
             toml_dict = toml.load(f)
-            self.original_toml_dict = toml_dict
             blockorder = toml_dict.keys()
 
             for k, v in toml_dict.iteritems():
@@ -675,6 +674,12 @@ class TOML(App):
             toml.dump(toml_dict, f)
 
         return 1
+
+    def read_original_toml_dict(self):
+        file_name = os.path.join(self.appdir, self.simfn)
+
+        with open(file_name, u'r') as f:
+            return toml.load(f)
 
     def cast_string_to_original_type(self, s, original_type):
         if original_type is int:
