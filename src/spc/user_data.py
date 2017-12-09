@@ -120,8 +120,8 @@ def case():
 
         if jid: params['jid'] = jid
 
-        return template('case', params)
-        #return template('case_tail-f', params)
+        #return template('case', params)
+        return template('case_tail-f', params)
 
 
 @routes.get('/output')
