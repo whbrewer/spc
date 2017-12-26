@@ -13,11 +13,11 @@
 """
 
 
-from htmllib import HTMLParser
+from html.parser import HTMLParser
 from cgi import escape
-from urlparse import urlparse
+from urllib.parse import urlparse
 from formatter import AbstractFormatter
-from htmlentitydefs import entitydefs
+from html.entities import entitydefs
 from xml.sax.saxutils import quoteattr
 
 __all__ = ['sanitize']
@@ -222,7 +222,7 @@ def sanitize(text, permitted_tags=[
         'td': ['colspan'],
     },
         escape=True):
-    if not isinstance(text, basestring):
+    if not isinstance(text, str):
         return str(text)
     return XssCleaner(permitted_tags=permitted_tags,
                       allowed_attributes=allowed_attributes).strip(text, escape)

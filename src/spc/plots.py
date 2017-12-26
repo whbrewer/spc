@@ -1,12 +1,14 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, request, template, redirect
 import argparse as ap
 import os, re, sys, csv, traceback
 import json
 
-from user_data import user_dir
-from model import db, apps, jobs, plots, datasource
-from common import replace_tags
-import config
+from .user_data import user_dir
+from .model import db, apps, jobs, plots, datasource
+from .common import replace_tags
+from . import config
 
 routes = Bottle()
 
@@ -44,7 +46,7 @@ class Plot(object):
             data = open(fn, 'rU').readlines()
         except IOError:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
+            print(traceback.print_exception(exc_type, exc_value, exc_traceback))
             return -1
 
         try:
@@ -71,7 +73,7 @@ class Plot(object):
                 return z
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
+            print(traceback.print_exception(exc_type, exc_value, exc_traceback))
             return -2
 
 
@@ -83,7 +85,7 @@ class Plot(object):
 
         except IOError:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
+            print(traceback.print_exception(exc_type, exc_value, exc_traceback))
             return -1
 
 
@@ -192,7 +194,7 @@ def editplot(pltid):
     title = request.forms.title
     ptype = request.forms.ptype
     options = request.forms.options
-    print "updating plot ", pltid, "for app", app
+    print("updating plot ", pltid, "for app", app)
     plots(pltid).update_record(title=title, ptype=ptype, options=options)
     db.commit()
     redirect('/plots/edit?app='+app)
@@ -336,7 +338,7 @@ def plot_interface(pltid):
         plot_title = result['title']
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         redirect ('/plots/edit?app='+app+'&cid='+cid)
 
     # if plot not in DB return error
@@ -405,7 +407,7 @@ def plot_interface(pltid):
                 datadef += r['data_def'] + ", "
             except:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                print traceback.print_exception(exc_type, exc_value, exc_traceback)
+                print(traceback.print_exception(exc_type, exc_value, exc_traceback))
                 datadef = ""
 
             if cols.find(":") > 0: # two columns
@@ -434,14 +436,14 @@ def plot_interface(pltid):
                     dat = p.get_data(plotpath, col1, col2, line1, line2)
                 except: # if line2 not specified
                     exc_type, exc_value, exc_traceback = sys.exc_info()
-                    print traceback.print_exception(exc_type, exc_value, exc_traceback)
+                    print(traceback.print_exception(exc_type, exc_value, exc_traceback))
                     if num_fields == 2:
                         dat = p.get_data(plotpath, col1, col2, line1)
                     else: # single column of data
                         dat = p.get_data(plotpath, col1)
                 # remove this app-specific code in future
                 if app == "fpg":
-                    import process
+                    from . import process
                     dat = process.postprocess(plotpath, line1, line2)
             else:
                 dat = p.get_data(plotpath, col1, col2)

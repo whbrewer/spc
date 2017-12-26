@@ -1,7 +1,9 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, request, template, redirect
 import os, shutil, argparse as ap
-from user_data import user_dir
-from model import db, users
+from .user_data import user_dir
+from .model import db, users
 
 routes = Bottle()
 
@@ -30,7 +32,7 @@ def admin_delete_user():
 
     if request.forms.del_files == "True":
         path = os.path.join(user_dir, users(uid).user)
-        print "deleting files in path:", path
+        print("deleting files in path:", path)
         if os.path.isdir(path): shutil.rmtree(path)
 
     del db.users[uid]

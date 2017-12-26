@@ -1,14 +1,16 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, response, request, redirect, SimpleTemplate
 from webtest import TestApp
 import importlib, os, sys, traceback
 
-import app_reader_writer as apprw
-import config
-from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
-from user_data import user_dir
-from common import rand_cid
-from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
-from model import db, users, apps
+from . import app_reader_writer as apprw
+from . import config
+from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
+from .user_data import user_dir
+from .common import rand_cid
+from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
+from .model import db, users, apps
 
 # the real webapp
 app = Bottle()
@@ -87,14 +89,14 @@ def load_apps():
         postprocess = row['postprocess']
         input_format = row['input_format']
         try:
-            print 'loading: %s (id: %s)' % (name, appid)
+            print('loading: %s (id: %s)' % (name, appid))
             myapps[name] = app_instance(input_format, name, preprocess, postprocess)
             myapps[name].appid = appid
             myapps[name].input_format = input_format
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
-            print 'ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name, appid)
+            print(traceback.print_exception(exc_type, exc_value, exc_traceback))
+            print('ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name, appid))
     default_app = name # simple soln - use last app read from DB
     return True
 
@@ -123,18 +125,18 @@ def main():
             getattr(imported_module, 'bind')(globals())
             app.app.merge(getattr(imported_module, 'routes'))
         except ImportError:
-            print "ERROR importing module " + module
+            print("ERROR importing module " + module)
 
     # list all routes
     # for route in app.app.routes:
     #     print route.method + "\t" + route.rule
 
-    print 
+    print() 
 
     test_app = TestApp(app)
 
     # GET /register
-    print "GET /register"
+    print("GET /register")
     resp = test_app.get('/register')
     assert resp.status_int == 200
 
@@ -143,57 +145,57 @@ def main():
     passwd = 'XYZ1234'
 
     # POST /check_user - test existing user
-    print "POST /check_user user =", 'admin', resp.status
+    print("POST /check_user user =", 'admin', resp.status)
     resp = test_app.post('/check_user', {'user': 'admin'})
     assert resp.status_int == 200 # serves error page
     assert resp.body == "true"
 
     # POST /check_user - test non-existing user
-    print "POST /check_user user =", user, resp.status
+    print("POST /check_user user =", user, resp.status)
     resp = test_app.post('/check_user', {'user': user})
     assert resp.status_int == 200 # serves error page
     assert resp.body == "false"
 
-    print "registering user", user
+    print("registering user", user)
 
     # POST /register test new user
-    print "POST /register"
+    print("POST /register")
     resp = test_app.post('/register', {'user': user, 'email': email, 'password1': passwd, 'password2': passwd})
     assert resp.status_int == 302 # redirects to /login or to referrer   
 
     # POST /register test user already exists
-    print "POST /register"
+    print("POST /register")
     resp = test_app.post('/register', {'user': user, 'email': email, 'password1': passwd, 'password2': passwd})
     assert resp.status_int == 200 # return error template   
 
     # POST /register test new user
     npasswd = "Hello1234"
-    print "POST /account/change_password"
+    print("POST /account/change_password")
     resp = test_app.post('/account/change_password', {'user': user, 'opasswd': passwd, 'npasswd1': npasswd, 'npasswd2': npasswd})
     assert resp.status_int == 200 # returns account.tpl
 
     # GET /login
-    print "GET /login"
+    print("GET /login")
     resp = test_app.get('/login')
     assert resp.status_int == 200
 
     # POST /login -- login as user for testing other routes
-    print "POST /login"
+    print("POST /login")
     resp = test_app.post('/login', {'user': user, 'passwd': npasswd})
     assert resp.status_int == 302 # redirect to /myapps
 
     ### Test app.routes
-    print "\n### Test /app routes"
+    print("\n### Test /app routes")
 
     # test GET /logout -- this should be the last test
     # note: this test will fail if dna has been removed
     # need to probably add a test app
     appname = 'dna'
-    print "GET /<app> app is:" + appname
+    print("GET /<app> app is:" + appname)
     resp = test_app.get('/' + appname)
     assert resp.status_int == 200
 
-    print "GET /app_exists/<appname>"
+    print("GET /app_exists/<appname>")
     resp = test_app.get('/app_exists/'+ appname)
     assert resp.status_int == 200 
     assert resp.body == "true"
@@ -201,24 +203,24 @@ def main():
     ### Admin
 
     # POST /login - test incorrect password
-    print "POST /login"
+    print("POST /login")
     resp = test_app.post('/login', {'user': 'admin', 'passwd': 'xyz'})
     assert resp.status_int == 200 # serves error page
 
     # POST /login - test correct password
-    print "POST /login"
+    print("POST /login")
     resp = test_app.post('/login', {'user': 'admin', 'passwd': 'admin'})
     assert resp.status_int == 302 # redirects to /myapps or to referrer
 
     # POST /admin/delete_user
     uid = users(user=user).id
-    print "POST /admin/delete_user user =", user, uid, resp.status
+    print("POST /admin/delete_user user =", user, uid, resp.status)
     user = 'admin' # switch user to admin b/c only admin can delete users
     resp = test_app.post('/admin/delete_user', {'uid': uid})
     assert resp.status_int == 302 # serves error page
 
     # test GET /logout -- this should be the last test
-    print "POST /logout"
+    print("POST /logout")
     resp = test_app.get('/logout')
     assert resp.status_int == 302
 

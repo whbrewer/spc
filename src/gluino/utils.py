@@ -27,10 +27,9 @@ import zlib
 python_version = sys.version_info[0]
 
 if python_version == 2:
-    import cPickle as pickle
+    import pickle as pickle
 else:
     import pickle
-
 
 try:
     from Crypto.Cipher import AES
@@ -228,7 +227,7 @@ def fast_urandom16(urandom=[], locker=threading.RLock()):
         try:
             locker.acquire()
             ur = os.urandom(16 * 1024)
-            urandom += [ur[i:i + 16] for i in xrange(16, 1024 * 16, 16)]
+            urandom += [ur[i:i + 16] for i in range(16, 1024 * 16, 16)]
             return ur[0:16]
         finally:
             locker.release()
@@ -303,7 +302,7 @@ def is_loopback_ip_address(ip=None, addrinfo=None):
     if addrinfo: # see socket.getaddrinfo() for layout of addrinfo tuple
         if addrinfo[0] == socket.AF_INET or addrinfo[0] == socket.AF_INET6:
             ip = addrinfo[4]
-    if not isinstance(ip, basestring):
+    if not isinstance(ip, str):
         return False
     # IPv4 or IPv6-embedded IPv4 or IPv4-compatible IPv6
     if ip.count('.') == 3:  
@@ -320,6 +319,6 @@ def getipaddrinfo(host):
         return [addrinfo for addrinfo in socket.getaddrinfo(host, None)
                 if (addrinfo[0] == socket.AF_INET or 
                     addrinfo[0] == socket.AF_INET6)
-                and isinstance(addrinfo[4][0], basestring)]
+                and isinstance(addrinfo[4][0], str)]
     except socket.error:
         return []

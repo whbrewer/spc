@@ -1,11 +1,13 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, request, template, redirect
 import os, sys, re, traceback, shutil, time, argparse as ap
 from datetime import datetime, timedelta
 
-from user_data import user_dir
-from common import rand_cid, replace_tags, slurp_file
-from model import db, users, jobs
-import config
+from .user_data import user_dir
+from .common import rand_cid, replace_tags, slurp_file
+from .model import db, users, jobs
+from . import config
 
 routes = Bottle()
 
@@ -162,7 +164,7 @@ def start_new_job():
         return template('apps/' + root.myapps[app].appname, params)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return template('error', err="there was a problem with the template. Check traceback.")
 
 @routes.get('/jobs/diff')
@@ -354,7 +356,7 @@ def merge(rtype):
        nfile = len(cases)
     else:
        raise ValueError(rtype + " operation no supported")
-    print "nfile:", nfile, selected_cases
+    print("nfile:", nfile, selected_cases)
 
     # generate new case_id for outputtinging merged files
     while True:
@@ -404,12 +406,12 @@ def delete_jobs():
         app = jobs(id=jid).app
         path = os.path.join(user_dir, user, app, cid)
         if cid is not None:
-            print "removing path:", path
+            print("removing path:", path)
             if os.path.isdir(path): shutil.rmtree(path)
             root.sched.stop(jid)
             root.sched.qdel(jid)
         else:
-            print "ERROR: not removing path:", path, "because cid missing"
+            print("ERROR: not removing path:", path, "because cid missing")
     redirect("/jobs")
 
 @routes.post('/jobs/stop')

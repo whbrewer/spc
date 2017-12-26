@@ -12,8 +12,9 @@ Provides:
 - Storage; like dictionary allowing also for `obj.foo` for `obj['foo']`
 """
 
-import cPickle
-import portalocker
+import pickle
+from . import portalocker
+import collections
 
 __all__ = ['List', 'Storage', 'Settings', 'Messages',
            'StorageList', 'load_storage', 'save_storage']
@@ -119,7 +120,7 @@ class Storage(dict):
         values = self.getlist(key)
         return values[-1] if values else default
 
-PICKABLE = (str, int, long, float, bool, list, dict, tuple, set)
+PICKABLE = (str, int, int, float, bool, list, dict, tuple, set)
 
 
 class StorageList(Storage):
@@ -142,7 +143,7 @@ def load_storage(filename):
     fp = None
     try:
         fp = portalocker.LockedFile(filename, 'rb')
-        storage = cPickle.load(fp)
+        storage = pickle.load(fp)
     finally:
         if fp:
             fp.close()
@@ -153,7 +154,7 @@ def save_storage(storage, filename):
     fp = None
     try:
         fp = portalocker.LockedFile(filename, 'wb')
-        cPickle.dump(dict(storage), fp)
+        pickle.dump(dict(storage), fp)
     finally:
         if fp:
             fp.close()
@@ -266,12 +267,12 @@ class List(list):
             try:
                 value = cast(value)
             except (ValueError, TypeError):
-                from http import HTTP, redirect
+                from .http import HTTP, redirect
                 if otherwise is None:
                     raise HTTP(404)
                 elif isinstance(otherwise, str):
                     redirect(otherwise)
-                elif callable(otherwise):
+                elif isinstance(otherwise, collections.Callable):
                     return otherwise()
                 else:
                     raise RuntimeError("invalid otherwise")

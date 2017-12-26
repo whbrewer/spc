@@ -5,9 +5,10 @@ License: LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
 """
 import datetime
 import decimal
-from storage import Storage
-from html import TAG, XmlComponent
-from html import xmlescape
+from .storage import Storage
+from .html import TAG, XmlComponent
+from .html import xmlescape
+import collections
 
 try:
     import simplejson as json_parser                # try external module
@@ -46,8 +47,8 @@ def cast_keys(o, cast=str, encoding="utf-8"):
         else:
             newobj = Storage()
 
-        for k, v in o.items():
-            if (cast == str) and isinstance(k, unicode):
+        for k, v in list(o.items()):
+            if (cast == str) and isinstance(k, str):
                 key = k.encode(encoding)
             else:
                 key = cast(k)
@@ -71,13 +72,13 @@ def loads_json(o, unicode_keys=True, **kwargs):
     return result
 
 def custom_json(o):
-    if hasattr(o, 'custom_json') and callable(o.custom_json):
+    if hasattr(o, 'custom_json') and isinstance(o.custom_json, collections.Callable):
         return o.custom_json()
     if isinstance(o, (datetime.date,
                       datetime.datetime,
                       datetime.time)):
         return o.isoformat()[:19].replace('T', ' ')
-    elif isinstance(o, (int, long)):
+    elif isinstance(o, int):
         return int(o)
     elif isinstance(o, decimal.Decimal):
         return str(o)
@@ -85,25 +86,25 @@ def custom_json(o):
         return str(o)
     elif isinstance(o, XmlComponent):
         return str(o)
-    elif hasattr(o, 'as_list') and callable(o.as_list):
+    elif hasattr(o, 'as_list') and isinstance(o.as_list, collections.Callable):
         return o.as_list()
-    elif hasattr(o, 'as_dict') and callable(o.as_dict):
+    elif hasattr(o, 'as_dict') and isinstance(o.as_dict, collections.Callable):
         return o.as_dict()
     else:
         raise TypeError(repr(o) + " is not JSON serializable")
 
 
 def xml_rec(value, key, quote=True):
-    if hasattr(value, 'custom_xml') and callable(value.custom_xml):
+    if hasattr(value, 'custom_xml') and isinstance(value.custom_xml, collections.Callable):
         return value.custom_xml()
     elif isinstance(value, (dict, Storage)):
         return TAG[key](*[TAG[k](xml_rec(v, '', quote))
-                          for k, v in value.items()])
+                          for k, v in list(value.items())])
     elif isinstance(value, list):
         return TAG[key](*[TAG.item(xml_rec(item, '', quote)) for item in value])
-    elif hasattr(value, 'as_list') and callable(value.as_list):
+    elif hasattr(value, 'as_list') and isinstance(value.as_list, collections.Callable):
         return str(xml_rec(value.as_list(), '', quote))
-    elif hasattr(value, 'as_dict') and callable(value.as_dict):
+    elif hasattr(value, 'as_dict') and isinstance(value.as_dict, collections.Callable):
         return str(xml_rec(value.as_dict(), '', quote))
     else:
         return xmlescape(value, quote)
@@ -117,8 +118,8 @@ def json(value, default=custom_json):
     # replace JavaScript incompatible spacing
     # http://timelessrepo.com/json-isnt-a-javascript-subset
     return json_parser.dumps(value,
-        default=default).replace(ur'\u2028',
-                                 '\\u2028').replace(ur'\2029',
+        default=default).replace(r'\u2028',
+                                 '\\u2028').replace(r'\2029',
                                                     '\\u2029')
 
 def csv(value):
@@ -129,7 +130,7 @@ def ics(events, title=None, link=None, timeshift=0, calname=True,
         **ignored):
     import datetime
     title = title or '(unknown)'
-    if link and not callable(link):
+    if link and not isinstance(link, collections.Callable):
         link = lambda item, prefix=link: prefix.replace(
             '[id]', str(item['id']))
     s = 'BEGIN:VCALENDAR'

@@ -1,15 +1,22 @@
-import ConfigParser
+from __future__ import print_function
+from __future__ import absolute_import
+
+try:
+    import configparser
+except:
+    import ConfigParser
+
 import json, os, re, shutil, sys
 # import logging
 import xml.etree.ElementTree as ET
 try:
     import yaml
 except:
-    print "ERROR: when trying to import yaml"
+    print("ERROR: when trying to import yaml")
 
 import pytoml as toml
-from model import db, apps
-from user_data import user_dir
+from .model import db, apps
+from .user_data import user_dir
 
 # using convention over configuration
 # the executable is the name of the app
@@ -48,17 +55,17 @@ class App(object):
             # delete app directory
             if not self.appname == '':
                 path = os.path.join(apps_dir,self.appname)
-                print "deleting app dir:", path
+                print("deleting app dir:", path)
                 if os.path.isdir(path):
                    shutil.rmtree(path)
                 # remove static assets
                 path = os.path.join('static/apps',self.appname)
-                print "deleting static assets:", path
+                print("deleting static assets:", path)
                 if os.path.isdir(path):
                    shutil.rmtree(path)
                 # remove template file
                 path = "views/apps/"+self.appname+".tpl"
-                print "deleting template:", path
+                print("deleting template:", path)
                 if os.path.isfile(path):
                     os.remove(path)
                 return True
@@ -257,7 +264,7 @@ class Namelist(App):
         blockorder = []   # a list used to maintain the order of the sections
 
         if not os.path.isfile(fn):
-            print "ERROR: input file does not exist: " + fn
+            print("ERROR: input file does not exist: " + fn)
 
         for line in open(fn, 'rU'):
             m = re.search(r'&(\w+)',line) # section title
@@ -310,7 +317,7 @@ class INI(App):
         blockorder = []
 
         if not os.path.isfile(fn):
-            print "ERROR: input file does not exist: " + fn
+            print("ERROR: input file does not exist: " + fn)
 
         for section in Config.sections():
             options = Config.options(section)
@@ -400,11 +407,11 @@ class XML(App):
                     print("exception on %s!" % child.tag)
                     params[child.tag] = None
         if not params:
-            print "ERROR: parameters not read correctly.\n"
-            print "Please check xml file, and make sure it has a tree depth of three:"
-            print "\t(1) a root element,"
-            print "\t(2) subelements for each sections, and "
-            print "\t(3) sub-elements under each section."
+            print("ERROR: parameters not read correctly.\n")
+            print("Please check xml file, and make sure it has a tree depth of three:")
+            print("\t(1) a root element,")
+            print("\t(2) subelements for each sections, and ")
+            print("\t(3) sub-elements under each section.")
             sys.exit()
         #print '\nparams:',params
         #print '\nblockmap:',blockmap
@@ -464,7 +471,7 @@ class JSON(App):
         blockorder = []
 
         if not os.path.isfile(fn):
-            print "ERROR: input file does not exist: " + fn
+            print("ERROR: input file does not exist: " + fn)
 
         for section in parsed:
             blockorder += [ section ]
@@ -541,7 +548,7 @@ class YAML(App):
         blockorder = []
 
         if not os.path.isfile(fn):
-            print "ERROR: input file does not exist: " + fn
+            print("ERROR: input file does not exist: " + fn)
 
         # note: in the future this needs to be a recursively called function
         # see "flatten" below. the keys need to be glued-together versions of
@@ -636,7 +643,7 @@ class TOML(App):
         file_name = os.path.join(sim_dir, self.simfn)
 
         if not os.path.isfile(file_name):
-            print u'ERROR: input file does not exist: {}'.format(file_name)
+            print(u'ERROR: input file does not exist: {}'.format(file_name))
 
         params = {}
         blockmap = {}

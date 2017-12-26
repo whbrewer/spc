@@ -1,11 +1,12 @@
+from __future__ import absolute_import
 from bottle import template, static_file, request, response, get, post, run
 from os import listdir
 import config, cgi, os, pickle, re, process
 
-import scheduler
-from model import db, users, jobs
-from common import slurp_file
-from user_data import user_dir
+from . import scheduler
+from .model import db, users, jobs
+from .common import slurp_file
+from .user_data import user_dir
 
 sched = scheduler.Scheduler()
 

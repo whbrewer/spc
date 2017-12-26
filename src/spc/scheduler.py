@@ -1,10 +1,12 @@
 #!/usr/bin/env python
+from __future__ import print_function
+from __future__ import absolute_import
 import threading, time, os, subprocess, signal, datetime
 from multiprocessing import Process, BoundedSemaphore, Lock, Manager
 
 from gluino import DAL
-from user_data import user_dir
-import config
+from .user_data import user_dir
+from . import config
 
 STATE_RUN = 'R'
 STATE_QUEUED = 'Q'
@@ -17,7 +19,9 @@ class Scheduler(object):
     def __init__(self):
         # if any jobs marked in run state when scheduler starts
         # replace their state with X to mark that they have been shutdown
-        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        # db = DAL('sqlite://spc.db'.encode('utf-8').strip(), auto_import=True, migrate=False,
+        #          folder='db'.encode('utf-8').strip())
+        db = DAL(uri=config.uri, auto_import=True, migrate=False, folder=config.dbdir)
         myset = db(db.jobs.state == STATE_RUN)
         myset.update(state=STATE_STOPPED)
         db.commit()
@@ -98,7 +102,7 @@ class Scheduler(object):
         # redirect output to appname.out file
         outfn = app + ".out"
         cmd = command + ' > ' + outfn + ' 2>&1 '
-        print "cmd:", cmd
+        print("cmd:", cmd)
 
         run_dir = os.path.join(user_dir, user, app, cid)
 
@@ -156,7 +160,7 @@ class Scheduler(object):
                 now = time.mktime(datetime.datetime.now().timetuple())
                 runtime = now - time_submit
                 if runtime > walltime:
-                    print "INFO: scheduler stopped job", row.id, "REASON: reached timeout"
+                    print("INFO: scheduler stopped job", row.id, "REASON: reached timeout")
                     self.stop(row.id)
 
         db.close()
@@ -174,4 +178,4 @@ class Scheduler(object):
         # db.close()
 
     def test_qfront(self):
-        print self.qfront()
+        print(self.qfront())

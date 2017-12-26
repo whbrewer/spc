@@ -21,9 +21,9 @@ caching will be provided by the GAE memcache
 """
 import traceback
 import time
-import portalocker
+from . import portalocker
 import shelve
-import thread
+import _thread
 import os
 import logging
 import re
@@ -129,7 +129,7 @@ class CacheAbstract(object):
         Auxiliary function called by `clear` to search and clear cache entries
         """
         r = re.compile(regex)
-        for (key, value) in storage.items():
+        for (key, value) in list(storage.items()):
             if r.match(str(key)):
                 del storage[key]
 
@@ -143,7 +143,7 @@ class CacheInRam(CacheAbstract):
     A mutex-lock mechanism avoid conflicts.
     """
 
-    locker = thread.allocate_lock()
+    locker = _thread.allocate_lock()
     meta_storage = {}
 
     def __init__(self, request=None):
@@ -178,7 +178,7 @@ class CacheInRam(CacheAbstract):
         else:
             self._clear(storage, regex)
 
-        if not CacheAbstract.cache_stats_name in storage.keys():
+        if not CacheAbstract.cache_stats_name in list(storage.keys()):
             storage[CacheAbstract.cache_stats_name] = {
                 'hit_total': 0, 'misses': 0}
 
@@ -230,7 +230,7 @@ class CacheInRam(CacheAbstract):
             if key in self.storage:
                 value = self.storage[key][1] + value
             self.storage[key] = (time.time(), value)
-        except BaseException, e:
+        except BaseException as e:
             self.locker.release()
             raise e
         self.locker.release()
@@ -283,11 +283,11 @@ class CacheOnDisk(CacheAbstract):
             if not storage and os.path.exists(self.shelve_name):
                 os.unlink(self.shelve_name)
                 storage = shelve.open(self.shelve_name)
-            if not CacheAbstract.cache_stats_name in storage.keys():
+            if not CacheAbstract.cache_stats_name in list(storage.keys()):
                 storage[CacheAbstract.cache_stats_name] = {
                     'hit_total': 0, 'misses': 0}
             storage.sync()
-        except Exception, e:
+        except Exception as e:
             if storage:
                 storage.close()
                 storage = None
@@ -492,7 +492,7 @@ class Cache(object):
                         if user_agent_ is True:
                             cache_key.append("%(is_mobile)s_%(is_tablet)s" % current.request.user_agent())
                         else:
-                            cache_key.append(str(user_agent_.items()))
+                            cache_key.append(str(list(user_agent_.items())))
                     if vars_:
                         cache_key.append(current.request.env.query_string)
                     if lang_:
@@ -504,7 +504,7 @@ class Cache(object):
                         #action returns something
                         rtn = cache_model(cache_key, lambda : func(), time_expire=time_expire)
                         http, status = None, current.response.status
-                    except HTTP, e:
+                    except HTTP as e:
                         #action raises HTTP (can still be valid)
                         rtn = cache_model(cache_key, lambda : e.body, time_expire=time_expire)
                         http, status = HTTP(e.status, rtn, **e.headers), e.status
@@ -517,7 +517,7 @@ class Cache(object):
                         #action returns something
                         rtn = func()
                         http, status = None, current.response.status
-                    except HTTP, e:
+                    except HTTP as e:
                         #action raises HTTP (can still be valid)
                         status = e.status
                         http = HTTP(e.status, e.body, **e.headers)

@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 from gluino import DAL, Field
-import config
+from . import config
 
 #db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
 #db = DAL(config.uri, migrate=True, migrate_enabled=True, fake_migrate=True, folder=config.dbdir)

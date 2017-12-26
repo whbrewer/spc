@@ -15,18 +15,19 @@ Contributors:
 """
 
 import os
-import cgi
+import html
 import logging
 from re import compile, sub, escape, DOTALL
+import collections
 try:
-    import cStringIO as StringIO
+    import io as StringIO
 except:
     from io import StringIO
 
 try:
     # have web2py
     from restricted import RestrictedError
-    from globals import current
+    from .globals import current
 except ImportError:
     # do not have web2py
     current = None
@@ -433,6 +434,9 @@ class TemplateParser(object):
 
         # Get the filename; filename looks like ``"template.html"``.
         # We need to eval to remove the quotes and get the string type.
+
+        filename = filename.replace('\\','')
+        #print(filename)
         filename = eval(filename, context)
 
         # Get the path of the file on the system.
@@ -440,7 +444,7 @@ class TemplateParser(object):
 
         # try to read the text.
         try:
-            fileobj = open(filepath, 'rb')
+            fileobj = open(filepath, 'r')
             text = fileobj.read()
             fileobj.close()
         except IOError:
@@ -531,6 +535,7 @@ class TemplateParser(object):
         # Work off the parent node.
         self.content = t_content
 
+
     def parse(self, text):
 
         # Basically, r_tag.split will split the text into
@@ -545,6 +550,7 @@ class TemplateParser(object):
         # Use a list to store everything in
         # This is because later the code will "look ahead"
         # for missing strings or brackets.
+        text = str(text)
         ij = self.r_tag.split(text)
         # j = current index
         # i = current item
@@ -773,7 +779,7 @@ def parse_template(filename,
     # First, if we have a str try to open the file
     if isinstance(filename, str):
         try:
-            fp = open(os.path.join(path, filename), 'rb')
+            fp = open(os.path.join(path, filename), 'r')
             text = fp.read()
             fp.close()
         except IOError:
@@ -800,15 +806,18 @@ class DummyResponse():
     def write(self, data, escape=True):
         if not escape:
             self.body.write(str(data))
-        elif hasattr(data, 'xml') and callable(data.xml):
+        elif hasattr(data, 'xml') and isinstance(data.xml, collections.Callable):
             self.body.write(data.xml())
         else:
             # make it a string
-            if not isinstance(data, (str, unicode)):
+            if not isinstance(data, str):
                 data = str(data)
-            elif isinstance(data, unicode):
-                data = data.encode('utf8', 'xmlcharrefreplace')
-            data = cgi.escape(data, True).replace("'", "&#x27;")
+            #if isinstance(data, str):
+                #data = data.encode('utf8', 'xmlcharrefreplace')
+            #data = str(data)
+            #data = data.encode('utf8', 'xmlcharrefreplace')
+            #print(data)
+            #data = html.escape(data, True).replace("'", "&#x27;")
             self.body.write(data)
 
 
@@ -863,7 +872,7 @@ def render(content="hello world",
     """
     # here to avoid circular Imports
     try:
-        from globals import Response
+        from .globals import Response
     except ImportError:
         # Working standalone. Build a mock Response object.
         Response = DummyResponse
@@ -889,16 +898,18 @@ def render(content="hello world",
     close_stream = False
     if not stream:
         if filename:
-            stream = open(filename, 'rb')
+            stream = open(filename, 'r')
             close_stream = True
         elif content:
+            #print(content)
             stream = StringIO.StringIO(content)
 
     # Execute the template.
     code = str(TemplateParser(stream.read(
     ), context=context, path=path, lexers=lexers, delimiters=delimiters, writer=writer))
     try:
-        exec(code) in context
+        #print(code,context)
+        exec((code), context)
     except Exception:
         # for i,line in enumerate(code.split('\n')): print i,line
         raise

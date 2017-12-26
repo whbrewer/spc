@@ -1,3 +1,5 @@
+from __future__ import print_function
+from __future__ import absolute_import
 # web framework
 from bottle import static_file, request, redirect, app, get, run,\
                    SimpleTemplate, error, template
@@ -6,10 +8,10 @@ from bottle import static_file, request, redirect, app, get, run,\
 import os, sys, traceback, importlib
 
 # other local modules
-import config, scheduler, app_reader_writer as apprw
-from model import db, apps
-from user_data import user_dir
-from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
+from . import config, scheduler, app_reader_writer as apprw
+from .model import db, apps
+from .user_data import user_dir
+from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
@@ -127,20 +129,20 @@ def load_apps():
         postprocess = row['postprocess']
         input_format = row['input_format']
         try:
-            print 'loading: %s (id: %s)' % (name, appid)
+            print('loading: %s (id: %s)' % (name, appid))
             myapps[name] = app_instance(input_format, name, preprocess, postprocess)
             myapps[name].appid = appid
             myapps[name].input_format = input_format
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
-            print 'ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name, appid)
+            print(traceback.print_exception(exc_type, exc_value, exc_traceback))
+            print('ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name, appid))
     default_app = name # simple soln - use last app read from DB
     return True
 
 
 def main():
-    import util
+    from . import util
 
     init_config_options()
     load_apps()
@@ -160,7 +162,7 @@ def main():
             getattr(imported_module, 'bind')(globals())
             app.app.merge(getattr(imported_module, 'routes'))
         except ImportError:
-            print "ERROR importing module " + module
+            print("ERROR importing module " + module)
 
     ## Log CPU and Memory history to log files
     # util.MachineStatsLogger(interval=5, function=util.print_machine_stats)

@@ -71,7 +71,7 @@ class HTTP(Exception):
     def cookies2headers(self, cookies):
         if cookies and len(cookies) > 0:
             self.headers['Set-Cookie'] = [
-                str(cookie)[11:] for cookie in cookies.values()]
+                str(cookie)[11:] for cookie in list(cookies.values())]
 
     def to(self, responder, env=None):
         env = env or {}
@@ -91,7 +91,7 @@ class HTTP(Exception):
             if isinstance(body, str):
                 headers['Content-Length'] = len(body)
         rheaders = []
-        for k, v in headers.iteritems():
+        for k, v in headers.items():
             if isinstance(v, list):
                 rheaders += [(k, str(item)) for item in v]
             elif not v is None:

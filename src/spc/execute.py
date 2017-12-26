@@ -1,17 +1,19 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, request, template, redirect
 import os, re, sys, traceback, cgi, pickle, time
 import argparse as ap
 
-from common import rand_cid, slurp_file, replace_tags
-from user_data import user_dir
-from model import db, apps, users
-import app_reader_writer as apprw
-import config
+from .common import rand_cid, slurp_file, replace_tags
+from .user_data import user_dir
+from .model import db, apps, users
+from . import app_reader_writer as apprw
+from . import config
 
 try:
     import requests
 except:
-    print "INFO: not importing requests... only needed for remote workers"
+    print("INFO: not importing requests... only needed for remote workers")
 
 routes = Bottle()
 
@@ -57,12 +59,12 @@ def confirm_form():
         request.forms['appmod'] = pickle.dumps(root.myapps[app])
 
         try:
-            print config.remote_worker_url + '/execute'
+            print(config.remote_worker_url + '/execute')
             resp = requests.post(config.remote_worker_url +'/execute', data=dict(request.forms), verify=False)
 
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
+            print(traceback.print_exception(exc_type, exc_value, exc_traceback))
             return template('error', err="failed to submit job to SPC worker. " + \
                 "Possible solutions: Is a container running? Is Python requests " + \
                 "package installed? (pip install requests)")
@@ -87,7 +89,7 @@ def confirm_form():
         cmd = apps(name=app).command
         cmd = replace_tags(cmd, request.forms)
         outfn = app + ".out"
-        print "cmd:", cmd
+        print("cmd:", cmd)
         # following two params are temporary solutions
         np = 1
         walltime = 60
@@ -180,10 +182,10 @@ def execute():
         uid = users(user=user).id
         jid = root.sched.qsub(app, cid, uid, cmd, np, priority, walltime, desc)
         redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
-    except OSError, e:
+    except OSError as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
-        print >> sys.stderr, "Execution failed:", e
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
+        print("Execution failed:", e, file=sys.stderr)
         params = { 'cid': cid, 'app': app, 'user': user, 'err': e }
         return template('error', params)
 

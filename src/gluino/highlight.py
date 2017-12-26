@@ -301,7 +301,7 @@ def highlight(
         linenumbers = [cgi.escape(counter)] * len(lines)
     else:
         linenumbers = [str(i + counter) + '.' for i in
-                       xrange(len(lines))]
+                       range(len(lines))]
 
     if highlight_line:
         if counter and not isinstance(counter, str):
@@ -325,11 +325,11 @@ def highlight(
     code = '<br/>'.join(lines)
     numbers = '<br/>'.join(linenumbers)
 
-    items = attributes.items()
+    items = list(attributes.items())
     fa = ' '.join([key[1:].lower() for (key, value) in items if key[:1]
                    == '_' and value is None] + ['%s="%s"'
                                                 % (key[1:].lower(), str(value).replace('"', "'"))
-                  for (key, value) in attributes.items() if key[:1]
+                  for (key, value) in list(attributes.items()) if key[:1]
                   == '_' and value])
     if fa:
         fa = ' ' + fa
@@ -342,5 +342,5 @@ if __name__ == '__main__':
     argfp = open(sys.argv[1])
     data = argfp.read()
     argfp.close()
-    print '<html><body>' + highlight(data, sys.argv[2])\
-        + '</body></html>'
+    print('<html><body>' + highlight(data, sys.argv[2])\
+        + '</body></html>')

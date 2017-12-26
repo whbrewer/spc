@@ -1,8 +1,10 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, request, template
 import sys, json, psutil, datetime, logging, traceback, argparse as ap
 from threading import Timer
 
-from model import db, jobs
+from .model import db, jobs
 
 fn = 'log/machine_stats.log'
 logging.basicConfig(filename=fn)
@@ -42,7 +44,7 @@ def get_stats_mem():
         return json.dumps(res)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
 
 
 def print_machine_stats():

@@ -11,22 +11,22 @@ Created by Vladyslav Kozlovskyy (Ukraine) <dbdevelop©gmail.com>
 Utilities and class for UTF8 strings managing
 ===========================================
 """
-import __builtin__
+import builtins
 __all__ = ['Utf8']
 
 repr_escape_tab = {}
 for i in range(1, 32):
-    repr_escape_tab[i] = ur'\x%02x' % i
-repr_escape_tab[7] = u'\\a'
-repr_escape_tab[8] = u'\\b'
-repr_escape_tab[9] = u'\\t'
-repr_escape_tab[10] = u'\\n'
-repr_escape_tab[11] = u'\\v'
-repr_escape_tab[12] = u'\\f'
-repr_escape_tab[13] = u'\\r'
-repr_escape_tab[ord('\\')] = u'\\\\'
+    repr_escape_tab[i] = r'\x%02x' % i
+repr_escape_tab[7] = '\\a'
+repr_escape_tab[8] = '\\b'
+repr_escape_tab[9] = '\\t'
+repr_escape_tab[10] = '\\n'
+repr_escape_tab[11] = '\\v'
+repr_escape_tab[12] = '\\f'
+repr_escape_tab[13] = '\\r'
+repr_escape_tab[ord('\\')] = '\\\\'
 repr_escape_tab2 = repr_escape_tab.copy()
-repr_escape_tab2[ord('\'')] = u"\\'"
+repr_escape_tab2[ord('\'')] = "\\'"
 
 
 def sort_key(s):
@@ -48,10 +48,10 @@ def sort_key(s):
         from contrib.pyuca import unicode_collator
         unicode_sort_key = unicode_collator.sort_key
         sort_key = lambda s: unicode_sort_key(
-            unicode(s, 'utf-8') if isinstance(s, str) else s)
+            str(s, 'utf-8') if isinstance(s, str) else s)
     except:
         sort_key = lambda s: (
-            unicode(s, 'utf-8') if isinstance(s, str) else s).lower()
+            str(s, 'utf-8') if isinstance(s, str) else s).lower()
     return sort_key(s)
 
 
@@ -60,14 +60,14 @@ def ord(char):
 
         SUPPOSE that *char* is an utf-8 or unicode character only
     """
-    if isinstance(char, unicode):
-        return __builtin__.ord(char)
-    return __builtin__.ord(unicode(char, 'utf-8'))
+    if isinstance(char, str):
+        return builtins.ord(char)
+    return builtins.ord(str(char, 'utf-8'))
 
 
 def chr(code):
     """ return utf8-character with *code* unicode id """
-    return Utf8(unichr(code))
+    return Utf8(chr(code))
 
 
 def size(string):
@@ -89,8 +89,8 @@ def truncate(string, length, dots='...'):
      returns:
          (utf8-str): original or cutted string
     """
-    text = unicode(string, 'utf-8')
-    dots = unicode(dots, 'utf-8') if isinstance(dots, str) else dots
+    text = str(string, 'utf-8')
+    dots = str(dots, 'utf-8') if isinstance(dots, str) else dots
     if len(text) > length:
         text = text[:length - len(dots)] + dots
     return str.__new__(Utf8, text.encode('utf-8'))
@@ -116,12 +116,12 @@ class Utf8(str):
     You can see the benefit of this class in doctests() below
     """
     def __new__(cls, content='', codepage='utf-8'):
-        if isinstance(content, unicode):
-            return str.__new__(cls, unicode.encode(content, 'utf-8'))
+        if isinstance(content, str):
+            return str.__new__(cls, str.encode(content, 'utf-8'))
         elif codepage in ('utf-8', 'utf8') or isinstance(content, cls):
             return str.__new__(cls, content)
         else:
-            return str.__new__(cls, unicode(content, codepage).encode('utf-8'))
+            return str.__new__(cls, str(content, codepage).encode('utf-8'))
 
     def __repr__(self):
         r''' # note that we use raw strings to avoid having to use double back slashes below
@@ -152,9 +152,9 @@ class Utf8(str):
         True
         '''
         if str.find(self, "'") >= 0 and str.find(self, '"') < 0:  # only single quote exists
-            return '"' + unicode(self, 'utf-8').translate(repr_escape_tab).encode('utf-8') + '"'
+            return '"' + str(self, 'utf-8').translate(repr_escape_tab).encode('utf-8') + '"'
         else:
-            return "'" + unicode(self, 'utf-8').translate(repr_escape_tab2).encode('utf-8') + "'"
+            return "'" + str(self, 'utf-8').translate(repr_escape_tab2).encode('utf-8') + "'"
 
     def __size__(self):
         """ length of utf-8 string in bytes """
@@ -164,17 +164,17 @@ class Utf8(str):
         return str.__contains__(self, Utf8(other))
 
     def __getitem__(self, index):
-        return str.__new__(Utf8, unicode(self, 'utf-8')[index].encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8')[index].encode('utf-8'))
 
     def __getslice__(self, begin, end):
-        return str.__new__(Utf8, unicode(self, 'utf-8')[begin:end].encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8')[begin:end].encode('utf-8'))
 
     def __add__(self, other):
-        return str.__new__(Utf8, str.__add__(self, unicode.encode(other, 'utf-8')
-                                             if isinstance(other, unicode) else other))
+        return str.__new__(Utf8, str.__add__(self, str.encode(other, 'utf-8')
+                                             if isinstance(other, str) else other))
 
     def __len__(self):
-        return len(unicode(self, 'utf-8'))
+        return len(str(self, 'utf-8'))
 
     def __mul__(self, integer):
         return str.__new__(Utf8, str.__mul__(self, integer))
@@ -186,50 +186,50 @@ class Utf8(str):
         return str.__ne__(self, Utf8(string))
 
     def capitalize(self):
-        return str.__new__(Utf8, unicode(self, 'utf-8').capitalize().encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8').capitalize().encode('utf-8'))
 
     def center(self, length):
-        return str.__new__(Utf8, unicode(self, 'utf-8').center(length).encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8').center(length).encode('utf-8'))
 
     def upper(self):
-        return str.__new__(Utf8, unicode(self, 'utf-8').upper().encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8').upper().encode('utf-8'))
 
     def lower(self):
-        return str.__new__(Utf8, unicode(self, 'utf-8').lower().encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8').lower().encode('utf-8'))
 
     def title(self):
-        return str.__new__(Utf8, unicode(self, 'utf-8').title().encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8').title().encode('utf-8'))
 
     def index(self, string):
-        return unicode(self, 'utf-8').index(string if isinstance(string, unicode) else unicode(string, 'utf-8'))
+        return str(self, 'utf-8').index(string if isinstance(string, str) else str(string, 'utf-8'))
 
     def isalnum(self):
-        return unicode(self, 'utf-8').isalnum()
+        return str(self, 'utf-8').isalnum()
 
     def isalpha(self):
-        return unicode(self, 'utf-8').isalpha()
+        return str(self, 'utf-8').isalpha()
 
     def isdigit(self):
-        return unicode(self, 'utf-8').isdigit()
+        return str(self, 'utf-8').isdigit()
 
     def islower(self):
-        return unicode(self, 'utf-8').islower()
+        return str(self, 'utf-8').islower()
 
     def isspace(self):
-        return unicode(self, 'utf-8').isspace()
+        return str(self, 'utf-8').isspace()
 
     def istitle(self):
-        return unicode(self, 'utf-8').istitle()
+        return str(self, 'utf-8').istitle()
 
     def isupper(self):
-        return unicode(self, 'utf-8').isupper()
+        return str(self, 'utf-8').isupper()
 
     def zfill(self, length):
-        return str.__new__(Utf8, unicode(self, 'utf-8').zfill(length).encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8').zfill(length).encode('utf-8'))
 
     def join(self, iter):
         return str.__new__(Utf8, str.join(self, [Utf8(c) for c in
-                                                 list(unicode(iter, 'utf-8') if
+                                                 list(str(iter, 'utf-8') if
                                                       isinstance(iter, str) else
                                                       iter)]))
 
@@ -243,29 +243,29 @@ class Utf8(str):
         return str.__new__(Utf8, str.strip(self, None if chars is None else Utf8(chars)))
 
     def swapcase(self):
-        return str.__new__(Utf8, unicode(self, 'utf-8').swapcase().encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8').swapcase().encode('utf-8'))
 
     def count(self, sub, start=0, end=None):
-        unistr = unicode(self, 'utf-8')
+        unistr = str(self, 'utf-8')
         return unistr.count(
-            unicode(sub, 'utf-8') if isinstance(sub, str) else sub,
+            str(sub, 'utf-8') if isinstance(sub, str) else sub,
             start, len(unistr) if end is None else end)
 
     def decode(self, encoding='utf-8', errors='strict'):
         return str.decode(self, encoding, errors)
 
     def encode(self, encoding, errors='strict'):
-        return unicode(self, 'utf-8').encode(encoding, errors)
+        return str(self, 'utf-8').encode(encoding, errors)
 
     def expandtabs(self, tabsize=8):
-        return str.__new__(Utf8, unicode(self, 'utf-8').expandtabs(tabsize).encode('utf-8'))
+        return str.__new__(Utf8, str(self, 'utf-8').expandtabs(tabsize).encode('utf-8'))
 
     def find(self, sub, start=None, end=None):
-        return unicode(self, 'utf-8').find(unicode(sub, 'utf-8')
+        return str(self, 'utf-8').find(str(sub, 'utf-8')
                                            if isinstance(sub, str) else sub, start, end)
 
     def ljust(self, width, fillchar=' '):
-        return str.__new__(Utf8, unicode(self, 'utf-8').ljust(width, unicode(fillchar, 'utf-8')
+        return str.__new__(Utf8, str(self, 'utf-8').ljust(width, str(fillchar, 'utf-8')
                                                               if isinstance(fillchar, str) else fillchar).encode('utf-8'))
 
     def partition(self, sep):
@@ -278,15 +278,15 @@ class Utf8(str):
         return str.__new__(Utf8, str.replace(self, Utf8(old), Utf8(new), count))
 
     def rfind(self, sub, start=None, end=None):
-        return unicode(self, 'utf-8').rfind(unicode(sub, 'utf-8')
+        return str(self, 'utf-8').rfind(str(sub, 'utf-8')
                                             if isinstance(sub, str) else sub, start, end)
 
     def rindex(self, string):
-        return unicode(self, 'utf-8').rindex(string if isinstance(string, unicode)
-                                             else unicode(string, 'utf-8'))
+        return str(self, 'utf-8').rindex(string if isinstance(string, str)
+                                             else str(string, 'utf-8'))
 
     def rjust(self, width, fillchar=' '):
-        return str.__new__(Utf8, unicode(self, 'utf-8').rjust(width, unicode(fillchar, 'utf-8')
+        return str.__new__(Utf8, str(self, 'utf-8').rjust(width, str(fillchar, 'utf-8')
                                                               if isinstance(fillchar, str) else fillchar).encode('utf-8'))
 
     def rpartition(self, sep):
@@ -307,49 +307,49 @@ class Utf8(str):
         return [str.__new__(Utf8, part) for part in str.splitlines(self, keepends)]
 
     def startswith(self, prefix, start=0, end=None):
-        unistr = unicode(self, 'utf-8')
+        unistr = str(self, 'utf-8')
         if isinstance(prefix, tuple):
-            prefix = tuple(unicode(
+            prefix = tuple(str(
                 s, 'utf-8') if isinstance(s, str) else s for s in prefix)
         elif isinstance(prefix, str):
-            prefix = unicode(prefix, 'utf-8')
+            prefix = str(prefix, 'utf-8')
         return unistr.startswith(prefix, start, len(unistr) if end is None else end)
 
     def translate(self, table, deletechars=''):
         if isinstance(table, dict):
-            return str.__new__(Utf8, unicode(self, 'utf-8').translate(table).encode('utf-8'))
+            return str.__new__(Utf8, str(self, 'utf-8').translate(table).encode('utf-8'))
         else:
             return str.__new__(Utf8, str.translate(self, table, deletechars))
 
     def endswith(self, prefix, start=0, end=None):
-        unistr = unicode(self, 'utf-8')
+        unistr = str(self, 'utf-8')
         if isinstance(prefix, tuple):
-            prefix = tuple(unicode(
+            prefix = tuple(str(
                 s, 'utf-8') if isinstance(s, str) else s for s in prefix)
         elif isinstance(prefix, str):
-            prefix = unicode(prefix, 'utf-8')
+            prefix = str(prefix, 'utf-8')
         return unistr.endswith(prefix, start, len(unistr) if end is None else end)
     if hasattr(str, 'format'):  # Python 2.5 hasn't got str.format() method
         def format(self, *args, **kwargs):
-            args = [unicode(
+            args = [str(
                 s, 'utf-8') if isinstance(s, str) else s for s in args]
-            kwargs = dict((unicode(k, 'utf-8') if isinstance(k, str) else k,
-                           unicode(v, 'utf-8') if isinstance(v, str) else v)
-                          for k, v in kwargs.iteritems())
-            return str.__new__(Utf8, unicode(self, 'utf-8').
+            kwargs = dict((str(k, 'utf-8') if isinstance(k, str) else k,
+                           str(v, 'utf-8') if isinstance(v, str) else v)
+                          for k, v in kwargs.items())
+            return str.__new__(Utf8, str(self, 'utf-8').
                                format(*args, **kwargs).encode('utf-8'))
 
     def __mod__(self, right):
         if isinstance(right, tuple):
-            right = tuple(unicode(v, 'utf-8') if isinstance(v, str) else v
+            right = tuple(str(v, 'utf-8') if isinstance(v, str) else v
                           for v in right)
         elif isinstance(right, dict):
-            right = dict((unicode(k, 'utf-8') if isinstance(k, str) else k,
-                          unicode(v, 'utf-8') if isinstance(v, str) else v)
-                         for k, v in right.iteritems())
+            right = dict((str(k, 'utf-8') if isinstance(k, str) else k,
+                          str(v, 'utf-8') if isinstance(v, str) else v)
+                         for k, v in right.items())
         elif isinstance(right, str):
-            right = unicode(right, 'utf-8')
-        return str.__new__(Utf8, unicode(self, 'utf-8').__mod__(right).encode('utf-8'))
+            right = str(right, 'utf-8')
+        return str.__new__(Utf8, str(self, 'utf-8').__mod__(right).encode('utf-8'))
 
     def __ge__(self, string):
         return sort_key(self) >= sort_key(string)
@@ -366,7 +366,7 @@ class Utf8(str):
 
 if __name__ == '__main__':
     def doctests():
-        u"""
+        """
         doctests:
         >>> test_unicode=u'ПРоба Є PRobe'
         >>> test_unicode_word=u'ПРоба'
@@ -752,8 +752,8 @@ if __name__ == '__main__':
         reload(sys)
         sys.setdefaultencoding("UTF-8")
         import doctest
-        print "DOCTESTS STARTED..."
+        print("DOCTESTS STARTED...")
         doctest.testmod()
-        print "DOCTESTS FINISHED"
+        print("DOCTESTS FINISHED")
 
     doctests()

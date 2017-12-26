@@ -1,3 +1,4 @@
+from __future__ import print_function
 import docker
 import argparse as ap
 from bottle import Bottle, request, redirect, template
@@ -34,7 +35,7 @@ def get_docker():
 
 @routes.post('/docker/create/<id>')
 def create_container(id):
-    print "creating container:", id
+    print("creating container:", id)
     cli = docker.Client(base_url=base_url)
     host_port_number = int(request.forms.host_port_number)
     container_port_number = int(request.forms.container_port_number)
@@ -62,7 +63,7 @@ def create_container(id):
 
 @routes.get('/docker/start/<id>')
 def start_container(id):
-    print "starting container:", id
+    print("starting container:", id)
     cli = docker.Client(base_url=base_url)
     try:
         cli.start(container=id)
@@ -83,7 +84,7 @@ def stop_container(id):
 
 @routes.get('/docker/remove/<id>')
 def remove_container(id):
-    print "removing container:", id
+    print("removing container:", id)
     cli = docker.Client(base_url=base_url)
     try:
         cli.remove_container(id)

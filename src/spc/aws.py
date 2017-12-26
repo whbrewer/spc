@@ -1,10 +1,12 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, request, template, redirect
 import boto, sys, traceback, time, argparse as ap
 import boto.ec2
 from datetime import datetime
 
-from model import db, users, aws_creds, aws_instances
-import config
+from .model import db, users, aws_creds, aws_instances
+from . import config
 
 routes = Bottle()
 
@@ -137,7 +139,7 @@ def del_instance(aid):
         return "true"
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return "false"
 
 @routes.get('/aws/status/<aid>')
@@ -165,7 +167,7 @@ def aws_status(aid):
         return template('aws_status', params, astatus=astatus)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return template('error', err="There was a problem connecting to the AWS machine. Check the credentials and make sure the machine is running.")
 
 @routes.post('/aws/<aid>')

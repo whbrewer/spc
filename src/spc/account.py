@@ -1,8 +1,10 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, request, template, redirect, response
 import re, sys, hashlib, traceback, smtplib, uuid, argparse as ap
-from model import db, users, user_meta
-from constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
-import config
+from .model import db, users, user_meta
+from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
+from . import config
 
 routes = Bottle()
 
@@ -118,7 +120,7 @@ def post_login():
             return err
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return err
     # if referred to login from another page redirect to referring page
     referrer = request.forms.referrer
@@ -182,7 +184,7 @@ def get_theme():
 def save_theme():
     user = root.authorized()
     uid = users(user=user).id
-    print "saving theme:", request.forms.theme
+    print("saving theme:", request.forms.theme)
     user_meta.update_or_insert(user_meta.uid==uid, uid=uid, theme=request.forms.theme)
     db.commit()
 

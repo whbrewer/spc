@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # This is an SSL worker for submitting jobs remotely
 # with some code borrowed from:
 # https://github.com/nickbabcock/bottle-ssl/blob/master/main.py
@@ -18,10 +19,10 @@ from OpenSSL import SSL
 from os import listdir
 import cgi, os, process, pickle, re
 
-import scheduler
-from model import db, users, jobs
-from user_data import user_dir
-from common import slurp_file
+from . import scheduler
+from .model import db, users, jobs
+from .user_data import user_dir
+from .common import slurp_file
 
 ssl_cert = "/etc/apache2/ssl/ssl.crt"
 ssl_key = "/etc/apache2/ssl/private.key"

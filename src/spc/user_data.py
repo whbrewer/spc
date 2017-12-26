@@ -1,14 +1,16 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, request, template, redirect, static_file
 import os, re, sys, shutil, urllib, traceback, cgi, time, json
 import argparse as ap
 try:
     import requests
 except:
-    print "INFO: not importing requests... only needed for remote workers"
+    print("INFO: not importing requests... only needed for remote workers")
 
-from common import slurp_file
-from model import db, users, jobs
-import config
+from .common import slurp_file
+from .model import db, users, jobs
+from . import config
 
 user_dir = 'user_data'
 upload_dir = '_uploads'
@@ -258,13 +260,13 @@ def delete_f():
         path = os.path.join(user_dir, user, app, cid, file)
         if cid is not None:
             if os.path.isfile(path):
-                print "removing file:", path
+                print("removing file:", path)
                 os.remove(path)
             elif os.path.isdir(path):
-                print "removing path:", path
+                print("removing path:", path)
                 shutil.rmtree(path)
         else:
-            print "ERROR: not removing path:", path, "because cid missing"
+            print("ERROR: not removing path:", path, "because cid missing")
     redirect("/files?cid="+cid+"&app="+app)
 
 
@@ -287,7 +289,7 @@ def modify_selected_files(operation):
     files = selected_files.rstrip(':').split(':')
 
     for file in files:
-        print file
+        print(file)
         path = os.path.join(user_dir, user, app, cid, file)
 
         out = list()
@@ -325,7 +327,7 @@ def zip_selected_files():
 
     for file in files:
         path = os.path.join(user_dir, user, app, cid, file)
-        print "attempting to zip:", path
+        print("attempting to zip:", path)
         zf = zipfile.ZipFile(path+".zip", mode='w', compression=zipfile.ZIP_DEFLATED)
         zf.write(path)
         zf.close()
@@ -367,7 +369,7 @@ def zipget():
         worker = config.remote_worker_url
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         worker = request.query.url
 
     # if config.worker != "remote" or config.remote_worker_url is None:
@@ -384,11 +386,11 @@ def zipget():
     file_path = path+".zip"
     url = os.path.join(worker, file_path)
 
-    print "url is:", url
+    print("url is:", url)
     if not os.path.exists(path):
         os.makedirs(path)
 
-    print "downloading " + url
+    print("downloading " + url)
     fh, _ = urllib.urlretrieve(url)
     z = zipfile.ZipFile(fh, 'r', compression=zipfile.ZIP_DEFLATED)
     z.extractall()

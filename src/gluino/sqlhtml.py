@@ -4,7 +4,7 @@
 """
 This file is part of the web2py Web Framework
 Copyrighted by Massimo Di Pierro <mdipierro@cs.depaul.edu>
-License: LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
+License: LGPLv3 (http://www.gnu.org/licenses/lgpl.htmlh)
 
 Holds:
 
@@ -14,32 +14,34 @@ Holds:
 
 """
 try:
-    from urlparse import parse_qs as psq
+    from urllib.parse import parse_qs as psq
 except ImportError:
     from cgi import parse_qs as psq
 import os
 import copy
-from http import HTTP
-from html import XmlComponent
-from html import XML, SPAN, TAG, A, DIV, CAT, UL, LI, TEXTAREA, BR, IMG, SCRIPT
-from html import FORM, INPUT, LABEL, OPTION, SELECT
-from html import TABLE, THEAD, TBODY, TR, TD, TH, STYLE
-from html import URL, truncate_string, FIELDSET
-from dal import DAL, Field, Table, Row, CALLABLETYPES, smart_query, \
+from .http import HTTP
+from .html import XmlComponent
+from .html import XML, SPAN, TAG, A, DIV, CAT, UL, LI, TEXTAREA, BR, IMG, SCRIPT
+from .html import FORM, INPUT, LABEL, OPTION, SELECT
+from .html import TABLE, THEAD, TBODY, TR, TD, TH, STYLE
+from .html import URL, truncate_string, FIELDSET
+from .dal import DAL, Field, Table, Row, CALLABLETYPES, smart_query, \
     bar_encode, Reference, REGEX_TABLE_DOT_FIELD
-from storage import Storage
-from utils import md5_hash
-from validators import IS_EMPTY_OR, IS_NOT_EMPTY, IS_LIST_OF, IS_DATE, \
+from .storage import Storage
+from .utils import md5_hash
+from .validators import IS_EMPTY_OR, IS_NOT_EMPTY, IS_LIST_OF, IS_DATE, \
     IS_DATETIME, IS_INT_IN_RANGE, IS_FLOAT_IN_RANGE, IS_STRONG
 
-import serializers
+from . import serializers
 import datetime
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import re
-import cStringIO
-from globals import current
-from http import redirect
+import io
+from .globals import current
+from .http import redirect
 import inspect
+import collections
+from functools import reduce
 
 try:
     import settings
@@ -59,9 +61,9 @@ def trap_class(_class=None, trap=True):
 
 def represent(field, value, record):
     f = field.represent
-    if not callable(f):
+    if not isinstance(f, collections.Callable):
         return str(value)
-    n = f.func_code.co_argcount - len(f.func_defaults or [])
+    n = f.__code__.co_argcount - len(f.__defaults__ or [])
     if getattr(f, 'im_self', None):
         n -= 1
     if n == 1:
@@ -227,7 +229,7 @@ class JSONWidget(FormWidget):
 
         see also: :meth:`FormWidget.widget`
         """
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             if value is not None:
                 value = serializers.json(value)
         default = dict(value=value)
@@ -524,7 +526,7 @@ class UploadWidget(FormWidget):
         inp = INPUT(**attr)
 
         if download_url and value:
-            if callable(download_url):
+            if isinstance(download_url, collections.Callable):
                 url = download_url(value)
             else:
                 url = download_url + '/' + value
@@ -573,7 +575,7 @@ class UploadWidget(FormWidget):
         inp = cls.GENERIC_DESCRIPTION
 
         if download_url and value:
-            if callable(download_url):
+            if isinstance(download_url, collections.Callable):
                 url = download_url(value)
             else:
                 url = download_url + '/' + value
@@ -638,7 +640,7 @@ class AutocompleteWidget(object):
         if self.keyword in self.request.vars:
             field = self.fields[0]
             if is_gae:
-                rows = self.db(field.__ge__(self.request.vars[self.keyword]) & field.__lt__(self.request.vars[self.keyword] + u'\ufffd')).select(orderby=self.orderby, limitby=self.limitby, *(self.fields+self.help_fields))
+                rows = self.db(field.__ge__(self.request.vars[self.keyword]) & field.__lt__(self.request.vars[self.keyword] + '\ufffd')).select(orderby=self.orderby, limitby=self.limitby, *(self.fields+self.help_fields))
             else:
                 rows = self.db(field.like(self.request.vars[self.keyword] + '%')).select(orderby=self.orderby, limitby=self.limitby, distinct=self.distinct, *(self.fields+self.help_fields))
             if rows:
@@ -688,7 +690,7 @@ class AutocompleteWidget(object):
             attr['value'] = record and record[self.fields[0].name]
             attr['_onblur'] = "jQuery('#%(div_id)s').delay(1000).fadeOut('slow');" % \
                 dict(div_id=div_id, u='F' + self.keyword)
-            attr['_onkeyup'] = "jQuery('#%(key3)s').val('');var e=event.which?event.which:event.keyCode; function %(u)s(){jQuery('#%(id)s').val(jQuery('#%(key)s :selected').text());jQuery('#%(key3)s').val(jQuery('#%(key)s').val())}; if(e==39) %(u)s(); else if(e==40) {if(jQuery('#%(key)s option:selected').next().length)jQuery('#%(key)s option:selected').attr('selected',null).next().attr('selected','selected'); %(u)s();} else if(e==38) {if(jQuery('#%(key)s option:selected').prev().length)jQuery('#%(key)s option:selected').attr('selected',null).prev().attr('selected','selected'); %(u)s();} else if(jQuery('#%(id)s').val().length>=%(min_length)s) jQuery.get('%(url)s?%(key)s='+encodeURIComponent(jQuery('#%(id)s').val()),function(data){if(data=='')jQuery('#%(key3)s').val('');else{jQuery('#%(id)s').next('.error').hide();jQuery('#%(div_id)s').html(data).show().focus();jQuery('#%(div_id)s select').css('width',jQuery('#%(id)s').css('width'));jQuery('#%(key3)s').val(jQuery('#%(key)s').val());jQuery('#%(key)s').change(%(u)s);jQuery('#%(key)s').click(%(u)s);};}); else jQuery('#%(div_id)s').fadeOut('slow');" % \
+            attr['_onkeyup'] = "jQuery('#%(key3)s').val('');var e=event.which?event.which:event.keyCode; function %(u)s(){jQuery('#%(id)s').val(jQuery('#%(key)s :selected').text());jQuery('#%(key3)s').val(jQuery('#%(key)s').val())}; if(e==39) %(u)s(); else if(e==40) {if(jQuery('#%(key)s option:selected').next().length)jQuery('#%(key)s option:selected').attr('selected',null).next().attr('selected','selected'); %(u)s();} else if(e==38) {if(jQuery('#%(key)s option:selected').prev().length)jQuery('#%(key)s option:selected').attr('selected',null).prev().attr('selected','selected'); %(u)s();} else if(jQuery('#%(id)s').val().length>=%(min_length)s) jQuery.get('%(url)s?%(key)s='+encodeURIComponent(jQuery('#%(id)s').val()),function(data){if(data=='')jQuery('#%(key3)s').val('');else{jQuery('#%(id)s').next('.error').hide();jQuery('#%(div_id)s').htmlh(data).show().focus();jQuery('#%(div_id)s select').css('width',jQuery('#%(id)s').css('width'));jQuery('#%(key3)s').val(jQuery('#%(key)s').val());jQuery('#%(key)s').change(%(u)s);jQuery('#%(key)s').click(%(u)s);};}); else jQuery('#%(div_id)s').fadeOut('slow');" % \
                 dict(url=self.url, min_length=self.min_length,
                      key=self.keyword, id=attr['_id'], key2=key2, key3=key3,
                      name=name, div_id=div_id, u='F' + self.keyword)
@@ -701,7 +703,7 @@ class AutocompleteWidget(object):
             attr['_name'] = field.name
             attr['_onblur'] = "jQuery('#%(div_id)s').delay(1000).fadeOut('slow');" % \
                 dict(div_id=div_id, u='F' + self.keyword)
-            attr['_onkeyup'] = "var e=event.which?event.which:event.keyCode; function %(u)s(){jQuery('#%(id)s').val(jQuery('#%(key)s').val())}; if(e==39) %(u)s(); else if(e==40) {if(jQuery('#%(key)s option:selected').next().length)jQuery('#%(key)s option:selected').attr('selected',null).next().attr('selected','selected'); %(u)s();} else if(e==38) {if(jQuery('#%(key)s option:selected').prev().length)jQuery('#%(key)s option:selected').attr('selected',null).prev().attr('selected','selected'); %(u)s();} else if(jQuery('#%(id)s').val().length>=%(min_length)s) jQuery.get('%(url)s?%(key)s='+encodeURIComponent(jQuery('#%(id)s').val()),function(data){jQuery('#%(id)s').next('.error').hide();jQuery('#%(div_id)s').html(data).show().focus();jQuery('#%(div_id)s select').css('width',jQuery('#%(id)s').css('width'));jQuery('#%(key)s').change(%(u)s);jQuery('#%(key)s').click(%(u)s);}); else jQuery('#%(div_id)s').fadeOut('slow');" % \
+            attr['_onkeyup'] = "var e=event.which?event.which:event.keyCode; function %(u)s(){jQuery('#%(id)s').val(jQuery('#%(key)s').val())}; if(e==39) %(u)s(); else if(e==40) {if(jQuery('#%(key)s option:selected').next().length)jQuery('#%(key)s option:selected').attr('selected',null).next().attr('selected','selected'); %(u)s();} else if(e==38) {if(jQuery('#%(key)s option:selected').prev().length)jQuery('#%(key)s option:selected').attr('selected',null).prev().attr('selected','selected'); %(u)s();} else if(jQuery('#%(id)s').val().length>=%(min_length)s) jQuery.get('%(url)s?%(key)s='+encodeURIComponent(jQuery('#%(id)s').val()),function(data){jQuery('#%(id)s').next('.error').hide();jQuery('#%(div_id)s').htmlh(data).show().focus();jQuery('#%(div_id)s select').css('width',jQuery('#%(id)s').css('width'));jQuery('#%(key)s').change(%(u)s);jQuery('#%(key)s').click(%(u)s);}); else jQuery('#%(div_id)s').fadeOut('slow');" % \
                 dict(url=self.url, min_length=self.min_length,
                      key=self.keyword, id=attr['_id'], div_id=div_id, u='F' + self.keyword)
             if self.min_length == 0:
@@ -902,7 +904,7 @@ class SQLFORM(FORM):
             # - user not trying to upload a new file
             # - there is existing file and user is not trying to delete it
             # this is because removing the file may not pass validation
-            for key in self.errors.keys():
+            for key in list(self.errors.keys()):
                 if key in self.table \
                         and self.table[key].type == 'upload' \
                         and request_vars.get(key, None) in (None, '') \
@@ -973,7 +975,7 @@ class SQLFORM(FORM):
 
         # try to retrieve the indicated record using its id
         # otherwise ignore it
-        if record and isinstance(record, (int, long, str, unicode)):
+        if record and isinstance(record, (int, str)):
             if not str(record).isdigit():
                 raise HTTP(404, "Object not found")
             record = table._db(table._id == record).select().first()
@@ -1131,10 +1133,10 @@ class SQLFORM(FORM):
             db = linkto.split('/')[-1]
             for rfld in table._referenced_by:
                 if keyed:
-                    query = urllib.quote('%s.%s==%s' % (
+                    query = urllib.parse.quote('%s.%s==%s' % (
                         db, rfld, record[rfld.type[10:].split('.')[1]]))
                 else:
-                    query = urllib.quote(
+                    query = urllib.parse.quote(
                         '%s.%s==%s' % (db, rfld, record[self.id_field_name]))
                 lname = olname = '%s.%s' % (rfld.tablename, rfld.name)
                 if ofields and not olname in ofields:
@@ -1205,13 +1207,13 @@ class SQLFORM(FORM):
 
     def createform(self, xfields):
         formstyle = self.formstyle
-        if isinstance(formstyle, basestring):
+        if isinstance(formstyle, str):
             if formstyle in SQLFORM.formstyles:
                 formstyle = SQLFORM.formstyles[formstyle]
             else:
                 raise RuntimeError('formstyle not found')
 
-        if callable(formstyle):
+        if isinstance(formstyle, collections.Callable):
             # backward compatibility, 4 argument function is the old style
             args, varargs, keywords, defaults = inspect.getargspec(formstyle)
             if defaults and len(args) - len(defaults) == 4 or len(args) == 4:
@@ -1450,13 +1452,13 @@ class SQLFORM(FORM):
                         original_filename = os.path.split(f)[1]
                 elif hasattr(f, 'file'):
                     (source_file, original_filename) = (f.file, f.filename)
-                elif isinstance(f, (str, unicode)):
+                elif isinstance(f, str):
                     ### do not know why this happens, it should not
                     (source_file, original_filename) = \
-                        (cStringIO.StringIO(f), 'file.txt')
+                        (io.StringIO(f), 'file.txt')
                 else:
                     # this should never happen, why does it happen?
-                    print 'f=',repr(f)
+                    print('f=',repr(f))
                     continue
                 newfilename = field.store(source_file, original_filename,
                                           field.uploadfolder)
@@ -1510,7 +1512,7 @@ class SQLFORM(FORM):
                     elif not self.table[field.name].default is None:
                         fields[field.name] = self.table[field.name].default
             if keyed:
-                if reduce(lambda x, y: x and y, record_id.values()):  # if record_id
+                if reduce(lambda x, y: x and y, list(record_id.values())):  # if record_id
                     if fields:
                         qry = reduce(lambda x, y: x & y,
                                      [self.table[k] == self.record[k] for k in self.table._primarykey])
@@ -1848,9 +1850,9 @@ class SQLFORM(FORM):
                     nrows = dbset.db._adapter.count(dbset.query, limit=1000)
                 else:
                     nrows = dbset.count(cache=cache_count)
-            elif isinstance(cache_count, (int, long)):
+            elif isinstance(cache_count, int):
                     nrows = cache_count
-            elif callable(cache_count):
+            elif isinstance(cache_count, collections.Callable):
                 nrows = cache_count(dbset, request.vars)
             else:
                 nrows = 0
@@ -1926,7 +1928,7 @@ class SQLFORM(FORM):
             for table in tables:
                 fields += [f for f in table]
                 columns +=  [f for f in table]
-                for k,f in table.iteritems():
+                for k,f in table.items():
                     if isinstance(f,Field.Virtual) and f.readable:
                         f.tablename = table._tablename
                         columns.append(f)
@@ -1945,7 +1947,7 @@ class SQLFORM(FORM):
         def buttons(edit=False, view=False, record=None):
             buttons = DIV(gridbutton('buttonback', 'Back', referrer),
                           _class='form_header row_buttons %(header)s %(cornertop)s' % ui)
-            if edit and (not callable(edit) or edit(record)):
+            if edit and (not isinstance(edit, collections.Callable) or edit(record)):
                 args = ['edit', table._tablename, request.args[-1]]
                 buttons.append(gridbutton('buttonedit', 'Edit',
                                           url(args=args)))
@@ -2015,7 +2017,7 @@ class SQLFORM(FORM):
             table = db[request.args[-2]]
             record = table(request.args[-1]) or redirect(URL('error'))
             sqlformargs.update(editargs)
-            deletable_ = deletable(record) if callable(deletable) else deletable
+            deletable_ = deletable(record) if isinstance(deletable, collections.Callable) else deletable
             update_form = SQLFORM(
                 table,
                 record, upload=upload, ignore_rw=ignore_rw,
@@ -2040,7 +2042,7 @@ class SQLFORM(FORM):
             return res
         elif deletable and request.args(-3) == 'delete':
             table = db[request.args[-2]]
-            if not callable(deletable):
+            if not isinstance(deletable, collections.Callable):
                 if ondelete:
                     ondelete(table, request.args[-1])
                 db(table[table._id.name] == request.args[-1]).delete()
@@ -2095,7 +2097,7 @@ class SQLFORM(FORM):
                         dbset = dbset(SQLFORM.build_query(
                             fields, request.vars.get('keywords', '')))
                         rows = dbset.select(cacheable=True, *expcolumns)
-                    except Exception, e:
+                    except Exception as e:
                         response.flash = T('Internal Error')
                         rows = []
                 else:
@@ -2155,7 +2157,7 @@ class SQLFORM(FORM):
             console.append(form)
             keywords = request.vars.get('keywords', '')
             try:
-                if callable(searchable):
+                if isinstance(searchable, collections.Callable):
                     subquery = searchable(sfields, keywords)
                 else:
                     subquery = SQLFORM.build_query(sfields, keywords)
@@ -2256,7 +2258,7 @@ class SQLFORM(FORM):
             rows = None
             next_cursor = None
             error = T("Query Not Supported")
-        except Exception, e:
+        except Exception as e:
             rows = None
             next_cursor = None
             error = T("Query Not Supported: %s")%e
@@ -2304,7 +2306,7 @@ class SQLFORM(FORM):
                 paginator.append(LI(self_link('<<', 0)))
             if page > NPAGES:
                 paginator.append(LI(self_link('<', page - 1)))
-            pages = range(max(0, page - NPAGES), min(page + NPAGES, npages))
+            pages = list(range(max(0, page - NPAGES), min(page + NPAGES, npages)))
             for p in pages:
                 if p == page:
                     paginator.append(LI(A(p + 1, _onclick='return false'),
@@ -2350,7 +2352,7 @@ class SQLFORM(FORM):
                                       _disabled=True)
                     elif field.type == 'upload':
                         if value:
-                            if callable(upload):
+                            if isinstance(upload, collections.Callable):
                                 value = A(
                                     T('file'), _href=upload(value))
                             elif upload:
@@ -2378,15 +2380,15 @@ class SQLFORM(FORM):
                         linsert(trcols, 0, toadd)
 
                 if include_buttons_column:
-                    if details and (not callable(details) or details(row)):
+                    if details and (not isinstance(details, collections.Callable) or details(row)):
                         row_buttons.append(gridbutton(
                             'buttonview', 'View',
                             url(args=['view', tablename, id])))
-                    if editable and (not callable(editable) or editable(row)):
+                    if editable and (not isinstance(editable, collections.Callable) or editable(row)):
                         row_buttons.append(gridbutton(
                             'buttonedit', 'Edit',
                             url(args=['edit', tablename, id])))
-                    if deletable and (not callable(deletable) or deletable(row)):
+                    if deletable and (not isinstance(deletable, collections.Callable) or deletable(row)):
                         row_buttons.append(gridbutton(
                             'buttondelete', 'Delete',
                             url(args=['delete', tablename, id]),
@@ -2404,7 +2406,7 @@ class SQLFORM(FORM):
                 numrec += 1
                 if id:
                     rid = id
-                    if callable(rid):  # can this ever be callable?
+                    if isinstance(rid, collections.Callable):  # can this ever be callable?
                         rid = rid(row)
                     tr = TR(*trcols, **dict(
                             _id=rid,
@@ -2519,7 +2521,7 @@ class SQLFORM(FORM):
                 return T('Unknown')
             elif isinstance(table._format,str):
                 return table._format % row
-            elif callable(table._format):
+            elif isinstance(table._format, collections.Callable):
                 return table._format(row)
             else:
                 return '#'+str(row.id)
@@ -2571,7 +2573,7 @@ class SQLFORM(FORM):
                 # if isinstance(linked_tables, dict):
                 #     linked_tables = linked_tables.get(table._tablename, [])
                 if linked_tables is None or referee in linked_tables:
-                    field.represent = lambda id, r=None, referee=referee, rep=field.represent: A(callable(rep) and rep(id) or id, _class=trap_class(), _href=url(args=['view', referee, id]))
+                    field.represent = lambda id, r=None, referee=referee, rep=field.represent: A(isinstance(rep, collections.Callable) and rep(id) or id, _class=trap_class(), _href=url(args=['view', referee, id]))
         except (KeyError, ValueError, TypeError):
             redirect(URL(args=table._tablename))
         if nargs == len(args) + 1:
@@ -2594,7 +2596,7 @@ class SQLFORM(FORM):
             check[rfield.tablename] = \
                 check.get(rfield.tablename, []) + [rfield.name]
         if isinstance(linked_tables, dict):
-            for tbl in linked_tables.keys():
+            for tbl in list(linked_tables.keys()):
                 tb = db[tbl]
                 if isinstance(linked_tables[tbl], list):
                         if len(linked_tables[tbl]) > 1:
@@ -2759,15 +2761,19 @@ class SQLTABLE(TABLE):
         ):
 
         TABLE.__init__(self, **attributes)
-
+        #print(sqlrows)
         self.components = []
         self.attributes = attributes
         self.sqlrows = sqlrows
         (components, row) = (self.components, [])
-        if not sqlrows:
-            return
+        #print(sqlrows)
+
+        if len(self.sqlrows) > 0:
+            pass
         if not columns:
-            columns = sqlrows.colnames
+            columns = self.sqlrows.colnames
+
+
         if headers == 'fieldname:capitalize':
             headers = {}
             for c in columns:
@@ -2860,14 +2866,14 @@ class SQLTABLE(TABLE):
                             if ref.find('.') >= 0:
                                 tref, fref = ref.split('.')
                                 if hasattr(sqlrows.db[tref], '_primarykey'):
-                                    href = '%s/%s?%s' % (linkto, tref, urllib.urlencode({fref: r}))
+                                    href = '%s/%s?%s' % (linkto, tref, urllib.parse.urlencode({fref: r}))
                         r = A(represent(field, r, record), _href=str(href))
                     elif field.represent:
                         r = represent(field, r, record)
                 elif linkto and hasattr(field._table, '_primarykey')\
                         and fieldname in field._table._primarykey:
                     # have to test this with multi-key tables
-                    key = urllib.urlencode(dict([
+                    key = urllib.parse.urlencode(dict([
                                 ((tablename in record
                                       and isinstance(record, Row)
                                       and isinstance(record[tablename], Row)) and
@@ -2968,8 +2974,8 @@ class ExportClass(object):
             """
             if value is None:
                 return '<NULL>'
-            elif isinstance(value, unicode):
-                return value.encode('utf8')
+            elif isinstance(value, str):
+                return value
             elif isinstance(value, Reference):
                 return int(value)
             elif hasattr(value, 'isoformat'):
@@ -3015,26 +3021,26 @@ class ExporterTSV(ExportClass):
 
     def export(self):
 
-        out = cStringIO.StringIO()
-        final = cStringIO.StringIO()
+        out = io.StringIO()
+        final = io.StringIO()
         import csv
         writer = csv.writer(out, delimiter='\t')
         if self.rows:
             import codecs
             final.write(codecs.BOM_UTF16)
             writer.writerow(
-                [unicode(col).encode("utf8") for col in self.rows.colnames])
-            data = out.getvalue().decode("utf8")
-            data = data.encode("utf-16")
+                [str(col) for col in self.rows.colnames])
+            data = out.getvalue()
+            #data = data.encode("utf-16")
             data = data[2:]
             final.write(data)
             out.truncate(0)
         records = self.represented()
         for row in records:
             writer.writerow(
-                [str(col).decode('utf8').encode("utf-8") for col in row])
-            data = out.getvalue().decode("utf8")
-            data = data.encode("utf-16")
+                [str(col) for col in row])
+            data = out.getvalue()
+            #data = data.encode("utf-16")
             data = data[2:]
             final.write(data)
             out.truncate(0)

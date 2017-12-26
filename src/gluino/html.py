@@ -12,30 +12,31 @@ import os
 import re
 import copy
 import types
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import base64
-import sanitizer
+from . import sanitizer
 import itertools
-import decoder
-import copy_reg
-import cPickle
+from . import decoder
+import copyreg
+import pickle
 import marshal
 
-from HTMLParser import HTMLParser
-from htmlentitydefs import name2codepoint
+from html.parser import HTMLParser
+from html.entities import name2codepoint
 
-from storage import Storage
-from utils import web2py_uuid, simple_hash, compare
-from highlight import highlight
+from .storage import Storage
+from .utils import web2py_uuid, simple_hash, compare
+from .highlight import highlight
+import collections
+from functools import reduce
 
 regex_crlf = re.compile('\r|\n')
 
 join = ''.join
 
 # name2codepoint is incomplete respect to xhtml (and xml): 'apos' is missing.
-entitydefs = dict(map(lambda (
-    k, v): (k, unichr(v).encode('utf-8')), name2codepoint.iteritems()))
-entitydefs.setdefault('apos', u"'".encode('utf-8'))
+entitydefs = dict([(k_v[0], chr(k_v[1]).encode('utf-8')) for k_v in iter(name2codepoint.items())])
+entitydefs.setdefault('apos', "'".encode('utf-8'))
 
 
 __all__ = [
@@ -116,14 +117,14 @@ def xmlescape(data, quote=True):
     """
 
     # first try the xml function
-    if hasattr(data, 'xml') and callable(data.xml):
+    if hasattr(data, 'xml') and isinstance(data.xml, collections.Callable):
         return data.xml()
 
     # otherwise, make it a string
-    if not isinstance(data, (str, unicode)):
+    if not isinstance(data, str):
         data = str(data)
-    elif isinstance(data, unicode):
-        data = data.encode('utf8', 'xmlcharrefreplace')
+    #if isinstance(data, str):
+    #    data = data.encode('utf8', 'xmlcharrefreplace')
 
     # ... and do the escaping
     data = cgi.escape(data, quote).replace("'", "&#x27;")
@@ -136,9 +137,18 @@ def call_as_list(f,*a,**b):
         item(*a,**b)
 
 def truncate_string(text, length, dots='...'):
-    text = text.decode('utf-8')
+    #text = text.decode('utf-8')
+
     if len(text) > length:
-        text = text[:length - len(dots)].encode('utf-8') + dots
+        text = text[:length - len(dots)] + dots
+
+    #TODO: FIX the text variable before arrives here, this is a badly workaround
+    try:
+        text = text.replace("b'","").replace("'","")
+    except:
+        pass
+
+
     return text
 
 
@@ -256,7 +266,7 @@ def URL(
             (f, a, c) = (a, c, f)
         elif a and c and not f:
             (c, f, a) = (a, c, f)
-        from globals import current
+        from .globals import current
         if hasattr(current, 'request'):
             r = current.request
 
@@ -302,10 +312,10 @@ def URL(
     if args:
         if url_encode:
             if encode_embedded_slash:
-                other = '/' + '/'.join([urllib.quote(str(
+                other = '/' + '/'.join([urllib.parse.quote(str(
                     x), '') for x in args])
             else:
-                other = args and urllib.quote(
+                other = args and urllib.parse.quote(
                     '/' + '/'.join([str(x) for x in args]))
         else:
             other = args and ('/' + '/'.join([str(x) for x in args]))
@@ -325,7 +335,7 @@ def URL(
             list_vars.append((key, val))
 
     if user_signature:
-        from globals import current
+        from .globals import current
         if current.session.auth:
             hmac_key = current.session.auth.hmac_key
 
@@ -346,7 +356,7 @@ def URL(
             h_vars = [(k, v) for (k, v) in list_vars if k in hash_vars]
 
         # re-assembling the same way during hash authentication
-        message = h_args + '?' + urllib.urlencode(sorted(h_vars))
+        message = h_args + '?' + urllib.parse.urlencode(sorted(h_vars))
         sig = simple_hash(
             message, hmac_key or '', salt or '', digest_alg='sha1')
         # add the signature into vars
@@ -354,12 +364,12 @@ def URL(
 
     if list_vars:
         if url_encode:
-            other += '?%s' % urllib.urlencode(list_vars)
+            other += '?%s' % urllib.parse.urlencode(list_vars)
         else:
             other += '?%s' % '&'.join(['%s=%s' % var[:2] for var in list_vars])
     if anchor:
         if url_encode:
-            other += '#' + urllib.quote(str(anchor))
+            other += '#' + urllib.parse.quote(str(anchor))
         else:
             other += '#' + (str(anchor))
     if extension:
@@ -414,7 +424,7 @@ def verifyURL(request, hmac_key=None, hash_vars=True, salt=None, user_signature=
 
     # check if user_signature requires
     if user_signature:
-        from globals import current
+        from .globals import current
         if not current.session or not current.session.auth:
             return False
         hmac_key = current.session.auth.hmac_key
@@ -433,7 +443,7 @@ def verifyURL(request, hmac_key=None, hash_vars=True, salt=None, user_signature=
     # join all the args & vars into one long string
 
     # always include all of the args
-    other = args and urllib.quote('/' + '/'.join([str(x) for x in args])) or ''
+    other = args and urllib.parse.quote('/' + '/'.join([str(x) for x in args])) or ''
     h_args = '/%s/%s/%s.%s%s' % (request.application,
                                  request.controller,
                                  request.function,
@@ -465,7 +475,7 @@ def verifyURL(request, hmac_key=None, hash_vars=True, salt=None, user_signature=
             # user has removed one of our vars! Immediate fail
             return False
     # build the full message string with both args & vars
-    message = h_args + '?' + urllib.urlencode(sorted(h_vars))
+    message = h_args + '?' + urllib.parse.urlencode(sorted(h_vars))
 
     # hash with the hmac_key provided
     sig = simple_hash(message, str(hmac_key), salt or '', digest_alg='sha1')
@@ -576,7 +586,7 @@ class XML(XmlComponent):
         if sanitize:
             text = sanitizer.sanitize(text, permitted_tags,
                                       allowed_attributes)
-        if isinstance(text, unicode):
+        if isinstance(text, str):
             text = text.encode('utf8', 'xmlcharrefreplace')
         elif not isinstance(text, str):
             text = str(text)
@@ -641,7 +651,7 @@ def XML_unpickle(data):
 
 def XML_pickle(data):
     return XML_unpickle, (marshal.dumps(str(data)),)
-copy_reg.pickle(XML, XML_pickle, XML_unpickle)
+copyreg.pickle(XML, XML_pickle, XML_unpickle)
 
 
 class DIV(XmlComponent):
@@ -696,7 +706,7 @@ class DIV(XmlComponent):
         dictionary like updating of the tag attributes
         """
 
-        for (key, value) in kargs.iteritems():
+        for (key, value) in kargs.items():
             self[key] = value
         return self
 
@@ -756,7 +766,7 @@ class DIV(XmlComponent):
         :param value: the new value
         """
         self._setnode(value)
-        if isinstance(i, (str, unicode)):
+        if isinstance(i, str):
             self.attributes[i] = value
         else:
             self.components[i] = value
@@ -781,7 +791,7 @@ class DIV(XmlComponent):
         """
         return len(self.components)
 
-    def __nonzero__(self):
+    def __bool__(self):
         """
         always return True
         """
@@ -834,7 +844,7 @@ class DIV(XmlComponent):
         # TODO: docstring
         newstatus = status
         for c in self.components:
-            if hasattr(c, '_traverse') and callable(c._traverse):
+            if hasattr(c, '_traverse') and isinstance(c._traverse, collections.Callable):
                 c.vars = self.vars
                 c.request_vars = self.request_vars
                 c.errors = self.errors
@@ -888,7 +898,7 @@ class DIV(XmlComponent):
         # get the attributes for this component
         # (they start with '_', others may have special meanings)
         attr = []
-        for key, value in self.attributes.iteritems():
+        for key, value in self.attributes.items():
             if key[:1] != '_':
                 continue
             name = key[1:]
@@ -898,7 +908,7 @@ class DIV(XmlComponent):
                 continue
             attr.append((name, value))
         data = self.attributes.get('data',{})
-        for key, value in data.iteritems():
+        for key, value in data.items():
             name = 'data-' + key
             value = data[key]
             attr.append((name,value))
@@ -1079,7 +1089,7 @@ class DIV(XmlComponent):
         tag = getattr(self, 'tag').replace('/', '')
         if args and tag not in args:
             check = False
-        for (key, value) in kargs.iteritems():
+        for (key, value) in kargs.items():
             if key not in ['first_only', 'replace', 'find_text']:
                 if isinstance(value, (str, int)):
                     if self[key] != str(value):
@@ -1109,7 +1119,7 @@ class DIV(XmlComponent):
         def replace_component(i):
             if replace is None:
                 del self[i]
-            elif callable(replace):
+            elif isinstance(replace, collections.Callable):
                 self[i] = replace(self[i])
             else:
                 self[i] = replace
@@ -1159,7 +1169,7 @@ class DIV(XmlComponent):
                 tag = getattr(c, 'tag').replace("/", "")
                 if args and tag not in args:
                         check = False
-                for (key, value) in kargs.iteritems():
+                for (key, value) in kargs.items():
                     if c[key] != value:
                             check = False
                 if check:
@@ -1188,13 +1198,13 @@ class CAT(DIV):
 
 
 def TAG_unpickler(data):
-    return cPickle.loads(data)
+    return pickle.loads(data)
 
 
 def TAG_pickler(data):
     d = DIV()
     d.__dict__ = data.__dict__
-    marshal_dump = cPickle.dumps(d)
+    marshal_dump = pickle.dumps(d)
     return (TAG_unpickler, (marshal_dump,))
 
 
@@ -1203,7 +1213,7 @@ class __tag__(DIV):
         DIV.__init__(self,*a,**b)
         self.tag = name
 
-copy_reg.pickle(__tag__, TAG_pickler, TAG_unpickler)
+copyreg.pickle(__tag__, TAG_pickler, TAG_unpickler)
 
 class __TAG__(XmlComponent):
 
@@ -1221,7 +1231,7 @@ class __TAG__(XmlComponent):
     def __getattr__(self, name):
         if name[-1:] == '_':
             name = name[:-1] + '/'
-        if isinstance(name, unicode):
+        if isinstance(name, str):
             name = name.encode('utf-8')
         return lambda *a,**b: __tag__(name,*a,**b)
 
@@ -2058,7 +2068,7 @@ class FORM(DIV):
         attr = self.attributes.get('hidden', {})
         if 'hidden' in self.attributes:
             c = [INPUT(_type='hidden', _name=key, _value=value)
-                 for (key, value) in attr.iteritems()]
+                 for (key, value) in attr.items()]
         if hasattr(self, 'formkey') and self.formkey:
             c.append(INPUT(_type='hidden', _name='_formkey',
                      _value=self.formkey))
@@ -2134,13 +2144,13 @@ class FORM(DIV):
                     current.session.flash = message_onsuccess
                 else:
                     current.response.flash = message_onsuccess
-            elif callable(onsuccess):
+            elif isinstance(onsuccess, collections.Callable):
                 onsuccess(self)
             if next:
                 if self.vars:
-                    for key, value in self.vars.iteritems():
+                    for key, value in self.vars.items():
                         next = next.replace('[%s]' % key,
-                                            urllib.quote(str(value)))
+                                            urllib.parse.quote(str(value)))
                     if not next.startswith('/'):
                         next = URL(next)
                 redirect(next)
@@ -2148,14 +2158,14 @@ class FORM(DIV):
         elif self.errors:
             if onfailure == 'flash':
                 current.response.flash = message_onfailure
-            elif callable(onfailure):
+            elif isinstance(onfailure, collections.Callable):
                 onfailure(self)
             return False
         elif hasattr(self, "record_changed"):
             if self.record_changed and self.detect_record_change:
                 if onchange == 'flash':
                     current.response.flash = message_onchange
-                elif callable(onchange):
+                elif isinstance(onchange, collections.Callable):
                     onchange(self)
             return False
 
@@ -2209,11 +2219,11 @@ class FORM(DIV):
         inputs = [INPUT(_type='button',
                         _value=name,
                         _onclick=FORM.REDIRECT_JS % link)
-                  for name, link in buttons.iteritems()]
+                  for name, link in buttons.items()]
         inputs += [INPUT(_type='hidden',
                          _name=name,
                          _value=value)
-                   for name, value in hidden.iteritems()]
+                   for name, value in hidden.items()]
         form = FORM(INPUT(_type='submit', _value=text), *inputs)
         form.process()
         return form
@@ -2224,14 +2234,14 @@ class FORM(DIV):
         Sanitize is naive. It should catch any unsafe value
         for client retrieval.
         """
-        SERIALIZABLE = (int, float, bool, basestring, long,
+        SERIALIZABLE = (int, float, bool, str, int,
                         set, list, dict, tuple, Storage, type(None))
         UNSAFE = ("PASSWORD", "CRYPT")
         d = self.__dict__
 
         def sanitizer(obj):
             if isinstance(obj, dict):
-                for k in obj.keys():
+                for k in list(obj.keys()):
                     if any([unsafe in str(k).upper() for
                            unsafe in UNSAFE]):
                        # erease unsafe pair
@@ -2267,17 +2277,17 @@ class FORM(DIV):
 
     def as_json(self, sanitize=True):
         d = self.as_dict(flat=True, sanitize=sanitize)
-        from serializers import json
+        from .serializers import json
         return json(d)
 
     def as_yaml(self, sanitize=True):
         d = self.as_dict(flat=True, sanitize=sanitize)
-        from serializers import yaml
+        from .serializers import yaml
         return yaml(d)
 
     def as_xml(self, sanitize=True):
         d = self.as_dict(flat=True, sanitize=sanitize)
-        from serializers import xml
+        from .serializers import xml
         return xml(d)
 
 
@@ -2317,18 +2327,18 @@ class BEAUTIFY(DIV):
         if level == 0:
             return
         for c in self.components:
-            if hasattr(c, 'value') and not callable(c.value):
+            if hasattr(c, 'value') and not isinstance(c.value, collections.Callable):
                 if c.value:
                     components.append(c.value)
-            if hasattr(c, 'xml') and callable(c.xml):
+            if hasattr(c, 'xml') and isinstance(c.xml, collections.Callable):
                 components.append(c)
                 continue
-            elif hasattr(c, 'keys') and callable(c.keys):
+            elif hasattr(c, 'keys') and isinstance(c.keys, collections.Callable):
                 rows = []
                 try:
                     keys = (sorter and sorter(c)) or c
                     for key in keys:
-                        if isinstance(key, (str, unicode)) and keyfilter:
+                        if isinstance(key, str) and keyfilter:
                             filtered_key = keyfilter(key)
                         else:
                             filtered_key = str(key)
@@ -2348,7 +2358,7 @@ class BEAUTIFY(DIV):
                     pass
             if isinstance(c, str):
                 components.append(str(c))
-            elif isinstance(c, unicode):
+            elif isinstance(c, str):
                 components.append(c.encode('utf8'))
             elif isinstance(c, (list, tuple)):
                 items = [TR(TD(BEAUTIFY(item, **attributes)))
@@ -2566,7 +2576,7 @@ class web2pyHTMLParser(HTMLParser):
             self.last = tag.tag[:-1]
 
     def handle_data(self, data):
-        if not isinstance(data, unicode):
+        if not isinstance(data, str):
             try:
                 data = data.decode('utf8')
             except:
@@ -2575,9 +2585,9 @@ class web2pyHTMLParser(HTMLParser):
 
     def handle_charref(self, name):
         if name.startswith('x'):
-            self.parent.append(unichr(int(name[1:], 16)).encode('utf8'))
+            self.parent.append(chr(int(name[1:], 16)).encode('utf8'))
         else:
-            self.parent.append(unichr(int(name)).encode('utf8'))
+            self.parent.append(chr(int(name)).encode('utf8'))
 
     def handle_entityref(self, name):
         self.parent.append(entitydefs[name])

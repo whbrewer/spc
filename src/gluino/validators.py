@@ -14,13 +14,15 @@ import re
 import datetime
 import time
 import cgi
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import struct
 import decimal
 import unicodedata
-from cStringIO import StringIO
-from utils import simple_hash, web2py_uuid, DIGEST_ALG_BY_SIZE
-from dal import FieldVirtual, FieldMethod
+from io import StringIO
+from .utils import simple_hash, web2py_uuid, DIGEST_ALG_BY_SIZE
+from .dal import FieldVirtual, FieldMethod
+import collections
+from functools import reduce
 
 JSONErrors = (NameError, TypeError, ValueError, AttributeError,
               KeyError)
@@ -70,7 +72,7 @@ __all__ = [
 ]
 
 try:
-    from globals import current
+    from .globals import current
     have_current = True
 except ImportError:
     have_current = False
@@ -79,7 +81,7 @@ except ImportError:
 def translate(text):
     if text is None:
         return None
-    elif isinstance(text, (str, unicode)) and have_current:
+    elif isinstance(text, str) and have_current:
         if hasattr(current, 'T'):
             return str(current.T(text))
     return str(text)
@@ -174,25 +176,25 @@ class IS_MATCH(Validator):
 
     def __init__(self, expression, error_message='invalid expression',
                  strict=False, search=False, extract=False,
-                 unicode=False):
+                 str=False):
         if strict or not search:
             if not expression.startswith('^'):
                 expression = '^(%s)' % expression
         if strict:
             if not expression.endswith('$'):
                 expression = '(%s)$' % expression
-        if unicode:
-            if not isinstance(expression,unicode):
+        if str:
+            if not isinstance(expression,str):
                 expression = expression.decode('utf8')
             self.regex = re.compile(expression,re.UNICODE)
         else:
             self.regex = re.compile(expression)
         self.error_message = error_message
         self.extract = extract
-        self.unicode = unicode
+        self.str = str
 
     def __call__(self, value):
-        if self.unicode and not isinstance(value,unicode):
+        if self.str and not isinstance(value,str):
             match = self.regex.search(str(value).decode('utf8'))
         else:
             match = self.regex.search(str(value))
@@ -250,11 +252,11 @@ class IS_EXPR(Validator):
         self.environment = environment or {}
 
     def __call__(self, value):
-        if callable(self.expression):
+        if isinstance(self.expression, collections.Callable):
             return (value, self.expression(value))
         # for backward compatibility
         self.environment.update(value=value)
-        exec '__ret__=' + self.expression in self.environment
+        exec('__ret__=' + self.expression, self.environment)
         if self.environment['__ret__']:
             return (value, None)
         return (value, translate(self.error_message))
@@ -322,7 +324,7 @@ class IS_LENGTH(Validator):
                 lvalue = len(value)
             if self.minsize <= lvalue <= self.maxsize:
                 return (value, None)
-        elif isinstance(value, unicode):
+        elif isinstance(value, str):
             if self.minsize <= len(value) <= self.maxsize:
                 return (value.encode('utf8'), None)
         elif isinstance(value, (tuple, list)):
@@ -403,7 +405,7 @@ class IS_IN_SET(Validator):
         self.multiple = multiple
         if isinstance(theset, dict):
             self.theset = [str(item) for item in theset]
-            self.labels = theset.values()
+            self.labels = list(theset.values())
         elif theset and isinstance(theset, (tuple, list)) \
                 and isinstance(theset[0], (tuple, list)) and len(theset[0]) == 2:
             self.theset = [str(item) for item, label in theset]
@@ -480,7 +482,7 @@ class IS_IN_DB(Validator):
         sort=False,
         _and=None,
     ):
-        from dal import Table
+        from .dal import Table
         if isinstance(field, Table):
             field = field._id
 
@@ -528,7 +530,7 @@ class IS_IN_DB(Validator):
         else:
             fields = [table[k] for k in self.fields]
         ignore = (FieldVirtual,FieldMethod)
-        fields = filter(lambda f:not isinstance(f,ignore), fields)
+        fields = [f for f in fields if not isinstance(f,ignore)]
         if self.dbset.db._dbname != 'gae':
             orderby = self.orderby or reduce(lambda a, b: a | b, fields)
             groupby = self.groupby
@@ -577,12 +579,12 @@ class IS_IN_DB(Validator):
                 if not [v for v in values if not v in self.theset]:
                     return (values, None)
             else:
-                from dal import GoogleDatastoreAdapter
+                from .dal import GoogleDatastoreAdapter
 
                 def count(values, s=self.dbset, f=field):
-                    return s(f.belongs(map(int, values))).count()
+                    return s(f.belongs(list(map(int, values)))).count()
                 if isinstance(self.dbset.db._adapter, GoogleDatastoreAdapter):
-                    range_ids = range(0, len(values), 30)
+                    range_ids = list(range(0, len(values), 30))
                     total = sum(count(values[i:i + 30]) for i in range_ids)
                     if total == len(values):
                         return (values, None)
@@ -621,7 +623,7 @@ class IS_NOT_IN_DB(Validator):
         ignore_common_filters=False,
     ):
 
-        from dal import Table
+        from .dal import Table
         if isinstance(field, Table):
             field = field._id
 
@@ -639,7 +641,7 @@ class IS_NOT_IN_DB(Validator):
         self.record_id = id
 
     def __call__(self, value):
-        if isinstance(value,unicode):
+        if isinstance(value,str):
             value = value.encode('utf8')
         else:
             value = str(value)
@@ -965,7 +967,7 @@ class IS_DECIMAL_IN_RANGE(Validator):
 
 def is_empty(value, empty_regex=None):
     "test empty field"
-    if isinstance(value, (str, unicode)):
+    if isinstance(value, str):
         value = value.strip()
         if empty_regex is not None and empty_regex.match(value):
             value = ''
@@ -1321,7 +1323,7 @@ url_split_regex = \
 # Defined in RFC 3490, Section 3.1, Requirement #1
 # Use this regex to split the authority component of a unicode URL into
 # its component labels
-label_split_regex = re.compile(u'[\u002e\u3002\uff0e\uff61]')
+label_split_regex = re.compile('[\u002e\u3002\uff0e\uff61]')
 
 
 def escape_unicode(string):
@@ -1329,7 +1331,7 @@ def escape_unicode(string):
     Converts a unicode string into US-ASCII, using a simple conversion scheme.
     Each unicode character that does not have a US-ASCII equivalent is
     converted into a URL escaped form based on its hexadecimal value.
-    For example, the unicode character '\u4e86' will become the string '%4e%86'
+    For example, the unicode character '\\u4e86' will become the string '%4e%86'
 
     :param string: unicode string, the unicode string to convert into an
         escaped US-ASCII form
@@ -1394,7 +1396,7 @@ def unicode_to_ascii_authority(authority):
     except:
         asciiLabels = [str(label) for label in labels]
     #RFC 3490, Section 4, Step 5
-    return str(reduce(lambda x, y: x + unichr(0x002E) + y, asciiLabels))
+    return str(reduce(lambda x, y: x + chr(0x002E) + y, asciiLabels))
 
 
 def unicode_to_ascii_url(url, prepend_scheme):
@@ -1436,7 +1438,7 @@ def unicode_to_ascii_url(url, prepend_scheme):
         #Try appending a scheme to see if that fixes the problem
         scheme_to_prepend = prepend_scheme or 'http'
         groups = url_split_regex.match(
-            unicode(scheme_to_prepend) + u'://' + url).groups()
+            str(scheme_to_prepend) + '://' + url).groups()
     #if we still can't find the authority
     if not groups[3]:
         raise Exception('No authority component found, ' +
@@ -1534,7 +1536,7 @@ class IS_GENERIC_URL(Validator):
                     scheme = url_split_regex.match(value).group(2)
                     # Clean up the scheme before we check it
                     if not scheme is None:
-                        scheme = urllib.unquote(scheme).lower()
+                        scheme = urllib.parse.unquote(scheme).lower()
                     # If the scheme really exists
                     if scheme in self.allowed_schemes:
                         # Then the URL is valid
@@ -2130,7 +2132,7 @@ class IS_URL(Validator):
         else:
             raise SyntaxError("invalid mode '%s' in IS_URL" % self.mode)
 
-        if type(value) != unicode:
+        if type(value) != str:
             return subMethod(value)
         else:
             try:
@@ -2909,13 +2911,13 @@ class CRYPT(object):
 
 #  entropy calculator for IS_STRONG
 #
-lowerset = frozenset(unicode('abcdefghijklmnopqrstuvwxyz'))
-upperset = frozenset(unicode('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
-numberset = frozenset(unicode('0123456789'))
-sym1set = frozenset(unicode('!@#$%^&*()'))
-sym2set = frozenset(unicode('~`-_=+[]{}\\|;:\'",.<>?/'))
+lowerset = frozenset(str('abcdefghijklmnopqrstuvwxyz'))
+upperset = frozenset(str('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
+numberset = frozenset(str('0123456789'))
+sym1set = frozenset(str('!@#$%^&*()'))
+sym2set = frozenset(str('~`-_=+[]{}\\|;:\'",.<>?/'))
 otherset = frozenset(
-    unicode('0123456789abcdefghijklmnopqrstuvwxyz'))  # anything else
+    str('0123456789abcdefghijklmnopqrstuvwxyz'))  # anything else
 
 
 def calc_entropy(string):
@@ -2926,7 +2928,7 @@ def calc_entropy(string):
     seen = set()
     lastset = None
     if isinstance(string, str):
-        string = unicode(string, encoding='utf8')
+        string = str(string, encoding='utf8')
     for c in string:
         # classify this character
         inset = otherset
@@ -3069,7 +3071,7 @@ class IS_STRONG(object):
         if not self.error_message:
             if self.estring:
                 return (value, '|'.join(failures))
-            from html import XML
+            from .html import XML
             return (value, XML('<br />'.join(failures)))
         else:
             return (value, translate(self.error_message))
@@ -3369,8 +3371,8 @@ class IS_IPV4(Validator):
         '^(([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])$')
     numbers = (16777216, 65536, 256, 1)
     localhost = 2130706433
-    private = ((2886729728L, 2886795263L), (3232235520L, 3232301055L))
-    automatic = (2851995648L, 2852061183L)
+    private = ((2886729728, 2886795263), (3232235520, 3232301055))
+    automatic = (2851995648, 2852061183)
 
     def __init__(
         self,
@@ -3386,7 +3388,7 @@ class IS_IPV4(Validator):
             if isinstance(value, str):
                 temp.append(value.split('.'))
             elif isinstance(value, (list, tuple)):
-                if len(value) == len(filter(lambda item: isinstance(item, int), value)) == 4:
+                if len(value) == len([item for item in value if isinstance(item, int)]) == 4:
                     temp.append(value)
                 else:
                     for item in value:
@@ -3748,7 +3750,7 @@ class IS_IPADDRESS(Validator):
 
         try:
             ip = ipaddress.ip_address(value)
-        except ValueError, e:
+        except ValueError as e:
             return (value, translate(self.error_message))
 
         if self.is_ipv4 and isinstance(ip, ipaddress.IPv6Address):

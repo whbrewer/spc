@@ -1,9 +1,19 @@
-import sys, os, shutil, urllib2, time
+from __future__ import print_function
+from __future__ import absolute_import
+import sys, os, shutil, time
 import xml.etree.ElementTree as ET
 import re, json, hashlib, zipfile
+from builtins import input
+
+try:
+    # Python 3
+    from urllib.request import urlopen
+except ImportError:
+    # Python 2
+    from urllib2 import urlopen
 
 if os.path.exists("src/spc/config.py"):
-    import config
+    from . import config
 
 sys.argv[1:]
 
@@ -30,7 +40,7 @@ def usage():
     return buf
 
 if (len(sys.argv) == 1 or sys.argv[1] == "help"):
-    print usage()
+    print(usage())
     sys.exit()
 
 #db = config.db
@@ -82,7 +92,7 @@ def initdb():
     # get rid of old .table files
     for f in os.listdir(config.dbdir):
         if re.search("\.table", f):
-            print "removing file:", f
+            print("removing file:", f)
             os.remove(os.path.join(config.dbdir, f))
     # delete previous .db file should back first (future)
     dbpath = os.path.join(config.dbdir, config.db)
@@ -95,9 +105,9 @@ def initdb():
     dal.db.groups.insert(name="genetics")
 
     # add admin and guest user
-    hashpw = hashlib.sha256("admin").hexdigest()
+    hashpw = hashlib.sha256("admin".encode('utf-8')).hexdigest()
     dal.db.users.insert(user="admin", passwd=hashpw, gid=0)
-    hashpw = hashlib.sha256("guest").hexdigest()
+    hashpw = hashlib.sha256("guest".encode('utf-8')).hexdigest()
     dal.db.users.insert(user="guest", passwd=hashpw, gid=1)
 
     # add default app
@@ -157,28 +167,28 @@ notyet = "this feature not yet working"
 def dlfile(url):
     # Open the url
     try:
-        f = urllib2.urlopen(url)
-        print "downloading " + url
+        f = urlopen(url)
+        print("downloading " + url)
         # Open our local file for writing
         with open(os.path.basename(url), "wb") as local_file:
             local_file.write(f.read())
     #handle errors
-    except urllib2.HTTPError, e:
-        print "HTTP Error:", e.code, url
-    except urllib2.URLError, e:
-        print "URL Error:", e.reason, url
+    except HTTPError as e:
+        print("HTTP Error:", e.code, url)
+    except URLError as e:
+        print("URL Error:", e.reason, url)
 
 # process command line options
 def main():
     if (sys.argv[1] == "init"):
         create_config_file()
-        print "creating database."
+        print("creating database.")
         initdb()
     elif (sys.argv[1] == "migrate"):
-        print "migrating database schema changes"
+        print("migrating database schema changes")
         migrate()
     elif (sys.argv[1] == "run"):
-        import config
+        from . import config
         if config.server == 'uwsgi':
             os.system('/usr/local/bin/uwsgi etc/uwsgi.ini')
         else:
@@ -191,15 +201,15 @@ def main():
         import spc.worker_ssl
         spc.worker_ssl.main()
     elif (sys.argv[1] == "search"):
-        print notyet
+        print(notyet)
     elif (sys.argv[1] == "test"):
         import spc.test
         spc.test.main()
     elif (sys.argv[1] == "uninstall"):
-        import app_reader_writer as apprw
+        from . import app_reader_writer as apprw
         install_usage = "usage: spc uninstall appname"
         if len(sys.argv) == 3:
-            import migrate, config
+            from . import migrate, config
 
             app = sys.argv[2]
             a = apprw.App(app)
@@ -209,16 +219,16 @@ def main():
             if result:
                 appid = dal.db(dal.db.apps.name==app).select().first()["id"]
                 if a.delete(appid,True):
-                    print "SUCCESS: uninstalled app", app, "with appid:", appid
+                    print("SUCCESS: uninstalled app", app, "with appid:", appid)
             else:
-                print "ERROR: app does not exist"
+                print("ERROR: app does not exist")
                 sys.exit()
         else:
-            print install_usage
+            print(install_usage)
 
     elif (sys.argv[1] == "import"):
         if len(sys.argv) <= 2:
-            print "usage: spc import zipcase.zip (file.zip downloaded from another SPC instance)"
+            print("usage: spc import zipcase.zip (file.zip downloaded from another SPC instance)")
             sys.exit()
         else:
             save_path = sys.argv[2]
@@ -227,7 +237,7 @@ def main():
 
         if file_extension == ".zip":
 
-            print "importing zip file:", save_path
+            print("importing zip file:", save_path)
 
             # unzip file
             fh = open(save_path, 'rb')
@@ -243,19 +253,19 @@ def main():
             _, user, app, cid, _ = z.namelist()[0].split(os.sep)
 
             # delete zip file
-            user_input = raw_input('Remove zip file? [Yn] ') or 'y'
+            user_input = input('Remove zip file? [Yn] ') or 'y'
             if user_input.lower() == 'y':
                 os.unlink(save_path)
-                print "removed zip file", save_path
+                print("removed zip file", save_path)
             else:
-                print "file not removed"
+                print("file not removed")
 
         else:
-            print "importing directory:", save_path
+            print("importing directory:", save_path)
             _, user, app, cid = save_path.split(os.sep)
 
         # add case to database
-        import migrate, config
+        from . import migrate, config
         dal = migrate.dal(uri=config.uri, migrate=True)
         uid = dal.db.users(user=user).id
         dal.db.jobs.insert(uid=uid, app=app, cid=cid, state="D",
@@ -263,17 +273,17 @@ def main():
                        walltime="", np="", priority="")
         dal.db.commit()
 
-        print "imported case. user:", user, "app:", app, "cid:", cid
+        print("imported case. user:", user, "app:", app, "cid:", cid)
 
     elif (sys.argv[1] == "install"):
-        import app_reader_writer as apprw
+        from . import app_reader_writer as apprw
         #import platform
         #platform.system()  # Darwin, Linux, Windows, or Java
         #platform.machine() # i386, x86_64
         install_usage = "usage: spc install /path/to/file.zip\n    or spc install http://url/to/file.zip"
 
         if len(sys.argv) == 3:
-            import migrate, config
+            from . import migrate, config
 
             if re.search(r'http[s]://.*$', sys.argv[2]):
                 dlfile(sys.argv[2]) # download zip file
@@ -286,7 +296,7 @@ def main():
 
             app_dir_name = os.path.basename(save_path).split('.')[0]
             if os.path.isfile(app_dir_name):
-                print 'ERROR: app directory exists already. Please remove first.'
+                print('ERROR: app directory exists already. Please remove first.')
                 sys.exit()
             # don't overwrite another directory if it exists
             # instead rename old redirectory with timestamp
@@ -331,7 +341,7 @@ def main():
             # check if app already exists before preceding
             result = dal.db(dal.db.apps.name==parsed['name']).select().first()
             if result:
-                print "\n*** ERROR: app already exists in database ***"
+                print("\n*** ERROR: app already exists in database ***")
                 shutil.rmtree(app_path)
                 sys.exit()
 
@@ -342,7 +352,7 @@ def main():
 
             # turn on executable bit
             path = os.path.join(apprw.apps_dir, app, app)
-            if os.path.exists(path): os.chmod(path, 0700)
+            if os.path.exists(path): os.chmod(path, 0o700)
 
             # add app to database
             appid = dal.db.apps.insert(name=app,
@@ -400,10 +410,10 @@ def main():
 
             # commit to db
             dal.db.commit()
-            print "SUCCESS: installed app", app
-            print "Note: If SPC is running, you will need to restart"
+            print("SUCCESS: installed app", app)
+            print("Note: If SPC is running, you will need to restart")
         else:
-            print install_usage
+            print(install_usage)
 
     elif (sys.argv[1] == "list"):
         from spc import config
@@ -413,33 +423,33 @@ def main():
                 from spc import migrate
                 dal = migrate.dal(uri=config.uri)
                 result = dal.db().select(dal.db.apps.ALL)
-                for r in result: print r.name
+                for r in result: print(r.name)
             elif (sys.argv[2] == "available"):
                 try:
-                    response = urllib2.urlopen(url)
+                    response = urlopen(url)
                     html = response.read()
                     root = ET.fromstring(html)
                     for child in root.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Contents"):
                         for c in child.findall("{http://s3.amazonaws.com/doc/2006-03-01/}Key"):
                             (app, ext) = c.text.split(".")
-                            print app
+                            print(app)
                 except:
-                    print "ERROR: problem accessing network"
+                    print("ERROR: problem accessing network")
                     sys.exit()
             else:
-                print list_usage
+                print(list_usage)
         else:
-            print list_usage
+            print(list_usage)
 
     elif (sys.argv[1] == "update"):
-        import migrate, config, app_reader_writer as apprw
+        from . import migrate, config, app_reader_writer as apprw
 
         usage = "usage: spc update appname [command|plots]"
 
         if len(sys.argv) > 2:
             app = sys.argv[2]
         else:
-            print usage
+            print(usage)
             sys.exit()
 
         app_path = apprw.apps_dir + os.sep + app
@@ -447,14 +457,14 @@ def main():
 
         # check if directory exists
         if not os.path.isdir(app_path):
-            print 'ERROR: app directory does not exist'
-            print usage
+            print('ERROR: app directory does not exist')
+            print(usage)
             sys.exit()
 
         file_path = os.path.join(app_path, "spc.json")
 
         if not os.path.isfile(os.path.join(app_path, "spc.json")):
-            print 'ERROR: spc.json file does not exist in ' + app_path
+            print('ERROR: spc.json file does not exist in ' + app_path)
             sys.exit()
 
         # read the json app config file and insert info into db
@@ -464,7 +474,7 @@ def main():
 
         # check if this is the correct spc.json for the app specified
         if not app == parsed['name']:
-            print 'ERROR: app name specified in spc.json file different than command line'
+            print('ERROR: app name specified in spc.json file different than command line')
             sys.exit()
         else:
             appid = dal.db.apps(name=app).id
@@ -475,7 +485,7 @@ def main():
                 dal = migrate.dal(uri=config.uri, migrate=True)
                 dal.db.apps(name=sys.argv[2]).update_record(command=parsed['command'])
                 dal.db.commit()
-                print "updated", app, "command to:", parsed['command']
+                print("updated", app, "command to:", parsed['command'])
 
             elif sys.argv[3] == "plots":
 
@@ -491,7 +501,7 @@ def main():
                                                                  title=key['title'], options=key['options'])
 
                         if nrecords is not None:
-                            print '\nINFO: inserting plot definition', key['title']
+                            print('\nINFO: inserting plot definition', key['title'])
                             np += 1
 
                         pltid = dal.db.plots(title=key['title']).id
@@ -506,26 +516,26 @@ def main():
                                                      line_range=ds['line_range'],
                                                      data_def=ds['data_def'])
                             if nrecords is not None:
-                                print '\nINFO: inserting datasource for plt', pltid
+                                print('\nINFO: inserting datasource for plt', pltid)
                                 nd += 1
 
                 # commit changes to db
                 dal.db.commit()
-                print
-                if np > 0: print "SUCCESS: inserted", np, "plot defs"
-                if nd > 0: print "SUCCESS: inserted defs for app", app
-                print
-                print "NOTE: some plot records may have been updated but currently web2py DAL does not notify about that"
+                print()
+                if np > 0: print("SUCCESS: inserted", np, "plot defs")
+                if nd > 0: print("SUCCESS: inserted defs for app", app)
+                print()
+                print("NOTE: some plot records may have been updated but currently web2py DAL does not notify about that")
             else:
-                print "ERROR: option not supported"
+                print("ERROR: option not supported")
                 sys.exit()
         else:
-            print usage
+            print(usage)
             sys.exit()
 
     elif sys.argv[1] == "requirements":
         os.system('virtualenv venv')
         os.system('./venv/bin/pip install -r requirements.txt')
     else:
-        print "ERROR: option not supported"
+        print("ERROR: option not supported")
         sys.exit()

@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 from gluino import DAL, Field
-import config
+from . import config
 
 class dal(object):
     def __init__(self, uri=config.uri, migrate=False):

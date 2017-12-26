@@ -5,14 +5,14 @@
 # Bottle, Flask, Pyramid, Tornado, and other web frameworks.
 
 import traceback
-from dal import *
-from template import *
-from html import *
-from http import redirect
-from validators import *
-from sqlhtml import *
-from cache import Cache
-from globals import current
+from .dal import *
+from .template import *
+from .html import *
+from .http import redirect
+from .validators import *
+from .sqlhtml import *
+from .cache import Cache
+from .globals import current
 
 cache = Cache(None)
 
@@ -28,7 +28,7 @@ class wrapper(object):
         if not response is None: self.response = response
     def __call__(self,f):
         def g(*a,**b):
-            from globals import current
+            from .globals import current
             current.T = lambda s,*a,**b: str(s)
             g.__name__ = f.__name__
             try:
@@ -38,15 +38,15 @@ class wrapper(object):
                 if self.response:
                     # used by pyramid
                     r = self.response(r)
-            except HTTP, http:
+            except HTTP as http:
                 if 300<=http.status<400 and self.redirect:
                     return self.redirect(http.status,http.headers['Location'])
                 elif self.http_handler:
                     return self.http_handler(http.status,http.headers)
                 else:
                     raise NotImplementedError
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 for db in self.dbs: db.rollback()
                 if self.debug:
                     return str(traceback.format_exc())
@@ -63,7 +63,7 @@ class wrapper(object):
     @staticmethod
     def extract_vars(form):
         d = {}
-        for key, value in form.items():
+        for key, value in list(form.items()):
             if isinstance(value,list) and len(value)==1:
                 value = value[0]
             if not key in d:

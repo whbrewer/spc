@@ -1,9 +1,9 @@
 import traceback
-from dal import *
-from template import *
-from html import *
-from validators import *
-from sqlhtml import *
+from .dal import *
+from .template import *
+from .html import *
+from .validators import *
+from .sqlhtml import *
 
 class wrapper(object):
     debug = False
@@ -24,10 +24,10 @@ class wrapper(object):
                 if self.response:
                     # used by pyramid
                     r = self.response(r)
-            except HTTP, e:                
+            except HTTP as e:                
                 raise NotImplementedError
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 for db in self.dbs: db._adapter.close('rollback')
                 if self.debug:
                     return str(traceback.format_exc())
@@ -44,7 +44,7 @@ class wrapper(object):
     @staticmethod
     def extract_vars(form):
         d = {}
-        for key, value in form.items():
+        for key, value in list(form.items()):
             if isinstance(value,list) and len(value)==1:
                 value = value[0]
             if not key in d:

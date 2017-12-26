@@ -1,11 +1,13 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from bottle import Bottle, request, template, redirect
 import os, sys, traceback, cgi, time, shutil, json
 import argparse as ap
 
-from model import users, db, apps, app_user, plots, datasource
-from common import slurp_file
-import app_reader_writer as apprw
-import config
+from .model import users, db, apps, app_user, plots, datasource
+from .common import slurp_file
+from . import app_reader_writer as apprw
+from . import config
 
 routes = Bottle()
 
@@ -32,7 +34,7 @@ def show_app(app):
         return template(os.path.join('apps', app),  params)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         redirect('/app/'+app)
 
 @routes.get('/app_exists/<appname>')
@@ -137,7 +139,7 @@ def delete_app(appid):
             return template("error", err="must be admin")
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return template("error", err="failed to delete app... did the app load properly?")
 
     redirect("/apps")
@@ -163,7 +165,7 @@ def view_app(app):
         return template('app', params, rows=result)
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        print traceback.print_exception(exc_type, exc_value, exc_traceback)
+        print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return template('error', err="there was a problem showing the app template. Check traceback.")
 
 
@@ -173,7 +175,7 @@ def useapp():
     uid = users(user=user).id
     app = request.forms.app
     appid = apps(name=app).id
-    print "allowing user", user, uid, "to access app", app, appid
+    print("allowing user", user, uid, "to access app", app, appid)
     app_user.insert(uid=uid, appid=appid)
     db.commit()
     redirect('/apps')
@@ -186,7 +188,7 @@ def removeapp():
     appid = apps(name=app).id
     auid = app_user(uid=uid, appid=appid).id
     del app_user[auid]
-    print "removing user", user, uid, "access to app", app, appid
+    print("removing user", user, uid, "access to app", app, appid)
     db.commit()
     redirect('/myapps')
 
@@ -293,7 +295,7 @@ def appconfig_exe(step="upload"):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
                 shutil.move(save_path, save_path+"."+timestr)
             upload.save(save_path)
-            os.chmod(save_path, 0700)
+            os.chmod(save_path, 0o700)
 
             # process = subprocess.Popen(["otool -L", save_path], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
             # contents = process.readlines()
@@ -303,7 +305,7 @@ def appconfig_exe(step="upload"):
             return template('appconfig/exe_test', params)
         except IOError:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
+            print(traceback.print_exception(exc_type, exc_value, exc_traceback))
             return "IOerror:", IOError
         else:
             return "ERROR: must be already a file"
@@ -420,7 +422,7 @@ def edit_inputs(step):
             return template('appconfig/inputs_parse', params)
         except IOError:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            print traceback.print_exception(exc_type, exc_value, exc_traceback)
+            print(traceback.print_exception(exc_type, exc_value, exc_traceback))
             return "IOerror:", IOError
         else:
             return "ERROR: must be already a file"
@@ -430,7 +432,7 @@ def edit_inputs(step):
         appname = request.forms.appname
         myapp = root.app_instance(input_format, appname)
         inputs, _, _ = myapp.read_params()
-        print "inputs:", inputs
+        print("inputs:", inputs)
         params = { "appname": appname }
         return template('appconfig/inputs_create_view', params, inputs=inputs,
                                         input_format=input_format)
