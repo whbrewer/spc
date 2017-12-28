@@ -11,7 +11,79 @@ STATE_QUEUED = 'Q'
 STATE_COMPLETED = 'C'
 STATE_STOPPED = 'X'
 
-class Scheduler(object):
+
+class BaseScheduler(object):
+
+    def __init__(self):
+        pass
+
+    def poll(self):
+        """start polling thread which checks queue status every second"""
+        t = threading.Thread(target = self.assign_task)
+        t.daemon = True
+        t.start()
+
+    def assign_task(self):
+        pass
+
+    def qsub(self):
+        pass
+
+    def qdel(self):
+        pass
+
+
+class PBSScheduler(BaseScheduler):
+
+    def qsub(self, app, cid, uid, cmd, np, pry, walltime, desc=""):
+
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        user = db.users(uid).user
+        rel_path = os.path.join(user_dir, user, app, cid)
+        abs_path = os.path.join(os.getcwd(), rel_path)
+        file_name = os.path.join(rel_path, 'pbs.script')
+
+        # create pbs.script file
+        with open(file_name, 'w') as f:
+            f.write('#!/bin/sh\n')
+            f.write('#PBS -l select=1:ncpus=36:mpiprocs=2\n')
+            f.write('#PBS -l walltime=000:10:00\n')
+            f.write('#PBS -N JOB NAME\n')
+            f.write('#PBS -A XX-account number-XX\n')
+            f.write('#PBS -q standard\n')
+            f.write('env | sort\n')
+            f.write('hostname\n')
+            f.write('uname -a\n')
+            f.write('cd ' + abs_path + '\n')
+            # redirect output to appname.out file
+            outfn = app + ".out"
+            cmd = cmd + ' > ' + outfn + ' 2>&1 '
+            f.write("mpirun -np " + str(np) + " " + cmd + "\n")
+
+        desc = subprocess.check_output(["qsub", file_name]).strip()
+
+        jid = db.jobs.insert(uid=uid, app=app, cid=cid, command=cmd, state=STATE_QUEUED,
+                             description=desc, time_submit=time.asctime(),
+                             walltime=walltime, np=np, priority=pry)
+        db.commit()
+        db.close()
+
+        return str(jid)
+
+    def qstat(self):
+        pass
+
+    def qdel(self):
+        """delete job jid from the queue"""
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        del db.jobs[jid]
+        db.commit()
+        db.close()
+        desc = subprocess.check_output(["qdel", file_name]).strip()
+        return desc
+
+
+class DefaultScheduler(object):
     """multi-process scheduler"""
 
     def __init__(self):
@@ -31,11 +103,11 @@ class Scheduler(object):
 
     def poll(self):
         """start polling thread which checks queue status every second"""
-        t = threading.Thread(target = self.assignTask)
+        t = threading.Thread(target = self.assign_task)
         t.daemon = True
         t.start()
 
-    def assignTask(self):
+    def assign_task(self):
         global myjobs
         manager = Manager()
         myjobs = manager.dict()
@@ -175,3 +247,6 @@ class Scheduler(object):
 
     def test_qfront(self):
         print self.qfront()
+
+Scheduler = PBSScheduler
+
