@@ -436,7 +436,7 @@ def import_job_db(user, app, cid):
         uid=uid,
         app=app,
         cid=cid,
-        state='D',
+        state='C',
         description='',
         time_submit=time.asctime(),
         walltime='',
