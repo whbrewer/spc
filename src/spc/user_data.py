@@ -347,8 +347,11 @@ def zip_case():
     path = os.path.join(base_dir, cid+".zip")
     zf = zipfile.ZipFile(path, mode='w', compression=zipfile.ZIP_DEFLATED)
     sim_dir = os.path.join(base_dir, cid)
-    for fn in os.listdir(sim_dir):
-        zf.write(os.path.join(sim_dir, fn))
+
+    for dir_path, _, file_names in os.walk(sim_dir):
+        for file_name in file_names:
+            zf.write(os.path.join(dir_path, file_name))
+
     zf.close()
 
     return static_file(path, root="./")

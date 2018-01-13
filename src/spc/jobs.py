@@ -1,11 +1,12 @@
 from bottle import Bottle, request, template, redirect
-import os, sys, re, traceback, shutil, time, argparse as ap
+import os, sys, re, traceback, shutil, time, argparse as ap, zipfile
 from datetime import datetime, timedelta
 
 from user_data import user_dir
 from common import rand_cid, replace_tags, slurp_file
 from model import db, users, jobs
 import config
+import migrate
 
 routes = Bottle()
 
@@ -427,3 +428,33 @@ def stop_job():
     jobs(jid).update_record(state="X")
     db.commit()
     redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
+
+def import_job_db(user, app, cid):
+    dal = migrate.dal(uri=config.uri, migrate=True)
+    uid = dal.db.users(user=user).id
+    dal.db.jobs.insert(
+        uid=uid,
+        app=app,
+        cid=cid,
+        state='D',
+        description='',
+        time_submit=time.asctime(),
+        walltime='',
+        np='',
+        priority=''
+    )
+    dal.db.commit()
+
+@routes.get('/jobs/import', method='POST')
+def import_job():
+    upload = request.files.get('upload')
+
+    z = zipfile.ZipFile(upload.file)
+    z.extractall()
+
+    # Get the username, appname, and case id from the file structure
+    _, user, app, cid, _ = z.namelist()[0].split(os.sep)
+
+    import_job_db(user, app, cid)
+
+    redirect('/jobs')

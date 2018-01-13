@@ -20,7 +20,11 @@
             </form>
           </div>
 
-          <div class="btn-group col-xs-6" id="actions" style="display:none">
+          <div class="btn-group col-xs-2">
+              <button class="import-button btn btn-default" type="button">Import Zip</button>
+          </div>
+
+          <div class="btn-group col-xs-3" id="actions" style="display:none">
               <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#dModal"><span class="glyphicon glyphicon-trash"></span> Delete</button>
 
               <button type="button" class="btn btn-warning" data-toggle="modal"  data-target="#mergeModal"><span class="glyphicon glyphicon-resize-small"></span> Merge</button>
@@ -156,6 +160,10 @@
     </div>
 </div>
 
+<form class="import-form" action="/jobs/import" method="post" enctype="multipart/form-data" style="display: none">
+    <input type="file" name="upload" />
+</form>
+
 <script>
 $(document).ready(function() {
     // $('#clickable tr').click(function(e) {
@@ -276,4 +284,19 @@ function toggle_action_button_visibility() {
   }
 
 }
+
+// Import button
+(function() {
+    const button = document.querySelector('.import-button');
+    const form = document.querySelector('.import-form');
+    const input = form.querySelector('input');
+
+    button.addEventListener('click', function() {
+        input.click();
+    });
+
+    input.addEventListener('change', function() {
+        form.submit();
+    });
+}());
 </script>
