@@ -2,6 +2,8 @@ import sys, os, shutil, urllib2, time
 import xml.etree.ElementTree as ET
 import re, json, hashlib, zipfile
 
+from spc.jobs import import_job_db
+
 if os.path.exists("src/spc/config.py"):
     import config
 
@@ -254,14 +256,7 @@ def main():
             print "importing directory:", save_path
             _, user, app, cid = save_path.split(os.sep)
 
-        # add case to database
-        import migrate, config
-        dal = migrate.dal(uri=config.uri, migrate=True)
-        uid = dal.db.users(user=user).id
-        dal.db.jobs.insert(uid=uid, app=app, cid=cid, state="D",
-                       description="", time_submit=time.asctime(),
-                       walltime="", np="", priority="")
-        dal.db.commit()
+        import_job_db(user, app, cid)
 
         print "imported case. user:", user, "app:", app, "cid:", cid
 
