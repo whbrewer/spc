@@ -2,9 +2,8 @@ import sys, os, shutil, urllib2, time
 import xml.etree.ElementTree as ET
 import re, json, hashlib, zipfile
 
-from spc.jobs import import_job_db
-
 if os.path.exists("src/spc/config.py"):
+    from spc.jobs import import_job_db
     import config
 
 sys.argv[1:]
