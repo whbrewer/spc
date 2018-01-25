@@ -6,8 +6,11 @@ import sys
 
 
 def setup_virtualenv():
-    os.system('virtualenv venv')
-    os.system('./venv/bin/pip install -r ./requirements.txt')
+    try:
+        os.system('virtualenv venv')
+        os.system('./venv/bin/pip install -r ./requirements.txt')
+    except:
+        print "ERROR: couldn't find virtualenv. Try: sudo pip install virtualenv"
 
 def pass_to_cli(arg):
     path = './venv/bin/python'
