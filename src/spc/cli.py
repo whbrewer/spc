@@ -241,15 +241,19 @@ def main():
             fh.close()
 
             # get the username, appname, and case id out of the file structure
-            _, user, app, cid, _ = z.namelist()[0].split(os.sep)
+            _, user, app, cid, _ = z.namelist()[0].split(os.sep, 4)
 
             # delete zip file
-            user_input = raw_input('Remove zip file? [Yn] ') or 'y'
+            user_input = ''
+            if 'SPC_REMOVE_ZIP' in os.environ:
+                user_input = os.environ['SPC_REMOVE_ZIP']
+            else:
+                user_input = raw_input('Remove zip file? [Yn] ') or 'y'
             if user_input.lower() == 'y':
                 os.unlink(save_path)
-                print "removed zip file", save_path
+                print save_path, " removed"
             else:
-                print "file not removed"
+                print save_path, " not removed"
 
         else:
             print "importing directory:", save_path
