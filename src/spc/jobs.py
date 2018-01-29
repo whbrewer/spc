@@ -453,7 +453,7 @@ def import_job():
     z.extractall()
 
     # Get the username, appname, and case id from the file structure
-    _, user, app, cid, _ = z.namelist()[0].split(os.sep)
+    _, user, app, cid, _ = z.namelist()[0].split(os.sep, 4)
 
     import_job_db(user, app, cid)
 
