@@ -1,5 +1,9 @@
 # SPC Release Notes
 
+## 3/8/18
+
+There are problems running spc with the Anaconda Python distribution (at least on Mac).  There seems to be some name collisions or something.  So, try using Mac's built-in Python instead.
+
 ## 8/29/17
 
 If you want to run `./spc test` to test routes, need to first run `./spc requirements` on existing installation to update the 3rd party dependencies.
