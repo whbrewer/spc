@@ -547,7 +547,6 @@ class YAML(App):
         # see "flatten" below. the keys need to be glued-together versions of
         # the tree hierarchy
         for section in parsed:
-            #print section, parsed[section] #, len(parsed[section])
             # value is a dict
             if type(parsed[section]) == type({}):
                 for option in parsed[section]:
@@ -561,7 +560,7 @@ class YAML(App):
                         params[option] = None
 
             # value is a list
-            if type(parsed[section]) == type([]):
+            elif type(parsed[section]) == type([]):
                 for item in parsed[section]:
                     blockorder += [ section ]
                     for option in item:
@@ -573,16 +572,13 @@ class YAML(App):
                             print("exception on %s!" % option)
                             params[option] = None
 
-            else: # value is string, integer, or Boolean
-                # put every variable that is not part of a subtree in the "basic" category
-                if "basic" not in blockorder:
-                    blockorder += [ "basic" ]
-                blockmap.setdefault("basic",[]).append(section)
-                params[section] = str(parsed[section]) # simply a key/value assignment
+            blockorder += [section]
 
-        # print 'params:',params
-        # print 'blockmap:',blockmap
-        # print 'blockorder:',blockorder
+        blockmap.setdefault("basic",[])
+
+        #print 'params:',params
+        #print 'blockmap:',blockmap
+        #print 'blockorder:',blockorder
         return params, blockmap, blockorder
 
     def flatten(self, params):
