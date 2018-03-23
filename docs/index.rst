@@ -42,17 +42,21 @@ To install an app interactively, click the Apps button, then click the +Add butt
 
 	* **Command** – This is the command to run to start the simulation.  This command is being run from the working directory of the case, which is user_data/user/app/case (e.g. user_data/joe/mendel/c82d3f).   For example, this may look like::
 
-	    <rel_apps_dir>/mendel/mendel
+	    <rel_apps_path>/mendel/mendel
 
-	(or mendel.exe for a Windows machine).  Here <rel_apps_dir> will be later replaced by the location where the SPC apps are installed (currently this would replaced by the string ../../../../src/spc_apps). For a Java application, this may look like::
+	(or mendel.exe for a Windows machine).  Here <rel_apps_path> will be later replaced by the location where the SPC apps are installed (currently this would replaced by the string ../../../../src/spc_apps). For a Java application, this may look like::
 
-		/usr/bin/java -jar <rel_apps_dir>/jmendel/dist/jmendel.jar
+		/usr/bin/java -jar <rel_apps_path>/jmendel/dist/jmendel.jar
 
 	NOTE: since v0.22, the app run command can no longer be specified through the web interface.  It must instead be specified in the spc.json file.  Therefore, after setting up an, app, one may generate an spc.json manifest file by going in to the app configuration page (Click on top right “hamburger” icon and click “Configure app”, then click the “Export” button).  This will output a spc.json file to the src/spc_apps/appname folder.   Then, edit the command line in the  spc.json file to be something like (replacing app with the name of your app)::
 
 		"command": "<rel_apps_path>/app/app",
 
-	After setting up the database entry, to finish setting up the application will require several more steps, which can be controlled from the App Edit page, which can be accessed by clicking the cog wheel on the App Edit page
+After setting up the database entry,  you will need to run the command:
+
+                ./spc update appname command 
+
+to update the SPC database.
 
 2. **Upload input file** – To accomplish this step, click the “Configure inputs” button, and following through the instructions. One must upload an input file that is consistent with the input format specified in step 1.  So, for example, if namelist input format is specified, the upload file must be in namelist format.  Also, the name of the input file should be the name of the app with the following extension:
 
