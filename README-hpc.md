@@ -1,3 +1,5 @@
+> module load $PROJECTS_HOME/datools/modulefiles/anaconda/2
+
 > python src/main.py run
 
 > pip install --user -r requirements.txt
