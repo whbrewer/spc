@@ -1,5 +1,9 @@
 # SPC Release Notes
 
+## 3/24/18
+
+If you have any problems with using virtualenv, you may bypass using the virtualenv environment by simply running `python src/main.py run` from the main spc directory.
+
 ## 3/8/18
 
 There are problems running spc with the Anaconda Python distribution (at least on Mac).  There seems to be some name collisions or something.  So, try using Mac's built-in Python instead.

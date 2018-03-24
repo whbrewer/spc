@@ -52,9 +52,9 @@ To install an app interactively, click the Apps button, then click the +Add butt
 
 		"command": "<rel_apps_path>/app/app",
 
-After setting up the database entry,  you will need to run the command:
+After setting up the database entry,  you will need to run the command::
 
-                ./spc update appname command 
+        ./spc update appname command 
 
 to update the SPC database.
 
