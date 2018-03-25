@@ -4,6 +4,7 @@ import json, os, re, shutil, sys
 import xml.etree.ElementTree as ET
 try:
     import yaml
+    #from ruamel import yaml
 except:
     print "ERROR: when trying to import yaml"
 
@@ -600,7 +601,13 @@ class YAML(App):
             for key in self.blockmap[section]:
                 # for checkboxes that dont get sent when unchecked
                 if key not in form_params: form_params[key] = 'false'
-                params[section][key] = form_params[key]
+                try:
+                    params[section][key] = int(form_params[key])
+                except:
+                    try:
+                        params[section][key] = float(form_params[key])
+                    except:
+                        params[section][key] = form_params[key]
                 #print key, form_params[key]
 
         cfgfile.write(yaml.dump(params, default_flow_style=False))
