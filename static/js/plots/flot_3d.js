@@ -1,8 +1,12 @@
 (function() {
-    var data = JSON.parse(document.getElementById('flot-3d-data-json').textContent);
-    var options = JSON.parse(document.getElementById('flot-3d-options-json').textContent);
-    var zData = JSON.parse(document.getElementById('flot-3d-z-data-json').textContent);
-    var zLabel = JSON.parse(document.getElementById('flot-3d-z-label-json').textContent);
+    var serverData = JSON.parse(document.getElementById('flot-3d-json').textContent);
+
+    var data = serverData.data;
+    var options = serverData.flot_options;
+    var zData = serverData.z_data;
+    var zLabel = serverData.z_label;
+    var xAxisScale = serverData.x_axis_scale;
+
     var zoomed = false;
 
     var plotParent = document.getElementById('myplot');
@@ -30,7 +34,23 @@
     sliderParent.appendChild(sliderValue);
     sliderParent.appendChild(slider);
 
-    options = $.extend(true, {yaxis: getYMinMax(data, options)}, options);
+    var defaultOptions = {
+        yaxis: getYMinMax(data, options),
+    };
+
+    if (xAxisScale === 'log') {
+        defaultOptions.xaxis = {
+            transform: function(x) { return Math.log(x); },
+            inverseTransform: function(x) { return Math.exp(x); },
+        };
+    } else if (xAxisScale === 'negative_log') {
+        defaultOptions.xaxis = {
+            transform: function(x) { return -Math.log(x); },
+            inverseTransform: function(x) { return Math.exp(-x); },
+        };
+    }
+
+    options = $.extend(true, defaultOptions, options);
     data.forEach(initPlot);
 
     var plotElements = $.makeArray(plotParent.children);

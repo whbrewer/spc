@@ -526,10 +526,13 @@ def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
         'rows': list_of_plots,
         'stats': '',
         'user': user,
-        'options_json': json.dumps(options['flot_options']),
-        'data_json': json.dumps(plot_data),
-        'z_data_json': json.dumps(z_data),
-        'z_label_json': json.dumps(options['z_label']),
+        'flot_3d_json': json.dumps({
+            'flot_options': options['flot_options'],
+            'data': plot_data,
+            'z_data': z_data,
+            'z_label': options['z_label'],
+            'x_axis_scale': options.get('x_axis_scale', ''),
+        }),
     }
 
     return template('plots/flot-3d', params)

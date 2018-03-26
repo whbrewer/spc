@@ -9,12 +9,7 @@
 %include('navbar')
 %include('plots/plot_list')
 
-<div style="display: none">
-    <div id="flot-3d-data-json">{{!data_json}}</div>
-    <div id="flot-3d-options-json">{{!options_json}}</div>
-    <div id="flot-3d-z-data-json">{{!z_data_json}}</div>
-    <div id="flot-3d-z-label-json">{{!z_label_json}}</div>
-</div>
+<div id="flot-3d-json" style="display: none">{{!flot_3d_json}}</div>
 
 <script src="/static/js/flot/excanvas.min.js"></script>
 <script src="/static/js/flot/jquery.min.js"></script>
