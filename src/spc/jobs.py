@@ -149,7 +149,8 @@ def start_new_job():
 
     # if restarting from old case
     if re.search("[a-z]", cid):
-        params, _, _ = root.myapps[app].read_params(owner, cid)
+        previous_params, _, _ = root.myapps[app].read_params(owner, cid)
+        params.update(previous_params)
         if user == owner:
             params['tags'] = cid
         else:
