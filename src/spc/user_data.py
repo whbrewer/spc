@@ -341,10 +341,10 @@ def zip_case():
     user = root.authorized()
     import zipfile
     app = request.query.app
-    cid = request.query.cid
+    owner, cid = parse_owner_cid(request.query.cid, user)
 
-    base_dir = os.path.join(user_dir, user, app)
-    path = os.path.join(base_dir, cid+".zip")
+    base_dir = os.path.join(user_dir, owner, app)
+    path = os.path.join(base_dir, cid + '.zip')
     zf = zipfile.ZipFile(path, mode='w', compression=zipfile.ZIP_DEFLATED)
     sim_dir = os.path.join(base_dir, cid)
 
@@ -453,3 +453,12 @@ def get_notifications():
     response = dict()
     response['new_shared_jobs'] = users(user=user).new_shared_jobs
     return json.dumps(response)
+
+
+def parse_owner_cid(cid, default_user):
+    parts = cid.split('/')
+
+    if len(parts) == 2:
+        return (parts[0], parts[1])
+    else:
+        return (default_user, cid)
