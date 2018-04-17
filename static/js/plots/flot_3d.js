@@ -3,9 +3,12 @@
 
     var data = serverData.data;
     var options = serverData.flot_options;
+    var jobParams = serverData.job_params;
     var zData = serverData.z_data;
     var zLabel = serverData.z_label;
     var xAxisScale = serverData.x_axis_scale;
+
+    Function('options', 'jobParams', serverData.flot_options_transformer)(options, jobParams);
 
     var zoomed = false;
 
@@ -37,18 +40,6 @@
     var defaultOptions = {
         yaxis: getYMinMax(data, options),
     };
-
-    if (xAxisScale === 'log') {
-        defaultOptions.xaxis = {
-            transform: function(x) { return Math.log(x); },
-            inverseTransform: function(x) { return Math.exp(x); },
-        };
-    } else if (xAxisScale === 'negative_log') {
-        defaultOptions.xaxis = {
-            transform: function(x) { return -Math.log(x); },
-            inverseTransform: function(x) { return Math.exp(-x); },
-        };
-    }
 
     options = $.extend(true, defaultOptions, options);
     data.forEach(initPlot);

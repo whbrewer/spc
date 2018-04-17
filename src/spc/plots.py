@@ -361,7 +361,7 @@ def plot_interface(pltid):
     elif plottype == 'handson':
         tfn = 'plots/handson'
     elif plottype == 'flot-3d':
-        return plot_flot_3d(result, cid, app, sim_dir, owner, user, plot_title, pltid)
+        return plot_flot_3d(result, cid, app, sim_dir, owner, user, plot_title, pltid, inputs)
     else:
         return template("error", err="plot type not supported: " + plottype)
 
@@ -476,8 +476,7 @@ def plot_interface(pltid):
     return template(tfn, params)
 
 
-def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
-
+def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid, inputs):
     # to handle data in user/cid format when looking at shared cases
     if re.search("/", cid):
         (owner, c) = cid.split("/")
@@ -528,6 +527,8 @@ def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
         'user': user,
         'flot_3d_json': json.dumps({
             'flot_options': options['flot_options'],
+            'job_params': inputs,
+            'flot_options_transformer': options.get('flot_options_transformer', ''),
             'data': plot_data,
             'z_data': z_data,
             'z_label': options['z_label'],
