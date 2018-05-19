@@ -104,11 +104,13 @@
 </tbody>
 </table>
 
+% if len(rows) == num_rows:
 <form method="get" action="/jobs">
   <input type="hidden" name="n" value="{{n+num_rows}}">
   <input type="hidden" name="q" value="{{q}}">
   <input type="submit" class="btn btn-default btn-block" value="Show more">
 </form>
+% end
 
 <!-- Delete Modal -->
 <div class="modal fade" id="dModal" tabindex="-1" role="dialog"
