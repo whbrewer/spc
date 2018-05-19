@@ -152,9 +152,9 @@ def start_new_job():
         previous_params, _, _ = root.myapps[app].read_params(owner, cid)
         params.update(previous_params)
         if user == owner:
-            params['tags'] = cid
+            params['tags'] = cid + "," + jobs(cid=cid).description
         else:
-            params['tags'] = os.path.join(owner, cid)
+            params['tags'] = os.path.join(owner, cid) + "," + jobs(cid=cid).description
 
     params['cid'] = cid
     params['app'] = app
