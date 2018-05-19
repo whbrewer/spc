@@ -36,10 +36,12 @@
 %end
 </table>
 
+% if len(rows) == num_rows:
 <form method="get" action="/jobs/shared">
   <input type="hidden" name="n" value="{{n+num_rows}}">
   <input type="submit" class="btn btn-default btn-block" value="Show more">
 </form>
+% end
 
 <script>
 $(document).ready(function() {
