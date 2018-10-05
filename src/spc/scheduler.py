@@ -46,11 +46,11 @@ class PBSScheduler(BaseScheduler):
         # create pbs.script file
         with open(file_name, 'w') as f:
             f.write('#!/bin/sh\n')
-            f.write('#PBS -l select=1:ncpus=36:mpiprocs=2\n')
-            f.write('#PBS -l walltime=000:10:00\n')
-            f.write('#PBS -N JOB NAME\n')
-            f.write('#PBS -A XX-account number-XX\n')
-            f.write('#PBS -q standard\n')
+            f.write('#PBS -l select=1:ncpus=44:mpiprocs=1\n')
+            f.write('#PBS -l walltime=000:60:00\n')
+            f.write('#PBS -N spc\n')
+            f.write('#PBS -A ACCOUNT_NUMBER_HERE\n')
+            f.write('#PBS -q HIE\n')
             f.write('env | sort\n')
             f.write('hostname\n')
             f.write('uname -a\n')
@@ -58,9 +58,9 @@ class PBSScheduler(BaseScheduler):
             # redirect output to appname.out file
             outfn = app + ".out"
             cmd = cmd + ' > ' + outfn + ' 2>&1 '
-            f.write("mpirun -np " + str(np) + " " + cmd + "\n")
+            f.write("mpiexec -n " + str(np) + " " + cmd + "\n")
 
-        desc = subprocess.check_output(["qsub", file_name]).strip()
+        desc = subprocess.check_output(["/opt/pbs/default/bin/qsub", file_name]).strip()
 
         jid = db.jobs.insert(uid=uid, app=app, cid=cid, command=cmd, state=STATE_QUEUED,
                              description=desc, time_submit=time.asctime(),

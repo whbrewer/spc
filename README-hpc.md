@@ -9,6 +9,6 @@
 > pip install --user wsgiserver
 > pip install --user tornado
 
-note: use tornado instead of cherrpy on Onyx
+note: use tornado instead of cherrypy on Onyx
 need to set in src/spc/config.py
 
