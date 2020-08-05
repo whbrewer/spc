@@ -10,6 +10,10 @@ The Scientific Platform for the Cloud (SPC) is a Python-based cloud platform/fra
 
   > W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24 http://ieeexplore.ieee.org/document/7421906/
 
+Also, check out this white paper case study of using SPC to integrate bioinformatics algorithms:
+
+  * W Brewer [Scalable cloud platform middleware for integrating bioinformatics algorithms](https://github.com/whbrewer/unpublished/blob/master/scalable_bioinformatics_platform_2017.pdf)
+
 This platform is ideally suited to run scientific applications that: (1) require an input deck full of integers, floats, strings, and booleans stored in a standardized file format such as INI, XML, JSON, YAML, TOML, or Namelist.input, (2) require some amount of processing time (i.e. not instantaneous -- although it can handle such cases too), (3) require some plotting at the end of the simulation, (4) use MPI or MapReduce for parallelization (although handles serial cases well too).  Moreover, it can handle other applications as well, but some amount of pre- or post-processing may be required.  Such topics are described in more detail in the aforementioned paper.  If you need a copy of this paper, please send an e-mail request to the address at the bottom of this file.
 
 Disclaimer: SPC has been tested primarily with Google Chrome browser, Python 2.7.8 to 2.7.12, on Linux and OS X systems. Other environments may work, but are not guaranteed to work.
