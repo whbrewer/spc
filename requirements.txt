@@ -1,4 +1,4 @@
-bottle==0.12.13
+bottle==0.12.19
 beaker==1.9.0
 pyyaml>=4.2b1
 psutil==5.6.6
