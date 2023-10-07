@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from bottle import Bottle, request, template, redirect
+from flask import Flask, Blueprint
 import os, re, sys, traceback, cgi, pickle, time
 import argparse as ap
 
@@ -15,13 +15,10 @@ try:
 except:
     print("INFO: not importing requests... only needed for remote workers")
 
-routes = Bottle()
 
-def bind(app):
-    global root
-    root = ap.Namespace(**app)
+execute = Blueprint('routes', __name__)
 
-@routes.post('/confirm')
+@execute.route('/confirm', methods=['POST'])
 def confirm_form():
     user = root.authorized()
     app = request.forms.app
@@ -133,7 +130,7 @@ def confirm_form():
         # except:
         #     return 'ERROR: failed to write parameters to file'
 
-@routes.post('/execute')
+@app.route('/execute', methods=['POST'])
 def execute():
     user = root.authorized()
     app = request.forms.app
@@ -189,7 +186,7 @@ def execute():
         params = { 'cid': cid, 'app': app, 'user': user, 'err': e }
         return template('error', params)
 
-@routes.get('/<app>/<cid>/tail')
+@execute.route('/<app>/<cid>/tail')
 def tail(app, cid):
     user = root.authorized()
     # submit num_lines as form parameter

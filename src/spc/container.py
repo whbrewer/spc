@@ -1,17 +1,13 @@
 from __future__ import print_function
 import docker
 import argparse as ap
-from bottle import Bottle, request, redirect, template
+from flask import Flask, Blueprint
 
 base_url = 'unix://var/run/docker.sock'
 
-def bind(app):
-    global root
-    root = ap.Namespace(**app)
+container = Blueprint('routes', __name__)
 
-routes = Bottle()
-
-@routes.get('/docker')
+@container.route('/docker')
 def get_docker():
     user = root.authorized()
     params = {}
@@ -33,7 +29,7 @@ def get_docker():
 
     return template('docker', params, images=images, containers=conts)
 
-@routes.post('/docker/create/<id>')
+@container.route('/docker/create/<id>', methods=['POST'])
 def create_container(id):
     print("creating container:", id)
     cli = docker.Client(base_url=base_url)
@@ -61,7 +57,7 @@ def create_container(id):
 #                  " Remove the container and retry."
 #     redirect("/docker?alert="+alert)
 
-@routes.get('/docker/start/<id>')
+@container.route('/docker/start/<id>')
 def start_container(id):
     print("starting container:", id)
     cli = docker.Client(base_url=base_url)
@@ -72,7 +68,7 @@ def start_container(id):
         alert = "ERROR: failed to start container " + id
     redirect("/docker?alert="+alert)
 
-@routes.get('/docker/stop/<id>')
+@container.route('/docker/stop/<id>')
 def stop_container(id):
     cli = docker.Client(base_url=base_url)
     try:
@@ -82,7 +78,7 @@ def stop_container(id):
         alert = "ERROR stopping container " + id
     redirect("/docker?alert="+alert)
 
-@routes.get('/docker/remove/<id>')
+@container.route('/docker/remove/<id>')
 def remove_container(id):
     print("removing container:", id)
     cli = docker.Client(base_url=base_url)

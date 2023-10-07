@@ -1,6 +1,5 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from bottle import Bottle, request, template, redirect
 import os, sys, traceback, cgi, time, shutil, json
 import argparse as ap
 
@@ -9,13 +8,11 @@ from .common import slurp_file
 from . import app_reader_writer as apprw
 from . import config
 
-routes = Bottle()
+from flask import Flask, Blueprint
 
-def bind(app):
-    global root
-    root = ap.Namespace(**app)
+app_routes = Blueprint('routes', __name__)
 
-@routes.get('/<app>')
+@app_routes.route('/<app>')
 def show_app(app):
     # very similar to start_new_job() consider consolidating
     user = root.authorized()
@@ -37,14 +34,14 @@ def show_app(app):
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         redirect('/app/'+app)
 
-@routes.get('/app_exists/<appname>')
+@app_routes.route('/app_exists/<appname>')
 def app_exists(appname):
     '''Server-side AJAX function to check if an app exists in the DB.'''
     # return booleans as strings here b/c they get parsed by JavaScript
     if apps(name=appname): return 'true'
     else: return 'false'
 
-@routes.get('/apps')
+@app_routes.route('/apps')
 def showapps():
     user = root.authorized()
     q = request.query.q
@@ -70,7 +67,7 @@ def showapps():
     params = { 'configurable': configurable, 'user': user }
     return template('apps', params, rows=result, activated=activated_apps)
 
-@routes.get('/myapps')
+@app_routes.route('/myapps')
 def showmyapps():
     user = root.authorized()
     uid = users(user=user).id
@@ -84,12 +81,12 @@ def showmyapps():
     params = { 'configurable': configurable, 'user': user, 'app': app }
     return template('myapps', params, rows=result)
 
-@routes.get('/apps/load')
+@app_routes.route('/apps/load')
 def get_load_apps():
     root.load_apps()
     redirect('/myapps')
 
-@routes.post('/app/edit/<appid>')
+@app_routes.route('/app/edit/<appid>', methods=['POST'])
 def app_edit(appid):
     user = root.authorized()
     if user != 'admin':
@@ -100,7 +97,7 @@ def app_edit(appid):
     params = {'app': app, 'cid': cid}
     return template('app_edit', params, rows=result)
 
-@routes.post('/app/save/<appid>')
+@app_routes.route('/app/save/<appid>', methods=['POST'])
 def app_save(appid):
     root.authorized()
     app = request.forms.app
@@ -119,7 +116,7 @@ def app_save(appid):
     redirect("/app/"+app)
 
 # allow only admin or user to delete apps
-@routes.post('/app/delete/<appid>')
+@app_routes.route('/app/delete/<appid>', methods=['POST'])
 def delete_app(appid):
     user = root.authorized()
     if user != 'admin':
@@ -144,7 +141,7 @@ def delete_app(appid):
 
     redirect("/apps")
 
-@routes.get('/app/<app>')
+@app_routes.route('/app/<app>')
 def view_app(app):
     user = root.authorized()
     if app: root.set_active(app)
@@ -169,7 +166,7 @@ def view_app(app):
         return template('error', err="there was a problem showing the app template. Check traceback.")
 
 
-@routes.post('/useapp')
+@app_routes.route('/useapp', methods=['POST'])
 def useapp():
     user = root.authorized()
     uid = users(user=user).id
@@ -180,7 +177,7 @@ def useapp():
     db.commit()
     redirect('/apps')
 
-@routes.post('/removeapp')
+@app_routes.route('/removeapp', methods=['POST'])
 def removeapp():
     user = root.authorized()
     uid = users(user=user).id
@@ -192,14 +189,14 @@ def removeapp():
     db.commit()
     redirect('/myapps')
 
-@routes.get('/addapp')
+@app_routes.route('/addapp')
 def getaddapp():
     user = root.authorized()
     if user != 'admin':
         return template('error', err="must be admin to add app")
     return template('appconfig/addapp')
 
-@routes.post('/addapp')
+@app_routes.route('/addapp', methods=['POST'])
 def addapp():
     user = root.authorized()
     if user != 'admin':
@@ -224,7 +221,7 @@ def addapp():
     root.load_apps()
     redirect('/app/'+appname)
 
-@routes.get('/appconfig/status')
+@app_routes.route('/appconfig/status')
 def appconfig_status():
     root.authorized()
     status = dict()
@@ -268,7 +265,7 @@ def appconfig_status():
     return json.dumps(status)
 
 
-@routes.post('/appconfig/exe/<step>')
+@app_routes.route('/appconfig/exe/<step>', methods=['POST'])
 def appconfig_exe(step="upload"):
     user = root.authorized()
     if user != 'admin':
@@ -310,7 +307,7 @@ def appconfig_exe(step="upload"):
         else:
             return "ERROR: must be already a file"
 
-@routes.post('/appconfig/export')
+@app_routes.route('/appconfig/export', methods=['POST'])
 def export():
     user = root.authorized()
     if user != 'admin':
@@ -366,7 +363,7 @@ def export():
 
     return "spc.json file written to " + path + "<meta http-equiv='refresh' content='2; url=/app/"+app+"'>"
 
-@routes.post('/appconfig/inputs/<step>')
+@app_routes.route('/appconfig/inputs/<step>', methods=['POST'])
 def edit_inputs(step):
     user = root.authorized()
     if user != 'admin':

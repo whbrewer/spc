@@ -1,17 +1,14 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from bottle import Bottle, request, template, redirect
 import os, shutil, argparse as ap
 from .user_data import user_dir
 from .model import db, users
 
-routes = Bottle()
+from flask import Flask, Blueprint
 
-def bind(app):
-    global root
-    root = ap.Namespace(**app)
+admin = Blueprint('routes', __name__)
 
-@routes.get('/admin/show_users')
+@admin.route('/admin/show_users')
 def admin_show_users():
     user = root.authorized()
     if not user == "admin":
@@ -20,7 +17,7 @@ def admin_show_users():
     params = { 'user': user, 'app': root.active_app() }
     return template('admin/users', params, rows=result)
 
-@routes.post('/admin/delete_user')
+@admin.route('/admin/delete_user', methods=['POST'])
 def admin_delete_user():
     user = root.authorized()
     if not user == "admin":

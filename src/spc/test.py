@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from bottle import Bottle, response, request, redirect, SimpleTemplate
+from flask import Flask, request, redirect, session, render_template, send_from_directory
 from webtest import TestApp
 import importlib, os, sys, traceback
 
@@ -13,7 +13,8 @@ from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
 from .model import db, users, apps
 
 # the real webapp
-app = Bottle()
+app = Flask(__name__)
+app.secret_key = '40dd942d0f03108a84db8697e0307802'  # for sessions
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware

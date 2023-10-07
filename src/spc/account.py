@@ -1,16 +1,13 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from bottle import Bottle, request, template, redirect, response
 import re, sys, hashlib, traceback, smtplib, uuid, argparse as ap
 from .model import db, users, user_meta
 from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
 from . import config
 
-routes = Bottle()
+from flask import Flask, Blueprint
 
-def bind(app):
-    global root
-    root = ap.Namespace(**app)
+account = Blueprint('account', __name__)
 
 def _check_user_passwd(user, passwd):
     """check password against database"""
@@ -24,7 +21,7 @@ def _check_user_passwd(user, passwd):
 def _hash_pass(pw):
     return hashlib.sha256(pw).hexdigest()
 
-@routes.get('/account')
+@account.route('/account')
 def get_account():
     user = root.authorized()
     app = request.query.app or root.active_app()
@@ -33,11 +30,11 @@ def get_account():
     params['user'] = user
     return template('account', params)
 
-@routes.get('/register')
+@account.route('/register')
 def get_register():
     return template('register')
 
-@routes.post('/check_user')
+@account.route('/check_user', methods=['POST'])
 def check_user(user=""):
     if user == "": user = request.forms.user
     """Server-side AJAX function to check if a username exists in the DB."""
@@ -45,7 +42,7 @@ def check_user(user=""):
     if users(user=user.lower()): return 'true'
     else: return 'false'
 
-@routes.post('/register')
+@account.route('/register', methods=['POST'])
 def post_register():
     valid = True
 
@@ -90,8 +87,8 @@ def post_register():
         return "ERROR: there was a problem registering. Please try again...<p>" \
              + "<a href='/register'>Return to registration</a>"
 
-@routes.get('/login')
-@routes.get('/login/<referrer>')
+@account.route('/login')
+@account.route('/login/<referrer>')
 def get_login(referrer=''):
     try:
         return template('login', {'referrer': referrer,
@@ -99,7 +96,7 @@ def get_login(referrer=''):
     except:
         return template('login', {'referrer': referrer})
 
-@routes.post('/login')
+@account.route('/login', methods=['POST'])
 def post_login():
     if not config.auth:
         return "ERROR: authorization disabled. Change auth setting in config.py to enable"
@@ -127,7 +124,7 @@ def post_login():
     if referrer: redirect('/'+referrer)
     else: redirect('/myapps')
 
-@routes.get('/logout')
+@account.route('/logout')
 def logout():
     s = request.environ.get('beaker.session')
     s.delete()
@@ -136,7 +133,7 @@ def logout():
     except:
         redirect('/login')
 
-@routes.post('/account/change_password')
+@app.route('/account/change_password', methods=['POST'])
 def change_password():
     # this is basically the same coding as the register function
     # needs to be DRY'ed out in the future
@@ -158,7 +155,7 @@ def change_password():
     params['alert'] = "SUCCESS: password changed"
     return template('account', params)
 
-@routes.post('/tokensignin')
+@account.route('/tokensignin', methods=['POST'])
 def tokensignin():
     email = request.forms.get('email')
     s = request.environ.get('beaker.session')
@@ -174,13 +171,13 @@ def tokensignin():
 
     return user
 
-@routes.get('/theme')
+@account.route('/theme')
 def get_theme():
     user = root.authorized()
     uid = users(user=user).id
     return user_meta(uid=uid).theme
 
-@routes.post('/theme')
+@account.route('/theme', methods=['POST'])
 def save_theme():
     user = root.authorized()
     uid = users(user=user).id

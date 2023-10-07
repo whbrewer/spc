@@ -1,6 +1,5 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from bottle import Bottle, request, template, redirect
 import os, sys, re, traceback, shutil, time, argparse as ap
 from datetime import datetime, timedelta
 
@@ -9,13 +8,11 @@ from .common import rand_cid, replace_tags, slurp_file
 from .model import db, users, jobs
 from . import config
 
-routes = Bottle()
+from flask import Flask, Blueprint
 
-def bind(app):
-    global root
-    root = ap.Namespace(**app)
+jobs = Blueprint('routes', __name__)
 
-@routes.get('/jobs')
+@jobs.route('/jobs', methods=['GET'])
 def show_jobs():
     user = root.authorized()
     #if app not in root.myapps: redirect('/apps')
@@ -123,7 +120,7 @@ def show_jobs():
     params['num_rows'] = config.jobs_num_rows
     return template('jobs', params, rows=result)
 
-@routes.get('/jobs/new')
+@jobs.route('/jobs/new', methods=['GET'])
 def start_new_job():
     user = root.authorized()
     app = request.query.app or root.active_app()
@@ -167,7 +164,7 @@ def start_new_job():
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return template('error', err="there was a problem with the template. Check traceback.")
 
-@routes.get('/jobs/diff')
+@jobs.route('/jobs/diff', methods=['GET'])
 def diff_jobs():
     user = root.authorized()
     app = root.active_app()
@@ -194,7 +191,7 @@ def diff_jobs():
     params = { 'cid': cid, 'contents': ' '.join(result), 'app': app, 'user': user, 'fn': title }
     return template('more', params)
 
-@routes.post('/jobs/annotate')
+@jobs.route('/jobs/annotate', methods=['POST'])
 def annotate_job():
     root.authorized()
     cid = request.forms.cid
@@ -205,7 +202,7 @@ def annotate_job():
     db.commit()
     redirect('/jobs')
 
-@routes.post('/jobs/star')
+@jobs.route('/jobs/star', methods=['POST'])
 def star_case():
     root.authorized()
     jid = request.forms.jid
@@ -213,7 +210,7 @@ def star_case():
     db.commit()
     redirect('/jobs')
 
-@routes.post('/jobs/unstar')
+@jobs.route('/jobs/unstar', methods=['POST'])
 def unstar_case():
     root.authorized()
     jid = request.forms.jid
@@ -221,7 +218,7 @@ def unstar_case():
     db.commit()
     redirect('/jobs')
 
-@routes.post('/jobs/share')
+@jobs.route('/jobs/share', methods=['POST'])
 def share_case():
     root.authorized()
     jid = request.forms.jid
@@ -234,7 +231,7 @@ def share_case():
     db.commit()
     redirect('/jobs')
 
-@routes.post('/jobs/unshare')
+@jobs.route('/jobs/unshare', methods=['POST'])
 def unshare_case():
     root.authorized()
     jid = request.forms.jid
@@ -242,7 +239,7 @@ def unshare_case():
     db.commit()
     redirect('/jobs')
 
-@routes.get('/jobs/all')
+@jobs.route('/jobs/unshare', methods=['GET'])
 def get_all_jobs():
     user = root.authorized()
     if not user == "admin":
@@ -269,7 +266,7 @@ def get_all_jobs():
     params['num_rows'] = config.jobs_num_rows
     return template('shared', params, rows=result)
 
-@routes.get('/jobs/shared')
+@jobs.route('/jobs/shared', methods=['GET'])
 def get_shared():
     """Return the records from the shared table."""
     user = root.authorized()
@@ -297,7 +294,7 @@ def get_shared():
     params['num_rows'] = config.jobs_num_rows
     return template('shared', params, rows=result)
 
-@routes.post('/jobs/delete/<jid>')
+@jobs.route('/jobs/delete/<jid>', methods=['GET'])
 def delete_job(jid):
     user = root.authorized()
     app = request.forms.app
@@ -316,7 +313,7 @@ def delete_job(jid):
         return template("error", err="cannot delete while job is still running")
     redirect("/jobs")
 
-@routes.post('/jobs/merge/<rtype>')
+@jobs.route('/jobs/merge/<rtype>', methods=['POST'])
 def merge(rtype):
     user = root.authorized()
     selected_cases = request.forms.selected_merge_cases
@@ -394,7 +391,7 @@ def merge(rtype):
 
     return "merged file written to " + run_dir + "<meta http-equiv='refresh' content='2; url=/jobs'>"
 
-@routes.post('/jobs/delete_selected_cases')
+@jobs.route('/jobs/delete_selected_cases', methods=['POST'])
 def delete_jobs():
     user = root.authorized()
     selected_cases = request.forms.selected_cases
@@ -414,7 +411,7 @@ def delete_jobs():
             print("ERROR: not removing path:", path, "because cid missing")
     redirect("/jobs")
 
-@routes.post('/jobs/stop')
+@jobs.route('/jobs/stop', methods=['POST'])
 def stop_job():
     root.authorized()
     app = request.forms.app

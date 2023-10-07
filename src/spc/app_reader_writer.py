@@ -1,10 +1,7 @@
 from __future__ import print_function
 from __future__ import absolute_import
 
-try:
-    import configparser
-except:
-    import ConfigParser
+import configparser as ConfigParser
 
 import json, os, re, shutil, sys
 # import logging
@@ -15,7 +12,7 @@ except:
     print("ERROR: when trying to import yaml")
 
 import pytoml as toml
-from .model import db, apps
+#from .model import db, apps
 from .user_data import user_dir
 
 # using convention over configuration
@@ -38,39 +35,41 @@ class App(object):
         self.appname=name
 
     def create(self, name, desc, cat, lang, info, cmd, pre, post):
-        apps.insert(name=name, description=desc, category=cat, language=lang,
-                    input_format=info, command=cmd, preprocess=pre,
-                    postprocess=post)
-        db.commit()
+        #apps.insert(name=name, description=desc, category=cat, language=lang,
+        #            input_format=info, command=cmd, preprocess=pre,
+        #            postprocess=post)
+        #db.commit()
+        pass
 
     def update(self):
         pass
 
     def delete(self,appid,del_files=False):
         # remove db entry
-        del apps[appid]
-        db.commit()
-        # if delete files checkbox ticked
-        if del_files:
-            # delete app directory
-            if not self.appname == '':
-                path = os.path.join(apps_dir,self.appname)
-                print("deleting app dir:", path)
-                if os.path.isdir(path):
-                   shutil.rmtree(path)
-                # remove static assets
-                path = os.path.join('static/apps',self.appname)
-                print("deleting static assets:", path)
-                if os.path.isdir(path):
-                   shutil.rmtree(path)
-                # remove template file
-                path = "views/apps/"+self.appname+".tpl"
-                print("deleting template:", path)
-                if os.path.isfile(path):
-                    os.remove(path)
-                return True
-            else:
-                return False
+        #del apps[appid]
+        #db.commit()
+        ## if delete files checkbox ticked
+        #if del_files:
+        #    # delete app directory
+        #    if not self.appname == '':
+        #        path = os.path.join(apps_dir,self.appname)
+        #        print("deleting app dir:", path)
+        #        if os.path.isdir(path):
+        #           shutil.rmtree(path)
+        #        # remove static assets
+        #        path = os.path.join('static/apps',self.appname)
+        #        print("deleting static assets:", path)
+        #        if os.path.isdir(path):
+        #           shutil.rmtree(path)
+        #        # remove template file
+        #        path = "views/apps/"+self.appname+".tpl"
+        #        print("deleting template:", path)
+        #        if os.path.isfile(path):
+        #            os.remove(path)
+        #        return True
+        #    else:
+        #        return False
+        pass
 
     def deploy(self):
         pass

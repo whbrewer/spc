@@ -1,84 +1,83 @@
-from __future__ import absolute_import
-from gluino import DAL, Field
+from peewee import Model, CharField, IntegerField, ForeignKeyField, DoubleField, SqliteDatabase
 from . import config
 
-#db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
-#db = DAL(config.uri, migrate=True, migrate_enabled=True, fake_migrate=True, folder=config.dbdir)
-db = DAL(config.uri, migrate=False, folder=config.dbdir)
+# Set up the Peewee database
+db = SqliteDatabase(config.uri)  # Assuming config.dbdir points to a SQLite database file
 
-groups =  db.define_table('groups', Field('id', 'integer'),
-                                    Field('name', 'string'))
+class BaseModel(Model):
+    class Meta:
+        database = db
 
-users = db.define_table('users', Field('id', 'integer'),
-                                 Field('user', 'string'),
-                                 Field('passwd', 'string'),
-                                 Field('email', 'string'),
-                                 Field('new_shared_jobs', 'integer'),
-                                 Field('priority', 'integer'),
-                                 Field('gid', db.groups, ondelete="SET NULL"))
+class Groups(BaseModel):
+    name = CharField()
 
-user_meta = db.define_table('user_meta', Field('id', 'integer'),
-                                         Field('uid', db.users),
-                                         Field('new_shared_jobs', 'integer'),
-                                         Field('theme', 'string'))
+class Users(BaseModel):
+    user = CharField()
+    passwd = CharField()
+    email = CharField()
+    new_shared_jobs = IntegerField()
+    priority = IntegerField()
+    gid = ForeignKeyField(Groups, backref='users', null=True)
 
-# this is also defined in scheduler.py
-# need to fix in the future
-apps = db.define_table('apps', Field('id', 'integer'),
-                               Field('name', 'string'),
-                               Field('description', 'string'),
-                               Field('category', 'string'),
-                               Field('language', 'string'),
-                               Field('input_format', 'string'),
-                               Field('command', 'string'),
-                               Field('assets', 'string'),
-                               Field('preprocess', 'string'),
-                               Field('postprocess', 'string'))
+class UserMeta(BaseModel):
+    uid = ForeignKeyField(Users, backref='user_meta')
+    new_shared_jobs = IntegerField()
+    theme = CharField()
 
-app_user = db.define_table('app_user', Field('id', 'integer'),
-                                       Field('appid', 'integer'),
-                                       Field('uid', 'integer'))
+class Apps(BaseModel):
+    name = CharField()
+    description = CharField()
+    category = CharField()
+    language = CharField()
+    input_format = CharField()
+    command = CharField()
+    assets = CharField()
+    preprocess = CharField()
+    postprocess = CharField()
 
-jobs = db.define_table('jobs', Field('id', 'integer'),
-                               Field('uid', db.users),
-                               Field('app', 'string'),
-                               Field('cid', 'string'),
-                               Field('gid', db.groups),
-                               Field('command', 'string'),
-                               Field('state', 'string'),
-                               Field('time_submit', 'string'),
-                               Field('walltime', 'string'),
-                               Field('description', 'string'),
-                               Field('np', 'integer'),
-                               Field('priority', 'integer'),
-                               Field('starred', 'string'),
-                               Field('shared', 'string'))
+class AppUser(BaseModel):
+    appid = IntegerField()
+    uid = IntegerField()
 
-plots = db.define_table('plots', Field('id', 'integer'),
-                                 # need to turn on unique in the future, but will cause migration probs for old DBs
-                                 # this is needed for running "spc update" b/c primary keys are not specified in spc.json
-                                 Field('appid', db.apps), #unique=True),
-                                 Field('ptype', 'string'),
-                                 Field('title', 'string'),
-                                 Field('options', 'string'))
+class Jobs(BaseModel):
+    uid = ForeignKeyField(Users, backref='jobs')
+    app = CharField()
+    cid = CharField()
+    gid = ForeignKeyField(Groups, backref='jobs', null=True)
+    command = CharField()
+    state = CharField()
+    time_submit = CharField()
+    walltime = CharField()
+    description = CharField()
+    np = IntegerField()
+    priority = IntegerField()
+    starred = CharField()
+    shared = CharField()
 
-datasource = db.define_table('datasource', Field('id', 'integer'),
-                                           Field('label', 'string'), # unique=True),
-                                           Field('pltid', db.plots),
-                                           Field('filename', 'string'),
-                                           Field('cols', 'string'),
-                                           Field('line_range', 'string'),
-                                           Field('data_def', 'string'))
+class Plots(BaseModel):
+    appid = ForeignKeyField(Apps, backref='plots')
+    ptype = CharField()
+    title = CharField()
+    options = CharField()
 
-aws_creds = db.define_table('aws_creds', Field('id', 'integer'),
-                                         Field('key', 'string'),
-                                         Field('secret', 'string'),
-                                         Field('account_id', 'string'),
-                                         Field('uid', db.users))
+class DataSource(BaseModel):
+    label = CharField()
+    pltid = ForeignKeyField(Plots, backref='data_sources')
+    filename = CharField()
+    cols = CharField()
+    line_range = CharField()
+    data_def = CharField()
 
-aws_instances = db.define_table('aws_instances', Field('id', 'integer'),
-                                                 Field('region', 'string'),
-                                                 Field('instance', 'string'),
-                                                 Field('itype', 'string'),
-                                                 Field('rate', 'double'),
-                                                 Field('uid', db.users))
+class AWSCreds(BaseModel):
+    key = CharField()
+    secret = CharField()
+    account_id = CharField()
+    uid = ForeignKeyField(Users, backref='aws_creds')
+
+class AWSInstances(BaseModel):
+    region = CharField()
+    instance = CharField()
+    itype = CharField()
+    rate = DoubleField()
+    uid = ForeignKeyField(Users, backref='aws_instances')
+

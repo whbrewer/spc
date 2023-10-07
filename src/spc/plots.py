@@ -1,6 +1,5 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from bottle import Bottle, request, template, redirect
 import argparse as ap
 import os, re, sys, csv, traceback
 import json
@@ -10,12 +9,9 @@ from .model import db, apps, jobs, plots, datasource
 from .common import replace_tags
 from . import config
 
-routes = Bottle()
+from flask import Flask, Blueprint
 
-
-def bind(app):
-    global root
-    root = ap.Namespace(**app)
+plots = Blueprint('routes', __name__)
 
 
 def compute_stats(path):
@@ -160,7 +156,7 @@ class Plot(object):
             return False
 
 
-@routes.get('/plots/edit')
+@plots.route('/plots/edit')
 def editplotdefs():
     user = root.authorized()
     if user != 'admin':
@@ -174,7 +170,7 @@ def editplotdefs():
     return template('plots/plotdefs', params, rows=result)
 
 
-@routes.get('/plots/edit/<pltid>')
+@plots.route('/plots/edit/<pltid>')
 def editplotdef(pltid):
     user = root.authorized()
     if user != 'admin':
@@ -185,7 +181,7 @@ def editplotdef(pltid):
     return template('plots/edit_plot', params, row=result)
 
 
-@routes.post('/plots/edit/<pltid>')
+@plots.route('/plots/edit/<pltid>')
 def editplot(pltid):
     user = root.authorized()
     if user != 'admin':
@@ -200,7 +196,7 @@ def editplot(pltid):
     redirect('/plots/edit?app='+app)
 
 
-@routes.get('/plots/delete/<pltid>')
+@plots.route('/plots/delete/<pltid>')
 def delete_plot(pltid):
     user = root.authorized()
     if user != 'admin':
@@ -211,7 +207,7 @@ def delete_plot(pltid):
     redirect ('/plots/edit?app='+app)
 
 
-@routes.get('/plots/<pltid>/datasources')
+@plots.route('/plots/<pltid>/datasources')
 def get_datasource(pltid):
     """get list of datasources for given plot"""
     user = root.authorized()
@@ -227,7 +223,7 @@ def get_datasource(pltid):
     return template('plots/datasources', params, rows=result)
 
 
-@routes.post('/plots/<pltid>/datasources')
+@plots.route('/plots/<pltid>/datasources', methods=['POST'])
 def add_datasource(pltid):
     """create a new datasource for given plot"""
     user = root.authorized()
@@ -241,7 +237,7 @@ def add_datasource(pltid):
     redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
 
 
-@routes.get('/plots/<pltid>/datasources/<dsid>')
+@plots.route('/plots/<pltid>/datasources/<dsid>')
 def edit_datasource(pltid, dsid):
     """create a new datasource for given plot"""
     user = root.authorized()
@@ -254,7 +250,7 @@ def edit_datasource(pltid, dsid):
     return template('plots/edit_datasource', params, row=result)
 
 
-@routes.post('/plots/<pltid>/datasources/<dsid>')
+@plots.route('/plots/<pltid>/datasources/<dsid>', methods=['POST'])
 def edit_datasource_post(pltid, dsid):
     """update datasource for given plot"""
     user = root.authorized()
@@ -270,7 +266,7 @@ def edit_datasource_post(pltid, dsid):
     return template('plots/edit_datasource', params)
 
 
-@routes.post('/plots/datasource_delete')
+@plots.route('/plots/datasource_delete', methods=['POST'])
 def delete_datasource():
     user = root.authorized()
     if user != 'admin':
@@ -283,7 +279,7 @@ def delete_datasource():
     redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
 
 
-@routes.post('/plots/create')
+@plots.route('/plots/create', methods=['POST'])
 def create_plot():
     user = root.authorized()
     if user != 'admin':
@@ -296,7 +292,7 @@ def create_plot():
     redirect ('/plots/edit?app='+app)
 
 
-@routes.get('/plot/<pltid>')
+@plots.route('/plot/<pltid>')
 def plot_interface(pltid):
     user = root.authorized()
     app = request.query.app
@@ -537,7 +533,7 @@ def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
     return template('plots/flot-3d', params)
 
 
-@routes.get('/mpl/<pltid>')
+@plots.route('/mpl/<pltid>')
 def matplotlib(pltid):
     """Generate a random image using Matplotlib and display it"""
     # in the future create a private function __import__ to import third-party
