@@ -1,9 +1,3 @@
-from __future__ import print_function
-from __future__ import absolute_import
-# web framework
-from flask import Flask, request, redirect, session, render_template, send_from_directory
-
-
 # python built-ins
 import os, sys, traceback, importlib
 
@@ -12,9 +6,29 @@ from . import config, scheduler, app_reader_writer as apprw
 from .model import db, Apps
 from .user_data import user_dir
 from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
+from flask import Flask, request, redirect, session, render_template, send_from_directory
 
 app = Flask(__name__)
 app.secret_key = '40dd942d0f03108a84db8697e0307802'  # for sessions
+
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
+
+# create an instance of the scheduler
+sched = scheduler.Scheduler()
+
+app.run()
+
+exit()
+
+#from __future__ import print_function
+#from __future__ import absolute_import
+# web framework
+
+
+
+#app = Flask(__name__)
 
 ### end session management configuration ###
 
@@ -22,13 +36,8 @@ app.secret_key = '40dd942d0f03108a84db8697e0307802'  # for sessions
 #def inject_tab_title():
 #    return dict(tab_title=config.tab_title)
 
-# create an instance of the scheduler
-sched = scheduler.Scheduler()
 
 # a few generic routes
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
 
 #@app.route('/')
 #def root():
