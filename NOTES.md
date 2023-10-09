@@ -1,5 +1,10 @@
 # SPC Release Notes
 
+## 10/9/23
+
+Since Python 2 was officially sunset on January 1st, 2020 - the most convenient way to run SPC is via Docker. See the Docker repo here: https://hub.docker.com/r/whbrewer/mendel or build a new Docker image by running `docker build . -t spc:latest` from the etc/ folder. After building, should be able to run the container us
+ing `docker run -p 8580:8580 spc:latest`, then open the browser to the URL `localhost:8580`.
+
 ## 3/24/18
 
 If you have any problems with using virtualenv, you may bypass using the virtualenv environment by simply running `python src/main.py run` from the main spc directory.
