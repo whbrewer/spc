@@ -1,11 +1,9 @@
 flask=3.0.0
-#bottle=0.12.25
-beaker==1.12.1
+Jinja2==3.1.2
 pyyaml==3.12
 psutil==5.2.2
 pytoml==0.1.13
 docker-py==1.1.0
-#boto==2.6.0
 requests==2.9.1
 webtest==2.0.28
 cherrypy==18.8.0
