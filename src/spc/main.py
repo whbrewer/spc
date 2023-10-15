@@ -30,7 +30,7 @@ def get_favicon():
 # create an instance of the scheduler
 sched = scheduler.Scheduler()
 
-app.run()
+app.run(port=config.port)
 
 exit()
 
