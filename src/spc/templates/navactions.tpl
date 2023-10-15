@@ -13,37 +13,37 @@
                 <input type="hidden" name="app" value="{{app}}">
             </form>
 
-            %if defined('jid') and owner == user and not defined('plotpath'):
-                %if jid > 0:
+            {% if jid is defined and owner == user and plotpath is not defined %}
+                {% if jid > 0 %}
                     <form class="btn-group hidden-xs" action="/jobs/stop" method="post">
-                        <input type="hidden" name="cid" value="{{cid}}">
-                        <input type="hidden" name="app" value="{{app}}">
-                        <input type="hidden" name="jid" value="{{jid}}">
+                        <input type="hidden" name="cid" value="{{ cid }}">
+                        <input type="hidden" name="app" value="{{ app }}">
+                        <input type="hidden" name="jid" value="{{ jid }}">
                         <button class="btn btn-warning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
                     </form>
 
                     <button type="button"
                             class="btn btn-danger hidden-xs hidden-sm hidden-md"
                             data-toggle="modal" data-target="#dModal">
-                            <span class="glyphicon glyphicon-trash"></span> Delete
+                        <span class="glyphicon glyphicon-trash"></span> Delete
                     </button>
-                %end
-            %end
+                {% endif %}
+            {% endif %}
 
             <form class="btn-group hidden-xs" action="/case" method="get">
                 <button class="btn btn-default"><span class="glyphicon glyphicon-hourglass">
                 </span> Monitor</button>
-                % if defined('jid'):
+                {% if jid is defined %}
                    <input type="hidden" name="jid" value="{{jid}}">
-                % end
+                {% endif %}
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
             </form>
 
             <form class="btn-group" action="/plot/0" method="get">
-                % if defined('jid'):
+                {% if jid is defined %}
                    <input type="hidden" name="jid" value="{{jid}}">
-                % end
+                {% endif %}
                 <input type="hidden" name="cid" value="{{cid}}">
                 <input type="hidden" name="app" value="{{app}}">
                 <button class="btn btn-default">
@@ -51,14 +51,14 @@
                 </button>
             </form>
 
-            %if defined('plotpath'):
+            {% if plotpath is defined %}
                 <form class="btn-group hidden-xs" action="/more" method="get">
                     <input type="hidden" name="cid" value="{{cid}}">
                     <input type="hidden" name="app" value="{{app}}">
                     <input type="hidden" name="filepath" value="{{plotpath}}">
                     <button class="btn btn-warning"><span class="glyphicon glyphicon-list-alt"></span> Data</button>
                 </form>
-            %end
+            {% endif %}
 
             <div class="btn-group dropdown hidden-xs">
 
@@ -89,18 +89,18 @@
 
         </div>
 
-        %if defined('cid'):
+        {% if cid is defined %}
             &nbsp;&nbsp;&nbsp;
             <samp class="hidden-xs" style="color:#dfdfdf; font-size:x-large" ondblclick="document.execCommand('copy'); this.style.color='yellow'; this.style.transition='1s ease-in-out'">{{cid}}</samp>
-        %end
+        {% endif %}
 
         <span id="stats" class="navbar-right hidden-xs hidden-sm" style="position:relative;top:-10px"></span>
 
     </div>
 </div>
 
-%if defined('jid'):
-%if jid > 0:
+{% jid is defined %}
+{% if jid > 0 %}
 <!-- Delete Modal -->
 <div class="modal fade" style="top:35%" id="dModal" tabindex="-1"
      aria-labelledby="deleteModal">
@@ -122,10 +122,10 @@
         </div>
     </div>
 </div>
-%end
-%end
+{% endif %}
+{% endif %}
 
-%if defined('description'):
+{% if description is defined %}
 <!-- Label Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel">
     <div class="modal-dialog">
@@ -150,7 +150,7 @@
         </div>
     </div>
 </div>
-%end
+{% endif %}
 
 <script>
 // Dropdown Menu Fade

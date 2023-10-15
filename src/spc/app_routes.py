@@ -3,14 +3,14 @@ from __future__ import absolute_import
 import os, sys, traceback, cgi, time, shutil, json
 import argparse as ap
 
-from .model import users, db, apps, app_user, plots, datasource
+from .model import db, Users, Apps, AppUser, Plots, DataSource
 from .common import slurp_file
 from . import app_reader_writer as apprw
 from . import config
 
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, render_template
 
-app_routes = Blueprint('routes', __name__)
+app_routes = Blueprint('app_routes', __name__)
 
 @app_routes.route('/<app>')
 def show_app(app):
@@ -53,8 +53,8 @@ def showapps():
                     db.apps.description.contains(q, case_sensitive=False)).select()
 
     # find out what apps have already been activated so that a user can't activate twice
-    uid = users(user=user).id
-    activated = db(app_user.uid == uid).select()
+    uid = User.get(User.user == user)
+    activated = AppUser.select().where(AppUser.user == uid)
     activated_apps = []
     for row in activated:
         activated_apps.append(row.appid)
@@ -69,17 +69,20 @@ def showapps():
 
 @app_routes.route('/myapps')
 def showmyapps():
-    user = root.authorized()
-    uid = users(user=user).id
+    #user = root.authorized()
+    user = 'guest'
+    uid = Users.get(Users.user == user).id
     app = root.active_app()
 
-    result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select(orderby=apps.name)
+    result = (App.select().join(AppUser) \
+             .where((App.id == AppUser.app) & (AppUser.user_id == uid)).order_by(App.name))
+
     if user == "admin":
         configurable = True
     else:
         configurable = False
     params = { 'configurable': configurable, 'user': user, 'app': app }
-    return template('myapps', params, rows=result)
+    return render_template('myapps.tpl', params, rows=result)
 
 @app_routes.route('/apps/load')
 def get_load_apps():
@@ -169,7 +172,7 @@ def view_app(app):
 @app_routes.route('/useapp', methods=['POST'])
 def useapp():
     user = root.authorized()
-    uid = users(user=user).id
+    uid = User.get(User.user == user).id
     app = request.forms.app
     appid = apps(name=app).id
     print("allowing user", user, uid, "to access app", app, appid)
@@ -180,7 +183,7 @@ def useapp():
 @app_routes.route('/removeapp', methods=['POST'])
 def removeapp():
     user = root.authorized()
-    uid = users(user=user).id
+    uid = User.get(User.user == user).id
     app = request.forms.app
     appid = apps(name=app).id
     auid = app_user(uid=uid, appid=appid).id

@@ -7,13 +7,25 @@ from .model import db, Apps
 from .user_data import user_dir
 from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
 from flask import Flask, request, redirect, session, render_template, send_from_directory
+from .app_routes import app_routes
 
 app = Flask(__name__)
 app.secret_key = '40dd942d0f03108a84db8697e0307802'  # for sessions
+app.register_blueprint(app_routes)
 
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def root():
+    #authorized()
+    #return redirect('/myapps')
+    return render_template('apps/mendel.tpl')
+
+@app.route('/static/<path:filepath>')
+def server_static(filepath):
+    return send_from_directory('static', filepath)
+
+@app.route('/favicon.ico')
+def get_favicon():
+    return send_from_directory('static', filepath)
 
 # create an instance of the scheduler
 sched = scheduler.Scheduler()
@@ -39,18 +51,7 @@ exit()
 
 # a few generic routes
 
-#@app.route('/')
-#def root():
-#    authorized()
-#    redirect('/myapps')
 
-@app.route('/static/<path:filepath>')
-def server_static(filepath):
-    return send_from_directory('static', filepath)
-
-@app.route('/favicon.ico')
-def get_favicon():
-    return send_from_directory('static', filepath)
 
 
 @app.errorhandler(500)

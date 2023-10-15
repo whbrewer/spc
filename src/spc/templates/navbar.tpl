@@ -13,34 +13,36 @@
 
                         <button data-step="5" data-intro="You can find other user's shared runs here" type="submit" class="btn btn-default hidden-xs" formaction="/jobs/shared"><span class="glyphicon glyphicon-pushpin"></span> Shared <span class="badge" style="background-color:tomato" id="new_shared_jobs"></span></button>
 
-                        %if defined('app'):
-                            %if app != '':
+                        {% if app is defined %}
+                            {% if app != '' %}
                                 <button data-step="6" data-intro="Click this at any time to start a new run..." type="submit" class="btn btn-warning hidden-xs"
                                         formaction="/jobs/new">
-                                    <span class="glyphicon glyphicon-play-circle"></span> {{app}}</button>
-                            %end
-                        %end
+                                    <span class="glyphicon glyphicon-play-circle"></span> {{ app }}
+                                </button>
+                            {% endif %}
+                        {% endif %}
+
                     </div>
                 </div>
 
                 <div class="hidden-xs hidden-sm">
-                    %if defined('status'):
-                        <span class="navbar-brand">{{!status}}</span>
-                    %end
+                    {% if status is defined %}
+                        <span class="navbar-brand">{{ status }}</span>
+                    {% endif %}
 
-                    %if defined('description'):
+                    {% if description is defined %}
                         <div class="hidden-md">
                             <a href="#" class="navbar-brand" style="width:250px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap"
                                data-toggle="modal" data-target="#myModal">
-                            <span class="glyphicon glyphicon-tag"></span> {{!description}}</a>
+                            <span class="glyphicon glyphicon-tag"></span> {{description}}</a>
                         </div>
-                    %end
+                    {% endif %}
                 </div>
 
                 <div class="navbar-right hidden-xs" style="margin-right: 5px;">
-                    %if defined('user'):
+                    {% if user is defined %}
                         <a href="#" class="navbar-brand hidden-xs">{{user}}</a>
-                    %end
+                    {% endif %}
                     <div data-step="7" data-intro="Change your password or use advanced features (e.g. AWS, Docker integrations) here" class="btn-group">
                         <a data-toggle="dropdown" class="btn btn-default dropdown-toggle">
                             <span class="glyphicon glyphicon-menu-hamburger"></span></a>
@@ -54,17 +56,18 @@
                             <li class="divider"> </li>
                             <li> <a target="_blank" href="http://spc.readthedocs.io">SPC Docs</a> </li>
 
-                            %if defined('user'):
-                                %if user=="admin":
-			   	    <li class="divider"> </li>
+                            {% if user is defined %}
+                                {% if user == "admin" %}
+                                    <li class="divider"> </li>
                                     <li> <a href="/admin/show_users">Admin</a> </li>
-                                    %if defined('app'):
-                                        % if app != '':
-                                        <li> <a href="/app/{{app}}">Configure {{app}}</a> </li>
-                                        %end
-                                    %end
-                                %end
-                            %end
+                                    {% if app is defined %}
+                                        {% if app != '' %}
+                                            <li> <a href="/app/{{ app }}">Configure {{ app }}</a> </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+
                             <li class="divider"> </li>
                             <li> <a href="/logout">Logout</a> </li>
                         </ul>
@@ -78,7 +81,7 @@
 
 </nav>
 
-%include('alerts')
+{% include('alerts.tpl') %}
 
 <script>
 window.addEventListener('load', checkForNotifications);

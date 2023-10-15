@@ -1,23 +1,23 @@
-%if defined('alert'):
-    % if alert.find("SUCCESS") >= 0:
+{% if alert is defined %}
+    {% if "SUCCESS" in alert %}
         <div id="alert" class="alert alert-success alert-dismissable" style="text-align: center">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{!alert}}
+            {{ alert }}
         </div>
-    % elif alert.find("ERROR") >= 0:
+    {% elif "ERROR" in alert %}
         <div id="alert" class="alert alert-danger alert-dismissable" style="text-align: center">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{!alert}}
+            {{ alert }}
         </div>
-    % elif alert.find("WARNING") >= 0:
+    {% elif "WARNING" in alert %}
         <div id="alert" class="alert alert-warning alert-dismissable" style="text-align: center">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{!alert}}
+            {{ alert }}
         </div>
-    % else:
+    {% else %}
         <div id="alert" class="alert alert-info alert-dismissable" style="text-align: center">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{!alert}}
+            {{ alert }}
         </div>
-    % end
-%end
+    {% endif %}
+{% endif %}
