@@ -2,9 +2,9 @@ from __future__ import print_function
 from __future__ import absolute_import
 import threading, time, os, subprocess, signal, datetime
 from multiprocessing import Process, BoundedSemaphore, Lock, Manager
-from peewee import *
 
-from .model import Users, Jobs, Groups, Apps  # Importing the required models
+from flask_sqlalchemy import SQLAlchemy
+from .model import Users, Jobs, Groups, Apps  # Assuming you've already converted these models
 from .user_data import user_dir
 from . import config
 
@@ -13,15 +13,16 @@ STATE_QUEUED = 'Q'
 STATE_COMPLETED = 'C'
 STATE_STOPPED = 'X'
 
-db = SqliteDatabase(config.dbdir)  # Assuming SQLite, change if using another DB
+db = SQLAlchemy()  # Initialized without an app here, assuming it's bound elsewhere
 
 class Scheduler(object):
     """multi-process scheduler"""
 
     def __init__(self):
+
         # Update jobs in run state to stopped state
-        query = Jobs.update(state=STATE_STOPPED).where(Jobs.state == STATE_RUN)
-        query.execute()
+        Jobs.query.filter_by(state=STATE_RUN).update({Jobs.state: STATE_STOPPED})
+        db.session.commit()
         
         self.sem = BoundedSemaphore(config.np)
         self.mutex = Lock()
@@ -50,7 +51,7 @@ class Scheduler(object):
             time.sleep(1)
 
     def qsub(self, app, cid, uid, cmd, np, pry, walltime, desc=""):
-        job = Jobs.create(
+        job = Jobs(
             uid=uid,
             app=app,
             cid=cid,
@@ -62,22 +63,24 @@ class Scheduler(object):
             np=np,
             priority=pry
         )
+        db.session.add(job)
+        db.session.commit()
         return str(job.id)
 
     def qfront(self):
-        job = Jobs.select().where(Jobs.state == STATE_QUEUED).order_by(Jobs.priority.asc()).first()
+        job = Jobs.query.filter_by(state=STATE_QUEUED).order_by(Jobs.priority).first()
         return job.id if job else None
 
     def qdel(self, jid):
-        query = Jobs.delete().where(Jobs.id == jid)
-        query.execute()
+        Jobs.query.filter_by(id=jid).delete()
+        db.session.commit()
 
     def qstat(self):
-        return Jobs.select().where(Jobs.state == STATE_QUEUED).count()
+        return Jobs.query.filter_by(state=STATE_QUEUED).count()
 
     def start(self, jid):
-        job = Jobs.get(Jobs.id == jid)
-        user = Users.get(Users.id == job.uid)
+        job = Jobs.query.get(jid)
+        user = Users.query.get(job.uid)
         app = job.app
         cid = job.cid
         np = job.np
@@ -117,13 +120,12 @@ class Scheduler(object):
             self.sem.release()
 
     def _set_state(self, jid, state):
-        with db.atomic():
-            job = Jobs.get(Jobs.id == jid)
-            job.state = state
-            job.save()
+        job = Jobs.query.get(jid)
+        job.state = state
+        db.session.commit()
 
     def stop_expired_jobs(self):
-        for job in Jobs.select().where(Jobs.state == STATE_RUN):
+        for job in Jobs.query.filter_by(state=STATE_RUN).all():
             walltime = int(job.walltime)
             time_submit = time.mktime(datetime.datetime.strptime(
                 job.time_submit, "%a %b %d %H:%M:%S %Y").timetuple())

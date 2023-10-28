@@ -10,8 +10,14 @@ from flask import Flask, request, redirect, session, render_template, send_from_
 from .app_routes import app_routes
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = config.uri
+db.init_app(app)
+
 app.secret_key = '40dd942d0f03108a84db8697e0307802'  # for sessions
+
+# Register blueprints
 app.register_blueprint(app_routes)
+
 
 @app.route('/')
 def root():
@@ -25,10 +31,10 @@ def server_static(filepath):
 
 @app.route('/favicon.ico')
 def get_favicon():
-    return send_from_directory('static', filepath)
+    return send_from_directory('static', 'favicon.ico')
 
 # create an instance of the scheduler
-sched = scheduler.Scheduler()
+#sched = scheduler.Scheduler()
 
 app.run(port=config.port)
 

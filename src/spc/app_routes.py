@@ -3,14 +3,14 @@ from __future__ import absolute_import
 import os, sys, traceback, cgi, time, shutil, json
 import argparse as ap
 
-from .model import db, Users, Apps, AppUser, Plots, DataSource
-from .common import slurp_file
-from . import app_reader_writer as apprw
+from flask import Flask, Blueprint, render_template
+from flask_sqlalchemy import SQLAlchemy
+
 from . import config
 
-from flask import Flask, Blueprint, render_template
-
 app_routes = Blueprint('app_routes', __name__)
+
+from .model import Users, Apps, AppUser, Plots, DataSource
 
 @app_routes.route('/<app>')
 def show_app(app):
@@ -43,46 +43,50 @@ def app_exists(appname):
 
 @app_routes.route('/apps')
 def showapps():
-    user = root.authorized()
-    q = request.query.q
-    if not q:
-        result = db().select(apps.ALL, orderby=apps.name)
-    else:
-        result = db(db.apps.name.contains(q, case_sensitive=False) |
-                    db.apps.category.contains(q, case_sensitive=False) |
-                    db.apps.description.contains(q, case_sensitive=False)).select()
-
-    # find out what apps have already been activated so that a user can't activate twice
-    uid = User.get(User.user == user)
-    activated = AppUser.select().where(AppUser.user == uid)
-    activated_apps = []
-    for row in activated:
-        activated_apps.append(row.appid)
-
-    if user == "admin":
-        configurable = True
-    else:
-        configurable = False
-
-    params = { 'configurable': configurable, 'user': user }
-    return template('apps', params, rows=result, activated=activated_apps)
+    return "Hello!"
+#    user = root.authorized()
+#    q = request.query.q
+#    if not q:
+#        result = db().select(apps.ALL, orderby=apps.name)
+#    else:
+#        result = db(db.apps.name.contains(q, case_sensitive=False) |
+#                    db.apps.category.contains(q, case_sensitive=False) |
+#                    db.apps.description.contains(q, case_sensitive=False)).select()
+#
+#    # find out what apps have already been activated so that a user can't activate twice
+#    uid = User.get(User.user == user)
+#    activated = AppUser.select().where(AppUser.user == uid)
+#    activated_apps = []
+#    for row in activated:
+#        activated_apps.append(row.appid)
+#
+#    if user == "admin":
+#        configurable = True
+#    else:
+#        configurable = False
+#
+#    params = { 'configurable': configurable, 'user': user }
+#    return template('apps', params, rows=result, activated=activated_apps)
 
 @app_routes.route('/myapps')
 def showmyapps():
-    #user = root.authorized()
     user = 'guest'
-    uid = Users.get(Users.user == user).id
-    app = root.active_app()
+    #user_record = Users.query.filter_by(user=user).first()
+    #uid = user_record.id
+    app = 'mendel'  # Or however you want to fetch this
 
-    result = (App.select().join(AppUser) \
-             .where((App.id == AppUser.app) & (AppUser.user_id == uid)).order_by(App.name))
+    users = Users.query.all()
+    print('***', users)
+    exit()
 
-    if user == "admin":
-        configurable = True
-    else:
-        configurable = False
-    params = { 'configurable': configurable, 'user': user, 'app': app }
-    return render_template('myapps.tpl', params, rows=result)
+    result = Apps.query.join(AppUser, Apps.id == AppUser.appid).filter(AppUser.uid == uid).order_by(Apps.name).all()
+
+    for row in result:
+        print(row.name)
+
+    configurable = True if user == "admin" else False
+    params = {'configurable': configurable, 'user': user, 'app': app}
+    return render_template('myapps.tpl', **params, rows=result)
 
 @app_routes.route('/apps/load')
 def get_load_apps():
