@@ -4,8 +4,12 @@ import sys
 import time
 import traceback
 
-import boto
-import boto.ec2
+try:
+    import boto
+    import boto.ec2
+except Exception as exc:
+    boto = None
+    boto_import_error = exc
 from datetime import datetime
 
 from . import config
@@ -20,6 +24,8 @@ def bind(app):
 def aws_conn(id):
     """create a connection to the EC2 machine and return the handle"""
     user = root.authorized()
+    if boto is None:
+        raise RuntimeError("AWS support unavailable: boto import failed: {}".format(boto_import_error))
     uid = users(user=user).id
     try:
         creds = db(db.aws_creds.uid==uid).select().first()
@@ -85,6 +91,8 @@ class EC2(object):
 
 @routes.get('/aws')
 def get_aws():
+    if boto is None:
+        return template('error', err="AWS support unavailable: boto import failed.")
     user = root.authorized()
     cid = request.query.cid
     app = request.query.app or root.active_app()
@@ -105,6 +113,8 @@ def get_aws():
 @routes.post('/aws/creds')
 def post_aws_creds():
     user = root.authorized()
+    if boto is None:
+        return template('error', err="AWS support unavailable: boto import failed.")
     a = request.forms.account_id
     s = request.forms.secret
     k = request.forms.key
@@ -116,6 +126,8 @@ def post_aws_creds():
 @routes.delete('/aws/creds/<id>')
 def aws_cred_del(id):
     root.authorized()
+    if boto is None:
+        return template('error', err="AWS support unavailable: boto import failed.")
     del db.aws_creds[id]
     db.commit()
     redirect('/aws')
@@ -124,6 +136,8 @@ def aws_cred_del(id):
 def create_instance():
     """create instance"""
     user = root.authorized()
+    if boto is None:
+        return template('error', err="AWS support unavailable: boto import failed.")
     instance = request.forms.instance
     itype = request.forms.itype
     region = request.forms.region
@@ -136,6 +150,8 @@ def create_instance():
 @routes.delete('/aws/instance/<aid>')
 def del_instance(aid):
     root.authorized()
+    if boto is None:
+        return "false"
     try:
         del aws_instances[aid]
         db.commit()
@@ -148,6 +164,8 @@ def del_instance(aid):
 @routes.get('/aws/status/<aid>')
 def aws_status(aid):
     user = root.authorized()
+    if boto is None:
+        return template('error', err="AWS support unavailable: boto import failed.")
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -176,6 +194,8 @@ def aws_status(aid):
 @routes.post('/aws/<aid>')
 def aws_start(aid):
     root.authorized()
+    if boto is None:
+        return template('error', err="AWS support unavailable: boto import failed.")
     a = aws_conn(aid)
     a.start()
     # takes a few seconds for the status to change on the Amazon end
@@ -184,6 +204,8 @@ def aws_start(aid):
 @routes.delete('/aws/<aid>')
 def aws_stop(aid):
     root.authorized()
+    if boto is None:
+        return template('error', err="AWS support unavailable: boto import failed.")
     a = aws_conn(aid)
     a.stop()
     # takes a few seconds for the status to change on the Amazon end

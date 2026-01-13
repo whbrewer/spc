@@ -91,7 +91,7 @@ def initdb():
 
     # get rid of old .table files
     for f in os.listdir(config.dbdir):
-        if re.search("\.table", f):
+        if re.search(r"\.table", f):
             print("removing file:", f)
             os.remove(os.path.join(config.dbdir, f))
     # delete previous .db file should back first (future)

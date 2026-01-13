@@ -220,12 +220,13 @@ def tail(app, cid):
             output = f.readlines()
             # custom mendel mods for progress bar
             for line in output:
-                m = re.search("num_generations\s=\s*(\d+)", line)
+                m = re.search(r"num_generations\s=\s*(\d+)", line)
                 if m:
                     complete = int(m.group(1))
                 if complete > 0:
-                    m = re.match("generation\s=\s*(\d+)", line)
-                    if m: progress = int(float(m.group(1))/float(complete)*100)
+                    m = re.match(r"generation\s=\s*(\d+)", line)
+                    if m:
+                        progress = int(float(m.group(1)) / float(complete) * 100)
             # end mendel mods
             start_position = len(output) - num_lines
             if start_position > 0:

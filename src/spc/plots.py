@@ -550,7 +550,7 @@ def matplotlib(pltid):
     # libraries, so that it can respond gracefully.  See for example the
     # Examples section at https://docs.python.org/2/library/imp.html
     user = root.authorized()
-    import StringIO
+    import io
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
     app = request.query.app
@@ -568,15 +568,17 @@ def matplotlib(pltid):
     options = result['options']
 
     # parse plot options to extract and set x- and y-axis labels
-    m = re.search("xaxis:\s*{(.*)}", options)
+    m = re.search(r"xaxis:\s*{(.*)}", options)
     if m:
-        n = re.search("axisLabel:\s*\"(\w*)\"", m.group(1))
-        if n: ax.set_xlabel(n.group(1))
+        n = re.search(r"axisLabel:\s*\"(\w*)\"", m.group(1))
+        if n:
+            ax.set_xlabel(n.group(1))
 
-    m = re.search("yaxis:\s*{(.*)}", options)
+    m = re.search(r"yaxis:\s*{(.*)}", options)
     if m:
-        n = re.search("axisLabel:\s*\"(\w*)\"", m.group(1))
-        if n: ax.set_ylabel(n.group(1))
+        n = re.search(r"axisLabel:\s*\"(\w*)\"", m.group(1))
+        if n:
+            ax.set_ylabel(n.group(1))
 
     # get info about data source
     # fix in the future to handle multiple data sources
@@ -612,7 +614,7 @@ def matplotlib(pltid):
     else:
         return "ERROR: plottype not supported"
     canvas = FigureCanvas(fig)
-    png_output = StringIO.StringIO()
+    png_output = io.BytesIO()
     canvas.print_png(png_output)
 
     # save file
