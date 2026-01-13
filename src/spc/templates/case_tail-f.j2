@@ -49,7 +49,7 @@ var dataelem = "#output";
 var pausetoggle = "#pause";
 var scrollelems = ["html", "body"];
 
-var url = "user_data/{{user}}/{{app}}/{{cid}}/{{app}}.out";
+var url = "/user_data/{{user}}/{{app}}/{{cid}}/{{app}}.out";
 var fix_rn = true;
 var load = 30 * 1024; /* 30KB */
 var poll = 1000; /* 1s */
@@ -76,8 +76,8 @@ function get_log() {
     var first_load;
     var must_get_206;
     if (log_file_size === 0) {
-        /* Get the last 'load' bytes */
-        range = "-" + load.toString();
+        /* Get the full file on first load to avoid 416 for small files */
+        range = "0-";
         first_load = true;
         must_get_206 = false;
     } else {
@@ -163,14 +163,17 @@ function get_log() {
                 show_log();
 
                 setTimeout(get_log, poll);
+            } else if (xhr.status === 416) {
+                // File size changed; reset and try again.
+                log_file_size = 0;
+                log_data = "";
+                setTimeout(get_log, poll);
             } else {
                 throw "Unknown AJAX Error (status " + xhr.status + ")";
             }
         }
     });
 }
-
-{% endblock %}
 
 function scroll(where) {
     for (var i = 0; i < scrollelems.length; i++) {
@@ -234,3 +237,5 @@ $(document).ready(function () {
 });
 
 </script>
+
+{% endblock %}

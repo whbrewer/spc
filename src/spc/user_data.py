@@ -19,13 +19,19 @@ from .common import slurp_file
 from .model import db, jobs, users
 from .templating import template
 
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 user_dir = 'user_data'
+user_data_root = os.path.join(BASE_DIR, user_dir)
 upload_dir = '_uploads'
 
 routes = Blueprint('user_data', __name__)
 
 
-def static_file(filepath, root):
+def static_file(filepath, root=None):
+    if root is None:
+        root = user_data_root
+    elif not os.path.isabs(root):
+        root = os.path.join(BASE_DIR, root)
     return send_from_directory(root, filepath)
 
 
@@ -50,7 +56,7 @@ def get_user_data(filepath):
     if owner != user and shared != "True" and user != "admin":
         return template('error', err="access forbidden")
 
-    return static_file(filepath, root=user_dir)
+    return send_from_directory(user_data_root, filepath, conditional=True)
 
 
 @routes.get('/more')
@@ -107,7 +113,7 @@ def case():
         return template('error', err="case does not exist")
 
     state = jobs(cid=c).state
-    run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
+    run_dir = os.path.join(user_data_root, owner, root.myapps[app].appname, c)
     fn = os.path.join(run_dir, root.myapps[app].outfn)
 
     # note: eventually need to merge the following two into one
@@ -155,7 +161,7 @@ def output():
     if owner != user and shared != "True" and user != "admin":
         return template('error', err="access forbidden")
 
-    run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
+    run_dir = os.path.join(user_data_root, owner, root.myapps[app].appname, c)
     fn = os.path.join(run_dir, root.myapps[app].outfn)
 
     # prevent 500 error in case config.worker not defined in config.py
@@ -202,7 +208,7 @@ def inputs():
     if owner != user and shared != "True" and user != "admin":
         return template('error', err="access forbidden")
 
-    run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
+    run_dir = os.path.join(user_data_root, owner, root.myapps[app].appname, c)
     fn = os.path.join(run_dir, root.myapps[app].simfn)
     inputs = slurp_file(fn)
     # the following line will convert HTML chars like > to entities &gt;
@@ -242,7 +248,7 @@ def list_files():
         return template('error', err="access forbidden")
 
     if not path:
-        path = os.path.join(user_dir, owner, app, cid)
+        path = os.path.join(user_data_root, owner, app, cid)
 
     params['path'] = path
     if q:
@@ -268,7 +274,7 @@ def delete_f():
     selected_files = request.forms.selected_files
     files = selected_files.rstrip(':').split(':')
     for file in files:
-        path = os.path.join(user_dir, user, app, cid, file)
+        path = os.path.join(user_data_root, user, app, cid, file)
         if cid is not None:
             if os.path.isfile(path):
                 print("removing file:", path)
@@ -301,7 +307,7 @@ def modify_selected_files(operation):
 
     for file in files:
         print(file)
-        path = os.path.join(user_dir, user, app, cid, file)
+        path = os.path.join(user_data_root, user, app, cid, file)
 
         out = list()
         with open(path, "r") as infile:
@@ -337,7 +343,7 @@ def zip_selected_files():
     files = selected_files.rstrip(':').split(':')
 
     for file in files:
-        path = os.path.join(user_dir, user, app, cid, file)
+        path = os.path.join(user_data_root, user, app, cid, file)
         print("attempting to zip:", path)
         zf = zipfile.ZipFile(path+".zip", mode='w', compression=zipfile.ZIP_DEFLATED)
         zf.write(path)
@@ -356,7 +362,7 @@ def zip_case():
     app = request.query.app
     owner, cid = parse_owner_cid(request.query.cid, user)
 
-    base_dir = os.path.join(user_dir, owner, app)
+    base_dir = os.path.join(user_data_root, owner, app)
     path = os.path.join(base_dir, cid + '.zip')
     zf = zipfile.ZipFile(path, mode='w', compression=zipfile.ZIP_DEFLATED)
     sim_dir = os.path.join(base_dir, cid)
@@ -396,7 +402,7 @@ def zipget():
     requests.get(worker + "/zipcase",
          params={'app': app, 'cid': cid, 'user': user})
 
-    path = os.path.join(user_dir, user, app, cid)
+    path = os.path.join(user_data_root, user, app, cid)
     file_path = path+".zip"
     url = os.path.join(worker, file_path)
 
@@ -429,7 +435,7 @@ def upload_file():
     if not upload:
         return template('error', err="no file selected.")
 
-    save_path_dir = os.path.join(user_dir, user, upload_dir)
+    save_path_dir = os.path.join(user_data_root, user, upload_dir)
     if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
     save_path = os.path.join(save_path_dir, upload.filename)
     if os.path.isfile(save_path):
@@ -442,7 +448,7 @@ def upload_file():
 def upload_data():
 	# upload a payload of data that the user submits via form to the filename specified
     user = root.authorized()
-    save_path_dir = os.path.join(user_dir, user, upload_dir)
+    save_path_dir = os.path.join(user_data_root, user, upload_dir)
     if not os.path.exists(save_path_dir): os.makedirs(save_path_dir)
     filename = request.forms.filename
     # print "filename:", filename

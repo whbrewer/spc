@@ -5,7 +5,7 @@ import shutil
 
 from .model import db, users
 from .templating import template
-from .user_data import user_dir
+from .user_data import user_data_root
 
 routes = Blueprint('admin', __name__)
 
@@ -33,7 +33,7 @@ def admin_delete_user():
         return template("error", err="can't delete admin user")
 
     if request.forms.del_files == "True":
-        path = os.path.join(user_dir, users(uid).user)
+        path = os.path.join(user_data_root, users(uid).user)
         print("deleting files in path:", path)
         if os.path.isdir(path): shutil.rmtree(path)
 

@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from bio import DNA 
 import re
 
 # read and parse INI file
-import ConfigParser
+import configparser
 params = dict()
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('dna.ini')
 for section in config.sections():
     for option in config.options(section):
@@ -31,24 +31,24 @@ s = params['dna']
 #        # Delete apostrophes and commas
 #        s = re.sub(r"[',]", "", m.group(1))
 
-print "string is: ", s
+print("string is: ", s)
 
 dna1 = DNA(s)
-print "Reverse complement is: ", dna1.reversecomplement() 
-print 
-print "%G+C is:", dna1.gc() 
+print("Reverse complement is: ", dna1.reversecomplement()) 
+print()
+print("%G+C is:", dna1.gc()) 
 
 nucs = dna1.nucleotides()
-print "Nucleotides are:", nucs, len(nucs)
-print
+print("Nucleotides are:", nucs, len(nucs))
+print()
 
 din = dna1.dinucleotides()
-print "Dinucleotides are:", din, len(din)
-print
+print("Dinucleotides are:", din, len(din))
+print()
 
 codons = dna1.codons()
-print "Codons are:", codons , len(codons)
-print
+print("Codons are:", codons, len(codons))
+print()
 
 
 
@@ -71,4 +71,3 @@ for i, d in enumerate(codons):
     f.write( "\'" + d + "\' " + str(codons[d]) + "\n") 
 
 f.close()
-

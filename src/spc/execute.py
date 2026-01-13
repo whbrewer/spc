@@ -12,7 +12,7 @@ from . import app_reader_writer as apprw
 from . import config
 from .common import rand_cid, replace_tags, slurp_file
 from .model import apps, db, users
-from .user_data import user_dir
+from .user_data import user_data_root
 from .templating import template
 
 try:
@@ -36,7 +36,7 @@ def confirm_form():
     # will be guaranteed to be a string
     while True:
         cid = rand_cid()
-        run_dir = os.path.join(user_dir, user, app, cid)
+        run_dir = os.path.join(user_data_root, user, app, cid)
         # check if this case exists or not, if it exists generate a new case id
         if not os.path.isdir(run_dir): break
 
@@ -105,7 +105,7 @@ def confirm_form():
 
     else:
 
-        run_dir = os.path.join(user_dir, user, root.myapps[app].appname, cid)
+        run_dir = os.path.join(user_data_root, user, root.myapps[app].appname, cid)
         fn = os.path.join(run_dir, root.myapps[app].simfn)
 
         # this app-specific code should be removed in future
@@ -150,7 +150,7 @@ def execute():
     desc = request.forms.desc
     #priority = request.forms.priority
     params = {}
-    # base_dir = os.path.join(user_dir, user, app, cid)
+    # base_dir = os.path.join(user_data_root, user, app, cid)
 
     inputs, _, _ = root.myapps[app].read_params(user, cid)
     # in addition to supporting input params, also support case id
@@ -214,7 +214,7 @@ def tail(app, cid):
         xoutput = myoutput
         ofn = 'remote'
     else:
-        run_dir = os.path.join(user_dir, user, root.myapps[app].appname, cid)
+        run_dir = os.path.join(user_data_root, user, root.myapps[app].appname, cid)
         ofn = os.path.join(run_dir, root.myapps[app].outfn)
         if os.path.exists(ofn):
             f = open(ofn,'r')

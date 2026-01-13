@@ -13,7 +13,7 @@ except:
 
 import pytoml as toml
 #from .model import db, apps
-from .user_data import user_dir
+from .user_data import user_data_root
 
 # using convention over configuration
 # the executable is the name of the app
@@ -210,7 +210,7 @@ class Namelist(App):
         '''write the input file needed for the simulation'''
 
         cid = form_params['case_id']
-        sim_dir=os.path.join(user_dir, user, self.appname, cid)
+        sim_dir=os.path.join(user_data_root, user, self.appname, cid)
 
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
@@ -260,7 +260,7 @@ class Namelist(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(user_dir, user, self.appname, cid)
+            fn = os.path.join(user_data_root, user, self.appname, cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
         params = dict()   # a dictionary of parameter keys and default values
@@ -309,7 +309,7 @@ class INI(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(user_dir, user, self.appname, cid)
+            fn = os.path.join(user_data_root, user, self.appname, cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
 
@@ -344,7 +344,7 @@ class INI(App):
     def write_params(self,form_params,user):
         Config = ConfigParser.ConfigParser()
         cid = form_params['case_id']
-        sim_dir = os.path.join(user_dir, user, self.appname, cid)
+        sim_dir = os.path.join(user_data_root, user, self.appname, cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
@@ -385,7 +385,7 @@ class XML(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(user_dir, user, self.appname, cid)
+            fn = os.path.join(user_data_root, user, self.appname, cid)
 
         # append name of input file to end of string
         fn += os.sep + self.simfn
@@ -426,7 +426,7 @@ class XML(App):
     def write_params(self,form_params,user):
         """Write parameters to file."""
         cid = form_params['case_id']
-        sim_dir=os.path.join(user_dir, user, self.appname, cid)
+        sim_dir=os.path.join(user_data_root, user, self.appname, cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
@@ -462,7 +462,7 @@ class JSON(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(user_dir, user, self.appname, cid)
+            fn = os.path.join(user_data_root, user, self.appname, cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
 
@@ -498,7 +498,7 @@ class JSON(App):
     def write_params(self,form_params,user):
         """Write parameters to the JSON file."""
         cid = form_params['case_id']
-        sim_dir=os.path.join(user_dir, user, self.appname, cid)
+        sim_dir=os.path.join(user_data_root, user, self.appname, cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
@@ -539,7 +539,7 @@ class YAML(App):
         if cid is None or user is None:
             fn = self.appdir
         else:
-            fn = os.path.join(user_dir, user, self.appname, cid)
+            fn = os.path.join(user_data_root, user, self.appname, cid)
         # append name of input file to end of string
         fn += os.sep + self.simfn
 
@@ -603,7 +603,7 @@ class YAML(App):
     def write_params(self,form_params,user):
         """Write parameters to the YAML file."""
         cid = form_params['case_id']
-        sim_dir=os.path.join(user_dir, user, self.appname, cid)
+        sim_dir=os.path.join(user_data_root, user, self.appname, cid)
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)
         fn = os.path.join(sim_dir,self.simfn)
@@ -643,7 +643,7 @@ class TOML(App):
         if user is None or cid is None:
             sim_dir = self.appdir
         else:
-            sim_dir = os.path.join(user_dir, user, self.appname, cid)
+            sim_dir = os.path.join(user_data_root, user, self.appname, cid)
 
         file_name = os.path.join(sim_dir, self.simfn)
 
@@ -665,7 +665,7 @@ class TOML(App):
         return params, blockmap, blockorder
 
     def write_params(self, form_params, user):
-        sim_dir = os.path.join(user_dir, user, self.appname, form_params[u'case_id'])
+        sim_dir = os.path.join(user_data_root, user, self.appname, form_params[u'case_id'])
 
         if not os.path.exists(sim_dir):
             os.makedirs(sim_dir)

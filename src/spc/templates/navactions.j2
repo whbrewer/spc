@@ -14,7 +14,7 @@
             </form>
 
             {% if jid is defined and owner == user and plotpath is not defined %}
-                {% if jid > 0 %}
+                {% if jid|int > 0 %}
                     <form class="btn-group hidden-xs" action="/jobs/stop" method="post">
                         <input type="hidden" name="cid" value="{{ cid }}">
                         <input type="hidden" name="app" value="{{ app }}">
@@ -99,8 +99,8 @@
     </div>
 </div>
 
-{% jid is defined %}
-{% if jid > 0 %}
+{% if jid is defined %}
+{% if jid|int > 0 %}
 <!-- Delete Modal -->
 <div class="modal fade" style="top:35%" id="dModal" tabindex="-1"
      aria-labelledby="deleteModal">

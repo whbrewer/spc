@@ -10,7 +10,7 @@ import json
 from . import config
 from .common import replace_tags
 from .model import apps, datasource, db, jobs, plots
-from .user_data import user_dir
+from .user_data import user_data_root
 from .templating import template
 
 routes = Blueprint('plots', __name__)
@@ -325,7 +325,7 @@ def plot_interface(pltid):
         return template('error', err="access forbidden")
 
     inputs, _, _ = root.myapps[app].read_params(owner, c)
-    sim_dir = os.path.join(user_dir, owner, app, c)
+    sim_dir = os.path.join(user_data_root, owner, app, c)
 
     # use pltid of 0 to trigger finding the first pltid for the current app
     if int(pltid) == 0:
@@ -601,7 +601,7 @@ def matplotlib(pltid):
             (line1str, line2str) = re.split("[-:]", line_range)
 
     plotfn = re.sub(r"<cid>", cid, plotfn)
-    sim_dir = os.path.join(user_dir, user, app, cid)
+    sim_dir = os.path.join(user_data_root, user, app, cid)
     plotpath = os.path.join(sim_dir, plotfn)
     xx = p.get_column_of_data(plotpath, col1)
     yy = p.get_column_of_data(plotpath, col2)

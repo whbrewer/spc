@@ -10,7 +10,7 @@ from multiprocessing import Process, BoundedSemaphore, Lock, Manager
 from pydal import DAL
 
 from . import config
-from .user_data import user_dir
+from .user_data import user_data_root
 
 STATE_RUN = 'R'
 STATE_QUEUED = 'Q'
@@ -110,7 +110,7 @@ class Scheduler(object):
         cmd = command + ' > ' + outfn + ' 2>&1 '
         print("cmd:", cmd)
 
-        run_dir = os.path.join(user_dir, user, app, cid)
+        run_dir = os.path.join(user_data_root, user, app, cid)
 
         # if number procs available fork new process with command
         for i in range(np):
@@ -129,7 +129,7 @@ class Scheduler(object):
         os.chdir(run_dir) # change to case directory
 
         pro = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
-        myjobs[jid] = pro
+        myjobs[int(jid)] = pro.pid
 
         pro.wait() # wait for job to finish
         myjobs.pop(int(jid), None) # remove job from buffer
@@ -172,8 +172,9 @@ class Scheduler(object):
         db.close()
 
     def stop(self,jid):
-        p = myjobs.pop(int(jid), None)
-        if p: os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+        pid = myjobs.pop(int(jid), None)
+        if pid:
+            os.killpg(os.getpgid(pid), signal.SIGTERM)
 
         # the following doesn't work because it gets overwritten by line 128 above
         # need a way to feedback to start_job method whether job has been stopped or not

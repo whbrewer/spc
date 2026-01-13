@@ -13,7 +13,7 @@ from .common import slurp_file
 from .model import db, jobs, users
 from .request_shim import RequestShim
 from .templating import template
-from .user_data import user_dir
+from .user_data import user_data_root
 
 app = Flask(__name__)
 sched = scheduler.Scheduler()
@@ -65,7 +65,7 @@ def listfiles():
     appname = request.forms['app']
     user = request.forms['user']
     cid = request.forms['cid']
-    mypath = os.path.join(user_dir, user, appname, cid)
+    mypath = os.path.join(user_data_root, user, appname, cid)
     return listdir(mypath)
 
 
@@ -86,7 +86,7 @@ def execute():
     try:
         if appmod.preprocess:
             run_params, _, _ = appmod.read_params(user, cid)
-            base_dir = os.path.join(user_dir, user, appname)
+            base_dir = os.path.join(user_data_root, user, appname)
             process.preprocess(run_params, appmod.preprocess, base_dir)
         if appmod.preprocess == "terra.in":
             appmod.outfn = "out" + run_params['casenum'] + ".00"
@@ -119,7 +119,7 @@ def output():
         else:
             u = user
             c = cid
-        run_dir = os.path.join(user_dir, u, appname, c)
+        run_dir = os.path.join(user_data_root, u, appname, c)
         fn = os.path.join(run_dir, appname + '.out')
         output_text = slurp_file(fn)
         output_text = html.escape(output_text)
@@ -136,7 +136,7 @@ def zipcase():
     appname = request.query.app
     cid = request.query.cid
     user = request.query.user
-    base_dir = os.path.join(user_dir, user, appname)
+    base_dir = os.path.join(user_data_root, user, appname)
     path = os.path.join(base_dir, cid + ".zip")
 
     zf = zipfile.ZipFile(path, mode='w')

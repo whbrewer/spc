@@ -13,7 +13,7 @@ from . import config
 from . import migrate
 from .common import rand_cid, replace_tags, slurp_file
 from .model import db, jobs, users
-from .user_data import user_dir
+from .user_data import user_data_root
 from .templating import template
 
 routes = Blueprint('jobs', __name__)
@@ -191,7 +191,7 @@ def diff_jobs():
         cid = jobs(jid).cid
         cids.append(cid)
         app = jobs(jid).app
-        base_dir = os.path.join(user_dir, user, root.myapps[app].appname)
+        base_dir = os.path.join(user_data_root, user, root.myapps[app].appname)
         fn = os.path.join(base_dir, cid, root.myapps[app].simfn)
         content = slurp_file(fn).splitlines(1)
         contents.append(content)
@@ -318,7 +318,7 @@ def delete_job(jid):
         return template("error", err="only possible to delete cases that you own")
 
     if state != "R":
-        path = os.path.join(user_dir, user, app, cid)
+        path = os.path.join(user_data_root, user, app, cid)
         if os.path.isdir(path): shutil.rmtree(path)
         root.sched.stop(jid)
         root.sched.qdel(jid)
@@ -339,7 +339,7 @@ def merge(rtype):
         cid = jobs(id=jid).cid
         cases.append(cid)
         fn = replace_tags(request.forms.file_pattern, {'cid': cid})
-        path = os.path.join(user_dir, user, app, cid, fn)
+        path = os.path.join(user_data_root, user, app, cid, fn)
 
         with open(path, "r") as infile:
             # Loop over lines in each file
@@ -371,7 +371,7 @@ def merge(rtype):
     # generate new case_id for outputtinging merged files
     while True:
         ocid = rand_cid()
-        run_dir = os.path.join(user_dir, user, app, ocid)
+        run_dir = os.path.join(user_data_root, user, app, ocid)
         # check if this case exists or not, if it exists generate a new case id
         if not os.path.exists(run_dir):
             os.makedirs(run_dir)
@@ -414,7 +414,7 @@ def delete_jobs():
     for jid in cases:
         cid = jobs(id=jid).cid
         app = jobs(id=jid).app
-        path = os.path.join(user_dir, user, app, cid)
+        path = os.path.join(user_data_root, user, app, cid)
         if cid is not None:
             print("removing path:", path)
             if os.path.isdir(path): shutil.rmtree(path)
