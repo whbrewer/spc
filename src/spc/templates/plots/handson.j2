@@ -1,0 +1,25 @@
+{% extends 'plots/handson-base.j2' %}
+{% block content %}
+
+<div id="mysheet"></div>
+
+<script>
+    var data = {{ data|safe }};
+
+    var container = document.getElementById('mysheet');
+
+    var options = {
+        data: data, 
+        % if options:
+            {{ options|safe }}
+        % else:
+            rowHeaders: true, 
+            colHeaders: true, 
+            contextMenu: true 
+        %endif
+    }
+
+    var hot = new Handsontable(container, options);
+</script>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% include 'header.j2' %}
+    <script src="/static/js/flot/excanvas.min.js"></script>
+    <script src="/static/js/flot/jquery.min.js"></script>
+    <script src="/static/js/flot/jquery.flot.js"></script>
+    <script src="/static/js/flot/jquery.flot.axislabels.min.js"></script>
+    <script src="/static/js/flot/jquery.flot.selection.min.js"></script>
+    <script src="/static/js/flot/jquery.flot.fillbetween.min.js"></script>
+    <script src="/static/js/flot/jquery.flot.resize.min.js"></script>
+    <script src="/static/js/flot/jquery.flot.stack.min.js"></script>
+    <script src="/static/js/flot/jquery.flot.animator.min.js"></script>
+    <!-- <script src="/static/js/flot/jquery.flot.navigate.min.js"></script> -->
+    <!-- <script src="/static/js/canvas2image.js"></script> -->
+    {% include 'plots/style.j2' %}
+</head>
+
+<body>
+{% include 'navbar.j2' %}
+{% include 'plots/plot_list.j2' %}
+
+{% block content %}{% endblock %}
+
+{% include 'footer.j2' %}
+</body>
+</html>

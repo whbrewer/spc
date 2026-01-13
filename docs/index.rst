@@ -63,13 +63,13 @@ To install an app interactively, click the Apps button, then click the +Add butt
 	* TOML format - appname.toml
 	* namelist.input - appname.in (e.g. mendel.in)
 
-3. **Setup HTML template file** – one of the things that the upload input file format does is to create an HTML template file, ``appname.tpl``, in the ``views/apps`` folder.
+3. **Setup HTML template file** – one of the things that the upload input file format does is to create an HTML template file, ``appname.j2``, in the ``src/spc/templates/apps`` folder.
 
 4. **Upload binary file** – To upload a binary file, click the “Configure Executable” button.  Please note that the binary file must be compiled on the same operating system as the host machine running SPC.  So, for example, if SPC is running on an Amazon EC2 instance running 32-bit Linux with a certain glibc version, it should be compiled on an equivalent machine running the same glibc version.
 
 5. **Setup plots** – To configure plots, click the “Configure Plots” button, then click “Add Plot”.  Each plot must have at least one datasource.  So, once a plot has been setup, one must click the “datasource” link connected with that plot, and then click the “Add Data Source” button.  While there are options for label, plot type, and color, these are all stored together in JSON format under one field in the database called data_def, short for data definition.
 
-Additional options.  **Static assets** – It is also possible to include static assets such as JavaScript files, CSS files, etc. which currently cannot be uploaded through the web interface, but can be added later manually by copying the files to static/apps/appname.   They can be referenced later in the views/apps/appname.tpl, for example refer to the file mendel.js as follows::
+Additional options.  **Static assets** – It is also possible to include static assets such as JavaScript files, CSS files, etc. which currently cannot be uploaded through the web interface, but can be added later manually by copying the files to static/apps/appname.   They can be referenced later in ``src/spc/templates/apps/appname.j2``, for example refer to the file mendel.js as follows::
 
     <script src="/static/apps/mendel/mendel.js"></script>
 

@@ -1,0 +1,141 @@
+{% extends 'base.j2' %}
+{% block extra_style %}
+<style>
+    table { font-size: 120% }
+</style>
+{% endblock %}
+{% block content %}
+
+<script>
+function ddef() {
+  l = document.getElementById("label").value
+  ls = "label: \"" + l + "\""
+  ds = "data: d" + {{len(rows)+1}}
+  ptype = document.getElementById("ptype").value
+  if (ptype == "line") {
+    ps = "lines: { show: true }"
+  } else if (ptype == "bars") {
+    ps = "bars: { show: true, autoWidth: true }"
+  } else {
+    ps = "points: { show: true }"
+  }
+  c = document.getElementById("color").value
+  cs = "color: \"" + c + "\""
+  document.getElementById("data_def").value =
+    "{" + ls + ", " + ds + ", "+ ps + ", " + cs + "}"
+}
+</script>
+
+<div id="warning" class="alert-warning text-center"></div>
+
+<ol class="breadcrumb">
+  <li><a href="/">Apps</a></li>
+  <li><a href="/app/{{app}}">Configure App</a></li>
+  <li><a href="/plots/edit?app={{app}}">Plots</a></li>
+  <li class="active">Datasources</li>
+</ol>
+
+<div class="row">
+
+  <div class="col-xs-12 col-sm-10"><h1 style="vertical-align:top">{{title}} Datasources</h1></div>
+
+  <div class="col-xs-12 col-sm-2"><button type="button" class="btn btn-default pull-right" data-toggle="collapse" data-target="#editsource"><span class="glyphicon glyphicon-plus"></span> Add Datasource</button></div>
+
+</div>
+
+<div id="editsource" class="collapse">
+
+<form id="datasourceForm" class="form-horizontal" method="post" action="/plots/{{pltid}}/datasources" onsubmit="return validateForm()">
+
+    <div class="form-group">
+        <label for="label" class="control-label col-md-3">Label:</label>
+        <div class="col-md-6">
+            <input type="text" class="form-control" name="label" id="label" onchange="ddef()" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="ptype" class="control-label col-md-3">Plot type:</label>
+        <div class="col-md-6">
+           <select name="ptype" id="ptype" class="form-control" onchange="ddef()">
+               <option VALUE="line">line</option>
+               <option VALUE="points">points</option>
+               <option VALUE="bars">bars</option>
+           </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="color" class="control-label col-md-3">Color:</label>
+        <div class="col-md-6">
+            <select name="color" id="color" class="form-control" onchange="ddef()">
+                <option VALUE="rgb(200,0,0)">red</option>
+                <option VALUE="rgb(0,200,0)">green</option>
+                <option VALUE="rgb(0,0,200)">blue</option>
+                <option VALUE="rgb(128,0,128)">purple</option>
+                <option VALUE="rgb(0,0,0)">black</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="data_def" class="control-label col-md-3">Data definition (JSON):</label>
+        <div class="col-md-6"><textarea class="form-control" name="data_def" id="data_def"></textarea></div>
+    </div>
+
+    <div class="form-group">
+        <label for="filename" class="control-label col-md-3">Filename:</label>
+        <div class="col-md-6"><input type="text" class="form-control" name="fn" id="filename" required></div>
+    </div>
+
+    <div class="form-group">
+        <label for="cols" class="control-label col-md-3">Columns (e.g. 1:2):</label>
+        <div class="col-md-6"><input type="text" class="form-control" id="cols" name="cols" pattern="\d+:\d+" required></div>
+    </div>
+
+    <div class="form-group">
+        <label for="line_range" class="control-label col-md-3">Line range (e.g. 3-53):</label>
+        <div class="col-md-6"><input type="text" class="form-control" id="line_range" name="line_range" pattern="-?\d+:\d+" required></div>
+    </div>
+    <button class="btn btn-success center-block">Submit</button>
+    <input type="hidden" name="pltid" value="{{pltid}}">
+    <input type="hidden" name="app" value="{{app}}">
+</form>
+
+{% endblock %}
+</div>
+
+<table class="table table-striped">
+    <thead><tr><th>Label</th><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition (JSON)</th><th>actions</th></tr></thead>
+    %for row in rows:
+    <tr>
+        {% set url = "/plots/"+str(pltid)+"/datasources/"+str(row['id'])+"?app="+app %}
+        <td class="datasource">{{row['label']}} <a href="{{url}}"></a></td>
+        <td class="datasource">{{row['filename']}} <a href="{{url}}"></a></td>
+        <td class="datasource">{{row['cols']}} <a href="{{url}}"></a></td>
+        <td class="datasource">{{row['line_range']}} <a href="{{url}}"></a></td>
+        <td class="datasource">{{row['data_def']}} <a href="{{url}}"></a></td>
+        <td><form method="post" action="/plots/datasource_delete">
+              <input type="hidden" name="dsid" value="{{row['id']}}">
+              <input type="hidden" name="pltid" value="{{pltid}}">
+              <input type="hidden" name="app" value="{{app}}">
+              <button type="submit" class="btn btn-link" value="delete" onclick="if(confirm('confirm')) return true; return false"><span style="color:#d9302c" class="glyphicon glyphicon-remove"></span> delete</button>
+            </form>
+            <form method="get" action="/plots/{{pltid}}/datasources/{{row['id']}}">
+              <input type="hidden" name="app" value="{{app}}">
+              <button type="submit" class="btn btn-link"><span style="color:#000" class="glyphicon glyphicon-pencil"></span> edit</button>
+            </form>
+        </td>
+    </tr>
+    %endfor
+</table>
+
+<script>
+$(document).ready(function() {
+    $('.datasource').click(function(e) {
+        var href = $(this).find("a").attr("href");
+        if(href) { window.location = href; }
+        e.stopPropagation();
+    });
+});
+</script>

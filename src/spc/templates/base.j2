@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    {% include 'header.j2' %}
+
+    {% if style %}
+    <style>
+        {{ style|safe }}
+    </style>
+    {% endif %}
+
+    {% block extra_style %}{% endblock %}
+
+</head>
+
+<body>
+    {% include 'navbar.j2' %}
+
+    <div class="container-fluid">
+    {% block content %}{% endblock %}
+    </div>
+
+    {% include 'footer.j2' %}
+</body>
+
+</html>

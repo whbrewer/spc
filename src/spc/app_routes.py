@@ -243,7 +243,7 @@ def appconfig_status():
         status['command'] = 0
 
     # check template file
-    if os.path.exists("views/apps/"+app+".tpl"):
+    if os.path.exists(os.path.join(os.path.dirname(__file__), 'templates', 'apps', app + '.j2')):
         status['template'] = 1
     else:
         status['template'] = 0

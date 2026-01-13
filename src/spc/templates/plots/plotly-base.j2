@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'header.j2' %}
+    <script src="/static/js/plotly-latest.min.js"></script>
+</head>
+
+<body>
+{% include 'navbar.j2' %}
+{% include 'plots/plot_list.j2' %}
+{% block content %}{% endblock %}
+{% include 'footer.j2' %}
+</body>
+
+</html>

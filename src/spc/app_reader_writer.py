@@ -62,7 +62,7 @@ class App(object):
         #        if os.path.isdir(path):
         #           shutil.rmtree(path)
         #        # remove template file
-        #        path = "views/apps/"+self.appname+".tpl"
+        #        path = "src/spc/templates/apps/"+self.appname+".j2"
         #        print("deleting template:", path)
         #        if os.path.isfile(path):
         #            os.remove(path)
@@ -76,14 +76,19 @@ class App(object):
 
     def create_template(self,html_tags=None,bool_rep="T",desc=None):
         # need to output according to blocks
-        f = open('views/apps/'+self.appname+'.tpl', 'w')
-        f.write("%rebase('base.tpl')\n")
-        f.write("%include('apps/alert')\n")
+        template_dir = os.path.join(os.path.dirname(__file__), 'templates', 'apps')
+        if not os.path.exists(template_dir):
+            os.makedirs(template_dir)
+        path = os.path.join(template_dir, self.appname + '.j2')
+        f = open(path, 'w')
+        f.write("{% extends 'base.j2' %}\n")
+        f.write("{% block content %}\n")
+        f.write("{% include 'apps/alert.j2' %}\n")
         f.write("<form class=\"form-horizontal\" action=\"/confirm\" method=\"post\" novalidate>\n")
-        f.write("<input type=\"hidden\" name=\"app\" value=\"{{app}}\">\n")
-        f.write("%if defined('cid'):\n")
-        f.write("<input type=\"hidden\" name=\"cid\" value=\"{{cid}}\">\n")
-        f.write("%end\n")
+        f.write("<input type=\"hidden\" name=\"app\" value=\"{{ app }}\">\n")
+        f.write("{% if cid is defined %}\n")
+        f.write("<input type=\"hidden\" name=\"cid\" value=\"{{ cid }}\">\n")
+        f.write("{% endif %}\n")
         f.write("<div class=\"col-xs-12 visible-xs\" style=\"height:5px\"></div>\n")
 
         # f.write("<input class=\"btn btn-success\" type=\"submit\"" + \
@@ -133,35 +138,35 @@ class App(object):
                 if html_tags[param] == "checkbox":
                     buf += "\t\t\t<input type=\"checkbox\" name=\"" \
                             + param + "\" value=\""+ bool_rep + "\"\n"
-                    buf += "\t\t\t\t%if " + param + "== '" + bool_rep + "':\n"
+                    buf += "\t\t\t\t{% if " + param + " == '" + bool_rep + "' %}\n"
                     buf += "\t\t\t\t\tchecked\n"
-                    buf += "\t\t\t\t%end\n"
+                    buf += "\t\t\t\t{% endif %}\n"
                     buf += "\t\t\t/>\n"
                 elif html_tags[param] == "hidden":
                     buf = "\t\t\t<input type=\"hidden\" name=\"" \
-                              + param + "\" value=\"{{" + param + "}}\"/>\n"
+                              + param + "\" value=\"{{ " + param + " }}\"/>\n"
                 elif html_tags[param] == "select":
                     buf += "\t\t\t<select class=\"form-control\" name=\""+param+"\">\n"
-                    buf += "\t\t\t%opts = {"+param+": "+param+", 'option2': 'option2'}\n"
-                    buf += "\t\t\t%for key, value in sorted(opts.items()):\n"
-                    buf += "\t\t\t\t%if key == "+param+":\n" \
-                           "\t\t\t\t\t<option selected value=\"{{key}}\">{{value}}</option>\n"
-                    buf += "\t\t\t\t%else:\n"
-                    buf += "\t\t\t\t\t<option value=\"{{key}}\">{{value}}</option>\n"
-                    buf += "\t\t\t\t%end\n"
-                    buf += "\t\t\t%end\n"
+                    buf += "\t\t\t{% set opts = {" + param + ": " + param + ", 'option2': 'option2'} %}\n"
+                    buf += "\t\t\t{% for key, value in opts|dictsort %}\n"
+                    buf += "\t\t\t\t{% if key == " + param + " %}\n" \
+                           "\t\t\t\t\t<option selected value=\"{{ key }}\">{{ value }}</option>\n"
+                    buf += "\t\t\t\t{% else %}\n"
+                    buf += "\t\t\t\t\t<option value=\"{{ key }}\">{{ value }}</option>\n"
+                    buf += "\t\t\t\t{% endif %}\n"
+                    buf += "\t\t\t{% endfor %}\n"
                     buf += "\t\t\t</select>\n"
                 elif html_tags[param] == "textarea":
                     buf += "\t\t\t<textarea class=\"form-control\" name=\"" \
-                                + param + ">{{" + param + "}}\"</textarea>\n"
+                                + param + "\">{{ " + param + " }}</textarea>\n"
                 elif html_tags[param] == "number":
                     buf += "\t\t\t<input type=\"number\" class=\"form-control\" name=\"" \
-                                + param + "\" value=\"{{" + param + "}}\"/>\n"
+                                + param + "\" value=\"{{ " + param + " }}\"/>\n"
                 elif html_tags[param] == "video":
-                    buf += "\t\t\t<iframe src=\"{{" + param + "}}\" width=\"560\" height=\"315\" frameborder=\"0\" allowfullscreen></iframe>"
+                    buf += "\t\t\t<iframe src=\"{{ " + param + " }}\" width=\"560\" height=\"315\" frameborder=\"0\" allowfullscreen></iframe>"
                 else:
                     buf += "\t\t\t<input type=\"text\" class=\"form-control\" name=\"" \
-                                + param + "\" value=\"{{" + param + "}}\"/>\n"
+                                + param + "\" value=\"{{ " + param + " }}\"/>\n"
                 #if not html_tags[param] == "hidden":
                 buf += "\t\t</div>\n"
                 buf += "\t</div>\n"
@@ -183,6 +188,7 @@ class App(object):
         f.write("\t</div>\n")
         f.write("</div>\n")
         f.write("</form>\n")
+        f.write("{% endblock %}\n")
         f.close()
         return True
 

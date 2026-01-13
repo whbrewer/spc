@@ -1,24 +1,16 @@
 from __future__ import absolute_import
 
-import os
-
-from bottle import SimpleTemplate, TEMPLATE_PATH, template as bottle_template
-
-from . import config
-
-BASE_DIR = os.path.dirname(__file__)
-TEMPLATE_PATH.insert(0, os.path.join(BASE_DIR, 'templates'))
-
-try:
-    SimpleTemplate.defaults["tab_title"] = config.tab_title
-except Exception:
-    SimpleTemplate.defaults["tab_title"] = "SPC"
-
-SimpleTemplate.defaults.setdefault("app", "")
-SimpleTemplate.defaults.setdefault("user", "")
-SimpleTemplate.defaults.setdefault("status", "")
-SimpleTemplate.defaults.setdefault("description", "")
+from flask import render_template
 
 
 def template(name, *args, **kwargs):
-    return bottle_template(name, *args, **kwargs)
+    if not name.endswith('.j2'):
+        name = name + '.j2'
+    context = {}
+    for arg in args:
+        if isinstance(arg, dict):
+            context.update(arg)
+        else:
+            raise TypeError("template() only accepts dict positional args")
+    context.update(kwargs)
+    return render_template(name, **context)

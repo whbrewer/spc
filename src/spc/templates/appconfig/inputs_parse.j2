@@ -1,0 +1,24 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<div class="container-fluid">
+<h3>Configure inputs: step 2 of 3</h3><br>
+
+<h4>Parse input file</h4>
+
+<p>Choose how to parse this file:</p>
+
+<form method="post" action="/appconfig/inputs/create_view">
+    {% include 'appconfig/input_opts.j2' %}
+    <br>
+    <input type="hidden" name="appname" value="{{appname}}">
+    <input type="submit" class="btn btn-success" value="Parse">
+</form>
+
+<hr>
+
+<pre>
+{{ contents|safe }}
+</pre>
+</div>
+{% endblock %}

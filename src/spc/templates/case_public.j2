@@ -1,0 +1,24 @@
+{% extends 'base.j2' %}
+{% block extra_style %}
+<style>
+    #navaction { display: none }
+</style>
+{% endblock %}
+{% block content %}
+
+{% if status is defined %}
+    Status: {{ status }}
+{% endif %}
+
+{% include 'navactions.j2' %}
+
+<pre>
+{{ contents|safe }}
+</pre>
+<span>file: {{fn}}</span>
+
+<script>
+$(function() { $('#navaction').fadeIn() })
+</script>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<div class="bs-callout bs-callout-danger">
+<h2> ERROR: {{err}} </h2>
+</div>
+
+%if traceback is defined:
+<pre>
+{{ traceback|safe }}
+</pre>
+%endif
+{% endblock %}

@@ -1,14 +1,19 @@
 from __future__ import absolute_import
 
+import datetime
 import importlib
 import os
+import re
 import sys
+import time
 import traceback
+import urllib
 
 from flask import Flask, redirect, request, send_from_directory, session
 from werkzeug.datastructures import MultiDict
 
 from . import app_reader_writer as apprw
+from . import common
 from . import config
 from . import scheduler
 from .constants import APP_SESSION_KEY, NOAUTH_USER, USER_ID_SESSION_KEY
@@ -20,7 +25,26 @@ from .templating import template
 BASE_DIR = os.path.dirname(__file__)
 
 
-app = Flask(__name__, static_folder=os.path.join(BASE_DIR, 'static'))
+app = Flask(
+    __name__,
+    static_folder=os.path.join(BASE_DIR, 'static'),
+    template_folder=os.path.join(BASE_DIR, 'templates'),
+)
+app.jinja_env.line_statement_prefix = '%'
+app.jinja_env.globals.update(
+    os=os,
+    re=re,
+    datetime=datetime,
+    time=time,
+    urllib=urllib,
+    common=common,
+    sizeof_fmt=common.sizeof_fmt,
+    sorted=sorted,
+    len=len,
+    int=int,
+    float=float,
+    str=str,
+)
 app.secret_key = os.environ.get('SPC_SECRET_KEY', '40dd942d0f03108a84db8697e0307802')
 sched = scheduler.Scheduler()
 
@@ -30,6 +54,11 @@ def inject_request_shims():
     req = request._get_current_object()
     req.forms = RequestShim(MultiDict(request.form))
     req.query = RequestShim(MultiDict(request.args))
+
+
+@app.context_processor
+def inject_template_globals():
+    return {'tab_title': getattr(config, 'tab_title', 'SPC')}
 
 
 @app.route('/')

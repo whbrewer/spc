@@ -345,10 +345,12 @@ def main():
                 shutil.rmtree(app_path)
                 sys.exit()
 
-            # copy tpl file to views/apps folder
-            src = apprw.apps_dir + os.sep + app + os.sep + app + '.tpl'
-            dst = 'views' + os.sep + 'apps'
-            shutil.copy(src,dst)
+            # copy template file to templates/apps folder
+            src = apprw.apps_dir + os.sep + app + os.sep + app + '.j2'
+            dst = os.path.join('src', 'spc', 'templates', 'apps')
+            if not os.path.exists(dst):
+                os.makedirs(dst)
+            shutil.copy(src, dst)
 
             # turn on executable bit
             path = os.path.join(apprw.apps_dir, app, app)
