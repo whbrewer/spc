@@ -23,7 +23,7 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
     </thead>
     <tbody>
     % from spc import common
-    % for key, value in inputs.iteritems():
+    % for key, value in inputs.items():
         <tr>
             <td>{{key}}</td> <td>{{value}}</td>
             <td><select class="form-control" name="html_tags"

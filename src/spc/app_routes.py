@@ -1,18 +1,25 @@
-from __future__ import print_function
-from __future__ import absolute_import
-import os, sys, traceback, cgi, time, shutil, json
+from bottle import Bottle, redirect, request, template
 import argparse as ap
+import html
+import json
+import os
+import shutil
+import sys
+import time
+import traceback
 
-from flask import Flask, Blueprint, render_template
-from flask_sqlalchemy import SQLAlchemy
-
+from . import app_reader_writer as apprw
 from . import config
+from .common import slurp_file
+from .model import app_user, apps, datasource, db, plots, users
 
-app_routes = Blueprint('app_routes', __name__)
+routes = Bottle()
 
-from .model import Users, Apps, AppUser, Plots, DataSource
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
 
-@app_routes.route('/<app>')
+@routes.get('/<app>')
 def show_app(app):
     # very similar to start_new_job() consider consolidating
     user = root.authorized()
@@ -34,66 +41,59 @@ def show_app(app):
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         redirect('/app/'+app)
 
-@app_routes.route('/app_exists/<appname>')
+@routes.get('/app_exists/<appname>')
 def app_exists(appname):
     '''Server-side AJAX function to check if an app exists in the DB.'''
     # return booleans as strings here b/c they get parsed by JavaScript
     if apps(name=appname): return 'true'
     else: return 'false'
 
-@app_routes.route('/apps')
+@routes.get('/apps')
 def showapps():
-    return "Hello!"
-#    user = root.authorized()
-#    q = request.query.q
-#    if not q:
-#        result = db().select(apps.ALL, orderby=apps.name)
-#    else:
-#        result = db(db.apps.name.contains(q, case_sensitive=False) |
-#                    db.apps.category.contains(q, case_sensitive=False) |
-#                    db.apps.description.contains(q, case_sensitive=False)).select()
-#
-#    # find out what apps have already been activated so that a user can't activate twice
-#    uid = User.get(User.user == user)
-#    activated = AppUser.select().where(AppUser.user == uid)
-#    activated_apps = []
-#    for row in activated:
-#        activated_apps.append(row.appid)
-#
-#    if user == "admin":
-#        configurable = True
-#    else:
-#        configurable = False
-#
-#    params = { 'configurable': configurable, 'user': user }
-#    return template('apps', params, rows=result, activated=activated_apps)
+    user = root.authorized()
+    q = request.query.q
+    if not q:
+        result = db().select(apps.ALL, orderby=apps.name)
+    else:
+        result = db(db.apps.name.contains(q, case_sensitive=False) |
+                    db.apps.category.contains(q, case_sensitive=False) |
+                    db.apps.description.contains(q, case_sensitive=False)).select()
 
-@app_routes.route('/myapps')
+    # find out what apps have already been activated so that a user can't activate twice
+    uid = users(user=user).id
+    activated = db(app_user.uid == uid).select()
+    activated_apps = []
+    for row in activated:
+        activated_apps.append(row.appid)
+
+    if user == "admin":
+        configurable = True
+    else:
+        configurable = False
+
+    params = { 'configurable': configurable, 'user': user }
+    return template('apps', params, rows=result, activated=activated_apps)
+
+@routes.get('/myapps')
 def showmyapps():
-    user = 'guest'
-    #user_record = Users.query.filter_by(user=user).first()
-    #uid = user_record.id
-    app = 'mendel'  # Or however you want to fetch this
+    user = root.authorized()
+    uid = users(user=user).id
+    app = root.active_app()
 
-    users = Users.query.all()
-    print('***', users)
-    exit()
+    result = db((apps.id == app_user.appid) & (uid == app_user.uid)).select(orderby=apps.name)
+    if user == "admin":
+        configurable = True
+    else:
+        configurable = False
+    params = { 'configurable': configurable, 'user': user, 'app': app }
+    return template('myapps', params, rows=result)
 
-    result = Apps.query.join(AppUser, Apps.id == AppUser.appid).filter(AppUser.uid == uid).order_by(Apps.name).all()
-
-    for row in result:
-        print(row.name)
-
-    configurable = True if user == "admin" else False
-    params = {'configurable': configurable, 'user': user, 'app': app}
-    return render_template('myapps.tpl', **params, rows=result)
-
-@app_routes.route('/apps/load')
+@routes.get('/apps/load')
 def get_load_apps():
     root.load_apps()
     redirect('/myapps')
 
-@app_routes.route('/app/edit/<appid>', methods=['POST'])
+@routes.post('/app/edit/<appid>')
 def app_edit(appid):
     user = root.authorized()
     if user != 'admin':
@@ -104,7 +104,7 @@ def app_edit(appid):
     params = {'app': app, 'cid': cid}
     return template('app_edit', params, rows=result)
 
-@app_routes.route('/app/save/<appid>', methods=['POST'])
+@routes.post('/app/save/<appid>')
 def app_save(appid):
     root.authorized()
     app = request.forms.app
@@ -123,7 +123,7 @@ def app_save(appid):
     redirect("/app/"+app)
 
 # allow only admin or user to delete apps
-@app_routes.route('/app/delete/<appid>', methods=['POST'])
+@routes.post('/app/delete/<appid>')
 def delete_app(appid):
     user = root.authorized()
     if user != 'admin':
@@ -148,7 +148,7 @@ def delete_app(appid):
 
     redirect("/apps")
 
-@app_routes.route('/app/<app>')
+@routes.get('/app/<app>')
 def view_app(app):
     user = root.authorized()
     if app: root.set_active(app)
@@ -173,10 +173,10 @@ def view_app(app):
         return template('error', err="there was a problem showing the app template. Check traceback.")
 
 
-@app_routes.route('/useapp', methods=['POST'])
+@routes.post('/useapp')
 def useapp():
     user = root.authorized()
-    uid = User.get(User.user == user).id
+    uid = users(user=user).id
     app = request.forms.app
     appid = apps(name=app).id
     print("allowing user", user, uid, "to access app", app, appid)
@@ -184,10 +184,10 @@ def useapp():
     db.commit()
     redirect('/apps')
 
-@app_routes.route('/removeapp', methods=['POST'])
+@routes.post('/removeapp')
 def removeapp():
     user = root.authorized()
-    uid = User.get(User.user == user).id
+    uid = users(user=user).id
     app = request.forms.app
     appid = apps(name=app).id
     auid = app_user(uid=uid, appid=appid).id
@@ -196,14 +196,14 @@ def removeapp():
     db.commit()
     redirect('/myapps')
 
-@app_routes.route('/addapp')
+@routes.get('/addapp')
 def getaddapp():
     user = root.authorized()
     if user != 'admin':
         return template('error', err="must be admin to add app")
     return template('appconfig/addapp')
 
-@app_routes.route('/addapp', methods=['POST'])
+@routes.post('/addapp')
 def addapp():
     user = root.authorized()
     if user != 'admin':
@@ -228,7 +228,7 @@ def addapp():
     root.load_apps()
     redirect('/app/'+appname)
 
-@app_routes.route('/appconfig/status')
+@routes.get('/appconfig/status')
 def appconfig_status():
     root.authorized()
     status = dict()
@@ -272,7 +272,7 @@ def appconfig_status():
     return json.dumps(status)
 
 
-@app_routes.route('/appconfig/exe/<step>', methods=['POST'])
+@routes.post('/appconfig/exe/<step>')
 def appconfig_exe(step="upload"):
     user = root.authorized()
     if user != 'admin':
@@ -299,7 +299,7 @@ def appconfig_exe(step="upload"):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
                 shutil.move(save_path, save_path+"."+timestr)
             upload.save(save_path)
-            os.chmod(save_path, 0o700)
+            os.chmod(save_path, 0700)
 
             # process = subprocess.Popen(["otool -L", save_path], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
             # contents = process.readlines()
@@ -314,7 +314,7 @@ def appconfig_exe(step="upload"):
         else:
             return "ERROR: must be already a file"
 
-@app_routes.route('/appconfig/export', methods=['POST'])
+@routes.post('/appconfig/export')
 def export():
     user = root.authorized()
     if user != 'admin':
@@ -370,7 +370,7 @@ def export():
 
     return "spc.json file written to " + path + "<meta http-equiv='refresh' content='2; url=/app/"+app+"'>"
 
-@app_routes.route('/appconfig/inputs/<step>', methods=['POST'])
+@routes.post('/appconfig/inputs/<step>')
 def edit_inputs(step):
     user = root.authorized()
     if user != 'admin':
@@ -419,8 +419,8 @@ def edit_inputs(step):
             else:
                 return "ERROR: input_format not valid: ", input_format
             path = os.path.join(apprw.apps_dir, appname, fn)
-            # cgi.escape converts HTML chars like > to entities &gt;
-            contents = cgi.escape(slurp_file(path))
+            # html.escape converts HTML chars like > to entities &gt;
+            contents = html.escape(slurp_file(path))
             params = {'fn': fn, 'contents': contents, 'appname': appname,
                       'input_format': input_format }
             return template('appconfig/inputs_parse', params)

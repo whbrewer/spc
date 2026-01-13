@@ -1,24 +1,31 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from flask import Flask, Blueprint
-import os, re, sys, traceback, cgi, pickle, time
+from bottle import Bottle, redirect, request, template
 import argparse as ap
+import html
+import os
+import pickle
+import re
+import sys
+import time
+import traceback
 
-from .common import rand_cid, slurp_file, replace_tags
-from .user_data import user_dir
-from .model import db, apps, users
 from . import app_reader_writer as apprw
 from . import config
+from .common import rand_cid, replace_tags, slurp_file
+from .model import apps, db, users
+from .user_data import user_dir
 
 try:
     import requests
 except:
     print("INFO: not importing requests... only needed for remote workers")
 
+routes = Bottle()
 
-execute = Blueprint('routes', __name__)
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
 
-@execute.route('/confirm', methods=['POST'])
+@routes.post('/confirm')
 def confirm_form():
     user = root.authorized()
     app = request.forms.app
@@ -103,7 +110,9 @@ def confirm_form():
         # this app-specific code should be removed in future
         # this writes a customized forsim script needed to run the simulation
         if app == "forsim":
-            inputs = request.forms.script.decode('utf-8')
+            inputs = request.forms.script
+            if isinstance(inputs, bytes):
+                inputs = inputs.decode('utf-8')
             inputs = inputs.replace(u'\r\n', '\n')
             if not os.path.exists(run_dir): os.makedirs(run_dir)
             thisfn = os.path.join(run_dir, "input.sim")
@@ -115,7 +124,7 @@ def confirm_form():
         inputs = slurp_file(fn)
 
         # convert html tags to entities (e.g. < to &lt;)
-        inputs = cgi.escape(inputs)
+        inputs = html.escape(inputs)
 
         # attempt to get number of procs from forms inputs
         if 'num_procs' in request.forms:
@@ -130,7 +139,7 @@ def confirm_form():
         # except:
         #     return 'ERROR: failed to write parameters to file'
 
-@app.route('/execute', methods=['POST'])
+@routes.post('/execute')
 def execute():
     user = root.authorized()
     app = request.forms.app
@@ -186,7 +195,7 @@ def execute():
         params = { 'cid': cid, 'app': app, 'user': user, 'err': e }
         return template('error', params)
 
-@execute.route('/<app>/<cid>/tail')
+@routes.get('/<app>/<cid>/tail')
 def tail(app, cid):
     user = root.authorized()
     # submit num_lines as form parameter

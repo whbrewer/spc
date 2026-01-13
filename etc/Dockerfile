@@ -1,7 +1,7 @@
 # This is a Dockerfile for running a SciPaas Container
 # VERSION 1.0
 
-FROM library/python:2
+FROM python:3.11-slim
 
 MAINTAINER Will Scott <willscott@gmail.com>
 

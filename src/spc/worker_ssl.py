@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 # This is an SSL worker for submitting jobs remotely
 # with some code borrowed from:
 # https://github.com/nickbabcock/bottle-ssl/blob/master/main.py
@@ -12,17 +11,25 @@ from __future__ import absolute_import
 #   cherrypy
 #   pyOpenSSL
 
-from bottle import template, static_file, request, response, get, post, run, ServerAdapter
-from cherrypy import wsgiserver
-from cherrypy.wsgiserver.ssl_pyopenssl import pyOpenSSLAdapter
+from bottle import ServerAdapter, get, post, request, response, run, static_file, template
+try:
+    from cherrypy import wsgiserver
+    from cherrypy.wsgiserver.ssl_pyopenssl import pyOpenSSLAdapter
+except ImportError:
+    from cheroot import wsgi as wsgiserver
+    from cheroot.ssl.pyopenssl import pyOpenSSLAdapter
 from OpenSSL import SSL
 from os import listdir
-import cgi, os, process, pickle, re
+import html
+import os
+import pickle
+import re
 
+from . import process
 from . import scheduler
-from .model import db, users, jobs
-from .user_data import user_dir
 from .common import slurp_file
+from .model import db, jobs, users
+from .user_data import user_dir
 
 ssl_cert = "/etc/apache2/ssl/ssl.crt"
 ssl_key = "/etc/apache2/ssl/private.key"
@@ -68,7 +75,10 @@ def execute():
     cid = request.forms['cid']
     desc = request.forms['desc']
     np = request.forms['np']
-    appmod = pickle.loads(request.forms['appmod'])
+    appmod_payload = request.forms['appmod']
+    if isinstance(appmod_payload, str):
+        appmod_payload = appmod_payload.encode('latin1')
+    appmod = pickle.loads(appmod_payload)
     # remove the appmod key
     del request.forms['appmod']
 
@@ -116,7 +126,7 @@ def output():
         output = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
         # this is needed so that XML input files will show paramters labels
-        output = cgi.escape(output)
+        output = html.escape(output)
         return output
         # params = { 'cid': cid, 'contents': output, 'app': app,
         #            'user': u, 'fn': fn, 'apps': myapps.keys() }
@@ -166,7 +176,10 @@ class SecuredSSLServer(pyOpenSSLAdapter):
 # uses the default cherrypy server, which doesn't use SSL
 class SSLCherryPyServer(ServerAdapter):
     def run(self, handler):
-        server = wsgiserver.CherryPyWSGIServer((self.host, self.port), handler)
+        try:
+            server = wsgiserver.CherryPyWSGIServer((self.host, self.port), handler)
+        except AttributeError:
+            server = wsgiserver.Server((self.host, self.port), handler)
         server.ssl_adapter = SecuredSSLServer(ssl_cert, ssl_key)
         try:
             server.start()

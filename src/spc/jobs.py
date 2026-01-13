@@ -1,18 +1,27 @@
-from __future__ import print_function
-from __future__ import absolute_import
-import os, sys, re, traceback, shutil, time, argparse as ap
+from bottle import Bottle, redirect, request, template
+import argparse as ap
+import os
+import re
+import shutil
+import sys
+import time
+import traceback
+import zipfile
 from datetime import datetime, timedelta
 
-from .user_data import user_dir
-from .common import rand_cid, replace_tags, slurp_file
-from .model import db, users, jobs
 from . import config
+from . import migrate
+from .common import rand_cid, replace_tags, slurp_file
+from .model import db, jobs, users
+from .user_data import user_dir
 
-from flask import Flask, Blueprint
+routes = Bottle()
 
-jobs = Blueprint('routes', __name__)
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
 
-@jobs.route('/jobs', methods=['GET'])
+@routes.get('/jobs')
 def show_jobs():
     user = root.authorized()
     #if app not in root.myapps: redirect('/apps')
@@ -35,9 +44,9 @@ def show_jobs():
 
             if len(query_array[0]) == 1: # for general case search 3 main fields: cid, app, labels
                 result = db((jobs.uid==uid) & \
-                           ((db.jobs.cid.contains(q.encode('utf8'), case_sensitive=False)) |
-                            (db.jobs.app.contains(q.encode('utf8'), case_sensitive=False)) |
-                            (db.jobs.description.contains(q.encode('utf8'), case_sensitive=False)))).select(orderby=~jobs.id)
+                           ((db.jobs.cid.contains(q, case_sensitive=False)) |
+                            (db.jobs.app.contains(q, case_sensitive=False)) |
+                            (db.jobs.description.contains(q, case_sensitive=False)))).select(orderby=~jobs.id)
 
             else: # in the case of specific tag searching, e.g. app:mendel
                 key = query_array[0][0]
@@ -120,7 +129,7 @@ def show_jobs():
     params['num_rows'] = config.jobs_num_rows
     return template('jobs', params, rows=result)
 
-@jobs.route('/jobs/new', methods=['GET'])
+@routes.get('/jobs/new')
 def start_new_job():
     user = root.authorized()
     app = request.query.app or root.active_app()
@@ -147,11 +156,12 @@ def start_new_job():
 
     # if restarting from old case
     if re.search("[a-z]", cid):
-        params, _, _ = root.myapps[app].read_params(owner, cid)
+        previous_params, _, _ = root.myapps[app].read_params(owner, cid)
+        params.update(previous_params)
         if user == owner:
-            params['tags'] = cid
+            params['tags'] = cid + "," + jobs(cid=cid).description
         else:
-            params['tags'] = os.path.join(owner, cid)
+            params['tags'] = os.path.join(owner, cid) + "," + jobs(cid=cid).description
 
     params['cid'] = cid
     params['app'] = app
@@ -164,7 +174,7 @@ def start_new_job():
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return template('error', err="there was a problem with the template. Check traceback.")
 
-@jobs.route('/jobs/diff', methods=['GET'])
+@routes.get('/jobs/diff')
 def diff_jobs():
     user = root.authorized()
     app = root.active_app()
@@ -191,7 +201,7 @@ def diff_jobs():
     params = { 'cid': cid, 'contents': ' '.join(result), 'app': app, 'user': user, 'fn': title }
     return template('more', params)
 
-@jobs.route('/jobs/annotate', methods=['POST'])
+@routes.post('/jobs/annotate')
 def annotate_job():
     root.authorized()
     cid = request.forms.cid
@@ -202,7 +212,7 @@ def annotate_job():
     db.commit()
     redirect('/jobs')
 
-@jobs.route('/jobs/star', methods=['POST'])
+@routes.post('/jobs/star')
 def star_case():
     root.authorized()
     jid = request.forms.jid
@@ -210,7 +220,7 @@ def star_case():
     db.commit()
     redirect('/jobs')
 
-@jobs.route('/jobs/unstar', methods=['POST'])
+@routes.post('/jobs/unstar')
 def unstar_case():
     root.authorized()
     jid = request.forms.jid
@@ -218,7 +228,7 @@ def unstar_case():
     db.commit()
     redirect('/jobs')
 
-@jobs.route('/jobs/share', methods=['POST'])
+@routes.post('/jobs/share')
 def share_case():
     root.authorized()
     jid = request.forms.jid
@@ -231,7 +241,7 @@ def share_case():
     db.commit()
     redirect('/jobs')
 
-@jobs.route('/jobs/unshare', methods=['POST'])
+@routes.post('/jobs/unshare')
 def unshare_case():
     root.authorized()
     jid = request.forms.jid
@@ -239,7 +249,7 @@ def unshare_case():
     db.commit()
     redirect('/jobs')
 
-@jobs.route('/jobs/unshare', methods=['GET'])
+@routes.get('/jobs/all')
 def get_all_jobs():
     user = root.authorized()
     if not user == "admin":
@@ -266,7 +276,7 @@ def get_all_jobs():
     params['num_rows'] = config.jobs_num_rows
     return template('shared', params, rows=result)
 
-@jobs.route('/jobs/shared', methods=['GET'])
+@routes.get('/jobs/shared')
 def get_shared():
     """Return the records from the shared table."""
     user = root.authorized()
@@ -294,7 +304,7 @@ def get_shared():
     params['num_rows'] = config.jobs_num_rows
     return template('shared', params, rows=result)
 
-@jobs.route('/jobs/delete/<jid>', methods=['GET'])
+@routes.post('/jobs/delete/<jid>')
 def delete_job(jid):
     user = root.authorized()
     app = request.forms.app
@@ -313,7 +323,7 @@ def delete_job(jid):
         return template("error", err="cannot delete while job is still running")
     redirect("/jobs")
 
-@jobs.route('/jobs/merge/<rtype>', methods=['POST'])
+@routes.post('/jobs/merge/<rtype>')
 def merge(rtype):
     user = root.authorized()
     selected_cases = request.forms.selected_merge_cases
@@ -391,7 +401,7 @@ def merge(rtype):
 
     return "merged file written to " + run_dir + "<meta http-equiv='refresh' content='2; url=/jobs'>"
 
-@jobs.route('/jobs/delete_selected_cases', methods=['POST'])
+@routes.post('/jobs/delete_selected_cases')
 def delete_jobs():
     user = root.authorized()
     selected_cases = request.forms.selected_cases
@@ -411,7 +421,7 @@ def delete_jobs():
             print("ERROR: not removing path:", path, "because cid missing")
     redirect("/jobs")
 
-@jobs.route('/jobs/stop', methods=['POST'])
+@routes.post('/jobs/stop')
 def stop_job():
     root.authorized()
     app = request.forms.app
@@ -426,3 +436,33 @@ def stop_job():
     jobs(jid).update_record(state="X")
     db.commit()
     redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
+
+def import_job_db(user, app, cid):
+    dal = migrate.dal(uri=config.uri, migrate=True)
+    uid = dal.db.users(user=user).id
+    dal.db.jobs.insert(
+        uid=uid,
+        app=app,
+        cid=cid,
+        state='C',
+        description='',
+        time_submit=time.asctime(),
+        walltime='',
+        np='',
+        priority=''
+    )
+    dal.db.commit()
+
+@routes.get('/jobs/import', method='POST')
+def import_job():
+    upload = request.files.get('upload')
+
+    z = zipfile.ZipFile(upload.file)
+    z.extractall()
+
+    # Get the username, appname, and case id from the file structure
+    _, user, app, cid, _ = z.namelist()[0].split(os.sep, 4)
+
+    import_job_db(user, app, cid)
+
+    redirect('/jobs')

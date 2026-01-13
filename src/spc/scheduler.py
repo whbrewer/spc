@@ -1,32 +1,34 @@
-from __future__ import print_function
-from __future__ import absolute_import
-import threading, time, os, subprocess, signal, datetime
+#!/usr/bin/env python
+import datetime
+import os
+import signal
+import subprocess
+import threading
+import time
 from multiprocessing import Process, BoundedSemaphore, Lock, Manager
 
-from flask_sqlalchemy import SQLAlchemy
-from .model import Users, Jobs, Groups, Apps  # Assuming you've already converted these models
-from .user_data import user_dir
+from pydal import DAL
+
 from . import config
+from .user_data import user_dir
 
 STATE_RUN = 'R'
 STATE_QUEUED = 'Q'
 STATE_COMPLETED = 'C'
 STATE_STOPPED = 'X'
 
-db = SQLAlchemy()  # Initialized without an app here, assuming it's bound elsewhere
-
 class Scheduler(object):
     """multi-process scheduler"""
 
     def __init__(self):
-
-        # Update jobs in run state to stopped state
-        Jobs.query.filter_by(state=STATE_RUN).update({Jobs.state: STATE_STOPPED})
-        db.session.commit()
-        
+        # if any jobs marked in run state when scheduler starts
+        # replace their state with X to mark that they have been shutdown
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        myset = db(db.jobs.state == STATE_RUN)
+        myset.update(state=STATE_STOPPED)
+        db.commit()
         self.sem = BoundedSemaphore(config.np)
         self.mutex = Lock()
-        
         # set time zone
         try:
             os.environ['TZ'] = config.time_zone
@@ -35,7 +37,7 @@ class Scheduler(object):
 
     def poll(self):
         """start polling thread which checks queue status every second"""
-        t = threading.Thread(target=self.assignTask)
+        t = threading.Thread(target = self.assignTask)
         t.daemon = True
         t.start()
 
@@ -51,94 +53,131 @@ class Scheduler(object):
             time.sleep(1)
 
     def qsub(self, app, cid, uid, cmd, np, pry, walltime, desc=""):
-        job = Jobs(
-            uid=uid,
-            app=app,
-            cid=cid,
-            command=cmd,
-            state=STATE_QUEUED,
-            description=desc,
-            time_submit=time.asctime(),
-            walltime=walltime,
-            np=np,
-            priority=pry
-        )
-        db.session.add(job)
-        db.session.commit()
-        return str(job.id)
+        """queue job ... really just set state to 'Q'."""
+        db = DAL(config.uri, auto_import=True, migrate=False,
+                 folder=config.dbdir)
+        jid = db.jobs.insert(uid=uid, app=app, cid=cid, command=cmd, state=STATE_QUEUED,
+                              description=desc, time_submit=time.asctime(),
+                              walltime=walltime, np=np, priority=pry)
+        db.commit()
+        db.close()
+        return str(jid)
 
     def qfront(self):
-        job = Jobs.query.filter_by(state=STATE_QUEUED).order_by(Jobs.priority).first()
-        return job.id if job else None
+        """pop the top job off of the queue that is in a queued 'Q' state"""
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        myorder = db.jobs.priority
+        #myorder = db.jobs.priority | db.jobs.id
+        row = db(db.jobs.state==STATE_QUEUED).select(orderby=myorder).first()
+        db.close()
+        if row: return row.id
+        else: return None
 
-    def qdel(self, jid):
-        Jobs.query.filter_by(id=jid).delete()
-        db.session.commit()
+    def qdel(self,jid):
+        """delete job jid from the queue"""
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        del db.jobs[jid]
+        db.commit()
+        db.close()
 
     def qstat(self):
-        return Jobs.query.filter_by(state=STATE_QUEUED).count()
+        """return the number of jobs in a queued 'Q' state"""
+        db = DAL(config.uri, auto_import=True, migrate=False,
+                 folder=config.dbdir)
+        return db(db.jobs.state==STATE_QUEUED).count()
+        db.close()
 
-    def start(self, jid):
-        job = Jobs.query.get(jid)
-        user = Users.query.get(job.uid)
-        app = job.app
-        cid = job.cid
-        np = job.np
-        command = job.command if np <= 1 else config.mpirun + " -np " + str(np) + " " + command
+    def start(self,jid):
+        """start running a job by creating a new process"""
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        uid = db.jobs(jid).uid
+        user = db.users(uid).user
+        app = db.jobs(jid).app
+        cid = db.jobs(jid).cid
+        np = db.jobs(jid).np
+        if np > 1: # use mpi
+            command = db.jobs(jid).command
+            command = config.mpirun + " -np " + str(np) + " " + command
+        else: # dont use mpi
+            command = db.jobs(jid).command
 
+        # redirect output to appname.out file
         outfn = app + ".out"
         cmd = command + ' > ' + outfn + ' 2>&1 '
         print("cmd:", cmd)
 
-        run_dir = os.path.join(user_dir, user.user, app, cid)
+        run_dir = os.path.join(user_dir, user, app, cid)
+
+        # if number procs available fork new process with command
         for i in range(np):
             self.sem.acquire()
-        p = Process(target=self.start_job, args=(run_dir, cmd, app, jid, np, myjobs))
+        p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,myjobs))
         p.start()
         for i in range(np):
             self.sem.release()
 
-    def start_job(self, run_dir, cmd, app, jid, np, myjobs):
+    def start_job(self,run_dir,cmd,app,jid,np,myjobs):
+        """this is what the separate job process runs"""
         for i in range(np): self.sem.acquire()
-        self._set_state(jid, STATE_RUN)
+        # update state to 'R' for run
+        self._set_state(jid,STATE_RUN)
         mycwd = os.getcwd()
-        os.chdir(run_dir)  # change to case directory
+        os.chdir(run_dir) # change to case directory
 
         pro = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
         myjobs[jid] = pro
 
-        pro.wait()  # wait for job to finish
-        myjobs.pop(long(jid), None)  # remove job from buffer
+        pro.wait() # wait for job to finish
+        myjobs.pop(int(jid), None) # remove job from buffer
 
+        # let user know job has ended
         outfn = app + ".out"
-        with open(outfn, "a") as f:
+        with open(outfn,"a") as f:
             f.write("FINISHED EXECUTION")
 
+        # update state to 'C' for completed
         os.chdir(mycwd)
-        self._set_state(jid, STATE_COMPLETED)
+        self._set_state(jid,STATE_COMPLETED)
         for i in range(np):
             self.sem.release()
 
-    def _set_state(self, jid, state):
-        job = Jobs.query.get(jid)
-        job.state = state
-        db.session.commit()
+    def _set_state(self,jid,state):
+        """update state of job"""
+        self.mutex.acquire()
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        db.jobs[jid] = dict(state=state)
+        db.commit()
+        db.close()
+        self.mutex.release()
 
     def stop_expired_jobs(self):
-        for job in Jobs.query.filter_by(state=STATE_RUN).all():
-            walltime = int(job.walltime)
-            time_submit = time.mktime(datetime.datetime.strptime(
-                job.time_submit, "%a %b %d %H:%M:%S %Y").timetuple())
-            now = time.mktime(datetime.datetime.now().timetuple())
-            runtime = now - time_submit
-            if runtime > walltime:
-                print("INFO: scheduler stopped job", job.id, "REASON: reached timeout")
-                self.stop(job.id)
+        """shutdown jobs that exceed their time limit"""
+        db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        rows = db(db.jobs.state==STATE_RUN).select()
+        for row in rows:
+            if row:
+                walltime = int(row.walltime)
+                time_submit = time.mktime(datetime.datetime.strptime(
+                              row.time_submit, "%a %b %d %H:%M:%S %Y").timetuple())
+                now = time.mktime(datetime.datetime.now().timetuple())
+                runtime = now - time_submit
+                if runtime > walltime:
+                    print("INFO: scheduler stopped job", row.id, "REASON: reached timeout")
+                    self.stop(row.id)
 
-    def stop(self, jid):
-        p = myjobs.pop(long(jid), None)
+        db.close()
+
+    def stop(self,jid):
+        p = myjobs.pop(int(jid), None)
         if p: os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+
+        # the following doesn't work because it gets overwritten by line 128 above
+        # need a way to feedback to start_job method whether job has been stopped or not
+        # db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
+        # myset = db(db.jobs.id == jid)
+        # myset.update(state=STATE_STOPPED)
+        # db.commit()
+        # db.close()
 
     def test_qfront(self):
         print(self.qfront())
-

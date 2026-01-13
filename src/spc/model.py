@@ -1,93 +1,111 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from __future__ import absolute_import
+
+from pydal import DAL, Field
 
 from . import config
 
-#app = Flask(__name__)
-#app.config['SQLALCHEMY_DATABASE_URI'] = config.uri  # Ensure this is correctly set up
-#db = SQLAlchemy(app)
-db = SQLAlchemy()
+# DAL handles connection and table definitions; keep API close to legacy gluino.
+db = DAL(config.uri, migrate=False, folder=config.dbdir)
 
-class Groups(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+groups = db.define_table(
+    'groups',
+    Field('id', 'integer'),
+    Field('name', 'string'),
+)
 
-class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(db.String)
-    passwd = db.Column(db.String)
-    email = db.Column(db.String)
-    new_shared_jobs = db.Column(db.Integer)
-    priority = db.Column(db.Integer)
-    gid = db.Column(db.Integer)
+users = db.define_table(
+    'users',
+    Field('id', 'integer'),
+    Field('user', 'string'),
+    Field('passwd', 'string'),
+    Field('email', 'string'),
+    Field('new_shared_jobs', 'integer'),
+    Field('priority', 'integer'),
+    Field('gid', db.groups, ondelete="SET NULL"),
+)
 
-class UserMeta(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    uid = db.Column(db.Integer, db.ForeignKey('users.id'))
-    new_shared_jobs = db.Column(db.Integer)
-    theme = db.Column(db.String)
+user_meta = db.define_table(
+    'user_meta',
+    Field('id', 'integer'),
+    Field('uid', db.users),
+    Field('new_shared_jobs', 'integer'),
+    Field('theme', 'string'),
+)
 
-class Apps(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    description = db.Column(db.String)
-    category = db.Column(db.String)
-    language = db.Column(db.String)
-    input_format = db.Column(db.String)
-    command = db.Column(db.String)
-    assets = db.Column(db.String)
-    preprocess = db.Column(db.String)
-    postprocess = db.Column(db.String)
+apps = db.define_table(
+    'apps',
+    Field('id', 'integer'),
+    Field('name', 'string'),
+    Field('description', 'string'),
+    Field('category', 'string'),
+    Field('language', 'string'),
+    Field('input_format', 'string'),
+    Field('command', 'string'),
+    Field('assets', 'string'),
+    Field('preprocess', 'string'),
+    Field('postprocess', 'string'),
+)
 
-class AppUser(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    appid = db.Column(db.Integer)
-    uid = db.Column(db.Integer)
+app_user = db.define_table(
+    'app_user',
+    Field('id', 'integer'),
+    Field('appid', 'integer'),
+    Field('uid', 'integer'),
+)
 
-class Jobs(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    uid = db.Column(db.Integer, db.ForeignKey('users.id'))
-    app = db.Column(db.String)
-    cid = db.Column(db.String)
-    gid = db.Column(db.Integer, db.ForeignKey('groups.id'))
-    command = db.Column(db.String)
-    state = db.Column(db.String)
-    time_submit = db.Column(db.String)
-    walltime = db.Column(db.String)
-    description = db.Column(db.String)
-    np = db.Column(db.Integer)
-    priority = db.Column(db.Integer)
-    starred = db.Column(db.String)
-    shared = db.Column(db.String)
+jobs = db.define_table(
+    'jobs',
+    Field('id', 'integer'),
+    Field('uid', db.users),
+    Field('app', 'string'),
+    Field('cid', 'string'),
+    Field('gid', db.groups),
+    Field('command', 'string'),
+    Field('state', 'string'),
+    Field('time_submit', 'string'),
+    Field('walltime', 'string'),
+    Field('description', 'string'),
+    Field('np', 'integer'),
+    Field('priority', 'integer'),
+    Field('starred', 'string'),
+    Field('shared', 'string'),
+)
 
-class Plots(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    appid = db.Column(db.Integer, db.ForeignKey('apps.id'))
-    ptype = db.Column(db.String)
-    title = db.Column(db.String)
-    options = db.Column(db.String)
+plots = db.define_table(
+    'plots',
+    Field('id', 'integer'),
+    Field('appid', db.apps),
+    Field('ptype', 'string'),
+    Field('title', 'string'),
+    Field('options', 'string'),
+)
 
-class DataSource(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    label = db.Column(db.String)
-    pltid = db.Column(db.Integer, db.ForeignKey('plots.id'))
-    filename = db.Column(db.String)
-    cols = db.Column(db.String)
-    line_range = db.Column(db.String)
-    data_def = db.Column(db.String)
+datasource = db.define_table(
+    'datasource',
+    Field('id', 'integer'),
+    Field('label', 'string'),
+    Field('pltid', db.plots),
+    Field('filename', 'string'),
+    Field('cols', 'string'),
+    Field('line_range', 'string'),
+    Field('data_def', 'string'),
+)
 
-class AWSCreds(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String)
-    secret = db.Column(db.String)
-    account_id = db.Column(db.String)
-    uid = db.Column(db.Integer, db.ForeignKey('users.id'))
+aws_creds = db.define_table(
+    'aws_creds',
+    Field('id', 'integer'),
+    Field('key', 'string'),
+    Field('secret', 'string'),
+    Field('account_id', 'string'),
+    Field('uid', db.users),
+)
 
-class AWSInstances(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    region = db.Column(db.String)
-    instance = db.Column(db.String)
-    itype = db.Column(db.String)
-    rate = db.Column(db.Float)
-    uid = db.Column(db.Integer, db.ForeignKey('users.id'))
-
+aws_instances = db.define_table(
+    'aws_instances',
+    Field('id', 'integer'),
+    Field('region', 'string'),
+    Field('instance', 'string'),
+    Field('itype', 'string'),
+    Field('rate', 'double'),
+    Field('uid', db.users),
+)

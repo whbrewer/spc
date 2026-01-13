@@ -1,11 +1,15 @@
-from __future__ import absolute_import
-from bottle import template, static_file, request, response, get, post, run
+from bottle import get, post, request, response, run, static_file, template
 from os import listdir
-import config, cgi, os, pickle, re, process
+import html
+import os
+import pickle
+import re
 
+from . import config
+from . import process
 from . import scheduler
-from .model import db, users, jobs
 from .common import slurp_file
+from .model import db, jobs, users
 from .user_data import user_dir
 
 sched = scheduler.Scheduler()
@@ -53,7 +57,10 @@ def execute():
     cid = request.forms['cid']
     desc = request.forms['desc']
     np = request.forms['np']
-    appmod = pickle.loads(request.forms['appmod'])
+    appmod_payload = request.forms['appmod']
+    if isinstance(appmod_payload, str):
+        appmod_payload = appmod_payload.encode('latin1')
+    appmod = pickle.loads(appmod_payload)
     # remove the appmod key
     del request.forms['appmod']
     appmod.write_params(request.forms, user)
@@ -100,7 +107,7 @@ def output():
         output = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
         # this is needed so that XML input files will show paramters labels
-        output = cgi.escape(output)
+        output = html.escape(output)
         return output
         # params = { 'cid': cid, 'contents': output, 'app': app,
         #            'user': u, 'fn': fn, 'apps': myapps.keys() }

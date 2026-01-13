@@ -1,156 +1,157 @@
-# python built-ins
-import os, sys, traceback, importlib
+from __future__ import absolute_import
 
-# other local modules
-from . import config, scheduler, app_reader_writer as apprw
-from .model import db, Apps
+import importlib
+import os
+import sys
+import traceback
+
+from bottle import TEMPLATE_PATH, SimpleTemplate, app, error, get, redirect, request, run, static_file, template
+from beaker.middleware import SessionMiddleware
+
+from . import app_reader_writer as apprw
+from . import config
+from . import scheduler
+from .constants import APP_SESSION_KEY, NOAUTH_USER, USER_ID_SESSION_KEY
+from .model import apps, db
 from .user_data import user_dir
-from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
-from flask import Flask, request, redirect, session, render_template, send_from_directory
-from .app_routes import app_routes
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = config.uri
-db.init_app(app)
-
-app.secret_key = '40dd942d0f03108a84db8697e0307802'  # for sessions
-
-# Register blueprints
-app.register_blueprint(app_routes)
 
 
-@app.route('/')
+BASE_DIR = os.path.dirname(__file__)
+TEMPLATE_PATH.insert(0, os.path.join(BASE_DIR, 'templates'))
+
+session_opts = {
+    'session.type': 'file',
+    'session.cookie_expires': True,
+    'session.data_dir': user_dir,
+    'session.auto': True,
+}
+
+app = SessionMiddleware(app(), session_opts)
+
+try:
+    SimpleTemplate.defaults["tab_title"] = config.tab_title
+except Exception:
+    SimpleTemplate.defaults["tab_title"] = "SPC"
+
+sched = scheduler.Scheduler()
+
+
+@get('/')
 def root():
-    #authorized()
-    #return redirect('/myapps')
-    return render_template('apps/mendel.tpl')
+    authorized()
+    redirect('/myapps')
 
-@app.route('/static/<path:filepath>')
+
+@get('/static/<filepath:path>')
 def server_static(filepath):
-    return send_from_directory('static', filepath)
+    return static_file(filepath, root=os.path.join(BASE_DIR, 'static'))
 
-@app.route('/favicon.ico')
+
+@get('/favicon.ico')
 def get_favicon():
-    return send_from_directory('static', 'favicon.ico')
-
-# create an instance of the scheduler
-#sched = scheduler.Scheduler()
-
-app.run(port=config.port)
-
-exit()
-
-#from __future__ import print_function
-#from __future__ import absolute_import
-# web framework
+    return static_file('favicon.ico', root=os.path.join(BASE_DIR, 'static'))
 
 
-
-#app = Flask(__name__)
-
-### end session management configuration ###
-
-#@app.context_processor
-#def inject_tab_title():
-#    return dict(tab_title=config.tab_title)
-
-
-# a few generic routes
-
-
-
-
-@app.errorhandler(500)
-@app.errorhandler(501)
-@app.errorhandler(502)
+@error(500)
+@error(501)
+@error(502)
 def error500(error):
-    msg = error.exception.message + " (" + str(error.status_code) + ")"
-    trace = error.traceback
-    return template('error', err=msg, traceback=trace)
+    exc = getattr(error, 'exception', None)
+    msg = str(exc) if exc else "Unknown error"
+    status = getattr(error, 'status_code', '500')
+    trace = getattr(error, 'traceback', '')
+    return template('error', err="{} ({})".format(msg, status), traceback=trace)
+
 
 def authorized():
-    '''Return username if user is already logged in, redirect otherwise'''
+    """Return username if user is already logged in, redirect otherwise."""
     if config.auth:
-        username = session.get(USER_ID_SESSION_KEY)
-        if not username:
+        s = request.environ.get('beaker.session')
+        s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY, False)
+        if not s[USER_ID_SESSION_KEY]:
             redirect('/login')
         else:
-            return username
+            return s[USER_ID_SESSION_KEY]
     else:
         return NOAUTH_USER
+
 
 def active_app():
     s = request.environ.get('beaker.session')
     try:
         return s[APP_SESSION_KEY]
-    except:
+    except Exception:
         return None
 
-def set_active(app):
-    # set a session variable to keep track of the current app
+
+def set_active(app_name):
     s = request.environ.get('beaker.session')
-    s[APP_SESSION_KEY] = app
+    s[APP_SESSION_KEY] = app_name
+
 
 def init_config_options():
-    """set default options for missing config file settings"""
+    try:
+        config.worker
+    except Exception:
+        config.worker = "local"
 
-    try: config.worker
-    except: config.worker = "local"
+    try:
+        config.auth
+    except Exception:
+        config.auth = False
 
-    try: config.auth
-    except: config.auth = False
+    try:
+        config.np
+    except Exception:
+        config.np = 1
 
-    try: config.np
-    except: config.np = 1
+    try:
+        config.port
+    except Exception:
+        config.port = 8580
 
-    try: config.port
-    except: config.port = 8580
-
-    return None
-
-
-## a couple functions for loading the apps
 
 def app_instance(input_format, appname, preprocess=0, postprocess=0):
-    if(input_format=='namelist'):
+    if input_format == 'namelist':
         myapp = apprw.Namelist(appname, preprocess, postprocess)
-    elif(input_format=='ini'):
+    elif input_format == 'ini':
         myapp = apprw.INI(appname, preprocess, postprocess)
-    elif(input_format=='xml'):
+    elif input_format == 'xml':
         myapp = apprw.XML(appname, preprocess, postprocess)
-    elif(input_format=='json'):
+    elif input_format == 'json':
         myapp = apprw.JSON(appname, preprocess, postprocess)
-    elif(input_format=='yaml'):
+    elif input_format == 'yaml':
         myapp = apprw.YAML(appname, preprocess, postprocess)
-    elif(input_format=='toml'):
+    elif input_format == 'toml':
         myapp = apprw.TOML(appname, preprocess, postprocess)
     else:
         return 'ERROR: input_format', input_format, 'not supported'
     return myapp
 
+
 def load_apps():
     """load apps into myapps global dictionary"""
     global myapps, default_app
-    # Connect to DB
-    result = Apps.select()
+    result = db().select(apps.ALL)
     myapps = {}
     for row in result:
-        name = row.name
-        appid = row.id
-        preprocess = row.preprocess
-        postprocess = row.postprocess
-        input_format = row.input_format
+        name = row['name']
+        appid = row['id']
+        preprocess = row['preprocess']
+        postprocess = row['postprocess']
+        input_format = row['input_format']
         try:
             print('loading: %s (id: %s)' % (name, appid))
             myapps[name] = app_instance(input_format, name, preprocess, postprocess)
             myapps[name].appid = appid
             myapps[name].input_format = input_format
-        except:
+        except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print(traceback.print_exception(exc_type, exc_value, exc_traceback))
             print('ERROR: LOADING: %s (ID: %s) FAILED TO LOAD' % (name, appid))
-    default_app = name # simple soln - use last app read from DB
+    default_app = name
     return True
+
 
 def main():
     from . import util
@@ -158,39 +159,38 @@ def main():
     init_config_options()
     load_apps()
 
-    # for local workers, start a polling thread to continuously check for queued jobs
-    # if worker == "local": sched.poll()
-    #sched.poll()
+    sched.poll()
 
-    ## merge in other routes and modules
-
-    modules = ["account", "admin", "app_routes", "aws", "container",
-               "execute", "jobs", "plots", "user_data", "util"]
+    modules = [
+        "account",
+        "admin",
+        "app_routes",
+        "aws",
+        "container",
+        "execute",
+        "jobs",
+        "plots",
+        "user_data",
+        "util",
+    ]
 
     for module in modules:
         try:
-            # Import the module
             imported_module = importlib.import_module('.' + module, 'spc')
-            
-            # Register the blueprint from the imported module
-            # Assuming each module has a blueprint named 'routes'
-            #app.register_blueprint(imported_module.routes)
-            #app.register_blueprint(getattr(imported_module, module))
-            
+            getattr(imported_module, 'bind')(globals())
+            app.app.merge(getattr(imported_module, 'routes'))
         except ImportError:
             print("ERROR importing module " + module)
 
-    ## Log CPU and Memory history to log files
-    # util.MachineStatsLogger(interval=5, function=util.print_machine_stats)
-    # util.setup_rotating_handler(1000, 3)
-
-    ## start up the web server
-
-    # run the app using server specified in config.py
-    #if config.server != 'uwsgi':
-    #app.run(host='0.0.0.0', port=config.port, debug=False)
-    app.run()
-
-#if config.server == 'uwsgi': main()
+    if config.server != 'uwsgi':
+        run(
+            server=config.server,
+            app=app,
+            host='0.0.0.0',
+            port=config.port,
+            debug=False,
+        )
 
 
+if config.server == 'uwsgi':
+    main()

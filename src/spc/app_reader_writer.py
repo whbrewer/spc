@@ -265,7 +265,7 @@ class Namelist(App):
         if not os.path.isfile(fn):
             print("ERROR: input file does not exist: " + fn)
 
-        for line in open(fn, 'rU'):
+        for line in open(fn, 'r'):
             m = re.search(r'&(\w+)',line) # section title
             n = re.search(r'(\w+)\s*=\s*(.*$)',line) # parameter
             if m:
@@ -652,7 +652,7 @@ class TOML(App):
             toml_dict = toml.load(f)
             blockorder = toml_dict.keys()
 
-            for k, v in toml_dict.iteritems():
+            for k, v in toml_dict.items():
                 blockmap[k] = v.keys()
                 params.update(v)
 

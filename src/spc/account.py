@@ -1,13 +1,21 @@
-from __future__ import print_function
-from __future__ import absolute_import
-import re, sys, hashlib, traceback, smtplib, uuid, argparse as ap
-from .model import db, users, user_meta
-from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
+from bottle import Bottle, redirect, request, response, template
+import argparse as ap
+import hashlib
+import re
+import smtplib
+import sys
+import traceback
+import uuid
+
 from . import config
+from .constants import APP_SESSION_KEY, NOAUTH_USER, USER_ID_SESSION_KEY
+from .model import db, user_meta, users
 
-from flask import Flask, Blueprint
+routes = Bottle()
 
-account = Blueprint('account', __name__)
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
 
 def _check_user_passwd(user, passwd):
     """check password against database"""
@@ -19,9 +27,10 @@ def _check_user_passwd(user, passwd):
         return False
 
 def _hash_pass(pw):
-    return hashlib.sha256(pw).hexdigest()
+    data = pw if isinstance(pw, bytes) else pw.encode('utf-8')
+    return hashlib.sha256(data).hexdigest()
 
-@account.route('/account')
+@routes.get('/account')
 def get_account():
     user = root.authorized()
     app = request.query.app or root.active_app()
@@ -30,11 +39,11 @@ def get_account():
     params['user'] = user
     return template('account', params)
 
-@account.route('/register')
+@routes.get('/register')
 def get_register():
     return template('register')
 
-@account.route('/check_user', methods=['POST'])
+@routes.post('/check_user')
 def check_user(user=""):
     if user == "": user = request.forms.user
     """Server-side AJAX function to check if a username exists in the DB."""
@@ -42,7 +51,7 @@ def check_user(user=""):
     if users(user=user.lower()): return 'true'
     else: return 'false'
 
-@account.route('/register', methods=['POST'])
+@routes.post('/register')
 def post_register():
     valid = True
 
@@ -87,8 +96,8 @@ def post_register():
         return "ERROR: there was a problem registering. Please try again...<p>" \
              + "<a href='/register'>Return to registration</a>"
 
-@account.route('/login')
-@account.route('/login/<referrer>')
+@routes.get('/login')
+@routes.get('/login/<referrer>')
 def get_login(referrer=''):
     try:
         return template('login', {'referrer': referrer,
@@ -96,7 +105,7 @@ def get_login(referrer=''):
     except:
         return template('login', {'referrer': referrer})
 
-@account.route('/login', methods=['POST'])
+@routes.post('/login')
 def post_login():
     if not config.auth:
         return "ERROR: authorization disabled. Change auth setting in config.py to enable"
@@ -106,7 +115,7 @@ def post_login():
     pw = request.forms.passwd
     err = "<p>Login failed: wrong username or password</p>"
     # if password matches, set the USER_ID_SESSION_KEY
-    hashpw = hashlib.sha256(pw).hexdigest()
+    hashpw = _hash_pass(pw)
 
     try:
         if hashpw == row.passwd:
@@ -124,7 +133,7 @@ def post_login():
     if referrer: redirect('/'+referrer)
     else: redirect('/myapps')
 
-@account.route('/logout')
+@routes.get('/logout')
 def logout():
     s = request.environ.get('beaker.session')
     s.delete()
@@ -133,7 +142,7 @@ def logout():
     except:
         redirect('/login')
 
-@app.route('/account/change_password', methods=['POST'])
+@routes.post('/account/change_password')
 def change_password():
     # this is basically the same coding as the register function
     # needs to be DRY'ed out in the future
@@ -155,7 +164,7 @@ def change_password():
     params['alert'] = "SUCCESS: password changed"
     return template('account', params)
 
-@account.route('/tokensignin', methods=['POST'])
+@routes.post('/tokensignin')
 def tokensignin():
     email = request.forms.get('email')
     s = request.environ.get('beaker.session')
@@ -171,18 +180,16 @@ def tokensignin():
 
     return user
 
-@account.route('/theme')
+@routes.get('/theme')
 def get_theme():
     user = root.authorized()
     uid = users(user=user).id
     return user_meta(uid=uid).theme
 
-@account.route('/theme', methods=['POST'])
+@routes.post('/theme')
 def save_theme():
     user = root.authorized()
     uid = users(user=user).id
     print("saving theme:", request.forms.theme)
     user_meta.update_or_insert(user_meta.uid==uid, uid=uid, theme=request.forms.theme)
     db.commit()
-
-

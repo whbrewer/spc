@@ -1,23 +1,35 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from flask import Flask, Blueprint
-import os, re, sys, shutil, urllib, traceback, cgi, time, json
+from bottle import Bottle, redirect, request, static_file, template
 import argparse as ap
+import html
+import json
+import os
+import re
+import shutil
+import sys
+import time
+import traceback
+from urllib.request import urlretrieve
 try:
     import requests
 except:
     print("INFO: not importing requests... only needed for remote workers")
 
-from .common import slurp_file
-from .model import db, Users, Jobs
 from . import config
+from .common import slurp_file
+from .model import db, jobs, users
 
 user_dir = 'user_data'
 upload_dir = '_uploads'
 
-user_data = Blueprint('routes', __name__)
+routes = Bottle()
 
-@user_data.route('/' + user_dir + '/<filepath:path>')
+
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
+
+
+@routes.get('/' + user_dir + '/<filepath:path>')
 def get_user_data(filepath):
     user = root.authorized()
     # filepath = request.query.filepath
@@ -26,7 +38,7 @@ def get_user_data(filepath):
     path_list = filepath.split("/")
     owner = path_list[0]
     cid = path_list[2]
-    shared = Jobs.get(Jobs.cid == cid).shared
+    shared = jobs(cid=cid).shared
     # print filepath, path_list, shared
 
     # only allow admin to see other user's cases that have not been shared
@@ -36,7 +48,7 @@ def get_user_data(filepath):
     return static_file(filepath, root=user_dir)
 
 
-@user_data.route('/more')
+@routes.get('/more')
 def more():
     """given a form with the attribute plotpath,
        output the file to the browser"""
@@ -55,19 +67,19 @@ def more():
     else:
         c = cid
 
-    shared = Jobs.get(Jobs.cid == c).shared
+    shared = jobs(cid=c).shared
     # only allow admin to see other user's cases that have not been shared
     if owner != user and shared != "True" and user != "admin":
         return template('error', err="access forbidden")
 
     contents = slurp_file(filepath)
     # convert html tags to entities (e.g. < to &lt;)
-    contents = cgi.escape(contents)
+    contents = html.escape(contents)
     params = { 'cid': c, 'contents': contents, 'app': app, 'user': user, 'fn': filepath }
     return template('more', params)
 
 
-@user_data.route('/case')
+@routes.get('/case')
 def case():
     user = root.authorized()
     app = request.query.app
@@ -77,7 +89,7 @@ def case():
 
     if re.search("/", cid):
         (owner, c) = cid.split("/")
-        shared = Jobs.get(Jobs.cid == c).shared
+        shared = jobs(cid=c).shared
         # only allow admin to see other user's cases that have not been shared
         if owner != user and shared != "True" and user != "admin":
             return template('error', err="access forbidden")
@@ -86,10 +98,10 @@ def case():
         owner, c = user, cid
 
     # if case does not exist return error
-    if Jobs.get_or_none(Jobs.cid == c) is None:
+    if jobs(cid=c) is None:
         return template('error', err="case does not exist")
 
-    state = Jobs.get(Jobs.cid == c).state
+    state = jobs(cid=c).state
     run_dir = os.path.join(user_dir, owner, root.myapps[app].appname, c)
     fn = os.path.join(run_dir, root.myapps[app].outfn)
 
@@ -106,7 +118,7 @@ def case():
         return template('case_public', params)
 
     else:
-        result = Jobs.select().where(Jobs.cid == cid).first()
+        result = db(jobs.cid==cid).select().first()
         desc = result['description']
         shared = result['shared']
 
@@ -120,7 +132,7 @@ def case():
         return template('case_tail-f', params)
 
 
-@user_data.route('/output')
+@routes.get('/output')
 def output():
     user = root.authorized()
     app = request.query.app
@@ -156,7 +168,7 @@ def output():
         output = slurp_file(fn)
         # the following line will convert HTML chars like > to entities &gt;
         # this is needed so that XML input files will show paramters labels
-        output = cgi.escape(output)
+        output = html.escape(output)
 
     desc = jobs(cid=c).description
 
@@ -168,7 +180,7 @@ def output():
     return template('more', params)
 
 
-@user_data.route('/inputs')
+@routes.get('/inputs')
 def inputs():
     user = root.authorized()
     app = request.query.app
@@ -190,7 +202,7 @@ def inputs():
     inputs = slurp_file(fn)
     # the following line will convert HTML chars like > to entities &gt;
     # this is needed so that XML input files will show paramters labels
-    inputs = cgi.escape(inputs)
+    inputs = html.escape(inputs)
 
     desc = jobs(cid=c).description
 
@@ -199,7 +211,7 @@ def inputs():
     return template('more', params)
 
 
-@user_data.route('/files')
+@routes.get('/files')
 def list_files():
     user = root.authorized()
     cid = request.query.cid
@@ -219,7 +231,7 @@ def list_files():
     else:
         owner = user
 
-    shared = Jobs.get(Jobs.cid == cid).shared
+    shared = jobs(cid=cid).shared
     # only allow admin to see other user's cases that have not been shared
     if owner != user and shared != "True" and user != "admin":
         return template('error', err="access forbidden")
@@ -243,7 +255,7 @@ def list_files():
     return template('files', params)
 
 
-@user_data.route('/files/delete_selected', methods=['POST'])
+@routes.post('/files/delete_selected')
 def delete_f():
     user = root.authorized()
     app = request.forms.app
@@ -264,7 +276,7 @@ def delete_f():
     redirect("/files?cid="+cid+"&app="+app)
 
 
-@user_data.route('/files/modify/<operation>', methods=['POST'])
+@routes.post('/files/modify/<operation>')
 def modify_selected_files(operation):
     user = root.authorized()
     app = request.forms.app
@@ -276,7 +288,7 @@ def modify_selected_files(operation):
 
     import operator
     ops = {'add': operator.add, 'sub': operator.sub,
-           'mul': operator.mul, 'div': operator.div}
+           'mul': operator.mul, 'div': operator.truediv}
     op = ops[operation]
 
     selected_files = request.forms.selected_files_mod
@@ -309,7 +321,7 @@ def modify_selected_files(operation):
     redirect("/files?cid="+cid+"&app="+app)
 
 
-@user_data.route('/files/zip_selected', methods=['POST'])
+@routes.post('/files/zip_selected')
 def zip_selected_files():
     user = root.authorized()
     import zipfile
@@ -331,20 +343,23 @@ def zip_selected_files():
     redirect("/files?cid="+cid+"&app="+app)
 
 
-@user_data.route('/zipcase')
+@routes.get('/zipcase')
 def zip_case():
     """zip case on machine to prepare for download"""
     user = root.authorized()
     import zipfile
     app = request.query.app
-    cid = request.query.cid
+    owner, cid = parse_owner_cid(request.query.cid, user)
 
-    base_dir = os.path.join(user_dir, user, app)
-    path = os.path.join(base_dir, cid+".zip")
+    base_dir = os.path.join(user_dir, owner, app)
+    path = os.path.join(base_dir, cid + '.zip')
     zf = zipfile.ZipFile(path, mode='w', compression=zipfile.ZIP_DEFLATED)
     sim_dir = os.path.join(base_dir, cid)
-    for fn in os.listdir(sim_dir):
-        zf.write(os.path.join(sim_dir, fn))
+
+    for dir_path, _, file_names in os.walk(sim_dir):
+        for file_name in file_names:
+            zf.write(os.path.join(dir_path, file_name))
+
     zf.close()
 
     return static_file(path, root="./")
@@ -352,7 +367,7 @@ def zip_case():
     # redirect(request.headers.get('Referer')+"&status="+status)
 
 
-@user_data.route('/zipget')
+@routes.get('/zipget')
 def zipget():
     """get zipfile from another machine, save to current machine"""
     import zipfile
@@ -385,26 +400,23 @@ def zipget():
         os.makedirs(path)
 
     print("downloading " + url)
-    fh, _ = urllib.urlretrieve(url)
+    fh, _ = urlretrieve(url)
     z = zipfile.ZipFile(fh, 'r', compression=zipfile.ZIP_DEFLATED)
     z.extractall()
 
-    # Query for user ID
-    user_instance = Users.get_or_none(Users.user == user)
-    if user_instance:
-        uid = user_instance.id
-
-        # Add case to database
-        Jobs.create(uid=uid, app=app, cid=cid, state="REMOTE",
-                    description="", time_submit=time.asctime(),
-                    walltime="", np="", priority="")
+    # add case to database
+    uid = users(user=user).id
+    db.jobs.insert(uid=uid, app=app, cid=cid, state="REMOTE",
+                   description="", time_submit=time.asctime(),
+                   walltime="", np="", priority="")
+    db.commit()
 
     # status = "file_downloaded"
     # redirect(request.headers.get('Referer')) #+ "&status=" + status)
     redirect("/jobs")
 
 
-@user_data.route('/upload', methods=['POST'])
+@routes.post('/upload')
 def upload_file():
 	# upload file to user_dir/user/upload_dir folder
     user = root.authorized()
@@ -421,7 +433,7 @@ def upload_file():
     return "SUCCESS"
 
 
-@user_data.route('/upload_data', methods=['POST'])
+@routes.post('/upload_data')
 def upload_data():
 	# upload a payload of data that the user submits via form to the filename specified
     user = root.authorized()
@@ -437,16 +449,24 @@ def upload_data():
     with open(save_path, 'w') as f: f.write(upload_data)
 
 
-@user_data.route('/download/<filepath:path>')
+@routes.get('/download/<filepath:path>')
 def download(filepath):
     root.authorized()
     return static_file(filepath, root='download', download=filepath)
 
 
-@user_data.route('/notifications')
+@routes.get('/notifications')
 def get_notifications():
     user = root.authorized()
     response = dict()
     response['new_shared_jobs'] = users(user=user).new_shared_jobs
     return json.dumps(response)
 
+
+def parse_owner_cid(cid, default_user):
+    parts = cid.split('/')
+
+    if len(parts) == 2:
+        return (parts[0], parts[1])
+    else:
+        return (default_user, cid)

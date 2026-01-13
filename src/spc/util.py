@@ -1,27 +1,35 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from flask import Flask, Blueprint
-import sys, json, psutil, datetime, logging, traceback, argparse as ap
+from bottle import Bottle, request, template
+import argparse as ap
+import datetime
+import json
+import logging
+import psutil
+import sys
+import traceback
 from threading import Timer
 
-from .model import db, Jobs
+from .model import db, jobs
 
 fn = 'log/machine_stats.log'
 logging.basicConfig(filename=fn)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-util = Blueprint('routes', __name__)
+routes = Bottle()
 
-@util.route('/stats')
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
+
+@routes.get('/stats')
 def get_stats():
     root.authorized()
     params = {}
 
     # number of jobs in queued, running, and completed states
-    params['nq'] = Jobs.select().where(Jobs.state == 'Q').count()
-    params['nr'] = Jobs.select().where(Jobs.state == 'R').count()
-    params['nc'] = Jobs.select().where(Jobs.state == 'C').count()
+    params['nq'] = db(jobs.state=='Q').count()
+    params['nr'] = db(jobs.state=='R').count()
+    params['nc'] = db(jobs.state=='C').count()
 
     params['cpu'] = psutil.cpu_percent()
     params['vm'] = psutil.virtual_memory().percent
@@ -31,7 +39,7 @@ def get_stats():
 
     return template("stats", params)
 
-@util.route('/stats/mem')
+@routes.get('/stats/mem')
 def get_stats_mem():
     res = {}
     try:

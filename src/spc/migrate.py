@@ -1,5 +1,7 @@
 from __future__ import absolute_import
-from .gluino import DAL, Field
+
+from pydal import DAL, Field
+
 from . import config
 
 class dal(object):

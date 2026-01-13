@@ -1,15 +1,21 @@
-from __future__ import print_function
-from __future__ import absolute_import
-import boto, sys, traceback, time, argparse as ap
+from bottle import Bottle, redirect, request, template
+import argparse as ap
+import sys
+import time
+import traceback
+
+import boto
 import boto.ec2
 from datetime import datetime
 
-from .model import db, users, aws_creds, aws_instances
 from . import config
+from .model import aws_creds, aws_instances, db, users
 
-from flask import Flask, Blueprint
+routes = Bottle()
 
-aws = Blueprint('routes', __name__)
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
 
 def aws_conn(id):
     """create a connection to the EC2 machine and return the handle"""
@@ -77,7 +83,7 @@ class EC2(object):
         cost = self.uptime_seconds(self.launch_time)/3600.*self.rate
         return '${:,.2f}'.format(cost)
 
-@aws.route('/aws')
+@routes.get('/aws')
 def get_aws():
     user = root.authorized()
     cid = request.query.cid
@@ -96,7 +102,7 @@ def get_aws():
         params['status'] = request.query.status
     return template('aws', params, creds=creds, instances=instances)
 
-@aws.route('/aws/creds', methods=['POST'])
+@routes.post('/aws/creds')
 def post_aws_creds():
     user = root.authorized()
     a = request.forms.account_id
@@ -107,14 +113,14 @@ def post_aws_creds():
     db.commit()
     redirect('/aws')
 
-@aws.route('/aws/creds/<id>', methods=['DELETE'])
+@routes.delete('/aws/creds/<id>')
 def aws_cred_del(id):
     root.authorized()
     del db.aws_creds[id]
     db.commit()
     redirect('/aws')
 
-@aws.route('/aws/instance', methods=['POST'])
+@routes.post('/aws/instance')
 def create_instance():
     """create instance"""
     user = root.authorized()
@@ -127,7 +133,7 @@ def create_instance():
     db.commit()
     redirect('/aws')
 
-@aws.route('/aws/instance/<aid>', methods=['DELETE'])
+@routes.delete('/aws/instance/<aid>')
 def del_instance(aid):
     root.authorized()
     try:
@@ -139,7 +145,7 @@ def del_instance(aid):
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return "false"
 
-@aws.route('/aws/status/<aid>')
+@routes.get('/aws/status/<aid>')
 def aws_status(aid):
     user = root.authorized()
     cid = request.query.cid
@@ -167,7 +173,7 @@ def aws_status(aid):
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return template('error', err="There was a problem connecting to the AWS machine. Check the credentials and make sure the machine is running.")
 
-@aws.route('/aws/<aid>', methods=['POST'])
+@routes.post('/aws/<aid>')
 def aws_start(aid):
     root.authorized()
     a = aws_conn(aid)
@@ -175,7 +181,7 @@ def aws_start(aid):
     # takes a few seconds for the status to change on the Amazon end
     time.sleep(15)
 
-@aws.route('/aws/<aid>', methods=['DELETE'])
+@routes.delete('/aws/<aid>')
 def aws_stop(aid):
     root.authorized()
     a = aws_conn(aid)

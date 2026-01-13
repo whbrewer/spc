@@ -1,17 +1,23 @@
-from __future__ import print_function
-from __future__ import absolute_import
+from bottle import Bottle, redirect, request, template
 import argparse as ap
-import os, re, sys, csv, traceback
+import csv
+import os
+import re
+import sys
+import traceback
 import json
 
-from .user_data import user_dir
-from .model import db, apps, jobs, plots, datasource
-from .common import replace_tags
 from . import config
+from .common import replace_tags
+from .model import apps, datasource, db, jobs, plots
+from .user_data import user_dir
 
-from flask import Flask, Blueprint
+routes = Bottle()
 
-plots = Blueprint('routes', __name__)
+
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
 
 
 def compute_stats(path):
@@ -39,7 +45,7 @@ class Plot(object):
         z = []
         lineno = 0
         try:
-            data = open(fn, 'rU').readlines()
+            data = open(fn, 'r').readlines()
         except IOError:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             print(traceback.print_exception(exc_type, exc_value, exc_traceback))
@@ -75,7 +81,7 @@ class Plot(object):
 
     def get_csv_data(self, fn):
         try:
-            with open(fn, 'rU') as csv_file:
+            with open(fn, 'r') as csv_file:
                 data = csv.reader(csv_file)
                 return list(data)
 
@@ -90,7 +96,7 @@ class Plot(object):
         y = ''
         lineno = 0
         try:
-            data = open(fn, 'rU').readlines()
+            data = open(fn, 'r').readlines()
             nlines = len(data)
             # allow for tailing a file by giving a negative range, e.g. -100:10000
             if line1 < 0:
@@ -112,7 +118,7 @@ class Plot(object):
 
     def get_raw_data(self,fn,line1=1,line2=1e6):
         """return data as an array..."""
-        data = open(fn, 'rU').readlines()
+        data = open(fn, 'r').readlines()
         return data[line1:line2]
 
 
@@ -120,7 +126,7 @@ class Plot(object):
         try:
             y = []
             lineno = 0
-            data = open(fn, 'rU').readlines()
+            data = open(fn, 'r').readlines()
             nlines = len(data)
             # allow for tailing a file by giving a negative range, e.g. -100:10000
             if line1 < 0:
@@ -143,7 +149,7 @@ class Plot(object):
         try:
             y = ''
             i = 0
-            for line in open(fn, 'rU'):
+            for line in open(fn, 'r'):
                 # don't parse comments
                 if re.search(r'#',line): continue
                 x = line.split()
@@ -156,7 +162,7 @@ class Plot(object):
             return False
 
 
-@plots.route('/plots/edit')
+@routes.get('/plots/edit')
 def editplotdefs():
     user = root.authorized()
     if user != 'admin':
@@ -170,7 +176,7 @@ def editplotdefs():
     return template('plots/plotdefs', params, rows=result)
 
 
-@plots.route('/plots/edit/<pltid>')
+@routes.get('/plots/edit/<pltid>')
 def editplotdef(pltid):
     user = root.authorized()
     if user != 'admin':
@@ -181,7 +187,7 @@ def editplotdef(pltid):
     return template('plots/edit_plot', params, row=result)
 
 
-@plots.route('/plots/edit/<pltid>')
+@routes.post('/plots/edit/<pltid>')
 def editplot(pltid):
     user = root.authorized()
     if user != 'admin':
@@ -196,7 +202,7 @@ def editplot(pltid):
     redirect('/plots/edit?app='+app)
 
 
-@plots.route('/plots/delete/<pltid>')
+@routes.get('/plots/delete/<pltid>')
 def delete_plot(pltid):
     user = root.authorized()
     if user != 'admin':
@@ -207,7 +213,7 @@ def delete_plot(pltid):
     redirect ('/plots/edit?app='+app)
 
 
-@plots.route('/plots/<pltid>/datasources')
+@routes.get('/plots/<pltid>/datasources')
 def get_datasource(pltid):
     """get list of datasources for given plot"""
     user = root.authorized()
@@ -223,7 +229,7 @@ def get_datasource(pltid):
     return template('plots/datasources', params, rows=result)
 
 
-@plots.route('/plots/<pltid>/datasources', methods=['POST'])
+@routes.post('/plots/<pltid>/datasources')
 def add_datasource(pltid):
     """create a new datasource for given plot"""
     user = root.authorized()
@@ -237,7 +243,7 @@ def add_datasource(pltid):
     redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
 
 
-@plots.route('/plots/<pltid>/datasources/<dsid>')
+@routes.get('/plots/<pltid>/datasources/<dsid>')
 def edit_datasource(pltid, dsid):
     """create a new datasource for given plot"""
     user = root.authorized()
@@ -250,7 +256,7 @@ def edit_datasource(pltid, dsid):
     return template('plots/edit_datasource', params, row=result)
 
 
-@plots.route('/plots/<pltid>/datasources/<dsid>', methods=['POST'])
+@routes.post('/plots/<pltid>/datasources/<dsid>')
 def edit_datasource_post(pltid, dsid):
     """update datasource for given plot"""
     user = root.authorized()
@@ -266,7 +272,7 @@ def edit_datasource_post(pltid, dsid):
     return template('plots/edit_datasource', params)
 
 
-@plots.route('/plots/datasource_delete', methods=['POST'])
+@routes.post('/plots/datasource_delete')
 def delete_datasource():
     user = root.authorized()
     if user != 'admin':
@@ -279,7 +285,7 @@ def delete_datasource():
     redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
 
 
-@plots.route('/plots/create', methods=['POST'])
+@routes.post('/plots/create')
 def create_plot():
     user = root.authorized()
     if user != 'admin':
@@ -292,7 +298,7 @@ def create_plot():
     redirect ('/plots/edit?app='+app)
 
 
-@plots.route('/plot/<pltid>')
+@routes.get('/plot/<pltid>')
 def plot_interface(pltid):
     user = root.authorized()
     app = request.query.app
@@ -359,7 +365,7 @@ def plot_interface(pltid):
     elif plottype == 'handson':
         tfn = 'plots/handson'
     elif plottype == 'flot-3d':
-        return plot_flot_3d(result, cid, app, sim_dir, owner, user, plot_title, pltid)
+        return plot_flot_3d(result, cid, app, sim_dir, owner, user, plot_title, pltid, inputs)
     else:
         return template("error", err="plot type not supported: " + plottype)
 
@@ -439,7 +445,7 @@ def plot_interface(pltid):
                         dat = p.get_data(plotpath, col1)
                 # remove this app-specific code in future
                 if app == "fpg":
-                    from . import process
+                    import process
                     dat = process.postprocess(plotpath, line1, line2)
             else:
                 dat = p.get_data(plotpath, col1, col2)
@@ -474,8 +480,7 @@ def plot_interface(pltid):
     return template(tfn, params)
 
 
-def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
-
+def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid, inputs):
     # to handle data in user/cid format when looking at shared cases
     if re.search("/", cid):
         (owner, c) = cid.split("/")
@@ -524,16 +529,21 @@ def plot_flot_3d(plot, cid, app, sim_dir, owner, user, plot_title, pltid):
         'rows': list_of_plots,
         'stats': '',
         'user': user,
-        'options_json': json.dumps(options['flot_options']),
-        'data_json': json.dumps(plot_data),
-        'z_data_json': json.dumps(z_data),
-        'z_label_json': json.dumps(options['z_label']),
+        'flot_3d_json': json.dumps({
+            'flot_options': options['flot_options'],
+            'job_params': inputs,
+            'flot_options_transformer': options.get('flot_options_transformer', ''),
+            'data': plot_data,
+            'z_data': z_data,
+            'z_label': options['z_label'],
+            'x_axis_scale': options.get('x_axis_scale', ''),
+        }),
     }
 
     return template('plots/flot-3d', params)
 
 
-@plots.route('/mpl/<pltid>')
+@routes.get('/mpl/<pltid>')
 def matplotlib(pltid):
     """Generate a random image using Matplotlib and display it"""
     # in the future create a private function __import__ to import third-party

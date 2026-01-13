@@ -8,7 +8,7 @@ def preprocess(params,fn,base_dir=""):
     if fn == 'fpg.in':  
         # convert input key/value params to command-line style args
         if 'cid' in params: del params['cid']        
-        for key, value in (params.iteritems()):
+        for key, value in (params.items()):
             if key == 't_pseudo_data':
                 if value=='true': value = ''
                 else: continue # don't output anything when this param is false
@@ -17,7 +17,7 @@ def preprocess(params,fn,base_dir=""):
         sim_dir = os.path.join(base_dir, fn)
         return _write_file(buf, sim_dir)
     elif fn == 'Nemo2.ini':
-        for key, value in (params.iteritems()):
+        for key, value in (params.items()):
             buf += key + ' ' + value + '\n'
         sim_dir = os.path.join(base_dir, fn)
         return _write_file(buf, sim_dir)
@@ -46,7 +46,7 @@ def postprocess(path,line1,line2):
     into something that looks like this:
         [[100, 0.98299944], [200, 1.00444448], [300, 0.95629907], ... ]"""
     y = []
-    data = open(path, 'rU').readlines()
+    data = open(path, 'r').readlines()
     subdata = data[line1:line2]
     xx = []; yy = []
     for d in subdata: 
@@ -60,4 +60,3 @@ def postprocess(path,line1,line2):
         a = [ int(x), float(y) ]
         data += [ a ]
     return data
-

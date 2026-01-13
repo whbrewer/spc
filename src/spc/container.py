@@ -1,21 +1,69 @@
-from __future__ import print_function
-import docker
 import argparse as ap
-from flask import Flask, Blueprint
+import datetime
+
+import docker
+from bottle import Bottle, redirect, request, template
 
 base_url = 'unix://var/run/docker.sock'
 
-container = Blueprint('routes', __name__)
+def bind(app):
+    global root
+    root = ap.Namespace(**app)
 
-@container.route('/docker')
+routes = Bottle()
+
+
+def _to_timestamp(value):
+    if isinstance(value, (int, float)):
+        return int(value)
+    if isinstance(value, str):
+        ts = value.rstrip('Z')
+        if '.' in ts:
+            ts = ts.split('.')[0]
+        try:
+            return int(datetime.datetime.fromisoformat(ts).timestamp())
+        except ValueError:
+            return 0
+    return 0
+
+
+def _client():
+    return docker.DockerClient(base_url=base_url)
+
+@routes.get('/docker')
 def get_docker():
     user = root.authorized()
     params = {}
 
     try:
-        cli = docker.Client(base_url=base_url)
-        images = cli.images()
-        conts = cli.containers(all=True)
+        cli = _client()
+        images = []
+        for image in cli.images.list():
+            attrs = image.attrs or {}
+            images.append(
+                {
+                    'Id': attrs.get('Id', image.id),
+                    'RepoTags': attrs.get('RepoTags', []) or [],
+                    'Created': _to_timestamp(attrs.get('Created')),
+                    'Size': attrs.get('Size', 0),
+                }
+            )
+        conts = []
+        for container in cli.containers.list(all=True):
+            attrs = container.attrs or {}
+            status = attrs.get('State', {}).get('Status', container.status or '')
+            if status:
+                status = status.capitalize()
+            conts.append(
+                {
+                    'Id': attrs.get('Id', container.id),
+                    'Image': attrs.get('Config', {}).get('Image', ''),
+                    'Command': attrs.get('Path', ''),
+                    'Created': _to_timestamp(attrs.get('Created')),
+                    'Status': status,
+                    'Names': [attrs.get('Name', '/' + container.name)],
+                }
+            )
     except:
         images = []
         conts = []
@@ -29,14 +77,15 @@ def get_docker():
 
     return template('docker', params, images=images, containers=conts)
 
-@container.route('/docker/create/<id>', methods=['POST'])
+@routes.post('/docker/create/<id>')
 def create_container(id):
     print("creating container:", id)
-    cli = docker.Client(base_url=base_url)
+    cli = _client()
     host_port_number = int(request.forms.host_port_number)
     container_port_number = int(request.forms.container_port_number)
     try:
-        cli.create_container(image=id, ports=[host_port_number], host_config=cli.create_host_config(port_bindings={host_port_number:container_port_number}))
+        ports = {container_port_number: host_port_number}
+        cli.containers.run(id, detach=True, ports=ports)
         alert = "SUCCESS: container created " + id
     except Exception as e:
         alert = "ERROR: failed to start container " + str(e)
@@ -57,33 +106,33 @@ def create_container(id):
 #                  " Remove the container and retry."
 #     redirect("/docker?alert="+alert)
 
-@container.route('/docker/start/<id>')
+@routes.get('/docker/start/<id>')
 def start_container(id):
     print("starting container:", id)
-    cli = docker.Client(base_url=base_url)
+    cli = _client()
     try:
-        cli.start(container=id)
+        cli.containers.get(id).start()
         alert = "SUCCESS: started container " + id
     except:
         alert = "ERROR: failed to start container " + id
     redirect("/docker?alert="+alert)
 
-@container.route('/docker/stop/<id>')
+@routes.get('/docker/stop/<id>')
 def stop_container(id):
-    cli = docker.Client(base_url=base_url)
+    cli = _client()
     try:
-        cli.stop(container=id)
+        cli.containers.get(id).stop()
         alert = "SUCCESS: stopped container " + id
     except:
         alert = "ERROR stopping container " + id
     redirect("/docker?alert="+alert)
 
-@container.route('/docker/remove/<id>')
+@routes.get('/docker/remove/<id>')
 def remove_container(id):
     print("removing container:", id)
-    cli = docker.Client(base_url=base_url)
+    cli = _client()
     try:
-        cli.remove_container(id)
+        cli.containers.get(id).remove()
         alert = "SUCCESS: removed container " + id
     except:
         alert = "ERROR: problem removing container " + id

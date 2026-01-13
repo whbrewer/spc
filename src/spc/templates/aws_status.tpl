@@ -28,7 +28,7 @@
 <h1>Status of EC2 machine</h1>
 
 <pre>
-%for key,value in astatus.iteritems():
+%for key,value in astatus.items():
     {{key}}: {{value}}
 %end
 </pre>

@@ -1,20 +1,19 @@
-from __future__ import print_function
-from __future__ import absolute_import
-from flask import Flask, request, redirect, session, render_template, send_from_directory
+from bottle import Bottle, SimpleTemplate, redirect, request, response
 from webtest import TestApp
-import importlib, os, sys, traceback
+import importlib
+import os
+import sys
+import traceback
 
 from . import app_reader_writer as apprw
 from . import config
-from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
-from .user_data import user_dir
 from .common import rand_cid
-from .constants import USER_ID_SESSION_KEY, APP_SESSION_KEY, NOAUTH_USER
-from .model import db, users, apps
+from .constants import APP_SESSION_KEY, NOAUTH_USER, USER_ID_SESSION_KEY
+from .model import apps, db, users
+from .user_data import user_dir
 
 # the real webapp
-app = Flask(__name__)
-app.secret_key = '40dd942d0f03108a84db8697e0307802'  # for sessions
+app = Bottle()
 
 ### session management configuration ###
 from beaker.middleware import SessionMiddleware
@@ -122,7 +121,7 @@ def main():
 
     for module in modules:
         try:
-            imported_module = importlib.import_module(os.path.curdir + module, 'spc')
+            imported_module = importlib.import_module('.' + module, 'spc')
             getattr(imported_module, 'bind')(globals())
             app.app.merge(getattr(imported_module, 'routes'))
         except ImportError:
@@ -132,7 +131,7 @@ def main():
     # for route in app.app.routes:
     #     print route.method + "\t" + route.rule
 
-    print() 
+    print()
 
     test_app = TestApp(app)
 
@@ -224,4 +223,3 @@ def main():
     print("POST /logout")
     resp = test_app.get('/logout')
     assert resp.status_int == 302
-
