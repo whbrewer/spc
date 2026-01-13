@@ -6,7 +6,7 @@ Full documentation is available online at http://spc.readthedocs.io
 
 ## INTRO
 
-The Scientific Platform for the Cloud (SPC) is a Python-based cloud platform/framework for easily migrating and running scientific applications in the cloud. This repository is the Python 3 modernization (Flask + Jinja2 web stack, pydal data layer, boto3 for AWS). The original Python 2/Bottle codebase is archived at https://github.com/whbrewer/spc. It is described in more detail in the following paper:
+The Scientific Platform for the Cloud (SPC) is a Python-based cloud platform/framework for easily migrating and running scientific applications in the cloud. This repository is the Python 3 modernization (Flask + Jinja2 web stack, pydal data layer, boto3 for AWS). The original Python 2/Bottle codebase is archived in the legacy branch at https://github.com/whbrewer/spc/tree/legacy. It is described in more detail in the following paper:
 
   > W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24 http://ieeexplore.ieee.org/document/7421906/
 
