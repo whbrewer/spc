@@ -101,14 +101,14 @@ def initdb():
     dal = migrate.dal(uri=config.uri, migrate=True)
 
     # add default groups
-    dal.db.groups.insert(name="admin")
-    dal.db.groups.insert(name="genetics")
+    admin_gid = dal.db.groups.insert(name="admin")
+    guest_gid = dal.db.groups.insert(name="genetics")
 
     # add admin and guest user
     hashpw = hashlib.sha256("admin".encode('utf-8')).hexdigest()
-    dal.db.users.insert(user="admin", passwd=hashpw, gid=0)
+    dal.db.users.insert(user="admin", passwd=hashpw, gid=admin_gid)
     hashpw = hashlib.sha256("guest".encode('utf-8')).hexdigest()
-    dal.db.users.insert(user="guest", passwd=hashpw, gid=1)
+    dal.db.users.insert(user="guest", passwd=hashpw, gid=guest_gid)
 
     # add default app
     dal.db.apps.insert(name="dna",description="Compute reverse complement," +\

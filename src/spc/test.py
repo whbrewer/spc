@@ -1,4 +1,4 @@
-from bottle import Bottle, SimpleTemplate, redirect, request, response
+from bottle import Bottle, Jinja2Template, TEMPLATE_PATH, redirect, request, response
 from webtest import TestApp
 import importlib
 import os
@@ -11,6 +11,9 @@ from .common import rand_cid
 from .constants import APP_SESSION_KEY, NOAUTH_USER, USER_ID_SESSION_KEY
 from .model import apps, db, users
 from .user_data import user_dir
+
+BASE_DIR = os.path.dirname(__file__)
+TEMPLATE_PATH.insert(0, os.path.join(BASE_DIR, 'templates'))
 
 # the real webapp
 app = Bottle()
@@ -29,8 +32,10 @@ app = SessionMiddleware(app, session_opts)
 ### end session management configuration ###
 
 # context processors - send to every template
-try:    SimpleTemplate.defaults["tab_title"] = config.tab_title
-except: SimpleTemplate.defaults["tab_title"] = "SPC"
+try:
+    Jinja2Template.defaults["tab_title"] = config.tab_title
+except Exception:
+    Jinja2Template.defaults["tab_title"] = "SPC"
 
 
 # DRY this out in the future -- currently in main.py and here
@@ -111,6 +116,7 @@ def main():
     global user
 
     init_config_options()
+    config.auth = True
     load_apps()
 
     modules = ["account", "admin", "app_routes", "aws", "container",
@@ -148,13 +154,13 @@ def main():
     print("POST /check_user user =", 'admin', resp.status)
     resp = test_app.post('/check_user', {'user': 'admin'})
     assert resp.status_int == 200 # serves error page
-    assert resp.body == "true"
+    assert resp.text == "true"
 
     # POST /check_user - test non-existing user
     print("POST /check_user user =", user, resp.status)
     resp = test_app.post('/check_user', {'user': user})
     assert resp.status_int == 200 # serves error page
-    assert resp.body == "false"
+    assert resp.text == "false"
 
     print("registering user", user)
 
@@ -198,7 +204,7 @@ def main():
     print("GET /app_exists/<appname>")
     resp = test_app.get('/app_exists/'+ appname)
     assert resp.status_int == 200 
-    assert resp.body == "true"
+    assert resp.text == "true"
 
     ### Admin
 

@@ -1,4 +1,4 @@
-from bottle import Bottle, redirect, request, static_file, template
+from bottle import Bottle, jinja2_template as template, redirect, request, static_file
 import argparse as ap
 import html
 import json

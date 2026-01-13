@@ -1,4 +1,4 @@
-from bottle import get, post, request, response, run, static_file, template
+from bottle import get, jinja2_template as template, post, request, response, run, static_file
 from os import listdir
 import html
 import os

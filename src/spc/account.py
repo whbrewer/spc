@@ -1,4 +1,4 @@
-from bottle import Bottle, redirect, request, response, template
+from bottle import Bottle, jinja2_template as template, redirect, request, response
 import argparse as ap
 import hashlib
 import re
@@ -161,6 +161,11 @@ def change_password():
         return template('error', err="problem with password")
     params = {}
     params['user'] = user
+    app = request.forms.get('app')
+    if not app and hasattr(root, 'active_app'):
+        app = root.active_app()
+    params['app'] = app
+    params['status'] = ""
     params['alert'] = "SUCCESS: password changed"
     return template('account', params)
 

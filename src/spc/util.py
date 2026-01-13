@@ -1,4 +1,4 @@
-from bottle import Bottle, request, template
+from bottle import Bottle, jinja2_template as template, request
 import argparse as ap
 import datetime
 import json

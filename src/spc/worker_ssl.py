@@ -11,7 +11,7 @@
 #   cherrypy
 #   pyOpenSSL
 
-from bottle import ServerAdapter, get, post, request, response, run, static_file, template
+from bottle import ServerAdapter, get, jinja2_template as template, post, request, response, run, static_file
 try:
     from cherrypy import wsgiserver
     from cherrypy.wsgiserver.ssl_pyopenssl import pyOpenSSLAdapter

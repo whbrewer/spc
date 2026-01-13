@@ -5,7 +5,7 @@ import os
 import sys
 import traceback
 
-from bottle import TEMPLATE_PATH, SimpleTemplate, app, error, get, redirect, request, run, static_file, template
+from bottle import Jinja2Template, TEMPLATE_PATH, app, error, get, jinja2_template as template, redirect, request, run, static_file
 from beaker.middleware import SessionMiddleware
 
 from . import app_reader_writer as apprw
@@ -29,9 +29,9 @@ session_opts = {
 app = SessionMiddleware(app(), session_opts)
 
 try:
-    SimpleTemplate.defaults["tab_title"] = config.tab_title
+    Jinja2Template.defaults["tab_title"] = config.tab_title
 except Exception:
-    SimpleTemplate.defaults["tab_title"] = "SPC"
+    Jinja2Template.defaults["tab_title"] = "SPC"
 
 sched = scheduler.Scheduler()
 

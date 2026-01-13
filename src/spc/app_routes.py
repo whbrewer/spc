@@ -1,4 +1,4 @@
-from bottle import Bottle, redirect, request, template
+from bottle import Bottle, jinja2_template as template, redirect, request
 import argparse as ap
 import html
 import json
@@ -299,7 +299,7 @@ def appconfig_exe(step="upload"):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
                 shutil.move(save_path, save_path+"."+timestr)
             upload.save(save_path)
-            os.chmod(save_path, 0700)
+            os.chmod(save_path, 0o700)
 
             # process = subprocess.Popen(["otool -L", save_path], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
             # contents = process.readlines()

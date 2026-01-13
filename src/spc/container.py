@@ -2,7 +2,7 @@ import argparse as ap
 import datetime
 
 import docker
-from bottle import Bottle, redirect, request, template
+from bottle import Bottle, jinja2_template as template, redirect, request
 
 base_url = 'unix://var/run/docker.sock'
 
