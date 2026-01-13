@@ -5,10 +5,10 @@ import time
 import traceback
 
 try:
-    import boto
-    import boto.ec2
+    import boto3
+    from botocore.exceptions import BotoCoreError, ClientError
 except Exception as exc:
-    boto = None
+    boto3 = None
     boto_import_error = exc
 from datetime import datetime
 
@@ -24,8 +24,8 @@ def bind(app):
 def aws_conn(id):
     """create a connection to the EC2 machine and return the handle"""
     user = root.authorized()
-    if boto is None:
-        raise RuntimeError("AWS support unavailable: boto import failed: {}".format(boto_import_error))
+    if boto3 is None:
+        raise RuntimeError("AWS support unavailable: boto3 import failed: {}".format(boto_import_error))
     uid = users(user=user).id
     try:
         creds = db(db.aws_creds.uid==uid).select().first()
@@ -47,30 +47,38 @@ class EC2(object):
 
     def __init__(self, key, secret, account_id, instance, region, rate):
         # Connect to region
-        self.conn = boto.ec2.connect_to_region(region, aws_access_key_id=key,
-                                               aws_secret_access_key=secret)
+        session = boto3.Session(
+            aws_access_key_id=key,
+            aws_secret_access_key=secret,
+        )
+        self.conn = session.client('ec2', region_name=region)
         self.instance = instance
         self.rate = float(rate)
 
     def start(self):
-        self.conn.start_instances(instance_ids=[self.instance])
+        self.conn.start_instances(InstanceIds=[self.instance])
 
     def stop(self):
-        self.conn.stop_instances(instance_ids=[self.instance])
+        self.conn.stop_instances(InstanceIds=[self.instance])
 
     def status(self):
-        reservations = self.conn.get_all_instances()
+        try:
+            reservations = self.conn.describe_instances(InstanceIds=[self.instance]).get('Reservations', [])
+        except (BotoCoreError, ClientError) as exc:
+            raise RuntimeError("AWS status failed: {}".format(exc))
         status = {}
         for r in reservations:
-            for inst in r.instances:
-                if inst.id == self.instance:
-                    status['id:'] = inst.id
-                    status['type'] = inst.instance_type
-                    status['state'] = inst.state
-                    status['ip'] = inst.ip_address
-                    status['public_dns_name'] = inst.public_dns_name
-                    status['launch_time'] = inst.launch_time
-                    self.launch_time = inst.launch_time
+            for inst in r.get('Instances', []):
+                if inst.get('InstanceId') == self.instance:
+                    status['id:'] = inst.get('InstanceId')
+                    status['type'] = inst.get('InstanceType')
+                    status['state'] = inst.get('State', {}).get('Name')
+                    status['ip'] = inst.get('PublicIpAddress')
+                    status['public_dns_name'] = inst.get('PublicDnsName')
+                    launch_time = inst.get('LaunchTime')
+                    if launch_time:
+                        status['launch_time'] = launch_time.strftime('%Y-%m-%dT%H:%M:%S')
+                        self.launch_time = status['launch_time']
         return status
 
     def uptime(self,launch_time):
@@ -91,8 +99,8 @@ class EC2(object):
 
 @routes.get('/aws')
 def get_aws():
-    if boto is None:
-        return template('error', err="AWS support unavailable: boto import failed.")
+    if boto3 is None:
+        return template('error', err="AWS support unavailable: boto3 import failed.")
     user = root.authorized()
     cid = request.query.cid
     app = request.query.app or root.active_app()
@@ -113,8 +121,8 @@ def get_aws():
 @routes.post('/aws/creds')
 def post_aws_creds():
     user = root.authorized()
-    if boto is None:
-        return template('error', err="AWS support unavailable: boto import failed.")
+    if boto3 is None:
+        return template('error', err="AWS support unavailable: boto3 import failed.")
     a = request.forms.account_id
     s = request.forms.secret
     k = request.forms.key
@@ -126,8 +134,8 @@ def post_aws_creds():
 @routes.delete('/aws/creds/<id>')
 def aws_cred_del(id):
     root.authorized()
-    if boto is None:
-        return template('error', err="AWS support unavailable: boto import failed.")
+    if boto3 is None:
+        return template('error', err="AWS support unavailable: boto3 import failed.")
     del db.aws_creds[id]
     db.commit()
     redirect('/aws')
@@ -136,8 +144,8 @@ def aws_cred_del(id):
 def create_instance():
     """create instance"""
     user = root.authorized()
-    if boto is None:
-        return template('error', err="AWS support unavailable: boto import failed.")
+    if boto3 is None:
+        return template('error', err="AWS support unavailable: boto3 import failed.")
     instance = request.forms.instance
     itype = request.forms.itype
     region = request.forms.region
@@ -150,7 +158,7 @@ def create_instance():
 @routes.delete('/aws/instance/<aid>')
 def del_instance(aid):
     root.authorized()
-    if boto is None:
+    if boto3 is None:
         return "false"
     try:
         del aws_instances[aid]
@@ -164,8 +172,8 @@ def del_instance(aid):
 @routes.get('/aws/status/<aid>')
 def aws_status(aid):
     user = root.authorized()
-    if boto is None:
-        return template('error', err="AWS support unavailable: boto import failed.")
+    if boto3 is None:
+        return template('error', err="AWS support unavailable: boto3 import failed.")
     cid = request.query.cid
     app = request.query.app
     params = {}
@@ -194,8 +202,8 @@ def aws_status(aid):
 @routes.post('/aws/<aid>')
 def aws_start(aid):
     root.authorized()
-    if boto is None:
-        return template('error', err="AWS support unavailable: boto import failed.")
+    if boto3 is None:
+        return template('error', err="AWS support unavailable: boto3 import failed.")
     a = aws_conn(aid)
     a.start()
     # takes a few seconds for the status to change on the Amazon end
@@ -204,8 +212,8 @@ def aws_start(aid):
 @routes.delete('/aws/<aid>')
 def aws_stop(aid):
     root.authorized()
-    if boto is None:
-        return template('error', err="AWS support unavailable: boto import failed.")
+    if boto3 is None:
+        return template('error', err="AWS support unavailable: boto3 import failed.")
     a = aws_conn(aid)
     a.stop()
     # takes a few seconds for the status to change on the Amazon end
