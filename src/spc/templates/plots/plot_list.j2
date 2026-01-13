@@ -9,15 +9,13 @@
         <div class="col-sm-4 sidebar">
             <h4>Available Plots:</h4>
             <ul class="nav nav-sidebar">
-                {% set i = 0 %}
-                %for row in rows:
-                    {% set i = i + 1 %}
-                    % if jid is defined:
-                        <li> <a style="text-decoration:none" href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}&jid={{jid}}"><sup>{{i}}</sup> {{row['plots']['title']}}</a> </li>
-                    % else:
-                        <li> <a style="text-decoration:none" href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}"><sup>{{i}}</sup> {{row['plots']['title']}}</a> </li>
-                    %endif
-                %endfor
+                {% for row in rows %}
+                    {% if jid is defined %}
+                        <li> <a style="text-decoration:none" href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}&jid={{jid}}"><sup>{{ loop.index }}</sup> {{row['plots']['title']}}</a> </li>
+                    {% else %}
+                        <li> <a style="text-decoration:none" href="/plot/{{row['plots']['id']}}?app={{app}}&cid={{cid}}"><sup>{{ loop.index }}</sup> {{row['plots']['title']}}</a> </li>
+                    {% endif %}
+                {% endfor %}
             </ul>
         </div>
     </div>

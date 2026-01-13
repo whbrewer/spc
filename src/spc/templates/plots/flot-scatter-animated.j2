@@ -26,34 +26,30 @@
       }
 
       $(function () {
-          {% set i = 0 %}
-          %for d in data:
-          {% set i = i + 1 %}
-              var d{{i}} = {{ d|safe }};
-          %endfor
+          {% for d in data %}
+              var d{{ loop.index }} = {{ d|safe }};
+          {% endfor %}
           var data = [
-              %if datadef:
+              {% if datadef %}
                   {{ datadef|safe }}
-              %else:
-                  {% set i = 0 %}
-                  %for d in data:
-                  {% set i = i + 1 %}
-                      { data: d{{i}} },
-                  %endfor
-              %endif
+              {% else %}
+                  {% for d in data %}
+                      { data: d{{ loop.index }} },
+                  {% endfor %}
+              {% endif %}
           ];
 
           var options = {
-              %if options:
+              {% if options %}
                   {{ options|safe }}
-              %else:
+              {% else %}
                   legend: { position: 'nw' },
                   xaxis:  { axisLabelFontSizePixels: 12 },
                   yaxis:  { axisLabelOffset: -30,
                             axisLabelFontSizePixels: 12 },
                   grid:   { hoverable: true, clickable: true },
                   selection: { mode: "xy" }
-              %endif
+              {% endif %}
           };
 
           var placeholder = $("#myplot");

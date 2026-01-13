@@ -19,6 +19,54 @@ sys.argv[1:]
 
 url = 'https://s3-us-west-1.amazonaws.com/scihub'
 
+
+def _convert_tpl_to_j2(src_path, dst_path):
+    with open(src_path, 'r') as f:
+        text = f.read()
+
+    includes = re.compile(r"%\s*include\(([^)]+)\)")
+    def _rewrite_include(match):
+        raw = match.group(1).strip()
+        if ',' in raw:
+            raw = raw.split(',', 1)[0]
+        raw = raw.strip().strip("'\"")
+        if raw.endswith('.tpl'):
+            raw = raw[:-4] + '.j2'
+        elif not raw.endswith('.j2'):
+            raw = raw + '.j2'
+        return "{% include '" + raw + "' %}"
+
+    has_rebase = False
+    lines = []
+    stack = []
+    for line in text.splitlines():
+        if re.search(r"%\s*rebase\(", line):
+            has_rebase = True
+            continue
+        line = re.sub(r"^(\s*)%opts\s*=\s*(.+)$", r"\1{% set opts = \2 %}", line)
+        line = includes.sub(_rewrite_include, line)
+        line = re.sub(r"\{\{!\s*(.*?)\s*\}\}", r"{{ \1|safe }}", line)
+        line = line.replace('opts.iteritems()', 'opts.items()')
+        match = re.match(r'(\s*)%(if|for|elif|else|endif|endfor|end)\b', line.lstrip())
+        if match:
+            indent = line[:len(line) - len(line.lstrip())]
+            tag = match.group(2)
+            if tag in ('if', 'for'):
+                stack.append(tag)
+            elif tag == 'end':
+                if stack:
+                    last = stack.pop()
+                    end_tag = '%endif' if last == 'if' else '%endfor'
+                    line = indent + end_tag
+        lines.append(line)
+
+    body = "\n".join(lines).rstrip() + "\n"
+    if has_rebase:
+        body = "{% extends 'base.j2' %}\n{% block content %}\n" + body + "{% endblock %}\n"
+
+    with open(dst_path, 'w') as f:
+        f.write(body)
+
 def usage():
     buf =  "usage: spc <command> [<args>]\n\n"
     buf += "available commands:\n\n"
@@ -218,8 +266,30 @@ def main():
             result = dal.db(dal.db.apps.name==app).select()
             if result:
                 appid = dal.db(dal.db.apps.name==app).select().first()["id"]
-                if a.delete(appid,True):
-                    print("SUCCESS: uninstalled app", app, "with appid:", appid)
+                # delete associated data
+                dal.db(dal.db.app_user.appid == appid).delete()
+                plot_rows = dal.db(dal.db.plots.appid == appid).select(dal.db.plots.id)
+                for row in plot_rows:
+                    dal.db(dal.db.datasource.pltid == row.id).delete()
+                dal.db(dal.db.plots.appid == appid).delete()
+                dal.db(dal.db.apps.id == appid).delete()
+                dal.db.commit()
+
+                # delete app directory, template, and static assets
+                app_path = os.path.join(apprw.apps_dir, app)
+                if os.path.isdir(app_path):
+                    shutil.rmtree(app_path)
+                tpl_path = os.path.join('src', 'spc', 'templates', 'apps', app + '.j2')
+                if os.path.isfile(tpl_path):
+                    os.remove(tpl_path)
+                tpl_legacy = os.path.join('src', 'spc', 'templates', 'apps', app + '.tpl')
+                if os.path.isfile(tpl_legacy):
+                    os.remove(tpl_legacy)
+                static_path = os.path.join('static', 'apps', app)
+                if os.path.isdir(static_path):
+                    shutil.rmtree(static_path)
+
+                print("SUCCESS: uninstalled app", app, "with appid:", appid)
             else:
                 print("ERROR: app does not exist")
                 sys.exit()
@@ -345,8 +415,15 @@ def main():
                 shutil.rmtree(app_path)
                 sys.exit()
 
-            # copy template file to templates/apps folder
-            src = apprw.apps_dir + os.sep + app + os.sep + app + '.j2'
+            # copy or convert template file to templates/apps folder
+            app_template_dir = apprw.apps_dir + os.sep + app
+            src = os.path.join(app_template_dir, app + '.j2')
+            if not os.path.exists(src):
+                tpl_src = os.path.join(app_template_dir, app + '.tpl')
+                if os.path.exists(tpl_src):
+                    _convert_tpl_to_j2(tpl_src, src)
+                else:
+                    raise RuntimeError("Missing app template: {}".format(src))
             dst = os.path.join('src', 'spc', 'templates', 'apps')
             if not os.path.exists(dst):
                 os.makedirs(dst)

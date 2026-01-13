@@ -415,48 +415,66 @@ def plot_interface(pltid):
                 print(traceback.print_exception(exc_type, exc_value, exc_traceback))
                 datadef = ""
 
-            if cols.find(":") > 0: # two columns
-                num_fields = 2
-                (col1str, col2str) = cols.split(":")
-                col1 = int(col1str); col2 = int(col2str)
+            cols = (cols or '').strip()
+            if ':' in cols: # two columns or malformed spec
+                (col1str, col2str) = cols.split(":", 1)
+                col1str = col1str.strip()
+                col2str = col2str.strip()
+                if col1str and col2str:
+                    num_fields = 2
+                    col1 = int(col1str)
+                    col2 = int(col2str)
+                else:
+                    num_fields = 1
+                    col1 = int(col1str or col2str)
             else: # single column
                 num_fields = 1
                 col1 = int(cols)
 
             # do some postprocessing
-            if line_range is not None:
+            if line_range:
                 # to prevent breaking current spc apps, still support
                 # expressions like 1:1000, but in the future this should
                 # be changed to a range 1-1000.  Therefore, using : is deprecated
                 # and will be removed in the future.
-                (line1str, line2str) = re.split("[-:]", line_range)
-                line1 = int(line1str)
+                parts = re.split("[-:]", line_range, maxsplit=1)
+                line1str = parts[0].strip() if parts else ''
+                line2str = parts[1].strip() if len(parts) > 1 else ''
+                if not line1str:
+                    line1 = 1
+                    line2 = None
+                else:
+                    line1 = int(line1str)
+                    line2 = int(line2str) if line2str else None
                 ## there is a problem with the following statement
                 ## shows up in mendel app
                 # if root.myapps[app].postprocess > 0:
                 #    dat = process.postprocess(plotpath, line1, line2)
                 # else:
-                try: # if line2 is specified
-                    line2 = int(line2str)
-                    dat = p.get_data(plotpath, col1, col2, line1, line2)
-                except: # if line2 not specified
-                    exc_type, exc_value, exc_traceback = sys.exc_info()
-                    print(traceback.print_exception(exc_type, exc_value, exc_traceback))
-                    if num_fields == 2:
+                if num_fields == 2:
+                    if line2 is not None:
+                        dat = p.get_data(plotpath, col1, col2, line1, line2)
+                    else:
                         dat = p.get_data(plotpath, col1, col2, line1)
-                    else: # single column of data
+                else: # single column of data
+                    if line2 is not None:
+                        dat = p.get_data(plotpath, col1, None, line1, line2)
+                    else:
                         dat = p.get_data(plotpath, col1)
                 # remove this app-specific code in future
                 if app == "fpg":
                     import process
                     dat = process.postprocess(plotpath, line1, line2)
             else:
-                dat = p.get_data(plotpath, col1, col2)
+                if num_fields == 2:
+                    dat = p.get_data(plotpath, col1, col2)
+                else:
+                    dat = p.get_data(plotpath, col1)
 
             if dat == -1:
-                stats = "ERROR: Could not read data file"
+                return template('error', err="plot data file not found: " + plotpath)
             elif dat == -2:
-                stats = "ERROR: file exists, but problem parsing data. Are column and line ranges setup properly? Is all the data there?"
+                return template('error', err="plot data file parse error: " + plotpath)
             else:
                 stats = compute_stats(plotpath)
             # [[1,2,3]] >>> [1,2,3]

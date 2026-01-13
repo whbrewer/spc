@@ -37,9 +37,9 @@
         var data = [{{ data[0]|safe }}];
 
         var options = {
-            %if options:
+            {% if options %}
               {{ options|safe }}
-            %else:
+            {% else %}
               series: {
                   bars: {
                       show: true,
@@ -52,7 +52,7 @@
                   ticks: {{ ticks|safe }},
                   tickLength: 0
               }
-            %endif
+            {% endif %}
         };
 
 
