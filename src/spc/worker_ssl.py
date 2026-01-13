@@ -1,76 +1,82 @@
-# This is an SSL worker for submitting jobs remotely
-# with some code borrowed from:
-# https://github.com/nickbabcock/bottle-ssl/blob/master/main.py
+# This is an SSL worker for submitting jobs remotely.
 
-# to use this must install the following package using apt-get or yum:
-#   python-dev
-#   libssl-dev
-#   libffi-dev
+from flask import Flask, make_response, request, send_from_directory
+from werkzeug.datastructures import MultiDict
+from OpenSSL import SSL
+import html
+import os
+import pickle
+import re
 
-# Also, must install the following using pip or easy_install:
-#   cherrypy
-#   pyOpenSSL
-
-from bottle import ServerAdapter, get, jinja2_template as template, post, request, response, run, static_file
 try:
     from cherrypy import wsgiserver
     from cherrypy.wsgiserver.ssl_pyopenssl import pyOpenSSLAdapter
 except ImportError:
     from cheroot import wsgi as wsgiserver
     from cheroot.ssl.pyopenssl import pyOpenSSLAdapter
-from OpenSSL import SSL
-from os import listdir
-import html
-import os
-import pickle
-import re
 
 from . import process
 from . import scheduler
 from .common import slurp_file
 from .model import db, jobs, users
+from .request_shim import RequestShim
+from .templating import template
 from .user_data import user_dir
 
 ssl_cert = "/etc/apache2/ssl/ssl.crt"
 ssl_key = "/etc/apache2/ssl/private.key"
 
+app = Flask(__name__)
 sched = scheduler.Scheduler()
 
-@get('/')
-def root(): return "hello this is an SPC worker node"
 
-@get('/delete')
+@app.before_request
+def inject_request_shims():
+    req = request._get_current_object()
+    req.forms = RequestShim(MultiDict(request.form))
+    req.query = RequestShim(MultiDict(request.args))
+
+
+@app.get('/')
+def root():
+    return "hello this is an SPC worker node"
+
+
+@app.get('/delete')
 def del_job():
-    # jid = request.forms['jid']
     jid = request.query.jid
     sched.stop(jid)
     sched.qdel(jid)
     return "OK"
 
-@get('/stop')
+
+@app.get('/stop')
 def stop():
-    # jid = request.forms['jid']
     jid = request.query.jid
     sched.stop(jid)
     return "OK"
 
-@get('/status/<jid>')
-def get_status(jid):
-    resp = db(jobs.id==jid).select(jobs.state).first()
-    if resp is None: return 'X'
-    else: return resp.state
 
-@get('/listfiles')
+@app.get('/status/<jid>')
+def get_status(jid):
+    row = db(jobs.id==jid).select(jobs.state).first()
+    if row is None:
+        return 'X'
+    return row.state
+
+
+@app.get('/listfiles')
 def listfiles():
-    app = request.forms['app']
+    appname = request.forms['app']
     user = request.forms['user']
     cid = request.forms['cid']
-    mypath = os.path.join(user_dir, user, app, cid)
-    return listdir(mypath)
+    mypath = os.path.join(user_dir, user, appname, cid)
+    return os.listdir(mypath)
 
-@post('/execute')
+
+@app.post('/execute')
 def execute():
-    app = request.forms['app']
+    appname = request.forms['app']
     user = request.forms['user']
     cid = request.forms['cid']
     desc = request.forms['desc']
@@ -79,39 +85,36 @@ def execute():
     if isinstance(appmod_payload, str):
         appmod_payload = appmod_payload.encode('latin1')
     appmod = pickle.loads(appmod_payload)
-    # remove the appmod key
     del request.forms['appmod']
-
     appmod.write_params(request.forms, user)
 
-    # if preprocess is set run the preprocessor
     try:
         if appmod.preprocess:
             run_params, _, _ = appmod.read_params(user, cid)
-            base_dir = os.path.join(user_dir, user, app)
+            base_dir = os.path.join(user_dir, user, appname)
             process.preprocess(run_params, appmod.preprocess, base_dir)
         if appmod.preprocess == "terra.in":
-            appmod.outfn = "out"+run_params['casenum']+".00"
-    except:
+            appmod.outfn = "out" + run_params['casenum'] + ".00"
+    except Exception:
         return template('error', err="There was an error with the preprocessor")
 
-    # submit job to queue
     try:
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
-        jid = sched.qsub(app, cid, uid, np, priority, desc)
+        jid = sched.qsub(appname, cid, uid, np, priority, desc)
         return str(jid)
-        #redirect("http://localhost:"+str(config.port)+"/case?app="+str(app)+"&cid="+str(cid)+"&jid="+str(jid))
     except OSError:
         return "ERROR: a problem occurred"
 
-@get('/output')
-def output():
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
 
-    app = request.query.app
+@app.get('/output')
+def output():
+    resp = make_response()
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+
+    appname = request.query.app
     cid = request.query.cid
     user = request.query.user
 
@@ -121,31 +124,25 @@ def output():
         else:
             u = user
             c = cid
-        run_dir = os.path.join(user_dir, u, app, c)
-        fn = os.path.join(run_dir, app + '.out')
-        output = slurp_file(fn)
-        # the following line will convert HTML chars like > to entities &gt;
-        # this is needed so that XML input files will show paramters labels
-        output = html.escape(output)
-        return output
-        # params = { 'cid': cid, 'contents': output, 'app': app,
-        #            'user': u, 'fn': fn, 'apps': myapps.keys() }
-        # return template('more', params)
-    except:
-        return "ERROR: something went wrong!"
-        # params = { 'app': app, 'apps': myapps.keys(),
-        #            'err': "Couldn't read input file. Check casename." }
-        # return template('error', params)
+        run_dir = os.path.join(user_dir, u, appname, c)
+        fn = os.path.join(run_dir, appname + '.out')
+        output_text = slurp_file(fn)
+        output_text = html.escape(output_text)
+        resp.set_data(output_text)
+        return resp
+    except Exception:
+        resp.set_data("ERROR: something went wrong!")
+        return resp
 
-@get('/zipcase')
+
+@app.get('/zipcase')
 def zipcase():
-    """zip case on machine to prepare for download"""
     import zipfile
-    app = request.query.app
+    appname = request.query.app
     cid = request.query.cid
     user = request.query.user
-    base_dir = os.path.join(user_dir, user, app)
-    path = os.path.join(base_dir, cid+".zip")
+    base_dir = os.path.join(user_dir, user, appname)
+    path = os.path.join(base_dir, cid + ".zip")
 
     zf = zipfile.ZipFile(path, mode='w')
     sim_dir = os.path.join(base_dir, cid)
@@ -156,37 +153,35 @@ def zipcase():
     return "OK"
 
 
-@get('/user_data/<filepath:path>')
+@app.get('/user_data/<path:filepath>')
 def user_data(filepath):
-    return static_file(filepath, root='user_data')
+    return send_from_directory('user_data', filepath)
 
-# By default, the server will allow negotiations with extremely old protocols
-# that are susceptible to attacks, so we only allow TLSv1.2
-class SecuredSSLServer(pyOpenSSLAdapter):
+
+class SecuredSSLServer(object):
+    def __init__(self, cert, key):
+        self._adapter = pyOpenSSLAdapter(cert, key)
+
+    def __getattr__(self, name):
+        return getattr(self._adapter, name)
+
     def get_context(self):
-        c = super(SecuredSSLServer, self).get_context()
+        c = self._adapter.get_context()
         c.set_options(SSL.OP_NO_SSLv2)
         c.set_options(SSL.OP_NO_SSLv3)
         c.set_options(SSL.OP_NO_TLSv1)
         c.set_options(SSL.OP_NO_TLSv1_1)
         return c
 
-# Create our own sub-class of Bottle's ServerAdapter
-# so that we can specify SSL. Using just server='cherrypy'
-# uses the default cherrypy server, which doesn't use SSL
-class SSLCherryPyServer(ServerAdapter):
-    def run(self, handler):
-        try:
-            server = wsgiserver.CherryPyWSGIServer((self.host, self.port), handler)
-        except AttributeError:
-            server = wsgiserver.Server((self.host, self.port), handler)
-        server.ssl_adapter = SecuredSSLServer(ssl_cert, ssl_key)
-        try:
-            server.start()
-        finally:
-            server.stop()
 
-if __name__ == "__main__":
+def main():
     sched.poll()
-    ## run(server='cherrypy', host='0.0.0.0', port=config.port+1, debug=False)
-    run(host='0.0.0.0', port=8581, server=SSLCherryPyServer)
+    try:
+        server = wsgiserver.CherryPyWSGIServer(('0.0.0.0', 8581), app)
+    except AttributeError:
+        server = wsgiserver.Server(('0.0.0.0', 8581), app)
+    server.ssl_adapter = SecuredSSLServer(ssl_cert, ssl_key)
+    try:
+        server.start()
+    finally:
+        server.stop()

@@ -1,4 +1,4 @@
-from bottle import Bottle, jinja2_template as template, redirect, request
+from flask import Blueprint, redirect, request
 import argparse as ap
 import os
 import re
@@ -14,8 +14,9 @@ from . import migrate
 from .common import rand_cid, replace_tags, slurp_file
 from .model import db, jobs, users
 from .user_data import user_dir
+from .templating import template
 
-routes = Bottle()
+routes = Blueprint('jobs', __name__)
 
 def bind(app):
     global root
@@ -135,11 +136,13 @@ def start_new_job():
     app = request.query.app or root.active_app()
 
     if app: root.set_active(app)
-    else: redirect('/myapps')
+    else: return redirect('/myapps')
 
-    if config.auth and not root.authorized(): redirect('/login')
+    if config.auth and not root.authorized():
+        return redirect('/login')
 
-    if app not in root.myapps: redirect('/apps')
+    if app not in root.myapps:
+        return redirect('/apps')
 
     cid = request.query.cid
     if re.search("/", cid):
@@ -210,7 +213,7 @@ def annotate_job():
     desc = desc.replace(',', ', ')
     jobs(cid=cid).update_record(description=desc)
     db.commit()
-    redirect('/jobs')
+    return redirect('/jobs')
 
 @routes.post('/jobs/star')
 def star_case():
@@ -218,7 +221,7 @@ def star_case():
     jid = request.forms.jid
     jobs(id=jid).update_record(starred="True")
     db.commit()
-    redirect('/jobs')
+    return redirect('/jobs')
 
 @routes.post('/jobs/unstar')
 def unstar_case():
@@ -226,7 +229,7 @@ def unstar_case():
     jid = request.forms.jid
     jobs(id=jid).update_record(starred="False")
     db.commit()
-    redirect('/jobs')
+    return redirect('/jobs')
 
 @routes.post('/jobs/share')
 def share_case():
@@ -239,7 +242,7 @@ def share_case():
         nmsg = users(user=u.user).new_shared_jobs or 0
         users(user=u.user).update_record(new_shared_jobs=nmsg+1)
     db.commit()
-    redirect('/jobs')
+    return redirect('/jobs')
 
 @routes.post('/jobs/unshare')
 def unshare_case():
@@ -247,7 +250,7 @@ def unshare_case():
     jid = request.forms.jid
     jobs(id=jid).update_record(shared="False")
     db.commit()
-    redirect('/jobs')
+    return redirect('/jobs')
 
 @routes.get('/jobs/all')
 def get_all_jobs():
@@ -321,7 +324,7 @@ def delete_job(jid):
         root.sched.qdel(jid)
     else:
         return template("error", err="cannot delete while job is still running")
-    redirect("/jobs")
+    return redirect("/jobs")
 
 @routes.post('/jobs/merge/<rtype>')
 def merge(rtype):
@@ -419,7 +422,7 @@ def delete_jobs():
             root.sched.qdel(jid)
         else:
             print("ERROR: not removing path:", path, "because cid missing")
-    redirect("/jobs")
+    return redirect("/jobs")
 
 @routes.post('/jobs/stop')
 def stop_job():
@@ -435,7 +438,7 @@ def stop_job():
     time.sleep(0.1)
     jobs(jid).update_record(state="X")
     db.commit()
-    redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
+    return redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
 
 def import_job_db(user, app, cid):
     dal = migrate.dal(uri=config.uri, migrate=True)
@@ -453,7 +456,7 @@ def import_job_db(user, app, cid):
     )
     dal.db.commit()
 
-@routes.get('/jobs/import', method='POST')
+@routes.route('/jobs/import', methods=['POST'])
 def import_job():
     upload = request.files.get('upload')
 
@@ -465,4 +468,4 @@ def import_job():
 
     import_job_db(user, app, cid)
 
-    redirect('/jobs')
+    return redirect('/jobs')

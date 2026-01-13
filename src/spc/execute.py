@@ -1,4 +1,4 @@
-from bottle import Bottle, jinja2_template as template, redirect, request
+from flask import Blueprint, redirect, request
 import argparse as ap
 import html
 import os
@@ -13,13 +13,14 @@ from . import config
 from .common import rand_cid, replace_tags, slurp_file
 from .model import apps, db, users
 from .user_data import user_dir
+from .templating import template
 
 try:
     import requests
 except:
     print("INFO: not importing requests... only needed for remote workers")
 
-routes = Bottle()
+routes = Blueprint('execute', __name__)
 
 def bind(app):
     global root
@@ -80,7 +81,7 @@ def confirm_form():
             db.jobs.insert(uid=uid, app=app, cid=cid, state=jid, description=desc,
                            time_submit=time.asctime(), np=config.np, priority=pry)
             db.commit()
-            redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
+            return redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
 
     elif config.submit_type == 'noverify':
         # "noverify" means don't echo the parameters back to the user before running
@@ -100,7 +101,7 @@ def confirm_form():
         uid = users(user=user).id
         priority = db(users.user==user).select(users.priority).first().priority
         jid = root.sched.qsub(app, cid, uid, cmd, np, priority, walltime, desc)
-        redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
+        return redirect("/case?app="+app+"&cid="+str(cid)+"&jid="+str(jid))
 
     else:
 
@@ -187,7 +188,7 @@ def execute():
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
         jid = root.sched.qsub(app, cid, uid, cmd, np, priority, walltime, desc)
-        redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
+        return redirect("/case?app="+app+"&cid="+cid+"&jid="+jid)
     except OSError as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))

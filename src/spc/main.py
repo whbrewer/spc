@@ -5,88 +5,74 @@ import os
 import sys
 import traceback
 
-from bottle import Jinja2Template, TEMPLATE_PATH, app, error, get, jinja2_template as template, redirect, request, run, static_file
-from beaker.middleware import SessionMiddleware
+from flask import Flask, redirect, request, send_from_directory, session
+from werkzeug.datastructures import MultiDict
 
 from . import app_reader_writer as apprw
 from . import config
 from . import scheduler
 from .constants import APP_SESSION_KEY, NOAUTH_USER, USER_ID_SESSION_KEY
 from .model import apps, db
-from .user_data import user_dir
+from .request_shim import RequestShim
+from .templating import template
 
 
 BASE_DIR = os.path.dirname(__file__)
-TEMPLATE_PATH.insert(0, os.path.join(BASE_DIR, 'templates'))
 
-session_opts = {
-    'session.type': 'file',
-    'session.cookie_expires': True,
-    'session.data_dir': user_dir,
-    'session.auto': True,
-}
 
-app = SessionMiddleware(app(), session_opts)
-
-try:
-    Jinja2Template.defaults["tab_title"] = config.tab_title
-except Exception:
-    Jinja2Template.defaults["tab_title"] = "SPC"
-
+app = Flask(__name__, static_folder=os.path.join(BASE_DIR, 'static'))
+app.secret_key = os.environ.get('SPC_SECRET_KEY', '40dd942d0f03108a84db8697e0307802')
 sched = scheduler.Scheduler()
 
 
-@get('/')
+@app.before_request
+def inject_request_shims():
+    req = request._get_current_object()
+    req.forms = RequestShim(MultiDict(request.form))
+    req.query = RequestShim(MultiDict(request.args))
+
+
+@app.route('/')
 def root():
     authorized()
-    redirect('/myapps')
+    return redirect('/myapps')
 
 
-@get('/static/<filepath:path>')
+@app.route('/static/<path:filepath>')
 def server_static(filepath):
-    return static_file(filepath, root=os.path.join(BASE_DIR, 'static'))
+    return send_from_directory(app.static_folder, filepath)
 
 
-@get('/favicon.ico')
+@app.route('/favicon.ico')
 def get_favicon():
-    return static_file('favicon.ico', root=os.path.join(BASE_DIR, 'static'))
+    return send_from_directory(app.static_folder, 'favicon.ico')
 
 
-@error(500)
-@error(501)
-@error(502)
+@app.errorhandler(500)
+@app.errorhandler(501)
+@app.errorhandler(502)
 def error500(error):
-    exc = getattr(error, 'exception', None)
+    exc = getattr(error, 'original_exception', None)
     msg = str(exc) if exc else "Unknown error"
-    status = getattr(error, 'status_code', '500')
-    trace = getattr(error, 'traceback', '')
-    return template('error', err="{} ({})".format(msg, status), traceback=trace)
+    status = getattr(error, 'code', '500')
+    return template('error', err="{} ({})".format(msg, status), traceback="")
 
 
 def authorized():
     """Return username if user is already logged in, redirect otherwise."""
     if config.auth:
-        s = request.environ.get('beaker.session')
-        s[USER_ID_SESSION_KEY] = s.get(USER_ID_SESSION_KEY, False)
-        if not s[USER_ID_SESSION_KEY]:
-            redirect('/login')
-        else:
-            return s[USER_ID_SESSION_KEY]
-    else:
-        return NOAUTH_USER
+        username = session.get(USER_ID_SESSION_KEY)
+        if username:
+            return username
+    return NOAUTH_USER
 
 
 def active_app():
-    s = request.environ.get('beaker.session')
-    try:
-        return s[APP_SESSION_KEY]
-    except Exception:
-        return None
+    return session.get(APP_SESSION_KEY)
 
 
 def set_active(app_name):
-    s = request.environ.get('beaker.session')
-    s[APP_SESSION_KEY] = app_name
+    session[APP_SESSION_KEY] = app_name
 
 
 def init_config_options():
@@ -153,14 +139,7 @@ def load_apps():
     return True
 
 
-def main():
-    from . import util
-
-    init_config_options()
-    load_apps()
-
-    sched.poll()
-
+def register_routes():
     modules = [
         "account",
         "admin",
@@ -178,18 +157,19 @@ def main():
         try:
             imported_module = importlib.import_module('.' + module, 'spc')
             getattr(imported_module, 'bind')(globals())
-            app.app.merge(getattr(imported_module, 'routes'))
+            app.register_blueprint(getattr(imported_module, 'routes'))
         except ImportError:
             print("ERROR importing module " + module)
 
+
+def main():
+    init_config_options()
+    load_apps()
+    sched.poll()
+    register_routes()
+
     if config.server != 'uwsgi':
-        run(
-            server=config.server,
-            app=app,
-            host='0.0.0.0',
-            port=config.port,
-            debug=False,
-        )
+        app.run(host='0.0.0.0', port=config.port, debug=False)
 
 
 if config.server == 'uwsgi':

@@ -27,8 +27,12 @@ class Scheduler(object):
         myset = db(db.jobs.state == STATE_RUN)
         myset.update(state=STATE_STOPPED)
         db.commit()
-        self.sem = BoundedSemaphore(config.np)
-        self.mutex = Lock()
+        try:
+            self.sem = BoundedSemaphore(config.np)
+            self.mutex = Lock()
+        except (OSError, PermissionError):
+            self.sem = threading.BoundedSemaphore(config.np)
+            self.mutex = threading.Lock()
         # set time zone
         try:
             os.environ['TZ'] = config.time_zone

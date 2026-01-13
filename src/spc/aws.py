@@ -1,4 +1,4 @@
-from bottle import Bottle, jinja2_template as template, redirect, request
+from flask import Blueprint, redirect, request
 import argparse as ap
 import sys
 import time
@@ -14,8 +14,9 @@ from datetime import datetime
 
 from . import config
 from .model import aws_creds, aws_instances, db, users
+from .templating import template
 
-routes = Bottle()
+routes = Blueprint('aws', __name__)
 
 def bind(app):
     global root
@@ -129,7 +130,7 @@ def post_aws_creds():
     uid = users(user=user).id
     db.aws_creds.insert(account_id=a, secret=s, key=k, uid=uid)
     db.commit()
-    redirect('/aws')
+    return redirect('/aws')
 
 @routes.delete('/aws/creds/<id>')
 def aws_cred_del(id):
@@ -138,7 +139,7 @@ def aws_cred_del(id):
         return template('error', err="AWS support unavailable: boto3 import failed.")
     del db.aws_creds[id]
     db.commit()
-    redirect('/aws')
+    return "true"
 
 @routes.post('/aws/instance')
 def create_instance():
@@ -153,7 +154,7 @@ def create_instance():
     uid = users(user=user).id
     db.aws_instances.insert(instance=instance, itype=itype, region=region, rate=rate, uid=uid)
     db.commit()
-    redirect('/aws')
+    return redirect('/aws')
 
 @routes.delete('/aws/instance/<aid>')
 def del_instance(aid):
@@ -208,6 +209,7 @@ def aws_start(aid):
     a.start()
     # takes a few seconds for the status to change on the Amazon end
     time.sleep(15)
+    return "true"
 
 @routes.delete('/aws/<aid>')
 def aws_stop(aid):
@@ -217,4 +219,5 @@ def aws_stop(aid):
     a = aws_conn(aid)
     a.stop()
     # takes a few seconds for the status to change on the Amazon end
+    return "true"
     time.sleep(10)

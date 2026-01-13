@@ -1,4 +1,4 @@
-from bottle import Bottle, jinja2_template as template, redirect, request, static_file
+from flask import Blueprint, redirect, request, send_from_directory
 import argparse as ap
 import html
 import json
@@ -17,11 +17,16 @@ except:
 from . import config
 from .common import slurp_file
 from .model import db, jobs, users
+from .templating import template
 
 user_dir = 'user_data'
 upload_dir = '_uploads'
 
-routes = Bottle()
+routes = Blueprint('user_data', __name__)
+
+
+def static_file(filepath, root):
+    return send_from_directory(root, filepath)
 
 
 def bind(app):
@@ -29,7 +34,7 @@ def bind(app):
     root = ap.Namespace(**app)
 
 
-@routes.get('/' + user_dir + '/<filepath:path>')
+@routes.get('/' + user_dir + '/<path:filepath>')
 def get_user_data(filepath):
     user = root.authorized()
     # filepath = request.query.filepath
@@ -273,7 +278,7 @@ def delete_f():
                 shutil.rmtree(path)
         else:
             print("ERROR: not removing path:", path, "because cid missing")
-    redirect("/files?cid="+cid+"&app="+app)
+    return redirect("/files?cid="+cid+"&app="+app)
 
 
 @routes.post('/files/modify/<operation>')
@@ -318,7 +323,7 @@ def modify_selected_files(operation):
             outfile.writelines(out)
             outfile.write("# modifications to file: cols = " + str(cols) + ", operation = " + operation + ", factor = " + str(factor) + "\n")
 
-    redirect("/files?cid="+cid+"&app="+app)
+    return redirect("/files?cid="+cid+"&app="+app)
 
 
 @routes.post('/files/zip_selected')
@@ -340,7 +345,7 @@ def zip_selected_files():
         # remove the original file if the zipfile now exists
         if os.path.isfile(path+".zip"): os.remove(path)
 
-    redirect("/files?cid="+cid+"&app="+app)
+    return redirect("/files?cid="+cid+"&app="+app)
 
 
 @routes.get('/zipcase')
@@ -413,7 +418,7 @@ def zipget():
 
     # status = "file_downloaded"
     # redirect(request.headers.get('Referer')) #+ "&status=" + status)
-    redirect("/jobs")
+    return redirect("/jobs")
 
 
 @routes.post('/upload')
@@ -449,7 +454,7 @@ def upload_data():
     with open(save_path, 'w') as f: f.write(upload_data)
 
 
-@routes.get('/download/<filepath:path>')
+@routes.get('/download/<path:filepath>')
 def download(filepath):
     root.authorized()
     return static_file(filepath, root='download', download=filepath)

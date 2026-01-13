@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import os
-from bottle import jinja2_template as template
+from .templating import template
 
 def preprocess(params,fn,base_dir=""):
     """app-specific code: in the future these need to be generalized or hooked in"""

@@ -1,4 +1,4 @@
-from bottle import Bottle, jinja2_template as template, request
+from flask import Blueprint, request
 import argparse as ap
 import datetime
 import json
@@ -9,13 +9,14 @@ import traceback
 from threading import Timer
 
 from .model import db, jobs
+from .templating import template
 
 fn = 'log/machine_stats.log'
 logging.basicConfig(filename=fn)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-routes = Bottle()
+routes = Blueprint('util', __name__)
 
 def bind(app):
     global root

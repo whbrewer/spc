@@ -1,4 +1,5 @@
-from bottle import get, jinja2_template as template, post, request, response, run, static_file
+from flask import Flask, make_response, request, send_from_directory
+from werkzeug.datastructures import MultiDict
 from os import listdir
 import html
 import os
@@ -10,49 +11,67 @@ from . import process
 from . import scheduler
 from .common import slurp_file
 from .model import db, jobs, users
+from .request_shim import RequestShim
+from .templating import template
 from .user_data import user_dir
 
+app = Flask(__name__)
 sched = scheduler.Scheduler()
 
-@get('/')
-def root(): return "hello this is an SPC worker node"
 
-@get('/delete')
+@app.before_request
+def inject_request_shims():
+    req = request._get_current_object()
+    req.forms = RequestShim(MultiDict(request.form))
+    req.query = RequestShim(MultiDict(request.args))
+
+
+@app.get('/')
+def root():
+    return "hello this is an SPC worker node"
+
+
+@app.get('/delete')
 def del_job():
-    # jid = request.forms['jid']
     jid = request.query.jid
     sched.stop(jid)
     sched.qdel(jid)
     return "OK"
 
-@get('/stop')
+
+@app.get('/stop')
 def stop():
-    # jid = request.forms['jid']
     jid = request.query.jid
     sched.stop(jid)
     return "OK"
 
-@get('/status/<jid>')
-def get_status(jid):
-    # following headers are needed because of CORS
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
-    resp = db(jobs.id==jid).select(jobs.state).first()
-    if resp is None: return 'X'
-    else: return resp.state
 
-@get('/listfiles')
+@app.get('/status/<jid>')
+def get_status(jid):
+    resp = make_response()
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+    row = db(jobs.id==jid).select(jobs.state).first()
+    if row is None:
+        resp.set_data('X')
+    else:
+        resp.set_data(row.state)
+    return resp
+
+
+@app.get('/listfiles')
 def listfiles():
-    app = request.forms['app']
+    appname = request.forms['app']
     user = request.forms['user']
     cid = request.forms['cid']
-    mypath = os.path.join(user_dir, user, app, cid)
+    mypath = os.path.join(user_dir, user, appname, cid)
     return listdir(mypath)
 
-@post('/execute')
+
+@app.post('/execute')
 def execute():
-    app = request.forms['app']
+    appname = request.forms['app']
     user = request.forms['user']
     cid = request.forms['cid']
     desc = request.forms['desc']
@@ -61,38 +80,36 @@ def execute():
     if isinstance(appmod_payload, str):
         appmod_payload = appmod_payload.encode('latin1')
     appmod = pickle.loads(appmod_payload)
-    # remove the appmod key
     del request.forms['appmod']
     appmod.write_params(request.forms, user)
 
-    # if preprocess is set run the preprocessor
     try:
         if appmod.preprocess:
             run_params, _, _ = appmod.read_params(user, cid)
-            base_dir = os.path.join(user_dir, user, app)
+            base_dir = os.path.join(user_dir, user, appname)
             process.preprocess(run_params, appmod.preprocess, base_dir)
         if appmod.preprocess == "terra.in":
-            appmod.outfn = "out"+run_params['casenum']+".00"
-    except:
+            appmod.outfn = "out" + run_params['casenum'] + ".00"
+    except Exception:
         return template('error', err="There was an error with the preprocessor")
 
-    # submit job to queue
     try:
         priority = db(users.user==user).select(users.priority).first().priority
         uid = users(user=user).id
-        jid = sched.qsub(app, cid, uid, np, priority, desc)
+        jid = sched.qsub(appname, cid, uid, np, priority, desc)
         return str(jid)
-        #redirect("http://localhost:"+str(config.port)+"/case?app="+str(app)+"&cid="+str(cid)+"&jid="+str(jid))
     except OSError:
         return "ERROR: a problem occurred"
 
-@get('/output')
-def output():
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
 
-    app = request.query.app
+@app.get('/output')
+def output():
+    resp = make_response()
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+
+    appname = request.query.app
     cid = request.query.cid
     user = request.query.user
 
@@ -102,31 +119,25 @@ def output():
         else:
             u = user
             c = cid
-        run_dir = os.path.join(user_dir, u, app, c)
-        fn = os.path.join(run_dir, app + '.out')
-        output = slurp_file(fn)
-        # the following line will convert HTML chars like > to entities &gt;
-        # this is needed so that XML input files will show paramters labels
-        output = html.escape(output)
-        return output
-        # params = { 'cid': cid, 'contents': output, 'app': app,
-        #            'user': u, 'fn': fn, 'apps': myapps.keys() }
-        # return template('more', params)
-    except:
-        return "ERROR: something went wrong!"
-        # params = { 'app': app, 'apps': myapps.keys(),
-        #            'err': "Couldn't read input file. Check casename." }
-        # return template('error', params)
+        run_dir = os.path.join(user_dir, u, appname, c)
+        fn = os.path.join(run_dir, appname + '.out')
+        output_text = slurp_file(fn)
+        output_text = html.escape(output_text)
+        resp.set_data(output_text)
+        return resp
+    except Exception:
+        resp.set_data("ERROR: something went wrong!")
+        return resp
 
-@get('/zipcase')
+
+@app.get('/zipcase')
 def zipcase():
-    """zip case on machine to prepare for download"""
     import zipfile
-    app = request.query.app
+    appname = request.query.app
     cid = request.query.cid
     user = request.query.user
-    base_dir = os.path.join(user_dir, user, app)
-    path = os.path.join(base_dir, cid+".zip")
+    base_dir = os.path.join(user_dir, user, appname)
+    path = os.path.join(base_dir, cid + ".zip")
 
     zf = zipfile.ZipFile(path, mode='w')
     sim_dir = os.path.join(base_dir, cid)
@@ -137,11 +148,11 @@ def zipcase():
     return "OK"
 
 
-@get('/user_data/<filepath:path>')
+@app.get('/user_data/<path:filepath>')
 def user_data(filepath):
-    return static_file(filepath, root='user_data')
+    return send_from_directory('user_data', filepath)
 
 
 def main():
     sched.poll()
-    run(host='0.0.0.0', port=config.port+1, debug=False)
+    app.run(host='0.0.0.0', port=config.port + 1, debug=False)

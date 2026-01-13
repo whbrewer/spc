@@ -1,4 +1,4 @@
-from bottle import Bottle, jinja2_template as template, redirect, request
+from flask import Blueprint, redirect, request
 import argparse as ap
 import html
 import json
@@ -12,8 +12,9 @@ from . import app_reader_writer as apprw
 from . import config
 from .common import slurp_file
 from .model import app_user, apps, datasource, db, plots, users
+from .templating import template
 
-routes = Bottle()
+routes = Blueprint('app_routes', __name__)
 
 def bind(app):
     global root
@@ -39,7 +40,7 @@ def show_app(app):
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))
-        redirect('/app/'+app)
+        return redirect('/app/'+app)
 
 @routes.get('/app_exists/<appname>')
 def app_exists(appname):
@@ -91,7 +92,7 @@ def showmyapps():
 @routes.get('/apps/load')
 def get_load_apps():
     root.load_apps()
-    redirect('/myapps')
+    return redirect('/myapps')
 
 @routes.post('/app/edit/<appid>')
 def app_edit(appid):
@@ -120,7 +121,7 @@ def app_save(appid):
     row.update_record(language=lang, category=category, description=desc, input_format=info,
                       preprocess=preprocess, postprocess=postprocess, assets=assets)
     db.commit()
-    redirect("/app/"+app)
+    return redirect("/app/"+app)
 
 # allow only admin or user to delete apps
 @routes.post('/app/delete/<appid>')
@@ -146,13 +147,13 @@ def delete_app(appid):
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))
         return template("error", err="failed to delete app... did the app load properly?")
 
-    redirect("/apps")
+    return redirect("/apps")
 
 @routes.get('/app/<app>')
 def view_app(app):
     user = root.authorized()
     if app: root.set_active(app)
-    else: redirect('/myapps')
+    else: return redirect('/myapps')
 
     if user != 'admin':
         return template('error', err="must be admin to edit app")
@@ -182,7 +183,7 @@ def useapp():
     print("allowing user", user, uid, "to access app", app, appid)
     app_user.insert(uid=uid, appid=appid)
     db.commit()
-    redirect('/apps')
+    return redirect('/apps')
 
 @routes.post('/removeapp')
 def removeapp():
@@ -194,7 +195,7 @@ def removeapp():
     del app_user[auid]
     print("removing user", user, uid, "access to app", app, appid)
     db.commit()
-    redirect('/myapps')
+    return redirect('/myapps')
 
 @routes.get('/addapp')
 def getaddapp():
@@ -226,7 +227,7 @@ def addapp():
     # this app just after it has been created... it is called again after
     # the user uploads a sample input file
     root.load_apps()
-    redirect('/app/'+appname)
+    return redirect('/app/'+appname)
 
 @routes.get('/appconfig/status')
 def appconfig_status():

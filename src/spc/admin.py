@@ -1,12 +1,13 @@
-from bottle import Bottle, jinja2_template as template, redirect, request
+from flask import Blueprint, redirect, request
 import argparse as ap
 import os
 import shutil
 
 from .model import db, users
+from .templating import template
 from .user_data import user_dir
 
-routes = Bottle()
+routes = Blueprint('admin', __name__)
 
 def bind(app):
     global root
@@ -39,4 +40,4 @@ def admin_delete_user():
     del db.users[uid]
     db.commit()
 
-    redirect("/admin/show_users")
+    return redirect("/admin/show_users")

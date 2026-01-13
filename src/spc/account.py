@@ -1,4 +1,4 @@
-from bottle import Bottle, jinja2_template as template, redirect, request, response
+from flask import Blueprint, redirect, request, session
 import argparse as ap
 import hashlib
 import re
@@ -10,8 +10,9 @@ import uuid
 from . import config
 from .constants import APP_SESSION_KEY, NOAUTH_USER, USER_ID_SESSION_KEY
 from .model import db, user_meta, users
+from .templating import template
 
-routes = Bottle()
+routes = Blueprint('account', __name__)
 
 def bind(app):
     global root
@@ -89,9 +90,9 @@ def post_register():
             admin_email = db(users.user=="admin").select(users.email).first()
             server.sendmail('admin@spc.com', [admin_email], message)
             server.quit()
-            redirect('/login')
+            return redirect('/login')
         except:
-            redirect('/login')
+            return redirect('/login')
     else:
         return "ERROR: there was a problem registering. Please try again...<p>" \
              + "<a href='/register'>Return to registration</a>"
@@ -110,7 +111,6 @@ def post_login():
     if not config.auth:
         return "ERROR: authorization disabled. Change auth setting in config.py to enable"
 
-    s = request.environ.get('beaker.session')
     row = users(user=request.forms.get('user').lower())
     pw = request.forms.passwd
     err = "<p>Login failed: wrong username or password</p>"
@@ -120,8 +120,7 @@ def post_login():
     try:
         if hashpw == row.passwd:
             # set session key
-            s[USER_ID_SESSION_KEY] = row.user.lower()
-            s.save()
+            session[USER_ID_SESSION_KEY] = row.user.lower()
         else:
             return err
     except:
@@ -130,24 +129,25 @@ def post_login():
         return err
     # if referred to login from another page redirect to referring page
     referrer = request.forms.referrer
-    if referrer: redirect('/'+referrer)
-    else: redirect('/myapps')
+    if referrer:
+        return redirect('/'+referrer)
+    return redirect('/myapps')
 
 @routes.get('/logout')
 def logout():
-    s = request.environ.get('beaker.session')
-    s.delete()
-    try:
-        return template('logout',  {'oauth_client_id': config.oauth_client_id})
-    except:
-        redirect('/login')
+    session.clear()
+    oauth_client_id = getattr(config, 'oauth_client_id', None)
+    return template('logout',  {'oauth_client_id': oauth_client_id})
 
 @routes.post('/account/change_password')
 def change_password():
     # this is basically the same coding as the register function
     # needs to be DRY'ed out in the future
     user = root.authorized()
-    if config.auth and not root.authorized(): redirect('/login')
+    if user == NOAUTH_USER:
+        user = request.forms.get('user', user)
+    if config.auth and user == NOAUTH_USER:
+        return redirect('/login')
     opasswd = request.forms.opasswd
     pw1 = request.forms.npasswd1
     pw2 = request.forms.npasswd2
@@ -172,9 +172,8 @@ def change_password():
 @routes.post('/tokensignin')
 def tokensignin():
     email = request.forms.get('email')
-    s = request.environ.get('beaker.session')
     user, _ = email.split('@')
-    s[USER_ID_SESSION_KEY] = user
+    session[USER_ID_SESSION_KEY] = user
 
     if not users(user=user.lower()):
        # insert a random password that nobody will be able to guess

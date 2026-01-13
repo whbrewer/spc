@@ -2,7 +2,7 @@ import argparse as ap
 import datetime
 
 import docker
-from bottle import Bottle, jinja2_template as template, redirect, request
+from flask import Blueprint, redirect, request
 
 base_url = 'unix://var/run/docker.sock'
 
@@ -10,7 +10,9 @@ def bind(app):
     global root
     root = ap.Namespace(**app)
 
-routes = Bottle()
+from .templating import template
+
+routes = Blueprint('container', __name__)
 
 
 def _to_timestamp(value):
@@ -90,7 +92,7 @@ def create_container(id):
     except Exception as e:
         alert = "ERROR: failed to start container " + str(e)
 
-    redirect("/docker?alert="+alert)
+    return redirect("/docker?alert="+alert)
 
 # don't think we want to have this option
 # @dockerMod.route('/docker/remove_image/<id:path>', method='GET')
@@ -115,7 +117,7 @@ def start_container(id):
         alert = "SUCCESS: started container " + id
     except:
         alert = "ERROR: failed to start container " + id
-    redirect("/docker?alert="+alert)
+    return redirect("/docker?alert="+alert)
 
 @routes.get('/docker/stop/<id>')
 def stop_container(id):
@@ -125,7 +127,7 @@ def stop_container(id):
         alert = "SUCCESS: stopped container " + id
     except:
         alert = "ERROR stopping container " + id
-    redirect("/docker?alert="+alert)
+    return redirect("/docker?alert="+alert)
 
 @routes.get('/docker/remove/<id>')
 def remove_container(id):
@@ -136,4 +138,4 @@ def remove_container(id):
         alert = "SUCCESS: removed container " + id
     except:
         alert = "ERROR: problem removing container " + id
-    redirect("/docker?alert="+alert)
+    return redirect("/docker?alert="+alert)

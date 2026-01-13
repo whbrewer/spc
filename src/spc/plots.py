@@ -1,4 +1,4 @@
-from bottle import Bottle, jinja2_template as template, redirect, request
+from flask import Blueprint, redirect, request
 import argparse as ap
 import csv
 import os
@@ -11,8 +11,9 @@ from . import config
 from .common import replace_tags
 from .model import apps, datasource, db, jobs, plots
 from .user_data import user_dir
+from .templating import template
 
-routes = Bottle()
+routes = Blueprint('plots', __name__)
 
 
 def bind(app):
@@ -168,8 +169,10 @@ def editplotdefs():
     if user != 'admin':
         return template('error', err="must be admin to edit plots")
     app = request.query.app
-    if config.auth and not root.authorized(): redirect('/login')
-    if app not in root.myapps: redirect('/apps')
+    if config.auth and not root.authorized():
+        return redirect('/login')
+    if app not in root.myapps:
+        return redirect('/apps')
     query = (root.apps.id==plots.appid) & (root.apps.name==app)
     result = db(query).select()
     params = { 'app': app, 'user': user }
@@ -199,7 +202,7 @@ def editplot(pltid):
     print("updating plot ", pltid, "for app", app)
     plots(pltid).update_record(title=title, ptype=ptype, options=options)
     db.commit()
-    redirect('/plots/edit?app='+app)
+    return redirect('/plots/edit?app='+app)
 
 
 @routes.get('/plots/delete/<pltid>')
@@ -210,7 +213,7 @@ def delete_plot(pltid):
     app = request.query.app
     del db.plots[pltid]
     db.commit()
-    redirect ('/plots/edit?app='+app)
+    return redirect('/plots/edit?app='+app)
 
 
 @routes.get('/plots/<pltid>/datasources')
@@ -221,8 +224,10 @@ def get_datasource(pltid):
         return template('error', err="must be admin to edit plots")
     app = request.query.app
     cid = request.query.cid
-    if root.myapps[app].appname not in root.myapps: redirect('/apps')
-    if config.auth and not root.authorized(): redirect('/login')
+    if root.myapps[app].appname not in root.myapps:
+        return redirect('/apps')
+    if config.auth and not root.authorized():
+        return redirect('/login')
     result = db(datasource.pltid==pltid).select()
     title = plots(pltid).title
     params = { 'app': app, 'cid': cid, 'user': user, 'pltid': pltid, 'rows': result, 'title': title}
@@ -240,7 +245,7 @@ def add_datasource(pltid):
     datasource.insert(pltid=pltid, label=r['label'],  filename=r['fn'], cols=r['cols'],
                       line_range=r['line_range'], data_def=r['data_def'])
     db.commit()
-    redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
+    return redirect('/plots/' + str(pltid) + '/datasources?app='+app)
 
 
 @routes.get('/plots/<pltid>/datasources/<dsid>')
@@ -267,9 +272,7 @@ def edit_datasource_post(pltid, dsid):
     datasource(id=dsid).update_record(label=r['label'], pltid=pltid, filename=r['fn'], cols=r['cols'],
                                       line_range=r['line_range'], data_def=r['data_def'])
     db.commit()
-    redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
-    params = {'app': app, 'pltid': pltid, 'dsid': dsid}
-    return template('plots/edit_datasource', params)
+    return redirect('/plots/' + str(pltid) + '/datasources?app='+app)
 
 
 @routes.post('/plots/datasource_delete')
@@ -282,7 +285,7 @@ def delete_datasource():
     dsid = request.forms.get('dsid')
     del db.datasource[dsid]
     db.commit()
-    redirect ('/plots/' + str(pltid) + '/datasources?app='+app)
+    return redirect('/plots/' + str(pltid) + '/datasources?app='+app)
 
 
 @routes.post('/plots/create')
@@ -295,7 +298,7 @@ def create_plot():
     plots.insert(appid=root.myapps[app].appid, ptype=r.forms['ptype'],
                  title=r.forms['title'], options=r.forms['options'])
     db.commit()
-    redirect ('/plots/edit?app='+app)
+    return redirect('/plots/edit?app='+app)
 
 
 @routes.get('/plot/<pltid>')
@@ -341,7 +344,7 @@ def plot_interface(pltid):
     except:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         print(traceback.print_exception(exc_type, exc_value, exc_traceback))
-        redirect ('/plots/edit?app='+app+'&cid='+cid)
+        return redirect('/plots/edit?app='+app+'&cid='+cid)
 
     # if plot not in DB return error
     if plottype is None:
@@ -361,7 +364,7 @@ def plot_interface(pltid):
     elif plottype == 'plotly-hist':
         tfn = 'plots/plotly-hist'
     elif plottype == 'mpl-line' or plottype == 'mpl-bar':
-        redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
+        return redirect('/mpl/'+pltid+'?app='+app+'&cid='+cid)
     elif plottype == 'handson':
         tfn = 'plots/handson'
     elif plottype == 'flot-3d':
