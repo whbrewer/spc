@@ -10,6 +10,32 @@ from builtins import input
 def setup_virtualenv():
     os.system('python3 -m venv venv')
     os.system('./venv/bin/pip install -r ./requirements.txt')
+    install_venv_entrypoint()
+
+def install_venv_entrypoint():
+    venv_python = os.path.abspath('./venv/bin/python')
+    if not os.path.exists(venv_python):
+        return
+    entrypoint_path = os.path.abspath('./venv/bin/spc')
+    repo_root = os.path.abspath('.')
+    script = """#!{venv_python}
+# -*- coding: utf-8 -*-
+import os
+import sys
+
+def main():
+    repo_root = {repo_root!r}
+    os.chdir(repo_root)
+    python_exe = os.path.join(repo_root, 'venv', 'bin', 'python')
+    main_py = os.path.join(repo_root, 'src', 'main.py')
+    os.execv(python_exe, [python_exe, main_py] + sys.argv[1:])
+
+if __name__ == '__main__':
+    sys.exit(main())
+""".format(venv_python=venv_python, repo_root=repo_root)
+    with open(entrypoint_path, 'w') as f:
+        f.write(script)
+    os.chmod(entrypoint_path, 0o755)
 
 def pass_to_cli(arg):
     path = './venv/bin/python'
@@ -32,4 +58,3 @@ elif sys.argv[1] == "init":
         pass_to_cli(['init']) 
 else:
     pass_to_cli(sys.argv[1:])
-
