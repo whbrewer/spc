@@ -1,59 +1,209 @@
-# SPC
+# SPC — Scientific Platform for the Cloud
 
-Note: see NOTES.md file for important release notes.
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
+[![Docs](https://img.shields.io/badge/docs-Read%20the%20Docs-blue.svg)](http://spc.readthedocs.io)
 
-Full documentation is available online at http://spc.readthedocs.io
+> Note: See `NOTES.md` for important release notes.
 
-Minimum Python requirement: 3.8.
+Full documentation is available online at: http://spc.readthedocs.io  
+Minimum Python requirement: **3.8** (tested on **3.12**).
 
-## INTRO
+---
 
-The Scientific Platform for the Cloud (SPC) is a Python-based cloud platform/framework for easily migrating and running scientific applications in the cloud. This repository is the Python 3 modernization (Flask + Jinja2 web stack, pydal data layer, boto3 for AWS). The original Python 2/Bottle codebase is archived in the legacy branch at https://github.com/whbrewer/spc/tree/legacy. It is described in more detail in the following paper:
+## Overview
 
-  > W Brewer, W Scott, and J Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156-165, doi:10.1109/ICCCRI.2015.24 http://ieeexplore.ieee.org/document/7421906/
+The **Scientific Platform for the Cloud (SPC)** is a Python-based platform/framework for rapidly migrating and running **scientific applications** in the cloud. SPC provides a web UI and workflow scaffolding for running parameterized simulations, tracking cases, managing files, executing jobs through a scheduler, and visualizing results (including plotting) in a standardized and repeatable way.
 
-This platform is ideally suited to run scientific applications that: (1) require an input deck full of integers, floats, strings, and booleans stored in a standardized file format such as INI, XML, JSON, YAML, TOML, or Namelist.input, (2) require some amount of processing time (i.e. not instantaneous -- although it can handle such cases too), (3) require some plotting at the end of the simulation, (4) use MPI or MapReduce for parallelization (although handles serial cases well too).  Moreover, it can handle other applications as well, but some amount of pre- or post-processing may be required.  Such topics are described in more detail in the aforementioned paper.  If you need a copy of this paper, please send an e-mail request to the address at the bottom of this file.
+This repository contains the **Python 3 modernization** of SPC, built with:
+- **Flask + Jinja2** (web UI stack)
+- **pydal** (data layer)
+- **boto3** (AWS integration)
 
-Disclaimer: SPC has been tested primarily with Google Chrome browser and Python 3 on Linux and OS X systems. Other environments may work, but are not guaranteed.
+The original Python 2 / Bottle implementation is archived in the `legacy` branch:
+https://github.com/whbrewer/spc/tree/legacy
 
-## QUICKSTART
+---
 
-* Note, SPC assumes you have a few packages installed by default, namely: Python 3.8+ (tested on 3.12), virtualenv, gcc, and python-dev/headers (required for compiling psutil). If you don't have these installed, use either apt-get or yum to install them.
+## Features (High-level)
 
-* To install dependencies, create and initialize the database which SPC uses, type:
+- Web-based UI for launching and monitoring scientific workflows
+- Standardized parameter entry and input deck generation
+- Case management and file management per run
+- Job submission and output redirection
+- Plot definitions and result visualization
+- Packaged “apps” that can be installed into SPC
 
-    `./spc init`
+---
 
-* To start running the web server, type:
+## Best fit / Intended use
 
-    `./spc run`
+SPC is ideally suited for scientific applications that:
 
-* Open browser to http://0.0.0.0:8580/ (port can be overridden in config.py)
+1. Use an **input deck** of common parameter types (ints, floats, strings, booleans) stored in standardized formats such as:
+   - INI, XML, JSON, YAML, TOML, or `Namelist.input`
+2. Require **non-trivial runtime** (though instantaneous jobs are supported)
+3. Produce **plots** and/or structured results
+4. Use **MPI** or MapReduce for parallelization (serial workflows are also supported)
 
-* To run the pre-installed example DNA Analyzer app in SPC:
+Other applications may be supported with additional pre-/post-processing.
 
-    a. **Activate App**.  Click `Apps` and then click `installed`.  `Activate` the DNA app, then click `Activated` again
+---
 
-    b. **Enter Parameters**. Click on `dna` the default installed app.  Enter a DNA string, or use the default.  Then Click `confirm` to write the datafile to disk
+## Screenshots
 
-    c. **Start Job**. Click `execute` to run the DNA analysis.  SPC will submit it to the job scheduler, and will redirect to the output.
+```md
+![SPC UI](docs/_static/spc0.png)
+![SPC UI](docs/_static/spc1.png)
+![SPC UI](docs/_static/spc2.png)
+```
 
-    d. **Inspect Outputs**.  At this point, you can look at the files output by clicking the `files` button to show the file manager. The `output` button will show the redirected output of the executable.  All the files for the case can be zipped up and downloaded by clicking the `download` button.
+---
 
-    e. **View Plots**. Click `plot` to see or define a list of plots.  For each plot, you can view it by clicking the plot button.  You can also see the data behind the plots by clicking the `data` button.  These files are also available in the file manager by clicking `files`.
+## Requirements
 
-## INSTALL PACKAGED APPS
+SPC assumes the following are available on your system:
 
-To install another SPC packaged app, e.g. Mendel's Accountant run the following commands according to the version needed:
+### System prerequisites
+- Python **3.8+**
+- `virtualenv` (or equivalent environment tooling)
+- A compiler toolchain (`gcc` / `clang`)
+- Python development headers (required to build packages such as `psutil`)
+  - Debian/Ubuntu: `python3-dev`
+  - RHEL/CentOS: `python3-devel`
 
-* Mac version:
+### Browser support
+SPC has been tested primarily with **Google Chrome** on Linux and macOS. Other environments may work but are not guaranteed.
 
-    > ./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-darwin-arm64.zip
+---
 
-* Linux 64-bit version:
+## Quickstart
 
-    > ./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-linux-x86_64.zip
+Initialize SPC (installs dependencies and initializes the SPC database):
 
-## QUESTIONS
+```bash
+./spc init
+```
 
-For more info, check out the documentation in the docs folder.  Send questions [Wes Brewer](https://www.ornl.gov/staff-profile/wes-h-brewer).
+Start the web server:
+
+```bash
+./spc run
+```
+
+Open your browser at:
+
+- http://localhost:8580/
+
+> Note: Port can be overridden in `config.py`.
+
+---
+
+## Run the pre-installed example: DNA Analyzer
+
+1. **Activate App**  
+   Navigate to `Apps` → `Installed`.  
+   Click **Activate** for the DNA app, then return to `Activated`.
+
+2. **Enter Parameters**  
+   Open the `dna` app and enter a DNA string (or use the default).  
+   Click `confirm` to write the datafile to disk.
+
+3. **Start Job**  
+   Click `execute` to run the DNA analysis.  
+   SPC will submit the job to the scheduler and redirect to the output view.
+
+4. **Inspect Outputs**  
+   Use `files` to open the file manager.  
+   Use `output` to view redirected executable output.  
+   Use `download` to zip and download all case files.
+
+5. **View Plots**  
+   Click `plot` to define/view plots.  
+   Use `data` to view the plotted data files (also visible via `files`).
+
+---
+
+## Install packaged apps
+
+To install an SPC packaged app (example: Mendel’s Accountant), run one of:
+
+### macOS (Apple Silicon)
+```bash
+./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-darwin-arm64.zip
+```
+
+### Linux (x86_64)
+```bash
+./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-linux-x86_64.zip
+```
+
+---
+
+## Documentation
+
+- Online documentation: http://spc.readthedocs.io
+- Local docs: see the `docs/` directory
+
+---
+
+## Developer setup (minimal)
+
+A lightweight development workflow:
+
+1. Clone the repo and enter it:
+```bash
+git clone https://github.com/whbrewer/spc.git
+cd spc
+```
+
+2. Initialize SPC:
+```bash
+./spc init
+```
+
+3. Run the server:
+```bash
+./spc run
+```
+
+4. Open:
+- http://localhost:8580/
+
+### Suggested additions (optional, if/when present)
+If you add these, document them here:
+- Unit tests: `pytest`
+- Linting: `ruff`
+- Formatting: `black`
+- Type checking: `mypy`
+
+---
+
+## Contributing
+
+Contributions are welcome.
+
+Suggested workflow:
+1. Fork the repo
+2. Create a feature branch
+3. Make changes with clear commit messages
+4. Add/update documentation where needed
+5. Open a Pull Request
+
+If you plan to contribute a new packaged app/plugin, please include:
+- A small example input deck
+- A minimal runnable executable or script stub
+- One representative plot/output artifact
+
+---
+
+## Citation
+
+If you use SPC in academic work, please cite:
+
+> W. Brewer, W. Scott, and J. Sanford, “An Integrated Cloud Platform for Rapid Interface Generation, Job Scheduling, Monitoring, Plotting, and Case Management of Scientific Applications”, Proc. of the International Conference on Cloud Computing Research and Innovation, Singapore, IEEE Press, October 2015, pp. 156–165. DOI: 10.1109/ICCCRI.2015.24
+
+---
+
+## Support / Questions
+
+For questions, contact [Wes Brewer](https://www.ornl.gov/staff-profile/wes-h-brewer).
