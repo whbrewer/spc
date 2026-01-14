@@ -24,7 +24,7 @@ import os
 import sys
 
 def main():
-    repo_root = {repo_root!r}
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     os.chdir(repo_root)
     python_exe = os.path.join(repo_root, 'venv', 'bin', 'python')
     main_py = os.path.join(repo_root, 'src', 'main.py')
@@ -56,5 +56,6 @@ elif sys.argv[1] == "init":
     if user_input.lower() == 'y':
         setup_virtualenv() 
         pass_to_cli(['init']) 
+        print("TIP: run `source venv/bin/activate` so you can run `spc` from anywhere")
 else:
     pass_to_cli(sys.argv[1:])
