@@ -54,7 +54,7 @@ To install another SPC packaged app, e.g. Mendel's Accountant run the following 
 
 ## UPDATING SPC
 
-To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc3.git"
+To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc.git"
 you can just do "git pull" within the spc directory.  If the database schema changes from the version you have, you may need to run "./spc migrate" to migrate the new changes to the database.  However, DB schema changes do not occur often, and should be annotated in the commits.
 
 For more information, see user's manual at http://spc.readthedocs.io
