@@ -119,8 +119,10 @@ function get_log() {
                 throw "Unexpected status " + xhr.status;
             }
 
-            if (first_load && data.length > load)
-                throw "Server's response was too long";
+            if (first_load && data.length > load) {
+                var clip_start = data.indexOf("\n", data.length - load);
+                data = clip_start >= 0 ? data.substring(clip_start + 1) : data.slice(-load);
+            }
 
             var added = false;
 
