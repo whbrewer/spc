@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __future__ import absolute_import
-import sys, os, shutil, time
+import sys, os, shutil, time, tempfile
 import xml.etree.ElementTree as ET
 import re, json, hashlib, zipfile
 from builtins import input
@@ -364,36 +364,37 @@ def main():
             else:
                 save_path = sys.argv[2]
 
-            app_dir_name = os.path.basename(save_path).split('.')[0]
-            if os.path.isfile(app_dir_name):
-                print('ERROR: app directory exists already. Please remove first.')
-                sys.exit()
-            # don't overwrite another directory if it exists
-            # instead rename old redirectory with timestamp
-            if os.path.isfile(app_dir_name):
-                timestr = time.strftime("%Y%m%d-%H%M%S")
-                shutil.move(app_dir_name, app_dir_name+"."+timestr)
-
-            # unzip file
-            fh = open(save_path, 'rb')
-            z = zipfile.ZipFile(fh)
-            z.extractall()
-            # depending on how file was zipped, the extracted directory
-            # may be different than the zip filename, so update the app_dir_name
-            # to the extracted filename
-            app_dir_name = z.namelist()[0]
-            fh.close()
+            # unzip file into a temp directory to avoid cluttering cwd
+            extract_dir = tempfile.mkdtemp(prefix="spc-install-")
+            with zipfile.ZipFile(save_path) as z:
+                z.extractall(extract_dir)
 
             # delete downloaded zip file
             if re.search(r'http[s]://.*$', sys.argv[2]):
                 os.unlink(save_path)
 
             # delete __MACOSX dir if exists
-            if os.path.exists("__MACOSX"):
-                shutil.rmtree("__MACOSX")
+            macosx_dir = os.path.join(extract_dir, "__MACOSX")
+            if os.path.exists(macosx_dir):
+                shutil.rmtree(macosx_dir)
+
+            # locate spc.json (support flat or nested archives)
+            app_root = None
+            if os.path.isfile(os.path.join(extract_dir, "spc.json")):
+                app_root = extract_dir
+            else:
+                for root, _, files in os.walk(extract_dir):
+                    if "spc.json" in files:
+                        app_root = root
+                        break
+
+            if not app_root:
+                shutil.rmtree(extract_dir)
+                print('ERROR: spc.json not found in archive')
+                sys.exit()
 
             # read the json app config file and insert info into db
-            path = app_dir_name + os.sep + "spc.json"
+            path = os.path.join(app_root, "spc.json")
             with open(path,'r') as f:
                 data = f.read()
             parsed = json.loads(data)
@@ -402,8 +403,20 @@ def main():
             app = parsed['name']
             app_path = apprw.apps_dir + os.sep + app
 
-            # move directory to apps folder
-            shutil.move(app_dir_name,app_path)
+            if os.path.exists(app_path):
+                print('ERROR: app directory exists already. Please remove first.')
+                shutil.rmtree(extract_dir)
+                sys.exit()
+
+            # move app files to apps folder
+            if app_root == extract_dir:
+                os.makedirs(app_path)
+                for name in os.listdir(extract_dir):
+                    shutil.move(os.path.join(extract_dir, name), app_path)
+                shutil.rmtree(extract_dir)
+            else:
+                shutil.move(app_root, app_path)
+                shutil.rmtree(extract_dir)
 
             # connect to db
             dal = migrate.dal(uri=config.uri)
