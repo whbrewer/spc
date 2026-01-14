@@ -52,13 +52,6 @@ To install another SPC packaged app, e.g. Mendel's Accountant run the following 
 
     > ./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-linux-x86_64.zip
 
-## UPDATING SPC
-
-To update SPC: if you got the code using "git clone https://github.com/whbrewer/spc.git"
-you can just do "git pull" within the spc directory.  If the database schema changes from the version you have, you may need to run "./spc migrate" to migrate the new changes to the database.  However, DB schema changes do not occur often, and should be annotated in the commits.
-
-For more information, see user's manual at http://spc.readthedocs.io
-
 ## QUESTIONS
 
 For more info, check out the documentation in the docs folder.  Send questions [Wes Brewer](https://www.ornl.gov/staff-profile/wes-h-brewer).
