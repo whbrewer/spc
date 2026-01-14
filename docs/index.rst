@@ -160,11 +160,13 @@ User authentication can be enabled or disabled by setting the auth value in `con
 Web Server
 --------------
 
-A number of different web servers can be used withing SPC.  By default, the CherryPy web server will be setup.  However, there are development servers, such as ``wsgiref``, and also a number of multi-threaded servers, such as: cherrypy, bjoern, tornado, rocket, gae, etc.  The web server can easily be changed by changing the server variable in config.py, e.g.::
-
-    server = 'rocket'
-
-Of course, this assumes that the web server has been installed on the local machine (e.g. ``sudo pip install rocket``).
+SPC now runs as a Flask application. By default, ``spc run`` starts the
+Flask development server on the configured port. For production, set
+``server = 'uwsgi'`` in ``config.py`` to launch uWSGI with the bundled
+configuration in ``etc/uwsgi.ini``. If you want to use another WSGI
+server, point it at the Flask app (``spc.main:app``) and keep the
+``server`` option set to any value other than ``uwsgi`` so ``spc run``
+uses the Flask dev server.
 
 **NGINX & uWSGI**
 
@@ -207,7 +209,8 @@ All the config.py options are listed here:
 * **np** - (required) The number of jobs to schedule simultaneously
 * **port** - (required) The port for the web server to listen on, e.g. ``port = 8580``
 * **remote_worker_url** - (optional) If you want to run the simulation on another SPC worker node at a different URL, specify it here.
-* **server** - (required) Can be either 'uwsgi', 'wsgiref', 'cherrypy', 'rocket', 'gae', or any other servers supported by Bottle
+* **server** - (required) Set to ``uwsgi`` to run behind uWSGI. Any other
+  value will run SPC using the Flask development server via ``spc run``.
 * **submit_type** - (optional) if this is set to either ``verify`` or ``noverify``, when the user clicks the green "Continue" button, the job will start directly, without echoing back the run parameters.  This can be used in cases where additional run-time options are not needed, such as specifying the number of processors.  For instantaneous applications with few parameters, it is recommended to use this setting.  For simulations that require a wall-time or use multiple processes, this is not recommended.  If this setting is not set, it will default to ``verify``.
 * **tab_title** - (optional) This is the title to use in the browser tab
 * **time_zone** - (optional) Used to show job submit date/time in local timezone.  This is needed in cases where Linux system shows time in UTC format.  One of the supported time zones, e.g. ``time_zone = "US/Eastern"``
