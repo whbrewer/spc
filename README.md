@@ -44,9 +44,9 @@ Disclaimer: SPC has been tested primarily with Google Chrome browser and Python 
 
 To install another SPC packaged app, e.g. Mendel's Accountant run the following commands according to the version needed:
 
-* Mac OS X version:
+* Mac version:
 
-    > ./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-darwin-x86_64.zip
+    > ./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-darwin-arm64.zip
 
 * Linux 64-bit version:
 

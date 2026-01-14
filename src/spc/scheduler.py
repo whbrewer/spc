@@ -5,6 +5,7 @@ import signal
 import subprocess
 import threading
 import time
+import multiprocessing
 from multiprocessing import Process, BoundedSemaphore, Lock, Manager
 
 from pydal import DAL
@@ -16,11 +17,13 @@ STATE_RUN = 'R'
 STATE_QUEUED = 'Q'
 STATE_COMPLETED = 'C'
 STATE_STOPPED = 'X'
+myjobs = {}
 
 class Scheduler(object):
     """multi-process scheduler"""
 
     def __init__(self):
+        self.mp_ctx = self._get_mp_context()
         # if any jobs marked in run state when scheduler starts
         # replace their state with X to mark that they have been shutdown
         db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
@@ -28,8 +31,8 @@ class Scheduler(object):
         myset.update(state=STATE_STOPPED)
         db.commit()
         try:
-            self.sem = BoundedSemaphore(config.np)
-            self.mutex = Lock()
+            self.sem = self.mp_ctx.BoundedSemaphore(config.np)
+            self.mutex = self.mp_ctx.Lock()
         except (OSError, PermissionError):
             self.sem = threading.BoundedSemaphore(config.np)
             self.mutex = threading.Lock()
@@ -41,14 +44,17 @@ class Scheduler(object):
 
     def poll(self):
         """start polling thread which checks queue status every second"""
+        manager = self._create_manager()
+        if manager is None:
+            print("WARN: scheduler disabled (unable to start Manager).")
+            return
+        global myjobs
+        myjobs = manager.dict()
         t = threading.Thread(target = self.assignTask)
         t.daemon = True
         t.start()
 
     def assignTask(self):
-        global myjobs
-        manager = Manager()
-        myjobs = manager.dict()
         while(True):
             self.stop_expired_jobs()
             j = self.qfront()
@@ -66,6 +72,20 @@ class Scheduler(object):
         db.commit()
         db.close()
         return str(jid)
+
+    def _create_manager(self):
+        """Create a multiprocessing manager in a macOS-safe way."""
+        try:
+            return self.mp_ctx.Manager()
+        except (ValueError, OSError, PermissionError, RuntimeError):
+            return None
+
+    def _get_mp_context(self):
+        """Prefer fork when available to avoid spawn re-import issues."""
+        try:
+            return multiprocessing.get_context("fork")
+        except (ValueError, RuntimeError):
+            return multiprocessing.get_context()
 
     def qfront(self):
         """pop the top job off of the queue that is in a queued 'Q' state"""
@@ -115,7 +135,7 @@ class Scheduler(object):
         # if number procs available fork new process with command
         for i in range(np):
             self.sem.acquire()
-        p = Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,myjobs))
+        p = self.mp_ctx.Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,myjobs))
         p.start()
         for i in range(np):
             self.sem.release()

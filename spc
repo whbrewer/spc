@@ -8,7 +8,7 @@ from builtins import input
 
 
 def setup_virtualenv():
-    os.system('virtualenv venv')
+    os.system('python3 -m venv venv')
     os.system('./venv/bin/pip install -r ./requirements.txt')
 
 def pass_to_cli(arg):
