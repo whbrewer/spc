@@ -1,5 +1,9 @@
 # SPC Release Notes
 
+## 1/13/26
+
+Update SPC to Python 3. Update Bottle web server to Flask, update gluino data access layer (DAL) to pyDAL, update boto to boto3 for AWS support. 
+
 ## 8/29/17
 
 If you want to run `./spc test` to test routes, need to first run `./spc requirements` on existing installation to update the 3rd party dependencies.
