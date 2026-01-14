@@ -51,11 +51,9 @@ Other applications may be supported with additional pre-/post-processing.
 
 ## Screenshots
 
-```md
 ![SPC UI](docs/_static/spc0.png)
 ![SPC UI](docs/_static/spc1.png)
 ![SPC UI](docs/_static/spc2.png)
-```
 
 ---
 
