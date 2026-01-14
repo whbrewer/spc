@@ -47,16 +47,16 @@ function toggleAddInstance() {
     <th>key</th>
 </tr>
 </thead>
-%if creds:
-    %for c in creds:
+{% if creds %}
+    {% for c in creds %}
         <tr>
             <td><a onclick="delCreds({{c['id']}})"><span class="glyphicon glyphicon-remove editable" style="display:none"></span></a></td>
             <td>{{c['account_id']}}</td>
             <td>{{c['secret']}}</td>
             <td>{{c['key']}}</td>
         </tr>
-    %endfor
-%else:
+    {% endfor %}
+{% else %}
     <form method="POST" action="/aws/creds">
     <tr> <td> </td>
          <td><input class="form-control" type="text" name="account_id" size=12></td>
@@ -64,7 +64,7 @@ function toggleAddInstance() {
          <td><input class="form-control" type="text" name="key" size=20></td>
          <td><input class="form-control" type="submit" class="btn btn-primary" value="Add"></td></tr>
     </form>
-%endif
+{% endif %}
 </table>
 </fieldset>
 
@@ -78,7 +78,7 @@ function toggleAddInstance() {
 <table class="table table-striped">
     <thead><tr><th></th><th>Intance id</th><th>Type</th><th>Region</th><th>Rate</th><th>Actions</th></thead>
     <tbody>
-    %for i in instances:
+    {% for i in instances %}
         <tr>
             <td><button class="btn btn-link editable" style="display:none" onclick="delInstance({{i['id']}})"><span class="glyphicon glyphicon-remove"></span></button></td>
             <td>{{i['instance']}}</td>
@@ -98,7 +98,7 @@ function toggleAddInstance() {
                 <!--<a href="/aws/stop/{{i['id']}}">stop</a> -->
             </td>
         </tr>
-    %endfor
+    {% endfor %}
 
     <tr class="editable" style="display:none">
 

@@ -4,10 +4,10 @@
 <head>
     {% include 'header.j2' %}
 
-    %if oauth_client_id is defined:
+    {% if oauth_client_id is defined %}
         <script src="https://apis.google.com/js/platform.js" async defer></script>
         <meta name="google-signin-client_id" content="{{oauth_client_id}}">
-    %endif
+    {% endif %}
 
     <script>
     function onSignIn(googleUser) {
@@ -79,7 +79,7 @@
     <p class="text-center">Don't have an account?
     <a class="btn btn-link" href="/register">Sign up</a></p>
 
-    %if oauth_client_id is defined:
+    {% if oauth_client_id is defined %}
 
        <center>
 
@@ -92,7 +92,7 @@
 
        </center>
 
-    %endif
+    {% endif %}
 
 </body>
 </html>

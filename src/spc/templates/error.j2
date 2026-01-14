@@ -5,9 +5,9 @@
 <h2> ERROR: {{err}} </h2>
 </div>
 
-%if traceback is defined:
+{% if traceback is defined %}
 <pre>
 {{ traceback|safe }}
 </pre>
-%endif
+{% endif %}
 {% endblock %}

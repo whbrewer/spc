@@ -120,27 +120,27 @@
 	{# removed python import #}
 	{% set binary_extensions = ['.bz2', '.gz', '.xz', '.zip', '.xls', '.xlsx', '.doc', '.docx', '.ppt', '.pptx'] %}
 	{% set image_extensions = ['.png', '.gif', '.jpg', '.svg'] %}
-	% for file in files:
+	{% for file in files %}
 		<tr>
 		<td><input type="checkbox" name="selected_files" value="{{file}}:" onchange="toggle_delete_button_visibility()"></td>
 		<td>
 		{% set ext = os.path.splitext(file)[1] %}
 		{% set stat = os.stat(os.path.join(path,file)) %}
-		% if os.path.isdir(os.path.join(path,file)):
+		{% if os.path.isdir(os.path.join(path,file)) %}
 			<a href="/files?app={{app}}&cid={{cid}}&path={{path}}/{{file}}">{{file}}/</a>
-		% elif ext in binary_extensions:
+		{% elif ext in binary_extensions %}
 			<a href="{{path}}/{{file}}">{{file}}</a>
-		% elif ext in image_extensions:
+		{% elif ext in image_extensions %}
 			<a href="{{path}}/{{file}}"><img src="{{path}}/{{file}}" width="100"><br> {{file}} </a> </td>
-		% else:
+		{% else %}
 			<a href="/more?app={{app}}&cid={{cid}}&filepath={{path}}/{{file}}">{{file}}</a>
-		%endif
+		{% endif %}
 		</td>
 		<td>{{stat.st_size}} </td>
 		<td>{{time.strftime("%c",time.localtime(stat.st_mtime))}}</td>
 		<!-- <td><span class="glyphicon glyphicon-remove"></span></td> -->
 		</tr>
-	%endfor
+	{% endfor %}
 </table>
 
 <!-- Delete Modal -->

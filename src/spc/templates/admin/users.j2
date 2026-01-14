@@ -17,7 +17,7 @@
 </tr>
 </thead>
 <tbody>
-%for row in rows:
+{% for row in rows %}
   <tr>
      <td>{{row['user']}}</td>
      <td>{{row['email']}}</td>
@@ -32,7 +32,7 @@
           <!-- <input class="btn btn-danger" type="submit" value="delete"></form> -->
       </td>
   </tr>
-%endfor
+{% endfor %}
 </tbody>
 </table>
 

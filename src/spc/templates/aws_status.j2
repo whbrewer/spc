@@ -29,18 +29,18 @@
 <h1>Status of EC2 machine</h1>
 
 <pre>
-%for key,value in astatus.items():
+{% for key,value in astatus.items() %}
     {{key}}: {{value}}
-%endfor
+{% endfor %}
 </pre>
 
 <fieldset style="text-align:center">
 
-%if astatus['state']=="stopped":
+{% if astatus['state']=="stopped" %}
 
     <button class="btn btn-success" onclick="start_ec2()" id="start_button"> <span class="glyphicon glyphicon-play"></span> start machine</button>
 
-%elif astatus['state']=="running":
+{% elif astatus['state']=="running" %}
 
     <!-- <div class="row">
         <div class="col-xs-12 col-sm-offset-2 col-sm-8">
@@ -63,9 +63,9 @@
 
     <p> LINK: <a target="_blank" href="http://{{astatus['public_dns_name']}}:{{port}}/">http://{{astatus['public_dns_name']}}:{{port}}</a> <span class="glyphicon glyphicon-new-window"></span></p>
 
-%else:
+{% else %}
     <a class="btn btn-default span"     href="javascript:window.location.reload(true)"><span style="font-size: 100%" class="glyphicon glyphicon-refresh"></span> </a>
-%endif
+{% endif %}
 
 <img src="/static/images/loading.gif" alt="loading..." id="loading-indicator" style="display:none" />
 

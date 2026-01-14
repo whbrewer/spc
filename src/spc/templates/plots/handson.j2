@@ -10,13 +10,13 @@
 
     var options = {
         data: data, 
-        % if options:
+        {% if options %}
             {{ options|safe }}
-        % else:
+        {% else %}
             rowHeaders: true, 
             colHeaders: true, 
             contextMenu: true 
-        %endif
+        {% endif %}
     }
 
     var hot = new Handsontable(container, options);

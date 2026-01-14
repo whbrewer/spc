@@ -51,14 +51,9 @@ function endis() {
 </ol>
 
 <div class="row">
-
   <div class="col-xs-12 col-sm-10"><h1 style="vertical-align:top">Plot definitions for {{app}} app</h1></div>
-
   <div class="col-xs-12 col-sm-2"><button type="button" class="btn btn-default pull-right" data-toggle="collapse" data-target="#addplot"><span class="glyphicon glyphicon-plus"></span> Add Plot</button></div>
-
 </div>
-
-{% endblock %}
 
 <div class="container-fluid">
 
@@ -132,7 +127,7 @@ function endis() {
 </tr>
 </thead>
 {% set i = 0 %}
-% for row in rows:
+{% for row in rows %}
 {% set i = i + 1 %}
 <tr>
     <!-- <td>{{row['plots']['id']}}</td> -->
@@ -154,7 +149,7 @@ function endis() {
         </div>
     </td>
 </tr>
-%endfor
+{% endfor %}
 </table>
 
 <script>
@@ -166,3 +161,4 @@ $(document).ready(function() {
     });
 });
 </script>
+{% endblock %}

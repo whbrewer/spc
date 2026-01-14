@@ -16,9 +16,26 @@ from .templating import template
 
 routes = Blueprint('app_routes', __name__)
 
+_INPUT_FORMATS = set(['namelist', 'ini', 'xml', 'json', 'yaml', 'toml'])
+_DEFAULT_INPUT_FORMAT = 'ini'
+
 def bind(app):
     global root
     root = ap.Namespace(**app)
+
+def normalize_input_format(value, appname=None, default=None):
+    if value:
+        value = value.lower()
+    if appname and (not value or value not in _INPUT_FORMATS):
+        try:
+            app_value = root.myapps[appname].input_format
+        except:
+            app_value = None
+        if app_value:
+            value = app_value.lower()
+    if default and (not value or value not in _INPUT_FORMATS):
+        value = default
+    return value
 
 @routes.get('/<app>')
 def show_app(app):
@@ -26,6 +43,8 @@ def show_app(app):
     user = root.authorized()
     root.set_active(app)
     # parameters for return template
+    if app not in root.myapps:
+        root.load_apps()
     if app not in root.myapps:
         return template('error', err="app %s is not installed" % (app))
 
@@ -110,7 +129,7 @@ def app_save(appid):
     root.authorized()
     app = request.forms.app
     lang = request.forms.language
-    info = request.forms.input_format
+    info = normalize_input_format(request.forms.input_format)
     category = request.forms.category
     preprocess = request.forms.preprocess
     postprocess = request.forms.postprocess
@@ -210,19 +229,25 @@ def addapp():
     if user != 'admin':
         return template('error', err="must be admin to add app")
     appname = request.forms.appname
-    input_format = request.forms.input_format
+    input_format = normalize_input_format(request.forms.input_format, default=_DEFAULT_INPUT_FORMAT)
     # ask for app name
-    category = request.forms.category
-    language = request.forms.language
-    description = request.forms.description
-    command = request.forms.command
-    preprocess = request.forms.preprocess
-    postprocess = request.forms.postprocess
+    category = request.forms.get('category')
+    language = request.forms.get('language')
+    description = request.forms.get('description')
+    command = request.forms.get('command')
+    preprocess = request.forms.get('preprocess')
+    postprocess = request.forms.get('postprocess')
     # put in db
     a = apprw.App()
     #print "user:",user
     a.create(appname, description, category, language,
              input_format, command, preprocess, postprocess)
+    if not apps(name=appname):
+        apps.insert(name=appname, description=description, category=category,
+                    language=language, input_format=input_format,
+                    command=command, preprocess=preprocess,
+                    postprocess=postprocess)
+        db.commit()
     # load_apps() needs to be called here in case a user wants to delete
     # this app just after it has been created... it is called again after
     # the user uploads a sample input file
@@ -284,7 +309,7 @@ def appconfig_exe(step="upload"):
         return template('appconfig/exe_upload', params)
     elif step == "test":
         appname    = request.forms.appname
-        upload     = request.files.upload
+        upload     = request.files.get('upload')
         if not upload:
             return template('appconfig/error',
                    err="no file selected. press back button and try again")
@@ -379,24 +404,28 @@ def edit_inputs(step):
     # upload zip file and return a text copy of the input file
     if step == "upload":
         appname = request.forms.appname
-        input_format = request.forms.input_format
+        input_format = normalize_input_format(request.forms.input_format, appname=appname,
+                                              default=_DEFAULT_INPUT_FORMAT)
         params = {'appname': appname, 'input_format': input_format}
         return template('appconfig/inputs_upload', params)
     if step == "parse":
-        input_format = request.forms.input_format
-        appname    = request.forms.appname
-        upload     = request.files.upload
+        appname = request.forms.get('appname') or request.forms.get('app')
+        input_format = normalize_input_format(request.forms.input_format, appname=appname,
+                                              default=_DEFAULT_INPUT_FORMAT)
+        upload = request.files.get('upload')
         if not upload:
             return template('appconfig/error',
                    err="no file selected. press back button and try again")
         name, ext = os.path.splitext(upload.filename)
         if ext not in ('.in', '.ini', '.xml', '.json', '.yaml', '.toml'):
             return 'ERROR: File extension not allowed.'
+        if not appname:
+            appname = name
         try:
-            save_path_dir = os.path.join(apprw.apps_dir, name)
+            save_path_dir = os.path.join(apprw.apps_dir, appname)
             if not os.path.exists(save_path_dir):
                 os.makedirs(save_path_dir)
-            save_path = os.path.join(save_path_dir, name) + ext
+            save_path = os.path.join(save_path_dir, appname) + ext
             if os.path.isfile(save_path):
                 timestr = time.strftime("%Y%m%d-%H%M%S")
                 shutil.move(save_path, save_path+"."+timestr)
@@ -433,8 +462,8 @@ def edit_inputs(step):
             return "ERROR: must be already a file"
     # show parameters with options how to tag and describe each parameter
     elif step == "create_view":
-        input_format = request.forms.input_format
         appname = request.forms.appname
+        input_format = normalize_input_format(request.forms.input_format, appname=appname)
         myapp = root.app_instance(input_format, appname)
         inputs, _, _ = myapp.read_params()
         print("inputs:", inputs)
@@ -451,7 +480,7 @@ def edit_inputs(step):
         keys = request.forms.getlist('keys')
         key_tag = dict(zip(keys, html_tags))
         key_desc = dict(zip(keys, descriptions))
-        input_format = request.forms.input_format
+        input_format = normalize_input_format(request.forms.input_format, appname=appname)
         myapp = root.app_instance(input_format, appname)
         params, _, _ = myapp.read_params()
         if myapp.create_template(html_tags=key_tag, bool_rep=bool_rep, desc=key_desc):

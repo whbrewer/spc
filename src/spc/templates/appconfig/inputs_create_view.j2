@@ -24,25 +24,25 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
     </thead>
     <tbody>
     {# removed python import #}
-    % for key, value in inputs.items():
+    {% for key, value in inputs.items() %}
         <tr>
             <td>{{key}}</td> <td>{{value}}</td>
             <td><select class="form-control" name="html_tags"
                         onchange="add_option_row(this)">
                 {% set vtype = common.type(value) %}
-                % if vtype == "number":
+                {% if vtype == "number" %}
                     <option selected value="number">number
                     <option value="text">text
                     <option value="checkbox">checkbox
-                % elif vtype == "bool":
+                {% elif vtype == "bool" %}
                     <option selected value="checkbox">checkbox
                     <option value="number">number
                     <option value="text">text
-                % else:
+                {% else %}
                     <option selected value="text">text
                     <option value="number">number
                     <option value="checkbox">checkbox
-                %endif
+                {% endif %}
                 <option value="hidden">hidden
                 <option value="select">select
                 <option value="textarea">textarea
@@ -62,7 +62,7 @@ How to represent a true Boolean value (e.g. T, True, true, 1)?
             <input type="hidden" name="input_format" value="{{input_format}}">
             </td>
         </tr>
-    %endfor
+    {% endfor %}
     </tbody>
 </table>
 </form>

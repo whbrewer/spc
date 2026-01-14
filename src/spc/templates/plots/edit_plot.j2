@@ -22,13 +22,13 @@
         <div class="col-md-6">
           <select name="ptype" id="ptype" class="form-control">
             {% set opts = {'flot-scatter':'flot/scatter (line, bar, points)', 'flot-scatter-animated':'flot/scatter animated', 'flot-cat':'flot/categories', 'plotly-hist':'plotly/histogram', 'mpl-line':'matplotlib/line', 'mpl-bar':'matplotlib/bar', 'handson':'handsontable'} %}
-            %for key, value in opts.items():
-              %if key == row['ptype']:
+            {% for key, value in opts.items() %}
+              {% if key == row['ptype'] %}
                 <option selected value="{{key}}">{{value}}
-              %else:
+              {% else %}
                 <option value="{{key}}">{{value}}
-              %endif
-            %endfor
+              {% endif %}
+            {% endfor %}
           </select>
         </div>
     </div>

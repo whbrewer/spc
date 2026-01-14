@@ -24,7 +24,7 @@
 </tr>
 </thead>
 
-%for row in rows:
+{% for row in rows %}
   <tr>
      <td><samp>{{row['jobs.cid']}}</samp></td>
      <td><samp>{{row['users.user']}}</samp></td>
@@ -34,7 +34,7 @@
          <a href="/case?cid={{row['users.user']}}/{{row['jobs.cid']}}&app={{row['jobs.app']}}&jid={{row['jobs.id']}}"></a>
      </td>
   </tr>
-%endfor
+{% endfor %}
 </table>
 
 <form method="get" action="/jobs/shared">

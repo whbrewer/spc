@@ -13,14 +13,13 @@
 
 <script>
 $(document).ready(function() {
+   set_status_error(["in", "tp", "bn", "pl"]);
    jQuery.ajax({
       type: "get",
       data: { app: '{{app}}' },
       dataType: "json",
-      contentType: "application/json; charset=utf-8",
       url:  "/appconfig/status",
-      complete: function(xhr){
-        var response = JSON.parse(xhr.responseText);
+      success: function(response){
         toggle(response.command,"db")
         toggle(response.inputs,"in")
         toggle(response.template,"tp")
@@ -29,6 +28,12 @@ $(document).ready(function() {
       }
    })
 })
+
+function set_status_error(ids) {
+   for (var i = 0; i < ids.length; i++) {
+      toggle(0, ids[i]);
+   }
+}
 
 function toggle(cmd,id) {
    if (cmd == 1) {

@@ -4,9 +4,9 @@
 <h1>{{user}}'s account</h1>
 <br>
 
-%if user == "guest":
+{% if user == "guest" %}
 <p>Guest account password can only be changed by the administrator.</p>
-%else:
+{% else %}
 <fieldset>
 
     <legend>Change Password</legend>
@@ -38,7 +38,7 @@
     </form>
 
 </fieldset>
-%endif
+{% endif %}
 
 <fieldset>
 <legend>Upload data to account</legend>

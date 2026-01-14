@@ -1,5 +1,5 @@
-%if progress is defined:
-	%if progress > 0:
+{% if progress is defined %}
+	{% if progress > 0 %}
 		<div class="container-fluid">
 			<div class="progress">
 				<div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}"
@@ -8,8 +8,8 @@
 				</div>
 			</div>
 		</div>
-	%endif
-%endif
+	{% endif %}
+{% endif %}
 
 <!-- comment out pre statements if using websocket rather than ajax -->
 <div id="mydiv">

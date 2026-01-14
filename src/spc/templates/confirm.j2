@@ -19,11 +19,11 @@
             </button>
         </div>
 
-        %if np > 1:
+        {% if np > 1 %}
             <input type="hidden" name="np" value="{{np}}">
-        %else:
+        {% else %}
             <input type="hidden" name="np" value="1">
-        %endif
+        {% endif %}
 
         <label for="walltime" class="control-label col-xs-12 col-sm-2">Max run time:</label>
         <div class="col-xs-12 col-sm-2">
@@ -45,11 +45,11 @@
 
     <input type="hidden" name="app" value="{{app}}">
     <input type="hidden" name="cid" value="{{cid}}">
-    %if desc is defined:
+    {% if desc is defined %}
     	<input type="hidden" name="desc" value="{{desc}}">
-    %else:
+    {% else %}
     	<input type="hidden" name="desc" value="None">
-    %endif
+    {% endif %}
 
 <pre>
 {{ inputs|safe }}

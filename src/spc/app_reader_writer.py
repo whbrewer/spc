@@ -402,7 +402,7 @@ class XML(App):
         # but needs to be included in the future
         for section in root:
             blockorder += [ section.tag ]
-            for child in section.getchildren():
+            for child in list(section):
                 try:
                     params[child.tag] = child.text
                     blockmap.setdefault(section.tag,[]).append(child.tag)
@@ -546,7 +546,7 @@ class YAML(App):
         # read file
         with open(fn,'r') as f: data = f.read()
         # parse data
-        parsed = yaml.load(data)
+        parsed = yaml.safe_load(data)
 
         params = {}
         blockmap = {}
@@ -562,6 +562,7 @@ class YAML(App):
             #print section, parsed[section] #, len(parsed[section])
             # value is a dict
             if type(parsed[section]) == type({}):
+                blockorder += [ section ]
                 for option in parsed[section]:
                     try:
                         params[option] = parsed[section][option]
@@ -573,9 +574,9 @@ class YAML(App):
                         params[option] = None
 
             # value is a list
-            if type(parsed[section]) == type([]):
+            elif type(parsed[section]) == type([]):
+                blockorder += [ section ]
                 for item in parsed[section]:
-                    blockorder += [ section ]
                     for option in item:
                         try:
                             blockmap.setdefault(section,[]).append(option)

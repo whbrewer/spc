@@ -101,13 +101,11 @@ function ddef() {
     <input type="hidden" name="pltid" value="{{pltid}}">
     <input type="hidden" name="app" value="{{app}}">
 </form>
-
-{% endblock %}
 </div>
 
 <table class="table table-striped">
     <thead><tr><th>Label</th><th>Filename</th><th>Columns</th><th>Line range</th><th>Data definition (JSON)</th><th>actions</th></tr></thead>
-    %for row in rows:
+    {% for row in rows %}
     <tr>
         {% set url = "/plots/"+str(pltid)+"/datasources/"+str(row['id'])+"?app="+app %}
         <td class="datasource">{{row['label']}} <a href="{{url}}"></a></td>
@@ -127,7 +125,7 @@ function ddef() {
             </form>
         </td>
     </tr>
-    %endfor
+    {% endfor %}
 </table>
 
 <script>
@@ -139,3 +137,4 @@ $(document).ready(function() {
     });
 });
 </script>
+{% endblock %}

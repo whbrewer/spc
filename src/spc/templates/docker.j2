@@ -7,7 +7,7 @@
 
 <table class="table table-striped">
 <thead><tr><th>CONTAINER ID</th><th>IMAGE</th><th>COMMAND</th><th>CREATED</th><th>STATUS</th><th>NAMES</th><th>ACTIONS</th></tr></thead>
-% for c in containers:
+{% for c in containers %}
     <tr>
         <!-- <td>{{c}}</td> -->
         <td>{{c['Id'][:12]}}</td>
@@ -17,18 +17,18 @@
         <td>{{c['Status']}}</td>
         <!-- <td>{{c['Ports']}}</td> -->
         <td>
-        % for n in c['Names']:
+        {% for n in c['Names'] %}
             {{n[1:]}}
-        %endfor
+        {% endfor %}
         </td>
         <td>
-        % if re.search("Exited", c['Status']) or re.search("Created", c['Status']):
+        {% if re.search("Exited", c['Status']) or re.search("Created", c['Status']) %}
             <a href="/docker/start/{{c['Id'][:12]}}"><span style="color:#080" class="glyphicon glyphicon-play"></span></a>&nbsp;&nbsp;&nbsp; <a href="/docker/remove/{{c['Id'][:12]}}"><span style="color:#d9302c" class="glyphicon glyphicon-remove-circle"></span></a>
-        % else:
+        {% else %}
             <a href="/docker/stop/{{c['Id'][:12]}}"><span style="color:#d9302c" class="glyphicon glyphicon-stop"></span></a>
-        %endif
+        {% endif %}
     </tr>
-%endfor
+{% endfor %}
 </table>
 
 <h2>Images</h2>
@@ -36,8 +36,8 @@
 <!--  % def sha(x): x.split(":")[1] -->
 <table class="table table-striped">
     <thead><tr><th>REPOSITORY</th><th>IMAGE ID</th><th>CREATED</th><th>SIZE</th><th>ACTIONS</th></tr></thead>
-    % for i in images:
-        % for t in i['RepoTags']:
+    {% for i in images %}
+        {% for t in i['RepoTags'] %}
             <tr>
                 <td>{{t}}</td>
                 {% set image_id = i['Id'].split(':')[1] %}
@@ -49,12 +49,12 @@
                     <!-- <a href="/docker/remove_image/{{t}}"><span class="glyphicon glyphicon-remove-circle"></span></a> -->
                 </td>
             </tr>
-        %endfor
-    %endfor
+        {% endfor %}
+    {% endfor %}
 
 </table>
 
-% for i in images:
+{% for i in images %}
     {% set image_id = i['Id'].split(':')[1] %}
     <div class="modal fade" id="{{ image_id }}" tabindex="-1" role="dialog">
       <div class="modal-dialog">
@@ -86,5 +86,5 @@
       </div>
     </div>
 
-%endfor
+{% endfor %}
 {% endblock %}

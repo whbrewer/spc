@@ -32,13 +32,13 @@
     </form>
   </div>
 
-  %if configurable:
+  {% if configurable %}
   <div class="xs-hidden col-md-4">
     <a href="/addapp" class="btn btn-primary">
       <span class="glyphicon glyphicon-plus"></span> Add
     </a>
   </div>
-  %endif
+  {% endif %}
 </div>
 
 <div style="height:5px"></div>
@@ -50,24 +50,24 @@
 
   <div id="mypanel" class="panel-group">
     <div class="row">
-      % for row in rows:
+      {% for row in rows %}
         <div class="panel panel-info">
           <div class="panel-heading"><h2>{{row['name']}}</h2></div>
           <div class="panel-body"><h4>{{row['description']}}</h4></div>
           <div class="panel-footer">category: {{row['category']}}</div>
 
-          % if row['id'] in activated:
+          {% if row['id'] in activated %}
             <button type="button" class="btn btn-info" onclick="removeapp('{{row['name']}}')">De-activate</button>
-          % else:
+          {% else %}
             <button type="button" class="btn btn-success" onclick="useapp('{{row['name']}}')">Activate</button>
-          %endif
+          {% endif %}
 
-          %if configurable:
+          {% if configurable %}
             <a href="/app/{{row['name']}}"><span style="font-size:150%" class="glyphicon glyphicon-cog pull-right"></span></a>
-          %endif
+          {% endif %}
         </div>
       <br>
-      %endfor
+      {% endfor %}
     </div>
   </div>
 </div>

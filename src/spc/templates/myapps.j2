@@ -45,23 +45,23 @@
 
 <div class="container-fluid">
 
-  % if not rows:
+  {% if not rows %}
     <div data-step="1" data-intro="Welcome to SPC! You'll first need to activate an app to use." class="bs-callout bs-callout-warning">
       <h4>No active apps</h4>
       <p>To activate an app, click "Installed" and activate an app.</p>
     </div>
-  %endif
+  {% endif %}
 
   <div class="list-group">
-  % for row in rows:
-    % if row['apps.name'] == app:
+  {% for row in rows %}
+    {% if row['apps.name'] == app %}
       <a class="list-group-item active" href="/{{row['apps.name']}}">
-    % else:
+    {% else %}
       <a class="list-group-item" href="/{{row['apps.name']}}">
-    %endif
+    {% endif %}
       {{row['apps.name']}}
     </a>
-  %endfor
+  {% endfor %}
   </div>
 
 </div>
