@@ -61,4 +61,4 @@ For more information, see user's manual at http://spc.readthedocs.io
 
 ## QUESTIONS
 
-For more info, check out the documentation in the docs folder.  Send questions to: wes@fluidphysics.com
+For more info, check out the documentation in the docs folder.  Send questions [Wes Brewer](https://www.ornl.gov/staff-profile/wes-h-brewer).
