@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from . import config
 from .common import rand_cid
 from . import main as spc_main

@@ -1,16 +1,7 @@
-from __future__ import print_function
-from __future__ import absolute_import
 import sys, os, shutil, time, tempfile
 import xml.etree.ElementTree as ET
 import re, json, hashlib, zipfile
-from builtins import input
-
-try:
-    # Python 3
-    from urllib.request import urlopen
-except ImportError:
-    # Python 2
-    from urllib2 import urlopen
+from urllib.request import urlopen
 
 if os.path.exists("src/spc/config.py"):
     from . import config

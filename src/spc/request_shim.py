@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-
-
 class RequestShim(object):
     def __init__(self, data):
         self._data = data
