@@ -46,15 +46,11 @@ To install another SPC packaged app, e.g. Mendel's Accountant run the following 
 
 * Mac OS X version:
 
-    > ./spc install https://github.com/whbrewer/fmendel-spc-osx/archive/master.zip
+    > ./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-darwin-x86_64.zip
 
 * Linux 64-bit version:
 
-    > ./spc install https://github.com/whbrewer/fmendel-spc-linux/archive/master.zip
-
-* Linux 32-bit version:
-
-    > ./spc install https://github.com/whbrewer/fmendel-spc-linux-32/archive/master.zip
+    > ./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-linux-x86_64.zip
 
 ## UPDATING SPC
 
