@@ -448,8 +448,8 @@ def main():
                                preprocess=parsed['preprocess'],
                                postprocess=parsed['postprocess'])
 
-            # copy static assets to static/apps/appname directory
-            stat_apps_dir = os.path.join('static', 'apps')
+            # copy static assets to src/spc/static/apps/appname directory
+            stat_apps_dir = os.path.join('src', 'spc', 'static', 'apps')
             if not os.path.exists(stat_apps_dir):
                 os.makedirs(stat_apps_dir)
 
@@ -457,7 +457,7 @@ def main():
             if not os.path.exists(stat_app_dir):
                 os.makedirs(stat_app_dir)
 
-            dst = 'static' + os.sep + 'apps' + os.sep + app
+            dst = os.path.join('src', 'spc', 'static', 'apps', app)
             if 'assets' in parsed.keys():
                 for asset in parsed['assets']:
                     src = os.path.join(apprw.apps_dir, app, asset)
