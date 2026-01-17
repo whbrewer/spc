@@ -167,12 +167,27 @@ cd spc
 4. Open:
 - http://localhost:8580/
 
-### Suggested additions (optional, if/when present)
-If you add these, document them here:
-- Unit tests: `pytest`
-- Linting: `ruff`
-- Formatting: `black`
-- Type checking: `mypy`
+### Running tests
+
+Tests use pytest and run against a temporary database (no server required):
+
+```bash
+# Run all tests
+./venv/bin/pytest tests/ -v
+
+# Run a single test file
+./venv/bin/pytest tests/test_login.py -v
+
+# Run a single test
+./venv/bin/pytest tests/test_login.py::TestLogin::test_login_valid_credentials -v
+```
+
+Test coverage includes:
+- Login, registration, and authentication routes
+- App display, parameter submission, and job execution
+- Admin routes and app configuration
+- Job scheduler operations
+- Input file format parsers (INI, JSON, YAML, Namelist)
 
 ---
 

@@ -111,9 +111,16 @@ def post_login():
     if not config.auth:
         return "ERROR: authorization disabled. Change auth setting in config.py to enable"
 
-    row = users(user=request.forms.get('user').lower())
-    pw = request.forms.passwd
     err = "<p>Login failed: wrong username or password</p>"
+
+    user = request.forms.get('user')
+    pw = request.forms.get('passwd')
+
+    # Handle missing or empty fields
+    if not user or not pw:
+        return err
+
+    row = users(user=user.lower())
     # if password matches, set the USER_ID_SESSION_KEY
     hashpw = _hash_pass(pw)
 
