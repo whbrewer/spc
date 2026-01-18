@@ -96,7 +96,9 @@ Open your browser at:
 
 ## Headless (CLI) mode
 
-You can run SPC without the web UI using the CLI. A typical workflow:
+You can run SPC without the web UI using the CLI.
+
+### Basic CLI commands
 
 ```bash
 # Submit a job
@@ -108,14 +110,69 @@ You can run SPC without the web UI using the CLI. A typical workflow:
 # Check status
 ./spc status <case_id>
 
-# View output
-cat user_data/cli/dna/<case_id>/dna.out
+# List cases
+./spc cases              # all recent cases
+./spc cases dna          # cases for dna app
+./spc cases --state R    # running jobs only
+
+# Share/unshare cases (makes them visible in web UI)
+./spc share <case_id>
+./spc unshare <case_id>
 ```
 
-For an interactive REPL, use:
+### Interactive REPL
+
+For an interactive session, use:
 
 ```bash
 ./spc shell
+```
+
+The shell provides these commands:
+
+```
+apps                          list installed apps
+submit <app> [params]         submit a job (params: key=val,key2=val2)
+status [cid]                  show job status (or all if no cid)
+cases [app] [--all]           list cases
+share <cid>                   share a case (visible in web UI)
+unshare <cid>                 unshare a case
+start                         start the scheduler
+stop                          stop the scheduler
+tail <cid>                    show output of a case
+help                          show help
+quit                          exit the shell
+```
+
+Example REPL session:
+
+```
+$ ./spc shell
+SPC Interactive Shell
+Type 'help' for available commands, 'quit' to exit
+
+spc> apps
+NAME            FORMAT     DESCRIPTION
+-----------------------------------------------------------------
+dna             ini        Compute reverse complement, GC content...
+
+spc> submit dna dna=ATCGATCG
+Submitted: cid=yf00b1 jid=1
+
+spc> start
+Scheduler started
+
+spc> status yf00b1
+Case yf00b1: Done (dna)
+
+spc> tail yf00b1
+string is:  ATCGATCG
+Reverse complement is:  CGATCGAT
+%G+C is: 50.0
+...
+
+spc> quit
+Goodbye!
 ```
 
 ## How the scheduler works
