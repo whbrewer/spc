@@ -257,23 +257,16 @@ def main():
         parser.add_argument("--path", default="/mcp")
         args = parser.parse_args(sys.argv[2:])
 
-        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-        mcp_python = os.path.join(repo_root, "mcp-venv", "bin", "python")
-        if not os.path.exists(mcp_python):
-            print("ERROR: MCP Python not found. Create it with:")
-            print("  brew install python@3.11")
-            print(f"  {os.path.join(repo_root, 'mcp-venv', 'bin', 'python')}")
-            print("  /opt/homebrew/bin/python3.11 -m venv mcp-venv")
-            print("  mcp-venv/bin/pip install git+https://github.com/modelcontextprotocol/python-sdk.git")
-            print("  mcp-venv/bin/pip install -r requirements.txt")
-            sys.exit(1)
+        requested_python = os.environ.get("SPC_MCP_PYTHON")
+        mcp_python = requested_python or sys.executable
 
-        check_cmd = [mcp_python, "-c", "import pytoml, yaml, pydal"]
+        check_cmd = [mcp_python, "-c", "import mcp, pytoml, yaml, pydal"]
         check = subprocess.call(check_cmd)
         if check != 0:
-            print("ERROR: MCP venv missing SPC runtime deps.")
-            print("Run:")
-            print("  mcp-venv/bin/pip install -r requirements.txt")
+            print("ERROR: MCP SDK or SPC runtime deps missing in current Python.")
+            print("Install with:")
+            print("  pip install git+https://github.com/modelcontextprotocol/python-sdk.git")
+            print("  pip install -r requirements.txt")
             sys.exit(1)
 
         env = os.environ.copy()

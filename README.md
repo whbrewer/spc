@@ -120,6 +120,15 @@ You can run SPC without the web UI using the CLI.
 ./spc unshare <case_id>
 ```
 
+### Quick headless demo (DNA)
+
+```bash
+./spc submit dna --params "dna=ATCGATCG"
+./spc scheduler
+./spc status <case_id>
+cat user_data/cli/dna/<case_id>/dna.out
+```
+
 ### MCP server (HTTP)
 
 Run the MCP server for agent tool access:
@@ -128,13 +137,13 @@ Run the MCP server for agent tool access:
 ./spc mcp
 ```
 
-Setup requires the MCP Python SDK and SPC deps in `mcp-venv`:
+Minimum Python version is 3.11 for the MCP SDK.
+
+Install MCP into your current environment:
 
 ```bash
-brew install python@3.11
-/opt/homebrew/bin/python3.11 -m venv mcp-venv
-mcp-venv/bin/pip install git+https://github.com/modelcontextprotocol/python-sdk.git
-mcp-venv/bin/pip install -r requirements.txt
+pip install git+https://github.com/modelcontextprotocol/python-sdk.git
+pip install -r requirements.txt
 ```
 
 Codex config example (`~/.codex/config.toml`):
@@ -142,6 +151,18 @@ Codex config example (`~/.codex/config.toml`):
 ```toml
 [mcpServers.spc]
 url = "http://127.0.0.1:7333/mcp"
+```
+
+List available tools:
+
+```bash
+scripts/mcp_tools.sh
+```
+
+Run the DNA tool over MCP:
+
+```bash
+scripts/mcp_call.sh http://127.0.0.1:7333/mcp run_dna '{"params":{"dna":"ATCGATCG"}}'
 ```
 
 ### Interactive REPL
