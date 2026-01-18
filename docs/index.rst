@@ -24,6 +24,29 @@ This will start the web server listening on port 8580. Then, open your web brows
 
 “spc init” will also install a simple Python demo app called simply “dna”, which asks the user to input a string of DNA, and then will analyze its content.
 
+Headless (CLI) mode
+-------------------
+
+SPC can be run without the web UI using the CLI:
+
+::
+
+    > spc submit dna --params "dna=ATCGATCGATCG" --desc "my experiment"
+    > spc scheduler
+    > spc status <case_id>
+    > cat user_data/cli/dna/<case_id>/dna.out
+
+For an interactive shell:
+
+::
+
+    > spc shell
+    spc> apps
+    spc> submit dna dna=ATCG
+    spc> start
+    spc> status
+    spc> quit
+
 Installing Apps
 ---------------
 
