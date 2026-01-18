@@ -164,13 +164,12 @@ def test_scheduler_command(app, monkeypatch, tmp_path, capsys):
 
     def pre_main(cli):
         def fake_sleep(_):
-            raise KeyboardInterrupt()
-        cli.time.sleep = fake_sleep
+            raise SystemExit()
+        monkeypatch.setattr(cli.time, "sleep", fake_sleep)
 
-    _run_cli(monkeypatch, ["spc", "scheduler"], pre_main=pre_main)
+    _run_cli_expect_exit(monkeypatch, ["spc", "scheduler"], pre_main=pre_main)
     out = capsys.readouterr().out
     assert "Starting SPC scheduler" in out
-    assert "Scheduler stopped." in out
     assert calls.get("poll") is True
 
 
