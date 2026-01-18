@@ -43,6 +43,7 @@ For an interactive shell:
     > spc shell
     spc> apps
     spc> submit dna dna=ATCG
+    spc> submit mendel --params "pop_size=2000,num_generations=1000"
     spc> start
     spc> status
     spc> quit
