@@ -74,6 +74,8 @@ def usage():
     buf += "submit        submit a job (headless mode)\n"
     buf += "status        check job/case status\n"
     buf += "cases         list cases for an app\n"
+    buf += "share         share a case (visible in web UI)\n"
+    buf += "unshare       unshare a case\n"
     buf += "scheduler     run the job scheduler (headless)\n"
     buf += "shell         interactive REPL\n"
     buf += "test          run tests\n"
@@ -339,6 +341,18 @@ examples:
         # Generate case ID
         cid = rand_cid()
 
+        # Create app instance and write parameters
+        input_format = app_row.input_format or 'ini'
+        app_classes = {
+            'namelist': apprw.Namelist,
+            'ini': apprw.INI,
+            'json': apprw.JSON,
+            'yaml': apprw.YAML,
+            'toml': apprw.TOML,
+            'xml': apprw.XML,
+        }
+        myapp = app_classes.get(input_format, apprw.INI)(app_name)
+
         # Parse parameters (seed with app defaults so missing fields aren't "F")
         params = dict(myapp.params) if getattr(myapp, "params", None) else {}
         params.update({'case_id': cid, 'cid': cid, 'user': user})
@@ -347,23 +361,6 @@ examples:
                 if '=' in pair:
                     key, val = pair.split('=', 1)
                     params[key.strip()] = val.strip()
-
-        # Create app instance and write parameters
-        input_format = app_row.input_format or 'ini'
-        if input_format == 'namelist':
-            myapp = apprw.Namelist(app_name)
-        elif input_format == 'ini':
-            myapp = apprw.INI(app_name)
-        elif input_format == 'json':
-            myapp = apprw.JSON(app_name)
-        elif input_format == 'yaml':
-            myapp = apprw.YAML(app_name)
-        elif input_format == 'toml':
-            myapp = apprw.TOML(app_name)
-        elif input_format == 'xml':
-            myapp = apprw.XML(app_name)
-        else:
-            myapp = apprw.INI(app_name)
 
         # Write parameters to case directory
         myapp.write_params(params, user)
@@ -535,6 +532,28 @@ examples:
 
         print(f"\nShowing {len(jobs)} case(s)")
 
+    elif sys.argv[1] in ("share", "unshare"):
+        from . import migrate, config
+
+        if len(sys.argv) < 3:
+            print(f"usage: spc {sys.argv[1]} <case_id>")
+            sys.exit(1)
+
+        cid = sys.argv[2]
+        dal = migrate.dal(uri=config.uri)
+        db = dal.db
+        job = db(db.jobs.cid == cid).select().first()
+        if not job:
+            print(f"ERROR: case '{cid}' not found")
+            sys.exit(1)
+
+        value = "True" if sys.argv[1] == "share" else "False"
+        db.jobs[job.id] = dict(shared=value)
+        action = "Shared" if value == "True" else "Unshared"
+
+        db.commit()
+        print(f"{action} case {cid}")
+
     elif sys.argv[1] == "scheduler":
         # Run the scheduler without the web server
         from . import config
@@ -574,12 +593,17 @@ examples:
         sched = None
         history_path = os.path.expanduser("~/.spc_shell_history")
         if readline:
+            def _save_history():
+                try:
+                    readline.write_history_file(history_path)
+                except (OSError, PermissionError):
+                    pass
             try:
                 readline.read_history_file(history_path)
             except FileNotFoundError:
                 pass
             readline.set_history_length(1000)
-            atexit.register(readline.write_history_file, history_path)
+            atexit.register(_save_history)
 
         def show_help():
             print("""
@@ -587,7 +611,9 @@ Available commands:
   apps                          list installed apps
   submit <app> [params]         submit a job (params: key=val,key2=val2)
   status [cid]                  show job status (or all if no cid)
-  cases [app]                   list cases
+  cases [app] [--all]           list cases (default: current shell user)
+  share <cid>                   share a case (visible in web UI)
+  unshare <cid>                 unshare a case
   start                         start the scheduler
   stop                          stop the scheduler
   tail <cid>                    show output of a case
@@ -696,8 +722,12 @@ Available commands:
                 for job in jobs:
                     print(f"{job.cid:<10} {job.app:<10} {states.get(job.state, job.state):<10}")
 
-        def list_cases(app_filter=None):
+        def list_cases(app_filter=None, show_all=False):
             query = db.jobs.id > 0
+            if not show_all:
+                user_row = db(db.users.user == "cli").select().first()
+                if user_row:
+                    query &= db.jobs.uid == user_row.id
             if app_filter:
                 query &= db.jobs.app == app_filter
             jobs = db(query).select(orderby=~db.jobs.id, limitby=(0, 20))
@@ -705,11 +735,13 @@ Available commands:
             if not jobs:
                 print("No cases")
                 return
-            print(f"{'CID':<10} {'APP':<12} {'STATUS':<10} {'DESCRIPTION':<30}")
-            print("-" * 65)
+            print(f"{'CID':<10} {'APP':<12} {'STATUS':<10} {'USER':<10} {'DESCRIPTION':<30}")
+            print("-" * 75)
             for job in jobs:
                 desc = (job.description or "")[:28]
-                print(f"{job.cid:<10} {job.app:<12} {states.get(job.state, job.state):<10} {desc:<30}")
+                user_row = db(db.users.id == job.uid).select().first()
+                username = user_row.user if user_row else "?"
+                print(f"{job.cid:<10} {job.app:<12} {states.get(job.state, job.state):<10} {username:<10} {desc:<30}")
 
         def start_scheduler():
             nonlocal sched
@@ -744,6 +776,15 @@ Available commands:
             else:
                 print(f"No output file yet: {out_file}")
 
+        def set_flag(cid, field, value, label):
+            job = db(db.jobs.cid == cid).select().first()
+            if not job:
+                print(f"Case '{cid}' not found")
+                return
+            db.jobs(job.id).update_record(**{field: value})
+            db.commit()
+            print(f"{label} case {cid}")
+
         # REPL loop
         while True:
             try:
@@ -771,7 +812,16 @@ Available commands:
             elif cmd == 'status':
                 show_status(args if args else None)
             elif cmd == 'cases':
-                list_cases(args if args else None)
+                show_all = False
+                app_filter = None
+                if args:
+                    parts = args.split()
+                    if "--all" in parts:
+                        show_all = True
+                        parts = [p for p in parts if p != "--all"]
+                    if parts:
+                        app_filter = parts[0]
+                list_cases(app_filter, show_all)
             elif cmd == 'start':
                 start_scheduler()
             elif cmd == 'stop':
@@ -781,6 +831,16 @@ Available commands:
                     tail_output(args)
                 else:
                     print("Usage: tail <cid>")
+            elif cmd == 'share':
+                if args:
+                    set_flag(args, "shared", "True", "Shared")
+                else:
+                    print("Usage: share <cid>")
+            elif cmd == 'unshare':
+                if args:
+                    set_flag(args, "shared", "False", "Unshared")
+                else:
+                    print("Usage: unshare <cid>")
             else:
                 print(f"Unknown command: {cmd}. Type 'help' for available commands.")
 

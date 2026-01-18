@@ -201,3 +201,24 @@ def test_shell_scheduler_and_tail(app, monkeypatch, tmp_path, capsys):
     assert "Scheduler started" in out
     assert "Case 'missing' not found" in out
     assert "Scheduler stopped" in out
+
+
+def test_share_and_pin_commands(app, monkeypatch, tmp_path, capsys):
+    _set_user_data_root(monkeypatch, tmp_path)
+
+    _run_cli(monkeypatch, ["spc", "submit", "dna", "--params", "dna=ATCG"])
+    out = capsys.readouterr().out
+    match = re.search(r"Case ID:\s+(\w+)", out)
+    assert match, out
+    cid = match.group(1)
+
+    _run_cli(monkeypatch, ["spc", "share", cid])
+
+    from spc import migrate, config
+    dal = migrate.dal(uri=config.uri)
+    job = dal.db(dal.db.jobs.cid == cid).select().first()
+    assert job.shared == "True"
+
+    _run_cli(monkeypatch, ["spc", "unshare", cid])
+    job = dal.db(dal.db.jobs.cid == cid).select().first()
+    assert job.shared == "False"
