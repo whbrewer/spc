@@ -265,6 +265,15 @@ def main():
             print(f"  {os.path.join(repo_root, 'mcp-venv', 'bin', 'python')}")
             print("  /opt/homebrew/bin/python3.11 -m venv mcp-venv")
             print("  mcp-venv/bin/pip install git+https://github.com/modelcontextprotocol/python-sdk.git")
+            print("  mcp-venv/bin/pip install -r requirements.txt")
+            sys.exit(1)
+
+        check_cmd = [mcp_python, "-c", "import pytoml, yaml, pydal"]
+        check = subprocess.call(check_cmd)
+        if check != 0:
+            print("ERROR: MCP venv missing SPC runtime deps.")
+            print("Run:")
+            print("  mcp-venv/bin/pip install -r requirements.txt")
             sys.exit(1)
 
         env = os.environ.copy()

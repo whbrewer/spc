@@ -10,13 +10,13 @@ from typing import Any, Dict, Optional
 
 import anyio
 from mcp.server.fastmcp import FastMCP
-
-from . import app_reader_writer as apprw
 from . import config, migrate
 from .common import rand_cid, replace_tags
 
 
 def _get_app_instance(app_name: str, input_format: str):
+    from . import app_reader_writer as apprw
+
     if input_format == "namelist":
         return apprw.Namelist(app_name)
     if input_format == "ini":
@@ -39,6 +39,8 @@ def _submit_job(
     np: int = 1,
     user: str = "mcp",
 ) -> Dict[str, Any]:
+    from . import app_reader_writer as apprw
+
     dal = migrate.dal(uri=config.uri)
     db = dal.db
 
@@ -191,19 +193,24 @@ def create_mcp_server() -> FastMCP:
 
     # Register one tool per app
     apps = _list_apps().get("apps", [])
+
     for app in apps:
         app_name = app["name"]
-        desc = app.get("description") or f"Run the {app_name} app"
+        app_desc = app.get("description") or f"Run the {app_name} app"
 
-        @mcp.tool(name=f"run_{app_name}", description=desc)
-        async def run_app_tool(
-            params: Optional[Dict[str, Any]] = None,
-            desc: str = "",
-            np: int = 1,
-            user: str = "mcp",
-            _app_name: str = app_name,
-        ) -> Dict[str, Any]:
-            return _submit_job(_app_name, params=params, desc=desc, np=np, user=user)
+        def _make_run_tool(app_name: str, description: str):
+            @mcp.tool(name=f"run_{app_name}", description=description)
+            async def run_app_tool(
+                params: Optional[Dict[str, Any]] = None,
+                desc: str = "",
+                np: int = 1,
+                user: str = "mcp",
+            ) -> Dict[str, Any]:
+                return _submit_job(app_name, params=params, desc=desc, np=np, user=user)
+
+            return run_app_tool
+
+        _make_run_tool(app_name, app_desc)
 
     return mcp
 
@@ -217,10 +224,11 @@ def main() -> None:
 
     mcp = create_mcp_server()
     anyio.run(
-        mcp.run_streamable_http_async,
-        host=args.host,
-        port=args.port,
-        streamable_http_path=args.path,
+        lambda: mcp.run_streamable_http_async(
+            host=args.host,
+            port=args.port,
+            streamable_http_path=args.path,
+        )
     )
 
 
