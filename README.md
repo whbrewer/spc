@@ -120,6 +120,30 @@ You can run SPC without the web UI using the CLI.
 ./spc unshare <case_id>
 ```
 
+### MCP server (HTTP)
+
+Run the MCP server for agent tool access:
+
+```bash
+./spc mcp
+```
+
+Setup requires the MCP Python SDK and SPC deps in `mcp-venv`:
+
+```bash
+brew install python@3.11
+/opt/homebrew/bin/python3.11 -m venv mcp-venv
+mcp-venv/bin/pip install git+https://github.com/modelcontextprotocol/python-sdk.git
+mcp-venv/bin/pip install -r requirements.txt
+```
+
+Codex config example (`~/.codex/config.toml`):
+
+```toml
+[mcpServers.spc]
+url = "http://127.0.0.1:7333/mcp"
+```
+
 ### Interactive REPL
 
 For an interactive session, use:
