@@ -339,8 +339,9 @@ examples:
         # Generate case ID
         cid = rand_cid()
 
-        # Parse parameters
-        params = {'case_id': cid, 'cid': cid, 'user': user}
+        # Parse parameters (seed with app defaults so missing fields aren't "F")
+        params = dict(myapp.params) if getattr(myapp, "params", None) else {}
+        params.update({'case_id': cid, 'cid': cid, 'user': user})
         if params_str:
             for pair in params_str.split(','):
                 if '=' in pair:
@@ -600,6 +601,12 @@ Available commands:
             parts = args.split(None, 1)
             app_name = parts[0]
             params_str = parts[1] if len(parts) > 1 else ""
+            if params_str.startswith("--params"):
+                params_str = params_str[len("--params"):].lstrip()
+            if (params_str.startswith('"') and params_str.endswith('"')) or (
+                params_str.startswith("'") and params_str.endswith("'")
+            ):
+                params_str = params_str[1:-1]
 
             app_row = db(db.apps.name == app_name).select().first()
             if not app_row:
@@ -615,14 +622,6 @@ Available commands:
                 user_row = db(db.users.id == uid).select().first()
             uid = user_row.id
 
-            cid = rand_cid()
-            params = {'case_id': cid, 'cid': cid, 'user': user}
-            if params_str:
-                for pair in params_str.split(','):
-                    if '=' in pair:
-                        key, val = pair.split('=', 1)
-                        params[key.strip()] = val.strip()
-
             # Create app instance
             input_format = app_row.input_format or 'ini'
             app_classes = {
@@ -634,6 +633,14 @@ Available commands:
                 'xml': apprw.XML
             }
             myapp = app_classes.get(input_format, apprw.INI)(app_name)
+            cid = rand_cid()
+            params = dict(myapp.params) if getattr(myapp, "params", None) else {}
+            params.update({'case_id': cid, 'cid': cid, 'user': user})
+            if params_str:
+                for pair in params_str.split(','):
+                    if '=' in pair:
+                        key, val = pair.split('=', 1)
+                        params[key.strip()] = val.strip()
             myapp.write_params(params, user)
 
             # Build command
