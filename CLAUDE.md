@@ -17,17 +17,20 @@ SPC (Scientific Platform for the Cloud) is a Python 3 web platform for running p
 # Start the web server (default: http://localhost:8580)
 ./spc run
 
-# Run tests with pytest (recommended)
-./venv/bin/pytest tests/ -v
+# Run all tests
+./spc test
+
+# Run tests with coverage
+./spc test --cov=src/spc
 
 # Run a single test file
-./venv/bin/pytest tests/test_login.py -v
+./spc test tests/test_login.py -v
 
 # Run a single test
-./venv/bin/pytest tests/test_login.py::TestLogin::test_login_valid_credentials -v
+./spc test tests/test_login.py::TestLogin::test_login_valid_credentials -v
 
-# Run legacy route tests (uses Flask test client internally)
-./spc test
+# Run legacy route tests
+./spc test --legacy
 
 # Install an app from URL or local zip
 ./spc install /path/to/app.zip

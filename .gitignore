@@ -7,3 +7,4 @@ views/apps
 user_data
 venv
 log/
+.coverage

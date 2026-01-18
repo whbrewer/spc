@@ -242,8 +242,25 @@ def main():
     elif (sys.argv[1] == "search"):
         print(notyet)
     elif (sys.argv[1] == "test"):
-        import spc.test
-        spc.test.main()
+        # Run pytest by default, or legacy tests with --legacy flag
+        if len(sys.argv) > 2 and sys.argv[2] == "--legacy":
+            import spc.test
+            spc.test.main()
+        else:
+            # Run pytest test suite
+            import subprocess
+            repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            pytest_path = os.path.join(repo_root, 'venv', 'bin', 'pytest')
+            tests_path = os.path.join(repo_root, 'tests')
+
+            if not os.path.exists(pytest_path):
+                print("ERROR: pytest not found. Run './spc init' first.")
+                sys.exit(1)
+
+            # Pass any additional arguments to pytest (e.g., -v, --cov)
+            extra_args = sys.argv[2:] if len(sys.argv) > 2 else ['-v']
+            cmd = [pytest_path, tests_path] + extra_args
+            sys.exit(subprocess.call(cmd))
     elif (sys.argv[1] == "uninstall"):
         from . import app_reader_writer as apprw
         install_usage = "usage: spc uninstall appname"
