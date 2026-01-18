@@ -2,6 +2,7 @@ import sys, os, shutil, time, tempfile
 import xml.etree.ElementTree as ET
 import re, json, hashlib, zipfile
 from urllib.request import urlopen
+from urllib.error import HTTPError, URLError
 
 if os.path.exists("src/spc/config.py"):
     from . import config
@@ -213,17 +214,20 @@ notyet = "this feature not yet working"
 # ref: http://stackoverflow.com/questions/4028697
 def dlfile(url):
     # Open the url
+    save_path = os.path.basename(url.split("?")[0])
     try:
         f = urlopen(url)
         print("downloading " + url)
         # Open our local file for writing
-        with open(os.path.basename(url), "wb") as local_file:
+        with open(save_path, "wb") as local_file:
             local_file.write(f.read())
+        return save_path
     #handle errors
     except HTTPError as e:
         print("HTTP Error:", e.code, url)
     except URLError as e:
         print("URL Error:", e.reason, url)
+    return None
 
 # process command line options
 def main():
@@ -1041,11 +1045,9 @@ Available commands:
             from . import migrate, config
 
             if re.search(r'http[s]://.*$', sys.argv[2]):
-                dlfile(sys.argv[2]) # download zip file
-                # if url is http://website.com/path/to/file.zip
-                # following line extracts out just "file.zip" which should
-                # now be in the current directory
-                save_path = os.path.basename(sys.argv[2].split('//')[1])
+                save_path = dlfile(sys.argv[2]) # download zip file
+                if not save_path:
+                    sys.exit(1)
             else:
                 save_path = sys.argv[2]
 
