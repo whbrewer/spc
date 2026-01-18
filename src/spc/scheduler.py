@@ -45,11 +45,12 @@ class Scheduler(object):
     def poll(self):
         """start polling thread which checks queue status every second"""
         manager = self._create_manager()
-        if manager is None:
-            print("WARN: scheduler disabled (unable to start Manager).")
-            return
         global myjobs
-        myjobs = manager.dict()
+        if manager is None:
+            print("WARN: Manager unavailable; job stop/kill tracking disabled.")
+            myjobs = {}
+        else:
+            myjobs = manager.dict()
         t = threading.Thread(target = self.assignTask)
         t.daemon = True
         t.start()
@@ -77,7 +78,7 @@ class Scheduler(object):
         """Create a multiprocessing manager in a macOS-safe way."""
         try:
             return self.mp_ctx.Manager()
-        except (ValueError, OSError, PermissionError, RuntimeError):
+        except (EOFError, ValueError, OSError, PermissionError, RuntimeError):
             return None
 
     def _get_mp_context(self):
