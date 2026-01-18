@@ -67,6 +67,7 @@ def usage():
     buf += "install       install an app\n"
     buf += "list          list installed or available apps\n"
     buf += "migrate       migrate new database changes\n"
+    buf += "mcp           start MCP server (HTTP)\n"
     buf += "requirements  install or update dependencies\n"
     buf += "run           start the server\n"
     buf += "runworker     start a worker\n"
@@ -246,6 +247,40 @@ def main():
     elif (sys.argv[1] == "runsslworker"):
         import spc.worker_ssl
         spc.worker_ssl.main()
+    elif (sys.argv[1] == "mcp"):
+        import argparse
+        import subprocess
+
+        parser = argparse.ArgumentParser(description="Start SPC MCP server (HTTP)")
+        parser.add_argument("--host", default="127.0.0.1")
+        parser.add_argument("--port", type=int, default=7333)
+        parser.add_argument("--path", default="/mcp")
+        args = parser.parse_args(sys.argv[2:])
+
+        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        mcp_python = os.path.join(repo_root, "mcp-venv", "bin", "python")
+        if not os.path.exists(mcp_python):
+            print("ERROR: MCP Python not found. Create it with:")
+            print("  brew install python@3.11")
+            print(f"  {os.path.join(repo_root, 'mcp-venv', 'bin', 'python')}")
+            print("  /opt/homebrew/bin/python3.11 -m venv mcp-venv")
+            print("  mcp-venv/bin/pip install git+https://github.com/modelcontextprotocol/python-sdk.git")
+            sys.exit(1)
+
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.path.join(repo_root, "src")
+        cmd = [
+            mcp_python,
+            "-m",
+            "spc.mcp_server",
+            "--host",
+            args.host,
+            "--port",
+            str(args.port),
+            "--path",
+            args.path,
+        ]
+        sys.exit(subprocess.call(cmd, env=env))
     elif (sys.argv[1] == "search"):
         print(notyet)
     elif (sys.argv[1] == "test"):
@@ -612,6 +647,8 @@ Available commands:
   submit <app> [params]         submit a job (params: key=val,key2=val2)
   status [cid]                  show job status (or all if no cid)
   cases [app] [--all]           list cases (default: current shell user)
+  files <cid>                   list files in a case directory
+  cat <cid>/<file>              view contents of a file
   share <cid>                   share a case (visible in web UI)
   unshare <cid>                 unshare a case
   start                         start the scheduler
@@ -776,6 +813,51 @@ Available commands:
             else:
                 print(f"No output file yet: {out_file}")
 
+        def list_files(cid):
+            job = db(db.jobs.cid == cid).select().first()
+            if not job:
+                print(f"Case '{cid}' not found")
+                return
+            user_row = db(db.users.id == job.uid).select().first()
+            username = user_row.user if user_row else "unknown"
+            case_dir = os.path.join('user_data', username, job.app, cid)
+            if not os.path.isdir(case_dir):
+                print(f"Case directory not found: {case_dir}")
+                return
+            files = os.listdir(case_dir)
+            if not files:
+                print("(no files)")
+                return
+            print(f"Files in {cid}:")
+            for f in sorted(files):
+                fpath = os.path.join(case_dir, f)
+                if os.path.isfile(fpath):
+                    size = os.path.getsize(fpath)
+                    print(f"  {f:<30} {size:>10} bytes")
+                else:
+                    print(f"  {f:<30} (dir)")
+
+        def cat_file(path):
+            # path can be "cid/filename" or "cid filename"
+            parts = path.replace('/', ' ').split()
+            if len(parts) < 2:
+                print("Usage: cat <cid>/<file> or cat <cid> <file>")
+                return
+            cid = parts[0]
+            filename = parts[1]
+            job = db(db.jobs.cid == cid).select().first()
+            if not job:
+                print(f"Case '{cid}' not found")
+                return
+            user_row = db(db.users.id == job.uid).select().first()
+            username = user_row.user if user_row else "unknown"
+            file_path = os.path.join('user_data', username, job.app, cid, filename)
+            if not os.path.isfile(file_path):
+                print(f"File not found: {file_path}")
+                return
+            with open(file_path, 'r') as f:
+                print(f.read())
+
         def set_flag(cid, field, value, label):
             job = db(db.jobs.cid == cid).select().first()
             if not job:
@@ -841,6 +923,16 @@ Available commands:
                     set_flag(args, "shared", "False", "Unshared")
                 else:
                     print("Usage: unshare <cid>")
+            elif cmd == 'files':
+                if args:
+                    list_files(args.strip())
+                else:
+                    print("Usage: files <cid>")
+            elif cmd == 'cat':
+                if args:
+                    cat_file(args)
+                else:
+                    print("Usage: cat <cid>/<file>")
             else:
                 print(f"Unknown command: {cmd}. Type 'help' for available commands.")
 
