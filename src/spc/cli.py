@@ -560,6 +560,11 @@ examples:
         from . import app_reader_writer as apprw
         from .common import rand_cid, replace_tags
         from .scheduler import Scheduler
+        try:
+            import readline
+        except ImportError:
+            readline = None
+        import atexit
 
         print("SPC Interactive Shell")
         print("Type 'help' for available commands, 'quit' to exit\n")
@@ -567,6 +572,14 @@ examples:
         dal = migrate.dal(uri=config.uri)
         db = dal.db
         sched = None
+        history_path = os.path.expanduser("~/.spc_shell_history")
+        if readline:
+            try:
+                readline.read_history_file(history_path)
+            except FileNotFoundError:
+                pass
+            readline.set_history_length(1000)
+            atexit.register(readline.write_history_file, history_path)
 
         def show_help():
             print("""
