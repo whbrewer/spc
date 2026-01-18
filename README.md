@@ -94,6 +94,36 @@ Open your browser at:
 
 > Note: Port can be overridden in `config.py`.
 
+## Headless (CLI) mode
+
+You can run SPC without the web UI using the CLI. A typical workflow:
+
+```bash
+# Submit a job
+./spc submit dna --params "dna=ATCGATCGATCG" --desc "my experiment"
+
+# Run the scheduler in a separate terminal
+./spc scheduler
+
+# Check status
+./spc status <case_id>
+
+# View output
+cat user_data/cli/dna/<case_id>/dna.out
+```
+
+For an interactive REPL, use:
+
+```bash
+./spc shell
+```
+
+## How the scheduler works
+1. `spc submit` queues a job (`state='Q'`) in the database.
+2. `spc scheduler` polls for queued jobs, marks them running (`state='R'`), and runs the app command in the case directory.
+3. Output is redirected to `<app>.out`; completed jobs are marked `state='C'`.
+4. Max concurrent jobs honors `config.np`.
+
 ---
 
 ## Run the pre-installed example: DNA Analyzer

@@ -3,7 +3,9 @@ db/
 src/spc/config.py
 src/spc_apps
 static/apps
+src/spc/static/apps
 views/apps
+src/spc/templates/apps
 user_data
 venv
 log/

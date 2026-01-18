@@ -71,7 +71,12 @@ def usage():
     buf += "run           start the server\n"
     buf += "runworker     start a worker\n"
     buf += "runsslworker  start an SSL worker\n"
-    buf += "test          run route tests\n"
+    buf += "submit        submit a job (headless mode)\n"
+    buf += "status        check job/case status\n"
+    buf += "cases         list cases for an app\n"
+    buf += "scheduler     run the job scheduler (headless)\n"
+    buf += "shell         interactive REPL\n"
+    buf += "test          run tests\n"
     buf += "uninstall     uninstall an app\n"
     # update is currently too buggy, don't release yet
     # buf += "update        update an app (in case spc.json was modified)\n"
@@ -261,6 +266,504 @@ def main():
             extra_args = sys.argv[2:] if len(sys.argv) > 2 else ['-v']
             cmd = [pytest_path, tests_path] + extra_args
             sys.exit(subprocess.call(cmd))
+
+    elif sys.argv[1] == "submit":
+        # Headless job submission
+        # Usage: spc submit <app> [--params "key=val,key2=val2"] [--desc "description"] [--np N]
+        from . import migrate, config
+        from . import app_reader_writer as apprw
+        from .common import rand_cid, replace_tags
+
+        submit_usage = """usage: spc submit <app> [options]
+
+options:
+  --params "key=val,key2=val2"   parameters to pass to the app
+  --desc "description"           job description
+  --np N                         number of processors (default: 1)
+  --user USERNAME                username (default: cli)
+
+examples:
+  spc submit dna --params "dna=ATCGATCG"
+  spc submit mendel --params "pop_size=1000,generations=500" --desc "test run"
+"""
+        if len(sys.argv) < 3:
+            print(submit_usage)
+            sys.exit(1)
+
+        app_name = sys.argv[2]
+
+        # Parse optional arguments
+        params_str = ""
+        desc = ""
+        np = 1
+        user = "cli"
+
+        i = 3
+        while i < len(sys.argv):
+            if sys.argv[i] == "--params" and i + 1 < len(sys.argv):
+                params_str = sys.argv[i + 1]
+                i += 2
+            elif sys.argv[i] == "--desc" and i + 1 < len(sys.argv):
+                desc = sys.argv[i + 1]
+                i += 2
+            elif sys.argv[i] == "--np" and i + 1 < len(sys.argv):
+                np = int(sys.argv[i + 1])
+                i += 2
+            elif sys.argv[i] == "--user" and i + 1 < len(sys.argv):
+                user = sys.argv[i + 1]
+                i += 2
+            else:
+                print(f"Unknown option: {sys.argv[i]}")
+                print(submit_usage)
+                sys.exit(1)
+
+        # Connect to database
+        dal = migrate.dal(uri=config.uri)
+        db = dal.db
+
+        # Check if app exists
+        app_row = db(db.apps.name == app_name).select().first()
+        if not app_row:
+            print(f"ERROR: app '{app_name}' not found. Use 'spc list installed' to see available apps.")
+            sys.exit(1)
+
+        # Get or create user
+        user_row = db(db.users.user == user).select().first()
+        if not user_row:
+            # Create CLI user with default priority
+            uid = db.users.insert(user=user, passwd="", priority=3)
+            db.commit()
+        else:
+            uid = user_row.id
+
+        # Generate case ID
+        cid = rand_cid()
+
+        # Parse parameters
+        params = {'case_id': cid, 'cid': cid, 'user': user}
+        if params_str:
+            for pair in params_str.split(','):
+                if '=' in pair:
+                    key, val = pair.split('=', 1)
+                    params[key.strip()] = val.strip()
+
+        # Create app instance and write parameters
+        input_format = app_row.input_format or 'ini'
+        if input_format == 'namelist':
+            myapp = apprw.Namelist(app_name)
+        elif input_format == 'ini':
+            myapp = apprw.INI(app_name)
+        elif input_format == 'json':
+            myapp = apprw.JSON(app_name)
+        elif input_format == 'yaml':
+            myapp = apprw.YAML(app_name)
+        elif input_format == 'toml':
+            myapp = apprw.TOML(app_name)
+        elif input_format == 'xml':
+            myapp = apprw.XML(app_name)
+        else:
+            myapp = apprw.INI(app_name)
+
+        # Write parameters to case directory
+        myapp.write_params(params, user)
+
+        # Build command
+        cmd = app_row.command or f"./{app_name}"
+        params['rel_apps_path'] = (os.pardir + os.sep) * 4 + apprw.apps_dir
+        cmd = replace_tags(cmd, params)
+
+        # Submit job to database
+        priority = user_row.priority if user_row else 3
+        jid = db.jobs.insert(
+            uid=uid,
+            app=app_name,
+            cid=cid,
+            command=cmd,  # Store the command
+            state='Q',
+            description=desc,
+            time_submit=time.strftime("%a %b %d %H:%M:%S %Y"),
+            walltime=3600,
+            np=np,
+            priority=priority
+        )
+        db.commit()
+
+        print(f"Job submitted successfully!")
+        print(f"  Case ID: {cid}")
+        print(f"  Job ID:  {jid}")
+        print(f"  App:     {app_name}")
+        print(f"  Status:  Queued")
+        print(f"\nTo check status: spc status {cid}")
+        print(f"To start scheduler and run jobs: spc run")
+
+    elif sys.argv[1] == "status":
+        # Check job/case status
+        # Usage: spc status <cid>
+        from . import migrate, config
+
+        if len(sys.argv) < 3:
+            print("usage: spc status <case_id>")
+            sys.exit(1)
+
+        cid = sys.argv[2]
+
+        dal = migrate.dal(uri=config.uri)
+        db = dal.db
+
+        job = db(db.jobs.cid == cid).select().first()
+        if not job:
+            print(f"ERROR: case '{cid}' not found")
+            sys.exit(1)
+
+        # Get user name
+        user_row = db(db.users.id == job.uid).select().first()
+        username = user_row.user if user_row else "unknown"
+
+        # State descriptions
+        states = {
+            'Q': 'Queued',
+            'R': 'Running',
+            'C': 'Completed',
+            'X': 'Stopped/Failed'
+        }
+        state_desc = states.get(job.state, job.state)
+
+        print(f"Case: {cid}")
+        print(f"  Job ID:      {job.id}")
+        print(f"  App:         {job.app}")
+        print(f"  User:        {username}")
+        print(f"  Status:      {state_desc}")
+        print(f"  Description: {job.description or '(none)'}")
+        print(f"  Submitted:   {job.time_submit}")
+        print(f"  Processors:  {job.np}")
+
+        # Show output file location
+        user_data_dir = os.path.join('user_data', username, job.app, cid)
+        if os.path.isdir(user_data_dir):
+            print(f"  Output dir:  {user_data_dir}")
+            out_file = os.path.join(user_data_dir, f"{job.app}.out")
+            if os.path.isfile(out_file):
+                # Show last few lines of output
+                print(f"\nLast 5 lines of output:")
+                with open(out_file, 'r') as f:
+                    lines = f.readlines()
+                    for line in lines[-5:]:
+                        print(f"  {line.rstrip()}")
+
+    elif sys.argv[1] == "cases":
+        # List cases for an app
+        # Usage: spc cases [app] [--user USERNAME] [--state STATE]
+        from . import migrate, config
+
+        cases_usage = """usage: spc cases [app] [options]
+
+options:
+  --user USERNAME    filter by user (default: all)
+  --state STATE      filter by state: Q, R, C, X (default: all)
+  --limit N          max number of cases to show (default: 20)
+
+examples:
+  spc cases                    # list all recent cases
+  spc cases dna                # list cases for dna app
+  spc cases --state R          # list running jobs
+  spc cases mendel --user cli  # list mendel cases for cli user
+"""
+        app_filter = None
+        user_filter = None
+        state_filter = None
+        limit = 20
+
+        i = 2
+        while i < len(sys.argv):
+            if sys.argv[i] == "--user" and i + 1 < len(sys.argv):
+                user_filter = sys.argv[i + 1]
+                i += 2
+            elif sys.argv[i] == "--state" and i + 1 < len(sys.argv):
+                state_filter = sys.argv[i + 1].upper()
+                i += 2
+            elif sys.argv[i] == "--limit" and i + 1 < len(sys.argv):
+                limit = int(sys.argv[i + 1])
+                i += 2
+            elif sys.argv[i] == "--help":
+                print(cases_usage)
+                sys.exit(0)
+            elif not sys.argv[i].startswith("--"):
+                app_filter = sys.argv[i]
+                i += 1
+            else:
+                print(f"Unknown option: {sys.argv[i]}")
+                print(cases_usage)
+                sys.exit(1)
+
+        dal = migrate.dal(uri=config.uri)
+        db = dal.db
+
+        # Build query
+        query = db.jobs.id > 0
+        if app_filter:
+            query &= db.jobs.app == app_filter
+        if state_filter:
+            query &= db.jobs.state == state_filter
+        if user_filter:
+            user_row = db(db.users.user == user_filter).select().first()
+            if user_row:
+                query &= db.jobs.uid == user_row.id
+            else:
+                print(f"No cases found for user '{user_filter}'")
+                sys.exit(0)
+
+        jobs = db(query).select(orderby=~db.jobs.id, limitby=(0, limit))
+
+        if not jobs:
+            print("No cases found")
+            sys.exit(0)
+
+        # State descriptions
+        states = {'Q': 'Queued', 'R': 'Running', 'C': 'Done', 'X': 'Failed'}
+
+        # Print header
+        print(f"{'CID':<10} {'APP':<12} {'STATUS':<10} {'USER':<10} {'DESCRIPTION':<30}")
+        print("-" * 75)
+
+        for job in jobs:
+            user_row = db(db.users.id == job.uid).select().first()
+            username = user_row.user if user_row else "?"
+            state_desc = states.get(job.state, job.state)
+            desc = (job.description or "")[:28]
+            print(f"{job.cid:<10} {job.app:<12} {state_desc:<10} {username:<10} {desc:<30}")
+
+        print(f"\nShowing {len(jobs)} case(s)")
+
+    elif sys.argv[1] == "scheduler":
+        # Run the scheduler without the web server
+        from . import config
+        from .scheduler import Scheduler
+
+        print("Starting SPC scheduler (headless mode)...")
+        print(f"  Max concurrent jobs: {config.np}")
+        print("  Press Ctrl+C to stop\n")
+
+        sched = Scheduler()
+        sched.poll()
+
+        # Keep the main thread alive
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("\nScheduler stopped.")
+
+    elif sys.argv[1] == "shell":
+        # Interactive REPL
+        from . import migrate, config
+        from . import app_reader_writer as apprw
+        from .common import rand_cid, replace_tags
+        from .scheduler import Scheduler
+
+        print("SPC Interactive Shell")
+        print("Type 'help' for available commands, 'quit' to exit\n")
+
+        dal = migrate.dal(uri=config.uri)
+        db = dal.db
+        sched = None
+
+        def show_help():
+            print("""
+Available commands:
+  apps                          list installed apps
+  submit <app> [params]         submit a job (params: key=val,key2=val2)
+  status [cid]                  show job status (or all if no cid)
+  cases [app]                   list cases
+  start                         start the scheduler
+  stop                          stop the scheduler
+  tail <cid>                    show output of a case
+  help                          show this help
+  quit                          exit the shell
+""")
+
+        def list_apps():
+            rows = db(db.apps.id > 0).select()
+            if not rows:
+                print("No apps installed")
+                return
+            print(f"{'NAME':<15} {'FORMAT':<10} {'DESCRIPTION':<40}")
+            print("-" * 65)
+            for row in rows:
+                desc = (row.description or "")[:38]
+                print(f"{row.name:<15} {row.input_format or 'ini':<10} {desc:<40}")
+
+        def submit_job(args):
+            if not args:
+                print("Usage: submit <app> [key=val,key2=val2]")
+                return
+
+            parts = args.split(None, 1)
+            app_name = parts[0]
+            params_str = parts[1] if len(parts) > 1 else ""
+
+            app_row = db(db.apps.name == app_name).select().first()
+            if not app_row:
+                print(f"App '{app_name}' not found")
+                return
+
+            # Get or create CLI user
+            user = "cli"
+            user_row = db(db.users.user == user).select().first()
+            if not user_row:
+                uid = db.users.insert(user=user, passwd="", priority=3)
+                db.commit()
+                user_row = db(db.users.id == uid).select().first()
+            uid = user_row.id
+
+            cid = rand_cid()
+            params = {'case_id': cid, 'cid': cid, 'user': user}
+            if params_str:
+                for pair in params_str.split(','):
+                    if '=' in pair:
+                        key, val = pair.split('=', 1)
+                        params[key.strip()] = val.strip()
+
+            # Create app instance
+            input_format = app_row.input_format or 'ini'
+            app_classes = {
+                'namelist': apprw.Namelist,
+                'ini': apprw.INI,
+                'json': apprw.JSON,
+                'yaml': apprw.YAML,
+                'toml': apprw.TOML,
+                'xml': apprw.XML
+            }
+            myapp = app_classes.get(input_format, apprw.INI)(app_name)
+            myapp.write_params(params, user)
+
+            # Build command
+            cmd = app_row.command or f"./{app_name}"
+            params['rel_apps_path'] = (os.pardir + os.sep) * 4 + apprw.apps_dir
+            cmd = replace_tags(cmd, params)
+
+            # Submit job
+            jid = db.jobs.insert(
+                uid=uid,
+                app=app_name,
+                cid=cid,
+                command=cmd,  # Store the command
+                state='Q',
+                description="",
+                time_submit=time.strftime("%a %b %d %H:%M:%S %Y"),
+                walltime=3600,
+                np=1,
+                priority=user_row.priority or 3
+            )
+            db.commit()
+            print(f"Submitted: cid={cid} jid={jid}")
+
+        def show_status(cid=None):
+            states = {'Q': 'Queued', 'R': 'Running', 'C': 'Done', 'X': 'Failed'}
+            if cid:
+                job = db(db.jobs.cid == cid).select().first()
+                if not job:
+                    print(f"Case '{cid}' not found")
+                    return
+                user_row = db(db.users.id == job.uid).select().first()
+                print(f"Case {cid}: {states.get(job.state, job.state)} ({job.app})")
+            else:
+                jobs = db(db.jobs.id > 0).select(orderby=~db.jobs.id, limitby=(0, 10))
+                if not jobs:
+                    print("No jobs")
+                    return
+                print(f"{'CID':<10} {'APP':<10} {'STATUS':<10}")
+                print("-" * 32)
+                for job in jobs:
+                    print(f"{job.cid:<10} {job.app:<10} {states.get(job.state, job.state):<10}")
+
+        def list_cases(app_filter=None):
+            query = db.jobs.id > 0
+            if app_filter:
+                query &= db.jobs.app == app_filter
+            jobs = db(query).select(orderby=~db.jobs.id, limitby=(0, 20))
+            states = {'Q': 'Queued', 'R': 'Running', 'C': 'Done', 'X': 'Failed'}
+            if not jobs:
+                print("No cases")
+                return
+            print(f"{'CID':<10} {'APP':<12} {'STATUS':<10} {'DESCRIPTION':<30}")
+            print("-" * 65)
+            for job in jobs:
+                desc = (job.description or "")[:28]
+                print(f"{job.cid:<10} {job.app:<12} {states.get(job.state, job.state):<10} {desc:<30}")
+
+        def start_scheduler():
+            nonlocal sched
+            if sched:
+                print("Scheduler already running")
+                return
+            sched = Scheduler()
+            sched.poll()
+            print("Scheduler started")
+
+        def stop_scheduler():
+            nonlocal sched
+            if not sched:
+                print("Scheduler not running")
+                return
+            sched = None
+            print("Scheduler stopped (running jobs will complete)")
+
+        def tail_output(cid):
+            job = db(db.jobs.cid == cid).select().first()
+            if not job:
+                print(f"Case '{cid}' not found")
+                return
+            user_row = db(db.users.id == job.uid).select().first()
+            username = user_row.user if user_row else "unknown"
+            out_file = os.path.join('user_data', username, job.app, cid, f"{job.app}.out")
+            if os.path.isfile(out_file):
+                with open(out_file, 'r') as f:
+                    lines = f.readlines()
+                    for line in lines[-20:]:
+                        print(line.rstrip())
+            else:
+                print(f"No output file yet: {out_file}")
+
+        # REPL loop
+        while True:
+            try:
+                line = input("spc> ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print("\nGoodbye!")
+                break
+
+            if not line:
+                continue
+
+            parts = line.split(None, 1)
+            cmd = parts[0].lower()
+            args = parts[1] if len(parts) > 1 else ""
+
+            if cmd in ('quit', 'exit', 'q'):
+                print("Goodbye!")
+                break
+            elif cmd == 'help':
+                show_help()
+            elif cmd == 'apps':
+                list_apps()
+            elif cmd == 'submit':
+                submit_job(args)
+            elif cmd == 'status':
+                show_status(args if args else None)
+            elif cmd == 'cases':
+                list_cases(args if args else None)
+            elif cmd == 'start':
+                start_scheduler()
+            elif cmd == 'stop':
+                stop_scheduler()
+            elif cmd == 'tail':
+                if args:
+                    tail_output(args)
+                else:
+                    print("Usage: tail <cid>")
+            else:
+                print(f"Unknown command: {cmd}. Type 'help' for available commands.")
+
     elif (sys.argv[1] == "uninstall"):
         from . import app_reader_writer as apprw
         install_usage = "usage: spc uninstall appname"
