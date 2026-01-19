@@ -6,12 +6,13 @@ from __future__ import annotations
 import argparse
 import os
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import anyio
 from mcp.server.fastmcp import FastMCP
 from . import config, migrate
 from .common import rand_cid, replace_tags
+from .user_data import user_data_root
 
 
 def _get_app_instance(app_name: str, input_format: str):
@@ -114,6 +115,110 @@ def _get_status(cid: str) -> Dict[str, Any]:
     }
 
 
+def _get_output(
+    cid: str,
+    tail: int = 0,
+) -> Dict[str, Any]:
+    """Get the output of a completed job.
+
+    Args:
+        cid: Case ID
+        tail: If > 0, return only the last N lines
+    """
+    dal = migrate.dal(uri=config.uri)
+    db = dal.db
+    job = db(db.jobs.cid == cid).select().first()
+    if not job:
+        return {"error": f"case '{cid}' not found"}
+
+    user_row = db(db.users.id == job.uid).select().first()
+    if not user_row:
+        return {"error": f"user not found for case '{cid}'"}
+
+    username = user_row.user
+    app = job.app
+
+    # Output file is at user_data/<user>/<app>/<cid>/<app>.out
+    out_file = os.path.join(user_data_root, username, app, cid, f"{app}.out")
+
+    if not os.path.exists(out_file):
+        # Try to list files in case directory to help user
+        case_dir = os.path.join(user_data_root, username, app, cid)
+        if os.path.isdir(case_dir):
+            files = os.listdir(case_dir)
+            return {
+                "error": f"output file not found: {app}.out",
+                "cid": cid,
+                "state": job.state,
+                "available_files": files,
+            }
+        return {
+            "error": f"case directory not found",
+            "cid": cid,
+            "state": job.state,
+        }
+
+    try:
+        with open(out_file, "r") as f:
+            if tail > 0:
+                lines = f.readlines()
+                content = "".join(lines[-tail:])
+            else:
+                content = f.read()
+    except Exception as e:
+        return {"error": f"failed to read output: {str(e)}"}
+
+    return {
+        "cid": cid,
+        "app": app,
+        "user": username,
+        "state": job.state,
+        "output": content,
+    }
+
+
+def _list_files(cid: str) -> Dict[str, Any]:
+    """List files in a case directory."""
+    dal = migrate.dal(uri=config.uri)
+    db = dal.db
+    job = db(db.jobs.cid == cid).select().first()
+    if not job:
+        return {"error": f"case '{cid}' not found"}
+
+    user_row = db(db.users.id == job.uid).select().first()
+    if not user_row:
+        return {"error": f"user not found for case '{cid}'"}
+
+    username = user_row.user
+    app = job.app
+    case_dir = os.path.join(user_data_root, username, app, cid)
+
+    if not os.path.isdir(case_dir):
+        return {
+            "error": "case directory not found",
+            "cid": cid,
+            "state": job.state,
+        }
+
+    files: List[Dict[str, Any]] = []
+    for name in os.listdir(case_dir):
+        path = os.path.join(case_dir, name)
+        stat = os.stat(path)
+        files.append({
+            "name": name,
+            "size": stat.st_size,
+            "is_dir": os.path.isdir(path),
+        })
+
+    return {
+        "cid": cid,
+        "app": app,
+        "user": username,
+        "state": job.state,
+        "files": sorted(files, key=lambda x: x["name"]),
+    }
+
+
 def _list_cases(
     app: Optional[str] = None,
     user: Optional[str] = None,
@@ -190,6 +295,14 @@ def create_mcp_server() -> FastMCP:
     @mcp.tool(name="get_status")
     async def get_status_tool(cid: str) -> Dict[str, Any]:
         return _get_status(cid)
+
+    @mcp.tool(name="get_output", description="Get the output of a job by case ID")
+    async def get_output_tool(cid: str, tail: int = 0) -> Dict[str, Any]:
+        return _get_output(cid, tail=tail)
+
+    @mcp.tool(name="list_files", description="List files in a case directory")
+    async def list_files_tool(cid: str) -> Dict[str, Any]:
+        return _list_files(cid)
 
     # Register one tool per app
     apps = _list_apps().get("apps", [])

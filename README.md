@@ -149,8 +149,15 @@ pip install -r requirements.txt
 Codex config example (`~/.codex/config.toml`):
 
 ```toml
-[mcpServers.spc]
+[mcp_servers.spc]
 url = "http://127.0.0.1:7333/mcp"
+```
+
+For Claude Code, the MCP server is setup in .mcp.json. Also, it was 
+necessary to add the following in ~/.bashrc or ~/.zshrc:
+
+```bash
+export NODE_TLS_REJECT_UNAUTHORIZED=0
 ```
 
 List available tools:
