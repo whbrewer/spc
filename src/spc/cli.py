@@ -274,6 +274,7 @@ def main():
             sys.exit(1)
 
         env = os.environ.copy()
+        repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         env["PYTHONPATH"] = os.path.join(repo_root, "src")
         cmd = [
             mcp_python,
