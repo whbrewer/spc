@@ -129,7 +129,10 @@ def confirm_form():
 
         # attempt to get number of procs from forms inputs
         if 'num_procs' in request.forms:
-            np = request.forms.num_procs
+            try:
+                np = int(request.forms.num_procs or 1)
+            except (TypeError, ValueError):
+                np = 1
         else:
             np = 1
 
