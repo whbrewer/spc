@@ -171,8 +171,7 @@ def execute():
 
     cmd = apps(name=app).command
 
-    # for parallel runs
-    if np > 1: cmd = config.mpirun + " -np " + str(np) + " " + cmd
+    # for parallel runs, scheduler will prepend mpirun at execution time
 
     # this is the relative path to the executable from the case directory where
     # the simulation files are stored

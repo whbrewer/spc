@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import os
 from .templating import template
+from . import config
 
 def preprocess(params,fn,base_dir=""):
     """app-specific code: in the future these need to be generalized or hooked in"""
@@ -29,7 +30,7 @@ def preprocess(params,fn,base_dir=""):
     elif fn == 'pbs.script':
         buf  = "#!/bin/sh\n"
         buf += "cd $PBS_O_WORKDIR"
-        buf += "/usr/local/bin/mpirun -np 2 ./mendel"
+        buf += config.mpirun + " -np 2 ./mendel"
         return buf
 
 def _write_file(data, path):

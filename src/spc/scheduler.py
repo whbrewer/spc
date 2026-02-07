@@ -134,6 +134,9 @@ class Scheduler(object):
         db.close()
 
         # if number procs available fork new process with command
+        if np > config.np:
+            print("ERROR: job %s requires %d procs but only %d available (config.np)" % (jid, np, config.np))
+            return
         for i in range(np):
             self.sem.acquire()
         p = self.mp_ctx.Process(target=self.start_job, args=(run_dir,cmd,app,jid,np,myjobs))

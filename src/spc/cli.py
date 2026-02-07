@@ -97,6 +97,7 @@ def create_config_file():
     """Create a config.py file in the spc directory"""
     fn="src/spc/config.py"
     if not os.path.exists(fn):
+        from . import config
         with open(fn, "w") as f:
             f.write("# USER AUTHENTICATION\n")
             f.write("auth = False\n")
@@ -107,18 +108,15 @@ def create_config_file():
             f.write("dbdir = 'db'\n")
             f.write("uri = 'sqlite://'+db\n")
             f.write("\n# DIRECTORIES\n")
-            f.write("mpirun = '/usr/local/bin/mpirun'\n")
+            f.write("mpirun = " + repr(config.mpirun) + "\n")
             f.write("default_priority = 3\n")
             f.write("# number of processors available to use on this machine\n")
             f.write("np = 1\n")
             f.write("\n# WORKERS\n")
             f.write("worker = 'local'\n")
             f.write("\n# WEB SERVER\n")
-            f.write("# use 'wsgiref' for the Bottle built-in single-threaded dev server\n")
-            f.write("# for a production system 'uwsgi' with NGINX is recommended\n")
-            f.write("# 'cherrypy' is a decent multi-threaded server\n")
-            f.write("# other options: 'rocket', 'bjoern', 'tornado', 'gae', etc.\n")
-            f.write("server = 'cherrypy'\n")
+            f.write("# 'flask' for the built-in dev server, 'uwsgi' for production deployment with NGINX\n")
+            f.write("server = 'flask'\n")
             f.write("# port number to listen for connections\n")
             f.write("port = 8580\n")
 
