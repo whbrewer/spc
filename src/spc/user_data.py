@@ -68,15 +68,11 @@ def more():
     cid = request.query.cid
 
     filepath = request.query.filepath
-    # get the owner from the filepath
-    # e.g. "user_data/wes/mendel/y23022/file.dat"
-    path_list = filepath.split("/")
-    owner = path_list[1]
 
     if re.search("/", cid):
-        (_, c) = cid.split("/")
+        (owner, c) = cid.split("/")
     else:
-        c = cid
+        owner, c = user, cid
 
     shared = jobs(cid=c).shared
     # only allow admin to see other user's cases that have not been shared
@@ -234,7 +230,7 @@ def list_files():
     params['app'] = app
     params['user'] = user
 
-    q = request.query.q
+    q = request.query.q or ""
     if "." not in q or q == "*.*": q = ""
 
     if re.search("/", cid):

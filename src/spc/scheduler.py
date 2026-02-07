@@ -24,11 +24,10 @@ class Scheduler(object):
 
     def __init__(self):
         self.mp_ctx = self._get_mp_context()
-        # if any jobs marked in run state when scheduler starts
-        # replace their state with X to mark that they have been shutdown
+        # if any jobs marked in run/queued state when scheduler starts
+        # remove them; they were interrupted by the restart
         db = DAL(config.uri, auto_import=True, migrate=False, folder=config.dbdir)
-        myset = db(db.jobs.state == STATE_RUN)
-        myset.update(state=STATE_STOPPED)
+        db((db.jobs.state == STATE_RUN) | (db.jobs.state == STATE_QUEUED)).delete()
         db.commit()
         try:
             self.sem = self.mp_ctx.BoundedSemaphore(config.np)
@@ -132,6 +131,7 @@ class Scheduler(object):
         print("cmd:", cmd)
 
         run_dir = os.path.join(user_data_root, user, app, cid)
+        db.close()
 
         # if number procs available fork new process with command
         for i in range(np):
