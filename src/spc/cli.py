@@ -1188,9 +1188,15 @@ Available commands:
                                                      line_range=ds['line_range'],
                                                      data_def=ds['data_def'])
 
+            # activate app for all existing users
+            all_users = dal.db(dal.db.users.id > 0).select()
+            for u in all_users:
+                dal.db.app_user.insert(appid=appid, uid=u.id)
+
             # commit to db
             dal.db.commit()
             print("SUCCESS: installed app", app)
+            print("App activated for", len(all_users), "user(s)")
             print("Note: If SPC is running, you will need to restart")
         else:
             print(install_usage)

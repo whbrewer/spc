@@ -196,6 +196,7 @@ def main():
     register_routes()
 
     if config.server != 'uwsgi':
+        print(f"\n * Running on http://localhost:{config.port}\n")
         app.run(host='0.0.0.0', port=config.port, debug=False)
 
 

@@ -267,16 +267,16 @@ Goodbye!
 
 ## Install packaged apps
 
-To install an SPC packaged app (example: Mendel’s Accountant), run one of:
+To install an SPC packaged app (example: Mendel’s Accountant), run one of the following based on your OS:
 
 ### macOS (Apple Silicon)
 ```bash
-./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-darwin-arm64.zip
+./spc install https://github.com/whbrewer/mendel-f90/releases/download/v2.8.0/fmendel-spc-darwin-arm64.zip
 ```
 
 ### Linux (x86_64)
 ```bash
-./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-linux-x86_64.zip
+./spc install https://github.com/whbrewer/mendel-f90/releases/download/v2.8.0/fmendel-spc-linux-x86_64.zip
 ```
 
 ---
