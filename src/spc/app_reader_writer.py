@@ -230,12 +230,13 @@ class Namelist(App):
                 # Also, found that when textboxes get disabled e.g. via JS
                 # they also don't show up in the dictionary.
                 if key not in form_params:
-                    #print "key not found - inserting:", key
-                    form_params[key] = "F"
-                    #if self.appname == "terra":
-                    #        form_params[key] = "0"
-                    #else:
-                    #        form_params[key] = "F"
+                    # Use "F" for boolean params (unchecked checkboxes),
+                    # otherwise preserve the default value from the input file
+                    default = self.params.get(key, "F")
+                    if default in ("T", "F", ".true.", ".false."):
+                        form_params[key] = "F"
+                    else:
+                        form_params[key] = default
 
                 # replace checked checkboxes with T value
                 form_params[key].replace("'","")

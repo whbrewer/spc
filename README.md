@@ -68,6 +68,10 @@ SPC assumes the following are available on your system:
 - Python development headers (required to build packages such as `psutil`)
   - Debian/Ubuntu: `python3-dev`
   - RHEL/CentOS: `python3-devel`
+- Open MPI (required by `mpi4py`)
+  - macOS: `brew install open-mpi`
+  - Debian/Ubuntu: `sudo apt install libopenmpi-dev`
+  - RHEL/CentOS: `sudo yum install openmpi-devel`
 
 ### Browser support
 SPC has been tested primarily with **Google Chrome** on Linux and macOS. Other environments may work but are not guaranteed.
