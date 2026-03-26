@@ -129,7 +129,10 @@ def confirm_form():
 
         # attempt to get number of procs from forms inputs
         if 'num_procs' in request.forms:
-            np = request.forms.num_procs
+            try:
+                np = int(request.forms.num_procs or 1)
+            except (TypeError, ValueError):
+                np = 1
         else:
             np = 1
 
@@ -168,8 +171,7 @@ def execute():
 
     cmd = apps(name=app).command
 
-    # for parallel runs
-    if np > 1: cmd = config.mpirun + " -np " + str(np) + " " + cmd
+    # for parallel runs, scheduler will prepend mpirun at execution time
 
     # this is the relative path to the executable from the case directory where
     # the simulation files are stored

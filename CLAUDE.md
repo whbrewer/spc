@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 SPC (Scientific Platform for the Cloud) is a Python 3 web platform for running parameterized scientific simulations. It provides a web UI for parameter entry, job scheduling, case management, file management, and result visualization (plotting).
 
-**Tech Stack:** Flask + Jinja2 (web), pydal (SQLite data layer), boto3 (AWS), CherryPy (default server)
+**Tech Stack:** Flask + Jinja2 (web), pydal (SQLite data layer), boto3 (AWS)
 
 ## Build & Development Commands
 
@@ -108,7 +108,7 @@ Apps use standardized input deck formats. The `app_reader_writer.py` module prov
 
 Edit `src/spc/config.py` to configure:
 - `auth` - Enable/disable user authentication
-- `server` - Web server (`cherrypy`, `uwsgi`, `wsgiref`)
+- `server` - Web server (`flask` for dev, `uwsgi` for production with NGINX)
 - `port` - Listen port (default: 8580)
 - `np` - Number of processors for job scheduler
 - `worker` - Worker type (`local` or AWS)

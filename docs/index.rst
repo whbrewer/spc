@@ -48,6 +48,25 @@ For an interactive shell:
     spc> status
     spc> quit
 
+MCP server (HTTP)
+-----------------
+
+Start the MCP server for agent tool access::
+
+    > spc mcp
+
+Setup requires the MCP SDK and SPC deps in ``mcp-venv``::
+
+    > brew install python@3.11
+    > /opt/homebrew/bin/python3.11 -m venv mcp-venv
+    > mcp-venv/bin/pip install git+https://github.com/modelcontextprotocol/python-sdk.git
+    > mcp-venv/bin/pip install -r requirements.txt
+
+Codex config example (``~/.codex/config.toml``)::
+
+    [mcpServers.spc]
+    url = "http://127.0.0.1:7333/mcp"
+
 Installing Apps
 ---------------
 

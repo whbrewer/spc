@@ -2,6 +2,7 @@ import sys, os, shutil, time, tempfile
 import xml.etree.ElementTree as ET
 import re, json, hashlib, zipfile
 from urllib.request import urlopen
+from urllib.error import HTTPError, URLError
 
 if os.path.exists("src/spc/config.py"):
     from . import config
@@ -67,6 +68,7 @@ def usage():
     buf += "install       install an app\n"
     buf += "list          list installed or available apps\n"
     buf += "migrate       migrate new database changes\n"
+    buf += "mcp           start MCP server (HTTP)\n"
     buf += "requirements  install or update dependencies\n"
     buf += "run           start the server\n"
     buf += "runworker     start a worker\n"
@@ -95,6 +97,7 @@ def create_config_file():
     """Create a config.py file in the spc directory"""
     fn="src/spc/config.py"
     if not os.path.exists(fn):
+        from . import config
         with open(fn, "w") as f:
             f.write("# USER AUTHENTICATION\n")
             f.write("auth = False\n")
@@ -105,18 +108,15 @@ def create_config_file():
             f.write("dbdir = 'db'\n")
             f.write("uri = 'sqlite://'+db\n")
             f.write("\n# DIRECTORIES\n")
-            f.write("mpirun = '/usr/local/bin/mpirun'\n")
+            f.write("mpirun = " + repr(config.mpirun) + "\n")
             f.write("default_priority = 3\n")
             f.write("# number of processors available to use on this machine\n")
             f.write("np = 1\n")
             f.write("\n# WORKERS\n")
             f.write("worker = 'local'\n")
             f.write("\n# WEB SERVER\n")
-            f.write("# use 'wsgiref' for the Bottle built-in single-threaded dev server\n")
-            f.write("# for a production system 'uwsgi' with NGINX is recommended\n")
-            f.write("# 'cherrypy' is a decent multi-threaded server\n")
-            f.write("# other options: 'rocket', 'bjoern', 'tornado', 'gae', etc.\n")
-            f.write("server = 'cherrypy'\n")
+            f.write("# 'flask' for the built-in dev server, 'uwsgi' for production deployment with NGINX\n")
+            f.write("server = 'flask'\n")
             f.write("# port number to listen for connections\n")
             f.write("port = 8580\n")
 
@@ -212,17 +212,20 @@ notyet = "this feature not yet working"
 # ref: http://stackoverflow.com/questions/4028697
 def dlfile(url):
     # Open the url
+    save_path = os.path.basename(url.split("?")[0])
     try:
         f = urlopen(url)
         print("downloading " + url)
         # Open our local file for writing
-        with open(os.path.basename(url), "wb") as local_file:
+        with open(save_path, "wb") as local_file:
             local_file.write(f.read())
+        return save_path
     #handle errors
     except HTTPError as e:
         print("HTTP Error:", e.code, url)
     except URLError as e:
         print("URL Error:", e.reason, url)
+    return None
 
 # process command line options
 def main():
@@ -246,6 +249,43 @@ def main():
     elif (sys.argv[1] == "runsslworker"):
         import spc.worker_ssl
         spc.worker_ssl.main()
+    elif (sys.argv[1] == "mcp"):
+        import argparse
+        import subprocess
+
+        parser = argparse.ArgumentParser(description="Start SPC MCP server (HTTP)")
+        parser.add_argument("--host", default="127.0.0.1")
+        parser.add_argument("--port", type=int, default=7333)
+        parser.add_argument("--path", default="/mcp")
+        args = parser.parse_args(sys.argv[2:])
+
+        requested_python = os.environ.get("SPC_MCP_PYTHON")
+        mcp_python = requested_python or sys.executable
+
+        check_cmd = [mcp_python, "-c", "import mcp, pytoml, yaml, pydal"]
+        check = subprocess.call(check_cmd)
+        if check != 0:
+            print("ERROR: MCP SDK or SPC runtime deps missing in current Python.")
+            print("Install with:")
+            print("  pip install git+https://github.com/modelcontextprotocol/python-sdk.git")
+            print("  pip install -r requirements.txt")
+            sys.exit(1)
+
+        env = os.environ.copy()
+        repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        env["PYTHONPATH"] = os.path.join(repo_root, "src")
+        cmd = [
+            mcp_python,
+            "-m",
+            "spc.mcp_server",
+            "--host",
+            args.host,
+            "--port",
+            str(args.port),
+            "--path",
+            args.path,
+        ]
+        sys.exit(subprocess.call(cmd, env=env))
     elif (sys.argv[1] == "search"):
         print(notyet)
     elif (sys.argv[1] == "test"):
@@ -612,6 +652,8 @@ Available commands:
   submit <app> [params]         submit a job (params: key=val,key2=val2)
   status [cid]                  show job status (or all if no cid)
   cases [app] [--all]           list cases (default: current shell user)
+  files <cid>                   list files in a case directory
+  cat <cid>/<file>              view contents of a file
   share <cid>                   share a case (visible in web UI)
   unshare <cid>                 unshare a case
   start                         start the scheduler
@@ -776,6 +818,51 @@ Available commands:
             else:
                 print(f"No output file yet: {out_file}")
 
+        def list_files(cid):
+            job = db(db.jobs.cid == cid).select().first()
+            if not job:
+                print(f"Case '{cid}' not found")
+                return
+            user_row = db(db.users.id == job.uid).select().first()
+            username = user_row.user if user_row else "unknown"
+            case_dir = os.path.join('user_data', username, job.app, cid)
+            if not os.path.isdir(case_dir):
+                print(f"Case directory not found: {case_dir}")
+                return
+            files = os.listdir(case_dir)
+            if not files:
+                print("(no files)")
+                return
+            print(f"Files in {cid}:")
+            for f in sorted(files):
+                fpath = os.path.join(case_dir, f)
+                if os.path.isfile(fpath):
+                    size = os.path.getsize(fpath)
+                    print(f"  {f:<30} {size:>10} bytes")
+                else:
+                    print(f"  {f:<30} (dir)")
+
+        def cat_file(path):
+            # path can be "cid/filename" or "cid filename"
+            parts = path.replace('/', ' ').split()
+            if len(parts) < 2:
+                print("Usage: cat <cid>/<file> or cat <cid> <file>")
+                return
+            cid = parts[0]
+            filename = parts[1]
+            job = db(db.jobs.cid == cid).select().first()
+            if not job:
+                print(f"Case '{cid}' not found")
+                return
+            user_row = db(db.users.id == job.uid).select().first()
+            username = user_row.user if user_row else "unknown"
+            file_path = os.path.join('user_data', username, job.app, cid, filename)
+            if not os.path.isfile(file_path):
+                print(f"File not found: {file_path}")
+                return
+            with open(file_path, 'r') as f:
+                print(f.read())
+
         def set_flag(cid, field, value, label):
             job = db(db.jobs.cid == cid).select().first()
             if not job:
@@ -841,6 +928,16 @@ Available commands:
                     set_flag(args, "shared", "False", "Unshared")
                 else:
                     print("Usage: unshare <cid>")
+            elif cmd == 'files':
+                if args:
+                    list_files(args.strip())
+                else:
+                    print("Usage: files <cid>")
+            elif cmd == 'cat':
+                if args:
+                    cat_file(args)
+                else:
+                    print("Usage: cat <cid>/<file>")
             else:
                 print(f"Unknown command: {cmd}. Type 'help' for available commands.")
 
@@ -947,11 +1044,9 @@ Available commands:
             from . import migrate, config
 
             if re.search(r'http[s]://.*$', sys.argv[2]):
-                dlfile(sys.argv[2]) # download zip file
-                # if url is http://website.com/path/to/file.zip
-                # following line extracts out just "file.zip" which should
-                # now be in the current directory
-                save_path = os.path.basename(sys.argv[2].split('//')[1])
+                save_path = dlfile(sys.argv[2]) # download zip file
+                if not save_path:
+                    sys.exit(1)
             else:
                 save_path = sys.argv[2]
 
@@ -1091,9 +1186,15 @@ Available commands:
                                                      line_range=ds['line_range'],
                                                      data_def=ds['data_def'])
 
+            # activate app for all existing users
+            all_users = dal.db(dal.db.users.id > 0).select()
+            for u in all_users:
+                dal.db.app_user.insert(appid=appid, uid=u.id)
+
             # commit to db
             dal.db.commit()
             print("SUCCESS: installed app", app)
+            print("App activated for", len(all_users), "user(s)")
             print("Note: If SPC is running, you will need to restart")
         else:
             print(install_usage)

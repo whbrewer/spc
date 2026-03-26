@@ -68,6 +68,10 @@ SPC assumes the following are available on your system:
 - Python development headers (required to build packages such as `psutil`)
   - Debian/Ubuntu: `python3-dev`
   - RHEL/CentOS: `python3-devel`
+- Open MPI (required by `mpi4py`)
+  - macOS: `brew install open-mpi`
+  - Debian/Ubuntu: `sudo apt install libopenmpi-dev`
+  - RHEL/CentOS: `sudo yum install openmpi-devel`
 
 ### Browser support
 SPC has been tested primarily with **Google Chrome** on Linux and macOS. Other environments may work but are not guaranteed.
@@ -96,7 +100,9 @@ Open your browser at:
 
 ## Headless (CLI) mode
 
-You can run SPC without the web UI using the CLI. A typical workflow:
+You can run SPC without the web UI using the CLI.
+
+### Basic CLI commands
 
 ```bash
 # Submit a job
@@ -108,14 +114,126 @@ You can run SPC without the web UI using the CLI. A typical workflow:
 # Check status
 ./spc status <case_id>
 
-# View output
+# List cases
+./spc cases              # all recent cases
+./spc cases dna          # cases for dna app
+./spc cases --state R    # running jobs only
+
+# Share/unshare cases (makes them visible in web UI)
+./spc share <case_id>
+./spc unshare <case_id>
+```
+
+### Quick headless demo (DNA)
+
+```bash
+./spc submit dna --params "dna=ATCGATCG"
+./spc scheduler
+./spc status <case_id>
 cat user_data/cli/dna/<case_id>/dna.out
 ```
 
-For an interactive REPL, use:
+### MCP server (HTTP)
+
+Run the MCP server for agent tool access:
+
+```bash
+./spc mcp
+```
+
+Minimum Python version is 3.11 for the MCP SDK.
+
+Install MCP into your current environment:
+
+```bash
+pip install git+https://github.com/modelcontextprotocol/python-sdk.git
+pip install -r requirements.txt
+```
+
+Codex config example (`~/.codex/config.toml`):
+
+```toml
+[mcp_servers.spc]
+url = "http://127.0.0.1:7333/mcp"
+```
+
+For Claude Code, the MCP server is setup in .mcp.json or by running:
+```bash
+claude mcp add --transport http drai http://127.0.0.1:7333/mcp
+```
+
+Also, it was necessary to add the following in ~/.bashrc or ~/.zshrc:
+
+
+```bash
+export NODE_TLS_REJECT_UNAUTHORIZED=0
+```
+
+List available tools:
+
+```bash
+scripts/mcp_tools.sh
+```
+
+Run the DNA tool over MCP:
+
+```bash
+scripts/mcp_call.sh http://127.0.0.1:7333/mcp run_dna '{"params":{"dna":"ATCGATCG"}}'
+```
+
+### Interactive REPL
+
+For an interactive session, use:
 
 ```bash
 ./spc shell
+```
+
+The shell provides these commands:
+
+```
+apps                          list installed apps
+submit <app> [params]         submit a job (params: key=val,key2=val2)
+status [cid]                  show job status (or all if no cid)
+cases [app] [--all]           list cases
+share <cid>                   share a case (visible in web UI)
+unshare <cid>                 unshare a case
+start                         start the scheduler
+stop                          stop the scheduler
+tail <cid>                    show output of a case
+help                          show help
+quit                          exit the shell
+```
+
+Example REPL session:
+
+```
+$ ./spc shell
+SPC Interactive Shell
+Type 'help' for available commands, 'quit' to exit
+
+spc> apps
+NAME            FORMAT     DESCRIPTION
+-----------------------------------------------------------------
+dna             ini        Compute reverse complement, GC content...
+
+spc> submit dna dna=ATCGATCG
+Submitted: cid=yf00b1 jid=1
+
+spc> start
+Scheduler started
+
+spc> status yf00b1
+Case yf00b1: Done (dna)
+
+spc> tail yf00b1
+string is:  ATCGATCG
+Reverse complement is:  CGATCGAT
+%G+C is: 50.0
+...
+
+spc> quit
+Goodbye!
 ```
 
 ## How the scheduler works
@@ -153,16 +271,16 @@ For an interactive REPL, use:
 
 ## Install packaged apps
 
-To install an SPC packaged app (example: Mendel’s Accountant), run one of:
+To install an SPC packaged app (example: Mendel’s Accountant), run one of the following based on your OS:
 
 ### macOS (Apple Silicon)
 ```bash
-./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-darwin-arm64.zip
+./spc install https://github.com/whbrewer/mendel-f90/releases/download/v2.8.0/fmendel-spc-darwin-arm64.zip
 ```
 
 ### Linux (x86_64)
 ```bash
-./spc install https://github.com/whbrewer/spc-fmendel-plugin/releases/download/v2.0.1/fmendel-spc-linux-x86_64.zip
+./spc install https://github.com/whbrewer/mendel-f90/releases/download/v2.8.0/fmendel-spc-linux-x86_64.zip
 ```
 
 ---
